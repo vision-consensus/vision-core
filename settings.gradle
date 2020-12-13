@@ -1,0 +1,10 @@
+rootProject.name = 'java-vision'
+include 'framework'
+include 'chainstorage'
+include 'vprotocol'
+include 'executor'
+include 'consensus'
+include 'common'
+include 'demo:executor-demo'
+include 'crypto'
+

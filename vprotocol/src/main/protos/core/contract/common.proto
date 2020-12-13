@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package protocol;
+
+option java_package = "org.vision.protos.contract"; //Specify the name of the package that generated the Java file
+//option java_outer_classname = "common"; //Specify the class name of the generated Java file
+
+enum ResourceCode {
+  BANDWIDTH = 0x00;
+  ENERGY = 0x01;
+}

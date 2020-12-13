@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Stest" parallel="tests" thread-count="4">
+
+  <listeners>
+    <listener class-name="stest.vision.wallet.common.client.utils.RetryListener"/>
+  </listeners>
+  <test name="account,transfer">
+    <packages>
+      <package name="stest.vision.wallet.transfer">
+      </package>
+      <package name="stest.vision.wallet.account">
+      </package>
+    </packages>
+  </test>
+
+  <test name="exchangeandtoken,mutisign">
+    <packages>
+      <package name="stest.vision.wallet.exchangeandtoken">
+      </package>
+      <package name="stest.vision.wallet.mutisign">
+      </package>
+    </packages>
+  </test>
+
+  <test name="Contract linkage,block,node">
+    <packages>
+      <package name="stest.vision.wallet.contract.linkage">
+      </package>
+      <package name="stest.vision.wallet.block">
+      </package>
+    </packages>
+  </test>
+
+  <test name="contract scenario,committee,witness">
+    <packages>
+      <package name="stest.v.wallet.contract.scenario">
+      </package>
+      <package name="stest.vision.wallet.committee">
+      </package>
+      <package name="stest.vision.wallet.witness">
+      </package>
+    </packages>
+  </test>
+</suite>

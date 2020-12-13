@@ -1,0 +1,6 @@
+description = "executor-demo – a demo of executor."
+
+dependencies {
+    compile project(":executor")
+}
+

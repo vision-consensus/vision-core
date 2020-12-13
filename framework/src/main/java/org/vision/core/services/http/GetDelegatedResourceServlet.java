@@ -1,0 +1,63 @@
+package org.vision.core.services.http;
+
+import com.google.protobuf.ByteString;
+import java.io.IOException;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.vision.api.GrpcAPI.DelegatedResourceList;
+import org.vision.api.GrpcAPI.DelegatedResourceMessage;
+import org.vision.common.utils.ByteArray;
+import org.vision.core.Wallet;
+
+
+@Component
+@Slf4j(topic = "API")
+public class GetDelegatedResourceServlet extends RateLimiterServlet {
+
+  @Autowired
+  private Wallet wallet;
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      boolean visible = Util.getVisible(request);
+      String fromAddress = request.getParameter("fromAddress");
+      String toAddress = request.getParameter("toAddress");
+      if (visible) {
+        fromAddress = Util.getHexAddress(fromAddress);
+        toAddress = Util.getHexAddress(toAddress);
+      }
+      fillResponse(visible, ByteString.copyFrom(ByteArray.fromHexString(fromAddress)),
+          ByteString.copyFrom(ByteArray.fromHexString(toAddress)), response);
+    } catch (Exception e) {
+      Util.processError(e, response);
+    }
+  }
+
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      String input =
+          request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+      Util.checkBodySize(input);
+      boolean visible = Util.getVisiblePost(input);
+      DelegatedResourceMessage.Builder build = DelegatedResourceMessage.newBuilder();
+      JsonFormat.merge(input, build, visible);
+      fillResponse(visible, build.getFromAddress(), build.getToAddress(), response);
+    } catch (Exception e) {
+      Util.processError(e, response);
+    }
+  }
+
+  private void fillResponse(boolean visible, ByteString fromAddress, ByteString toAddress,
+      HttpServletResponse response) throws IOException {
+    DelegatedResourceList reply = wallet.getDelegatedResource(fromAddress, toAddress);
+    if (reply != null) {
+      response.getWriter().println(JsonFormat.printToString(reply, visible));
+    } else {
+      response.getWriter().println("{}");
+    }
+  }
+}
