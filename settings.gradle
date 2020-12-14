@@ -1,4 +1,4 @@
-rootProject.name = 'java-vision'
+rootProject.name = 'vision-core'
 include 'framework'
 include 'chainstorage'
 include 'vprotocol'

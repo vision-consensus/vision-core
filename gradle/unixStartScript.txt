@@ -52,7 +52,7 @@ APP_BASE_NAME=`basename "\$0"`
 
 # Add default JVM options here. You can also use JAVA_OPTS and ${optsEnvironmentVar} to pass JVM options to this script.
 DEFAULT_JVM_OPTS=${defaultJvmOpts}
-for line in \$(cat \$APP_HOME/bin/java-vision.vmoptions)
+for line in \$(cat \$APP_HOME/bin/vision-core.vmoptions)
 do
     DEFAULT_JVM_OPTS="\$DEFAULT_JVM_OPTS \$line"
 done

@@ -132,7 +132,7 @@ run {
 }
 
 shadowJar {
-    baseName = 'java-vision'
+    baseName = 'vision-core'
     classifier = null
     version = null
 }
@@ -242,16 +242,16 @@ def createScript(project, mainClass, name) {
     }
 }
 
-applicationDistribution.from("../gradle/java-vision.vmoptions") {
+applicationDistribution.from("../gradle/vision-core.vmoptions") {
     into "bin"
 }
 //distZip {
 //    doLast {
-//        file("$destinationDir/$archiveName").renameTo("$destinationDir/"+'java-vision-'+version+'-bin.zip')
+//        file("$destinationDir/$archiveName").renameTo("$destinationDir/"+'vision-core-'+version+'-bin.zip')
 //    }
 //}
 configurations.archives.artifacts.removeAll { it.type == 'tar' }
-applicationName = 'java-vision'
+applicationName = 'vision-core'
 startScripts.enabled = false
 run.enabled = false
 tasks.distTar.enabled = false

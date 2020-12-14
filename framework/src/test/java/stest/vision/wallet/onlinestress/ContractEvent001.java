@@ -207,7 +207,7 @@ public class ContractEvent001 {
           "triggerBoolEvent(bool,bool)", param, false,
           0L, 100000000L, event001Address, event001Key, blockingStubFull);
       logger.info(txid);
-      String filename = "/Users/wangzihe/Documents/modify_fullnode/java-vision/tooLongString.txt";
+      String filename = "/Users/wangzihe/Documents/modify_fullnode/vision-core/tooLongString.txt";
       try {
         FileReader fr = new FileReader(
             filename);

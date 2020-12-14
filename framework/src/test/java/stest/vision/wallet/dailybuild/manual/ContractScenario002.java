@@ -97,7 +97,7 @@ public class ContractScenario002 {
 
   }
 
-  @Test(enabled = true, description = "Deploy contract with java-vision support interface")
+  @Test(enabled = true, description = "Deploy contract with vision-core support interface")
   public void test01DeployVisionNative() {
     ECKey ecKey1 = new ECKey(Utils.getRandom());
     byte[] contract002Address = ecKey1.getAddress();
