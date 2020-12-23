@@ -270,8 +270,8 @@ public class VM {
       }
 
       program.spendEnergy(energyCost, op.name());
-      // todo 临时改一下使用阿里云
-//      program.checkCPUTimeLimit(op.name());
+
+      program.checkCPUTimeLimit(op.name());
 
       // Execute operation
       switch (op) {
