@@ -11,7 +11,7 @@ import org.vision.common.parameter.CommonParameter;
 public class ConfigLoader {
 
   //only for unit test
-  public static boolean disable = false;
+  public static boolean disable = true;
 
   public static void load(StoreFactory storeFactory) {
     if (!disable) {
