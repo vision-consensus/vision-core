@@ -34,7 +34,7 @@ public class VMConfig {
   @Setter
   private static boolean vmTrace = false;
 
-  private static boolean ALLOW_VVM_TRANSFER_VRC10 = true;
+  private static boolean ALLOW_VVM_TRANSFER_VRC10 = false;
 
   private static boolean ALLOW_VVM_CONSTANTINOPLE = false;
 
