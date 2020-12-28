@@ -56,13 +56,6 @@ public class VM {
 
     try {
       OpCode op = OpCode.code(program.getCurrentOp());
-      logger.info("OpCode == null:"+(op == null));
-      logger.info("program.getCurrentOp():"+program.getCurrentOp());
-      logger.info("allowVvmTransferVrc10 opCode:"+(op == OpCode.CALLTOKEN || op == OpCode.TOKENBALANCE || op == OpCode.CALLTOKENVALUE
-              || op == OpCode.CALLTOKENID));
-      logger.info("allowVvmConstantinople opCode:"+(op == OpCode.SHL || op == OpCode.SHR || op == OpCode.SAR || op == OpCode.CREATE2 || op == OpCode.EXTCODEHASH));
-      logger.info("allowVvmSolidity059 opCode:"+(op == OpCode.ISCONTRACT));
-      logger.info("allowVvmIstanbul opCode:"+(op == OpCode.SELFBALANCE || op == OpCode.CHAINID));
       if (op == null
           || (!VMConfig.allowVvmTransferVrc10()
               && (op == OpCode.CALLTOKEN || op == OpCode.TOKENBALANCE || op == OpCode.CALLTOKENVALUE
