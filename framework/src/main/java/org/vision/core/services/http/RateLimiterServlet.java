@@ -86,6 +86,10 @@ public abstract class RateLimiterServlet extends HttpServlet {
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+    resp.setHeader("Access-Control-Allow-Origin", "*");
+    resp.setHeader("Access-Control-Allow-Methods", "*");
+    resp.addHeader("Access-Control-Allow-Headers", "*");
+    resp.setHeader("Access-Control-Allow-Credentials", "*");
     IRateLimiter rateLimiter = container.get(KEY_PREFIX_HTTP, getClass().getSimpleName());
 
     boolean acquireResource = true;
