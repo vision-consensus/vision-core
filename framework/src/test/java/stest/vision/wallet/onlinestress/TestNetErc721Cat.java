@@ -76,7 +76,7 @@ public class TestNetErc721Cat {
         testKey002, blockingStubFull));
     Assert.assertTrue(PublicMethed.sendcoin(triggerAddress, 50000000000L, fromAddress,
         testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(deployAddress, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(deployAddress, 100000000L,
         3, 1, deployKey, blockingStubFull));
     /*    Assert.assertTrue(PublicMethed.freezeBalanceGetCpu(triggerAddress,100000000L,
         3,1,triggerKey,blockingStubFull));*/

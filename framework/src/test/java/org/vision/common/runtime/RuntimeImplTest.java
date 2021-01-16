@@ -64,7 +64,7 @@ public class RuntimeImplTest {
         .decode(Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abd");
     dbManager = context.getBean(Manager.class);
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(5_000_000_000L); // unit is trx
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(5_000_000_000L); // unit is trx
     repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
     repository.createAccount(callerAddress, AccountType.Normal);
     repository.addBalance(callerAddress, callerTotalBalance);
@@ -154,7 +154,7 @@ public class RuntimeImplTest {
 
     long frozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - frozenBalance;
-    creatorAccount.setFrozenForEnergy(frozenBalance, 0L);
+    creatorAccount.setFrozenForEntropy(frozenBalance, 0L);
     creatorAccount.setBalance(newBalance);
     repository.putAccountValue(creatorAddress, creatorAccount);
     repository.commit();
@@ -240,7 +240,7 @@ public class RuntimeImplTest {
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
-    creatorAccount.setFrozenForEnergy(creatorFrozenBalance, 0L);
+    creatorAccount.setFrozenForEntropy(creatorFrozenBalance, 0L);
     creatorAccount.setBalance(newBalance);
     repository.putAccountValue(creatorAddress, creatorAccount);
     repository.commit();
@@ -272,7 +272,7 @@ public class RuntimeImplTest {
         expectEnergyLimit4);
 
     long callerFrozenBalance = 1_000_000_000L;
-    callerAccount.setFrozenForEnergy(callerFrozenBalance, 0L);
+    callerAccount.setFrozenForEntropy(callerFrozenBalance, 0L);
     callerAccount.setBalance(callerAccount.getBalance() - callerFrozenBalance);
     repository.putAccountValue(callerAddress, callerAccount);
     repository.commit();
@@ -344,7 +344,7 @@ public class RuntimeImplTest {
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
-    creatorAccount.setFrozenForEnergy(creatorFrozenBalance, 0L);
+    creatorAccount.setFrozenForEntropy(creatorFrozenBalance, 0L);
     creatorAccount.setBalance(newBalance);
     repository.putAccountValue(creatorAddress, creatorAccount);
     repository.commit();
@@ -424,7 +424,7 @@ public class RuntimeImplTest {
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
-    creatorAccount.setFrozenForEnergy(creatorFrozenBalance, 0L);
+    creatorAccount.setFrozenForEntropy(creatorFrozenBalance, 0L);
     creatorAccount.setBalance(newBalance);
     repository.putAccountValue(creatorAddress, creatorAccount);
     repository.commit();

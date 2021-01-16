@@ -78,11 +78,11 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "FreezeBalance for energy by http")
-  public void test003FreezebalanceForEnergy() {
+  @Test(enabled = true, description = "FreezeBalance for entropy by http")
+  public void test003FreezebalanceForEntropy() {
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //Freeze balance for energy
+    //Freeze balance for entropy
     response = HttpMethed
         .freezeBalance(httpnode, freezeBalanceAddress, frozenBalance, 0, 1, freezeBalanceKey);
     Assert.assertTrue(HttpMethed.verificationResult(response));
@@ -94,12 +94,12 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "UnFreezeBalance for energy by http")
-  public void test004UnFreezebalanceForEnergy() {
+  @Test(enabled = true, description = "UnFreezeBalance for entropy by http")
+  public void test004UnFreezebalanceForEntropy() {
 
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
     HttpMethed.waitToProduceOneBlock(httpnode);
-    //UnFreeze balance for energy
+    //UnFreeze balance for entropy
     response = HttpMethed.unFreezeBalance(httpnode, freezeBalanceAddress, 1, freezeBalanceKey);
     Assert.assertTrue(HttpMethed.verificationResult(response));
     HttpMethed.waitToProduceOneBlock(httpnode);

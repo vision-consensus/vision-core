@@ -64,7 +64,7 @@ public class ContractScenario007 {
     contract007Key = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
     Assert.assertTrue(PublicMethed.sendcoin(contract007Address, 20000000000L, fromAddress,
         testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract007Address, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract007Address, 100000000L,
         3, 1, contract007Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract007Address,

@@ -92,8 +92,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           break;
         case ENTROPY:
           unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForEntropy();
-          delegatedResourceCapsule.setFrozenBalanceForEnergy(0, 0);
-          accountCapsule.addDelegatedFrozenBalanceForEnergy(-unfreezeBalance);
+          delegatedResourceCapsule.setFrozenBalanceForEntropy(0, 0);
+          accountCapsule.addDelegatedFrozenBalanceForEntropy(-unfreezeBalance);
           break;
         default:
           //this should never happen
@@ -115,10 +115,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             break;
           case ENTROPY:
             if (dynamicStore.getAllowVvmSolidity059() == 1
-                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy() < unfreezeBalance) {
-              receiverCapsule.setAcquiredDelegatedFrozenBalanceForEnergy(0);
+                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEntropy() < unfreezeBalance) {
+              receiverCapsule.setAcquiredDelegatedFrozenBalanceForEntropy(0);
             } else {
-              receiverCapsule.addAcquiredDelegatedFrozenBalanceForEnergy(-unfreezeBalance);
+              receiverCapsule.addAcquiredDelegatedFrozenBalanceForEntropy(-unfreezeBalance);
             }
             break;
           default:
@@ -210,7 +210,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         break;
       case ENTROPY:
         dynamicStore
-            .addTotalEnergyWeight(-unfreezeBalance / VS_PRECISION);
+            .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -341,11 +341,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("no delegateFrozenBalance(Entropy)");
           }
           if (dynamicStore.getAllowVvmConstantinople() == 0) {
-            if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy()
+            if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForEntropy()
                 < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForEnergy() + "] < delegatedEnergy["
+                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEnergy["
                       + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }
@@ -353,11 +353,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (dynamicStore.getAllowVvmSolidity059() != 1
                 && receiverCapsule != null
                 && receiverCapsule.getType() != AccountType.Contract
-                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy()
+                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEntropy()
                 < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForEnergy() + "] < delegatedEnergy["
+                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEnergy["
                       + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }

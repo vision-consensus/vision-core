@@ -143,7 +143,7 @@ public class WalletTestAccount004 {
     account004 = PublicMethed.queryAccount(account004Address, blockingStubFull);
     Assert.assertTrue(account004.getBalance() == freezeAmount);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account004Address, freezeAmount, 0,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(account004Address, freezeAmount, 0,
         1, account004Key, blockingStubFull));
     account004 = PublicMethed.queryAccount(account004Address, blockingStubFull);
     Assert.assertTrue(account004.getBalance() == 0);

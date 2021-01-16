@@ -360,11 +360,11 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public long getAcquiredDelegatedFrozenBalanceForEnergy() {
+  public long getAcquiredDelegatedFrozenBalanceForEntropy() {
     return getAccountResource().getAcquiredDelegatedFrozenBalanceForEntropy();
   }
 
-  public void setAcquiredDelegatedFrozenBalanceForEnergy(long balance) {
+  public void setAcquiredDelegatedFrozenBalanceForEntropy(long balance) {
     AccountResource newAccountResource = getAccountResource().toBuilder()
         .setAcquiredDelegatedFrozenBalanceForEntropy(balance).build();
 
@@ -373,7 +373,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public long getDelegatedFrozenBalanceForEnergy() {
+  public long getDelegatedFrozenBalanceForEntropy() {
     return getAccountResource().getDelegatedFrozenBalanceForEntropy();
   }
 
@@ -387,7 +387,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public void addAcquiredDelegatedFrozenBalanceForEnergy(long balance) {
+  public void addAcquiredDelegatedFrozenBalanceForEntropy(long balance) {
     AccountResource newAccountResource = getAccountResource().toBuilder()
         .setAcquiredDelegatedFrozenBalanceForEntropy(
             getAccountResource().getAcquiredDelegatedFrozenBalanceForEntropy() + balance).build();
@@ -397,7 +397,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public void addDelegatedFrozenBalanceForEnergy(long balance) {
+  public void addDelegatedFrozenBalanceForEntropy(long balance) {
     AccountResource newAccountResource = getAccountResource().toBuilder()
         .setDelegatedFrozenBalanceForEntropy(
             getAccountResource().getDelegatedFrozenBalanceForEntropy() + balance).build();
@@ -819,7 +819,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return this.account.getAccountResource();
   }
 
-  public void setFrozenForEnergy(long newFrozenBalanceForEnergy, long time) {
+  public void setFrozenForEntropy(long newFrozenBalanceForEnergy, long time) {
     Frozen newFrozenForEnergy = Frozen.newBuilder()
         .setFrozenBalance(newFrozenBalanceForEnergy)
         .setExpireTime(time)
@@ -833,30 +833,30 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public long getEnergyFrozenBalance() {
+  public long getEntropyFrozenBalance() {
     return this.account.getAccountResource().getFrozenBalanceForEntropy().getFrozenBalance();
   }
 
-  public long getEnergyUsage() {
+  public long getEntropyUsage() {
     return this.account.getAccountResource().getEntropyUsage();
   }
 
-  public void setEnergyUsage(long energyUsage) {
+  public void setEntropyUsage(long energyUsage) {
     this.account = this.account.toBuilder()
         .setAccountResource(
             this.account.getAccountResource().toBuilder().setEntropyUsage(energyUsage).build())
         .build();
   }
 
-  public long getAllFrozenBalanceForEnergy() {
-    return getEnergyFrozenBalance() + getAcquiredDelegatedFrozenBalanceForEnergy();
+  public long getAllFrozenBalanceForEntropy() {
+    return getEntropyFrozenBalance() + getAcquiredDelegatedFrozenBalanceForEntropy();
   }
 
-  public long getLatestConsumeTimeForEnergy() {
+  public long getLatestConsumeTimeForEntropy() {
     return this.account.getAccountResource().getLatestConsumeTimeForEntropy();
   }
 
-  public void setLatestConsumeTimeForEnergy(long latest_time) {
+  public void setLatestConsumeTimeForEntropy(long latest_time) {
     this.account = this.account.toBuilder()
         .setAccountResource(
             this.account.getAccountResource().toBuilder().setLatestConsumeTimeForEntropy(latest_time)

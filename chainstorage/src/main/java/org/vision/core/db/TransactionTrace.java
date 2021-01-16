@@ -51,7 +51,7 @@ public class TransactionTrace {
 
   private CodeStore codeStore;
 
-  private EnergyProcessor energyProcessor;
+  private EntropyProcessor entropyProcessor;
 
   private InternalTransaction.TrxType trxType;
 
@@ -93,7 +93,7 @@ public class TransactionTrace {
     this.accountStore = storeFactory.getChainBaseManager().getAccountStore();
 
     this.receipt = new ReceiptCapsule(Sha256Hash.ZERO_HASH);
-    this.energyProcessor = new EnergyProcessor(dynamicPropertiesStore, accountStore);
+    this.entropyProcessor = new EntropyProcessor(dynamicPropertiesStore, accountStore);
     this.runtime = runtime;
     this.forkController = new ForkController();
     forkController.init(storeFactory.getChainBaseManager());
@@ -167,7 +167,7 @@ public class TransactionTrace {
       throws ContractExeException, ContractValidateException, VMIllegalException {
     /*  VM execute  */
     runtime.execute(transactionContext);
-    setBill(transactionContext.getProgramResult().getEnergyUsed());
+    setBill(transactionContext.getProgramResult().getEntropyUsed());
 
     if (InternalTransaction.TrxType.TRX_PRECOMPILED_TYPE != trxType) {
       if (contractResult.OUT_OF_TIME
@@ -238,8 +238,8 @@ public class TransactionTrace {
         origin,
         caller,
         percent, originEnergyLimit,
-        energyProcessor,
-        EnergyProcessor.getHeadSlot(dynamicPropertiesStore));
+            entropyProcessor,
+        EntropyProcessor.getHeadSlot(dynamicPropertiesStore));
   }
 
   public boolean checkNeedRetry() {

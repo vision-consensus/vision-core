@@ -171,7 +171,7 @@ public class WalletTestMutiSign014 {
         PublicMethedForMutiSign.updateSettingWithPermissionId(contractAddress, 50, ownerKey,
             ownerAddress, 0, blockingStubFull, ownerKeyString));
     Assert.assertTrue(
-        PublicMethedForMutiSign.updateEnergyLimitWithPermissionId(contractAddress, 50, ownerKey,
+        PublicMethedForMutiSign.updateEntropyLimitWithPermissionId(contractAddress, 50, ownerKey,
             ownerAddress, 0, blockingStubFull, ownerKeyString));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();

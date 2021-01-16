@@ -366,7 +366,7 @@ public class ContractVrcToken067 {
   @Test(enabled = true, description = "TransferToken with 0 tokenValue, "
       + "and not existed tokenId, get tokenBalance")
   public void test04TriggerTokenBalanceContract() {
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(user001Address, 1000_000_000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(user001Address, 1000_000_000L,
         0, 1, user001Key, blockingStubFull));
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);

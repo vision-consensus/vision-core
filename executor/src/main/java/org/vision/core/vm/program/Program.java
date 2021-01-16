@@ -800,12 +800,12 @@ public class Program {
     long saveCodeEnergy = (long) getLength(code) * EnergyCost.getInstance().getCREATE_DATA();
 
     long afterSpend =
-        programInvoke.getEnergyLimit() - createResult.getEnergyUsed() - saveCodeEnergy;
+        programInvoke.getEnergyLimit() - createResult.getEntropyUsed() - saveCodeEnergy;
     if (!createResult.isRevert()) {
       if (afterSpend < 0) {
         createResult.setException(
             Exception.notEnoughSpendEnergy("No energy to save just created contract code",
-                saveCodeEnergy, programInvoke.getEnergyLimit() - createResult.getEnergyUsed()));
+                saveCodeEnergy, programInvoke.getEnergyLimit() - createResult.getEntropyUsed()));
       } else {
         createResult.spendEnergy(saveCodeEnergy);
         deposit.saveCode(newAddress, code);
@@ -844,7 +844,7 @@ public class Program {
 
   public void refundEnergyAfterVM(DataWord energyLimit, ProgramResult result) {
 
-    long refundEnergy = energyLimit.longValueSafe() - result.getEnergyUsed();
+    long refundEnergy = energyLimit.longValueSafe() - result.getEntropyUsed();
     if (refundEnergy > 0) {
       refundEnergy(refundEnergy, "remain energy from the internal call");
       if (logger.isDebugEnabled()) {
@@ -1050,7 +1050,7 @@ public class Program {
     // 5. REFUND THE REMAIN ENERGY
     if (callResult != null) {
       BigInteger refundEnergy = msg.getEnergy().value()
-          .subtract(BIUtil.toBI(callResult.getEnergyUsed()));
+          .subtract(BIUtil.toBI(callResult.getEntropyUsed()));
       if (BIUtil.isPositive(refundEnergy)) {
         refundEnergy(refundEnergy.longValueExact(), "remaining energy from the internal call");
         if (logger.isDebugEnabled()) {
@@ -1077,7 +1077,7 @@ public class Program {
       throw new OutOfEnergyException(
           "Not enough energy for '%s' operation executing: curInvokeEnergyLimit[%d],"
               + " curOpEnergy[%d], usedEnergy[%d]",
-          opName, invoke.getEnergyLimit(), energyValue, getResult().getEnergyUsed());
+          opName, invoke.getEnergyLimit(), energyValue, getResult().getEntropyUsed());
     }
     getResult().spendEnergy(energyValue);
   }
@@ -1227,11 +1227,11 @@ public class Program {
   }
 
   public long getEnergylimitLeftLong() {
-    return invoke.getEnergyLimit() - getResult().getEnergyUsed();
+    return invoke.getEnergyLimit() - getResult().getEntropyUsed();
   }
 
   public DataWord getEnergyLimitLeft() {
-    return new DataWord(invoke.getEnergyLimit() - getResult().getEnergyUsed());
+    return new DataWord(invoke.getEnergyLimit() - getResult().getEntropyUsed());
   }
 
   public long getVmShouldEndInUs() {
@@ -1403,7 +1403,7 @@ public class Program {
       logger.trace(" -- STACK --   {}", stackData);
       logger.trace(" -- MEMORY --  {}", memoryData);
       logger.trace("\n  Spent Drop: [{}]/[{}]\n  Left Energy:  [{}]\n",
-          getResult().getEnergyUsed(),
+          getResult().getEntropyUsed(),
           invoke.getEnergyLimit(),
           getEnergyLimitLeft().longValue());
 
@@ -1431,7 +1431,7 @@ public class Program {
       if (!Arrays.equals(txData, ops)) {
         globalOutput.append("\n  msg.data: ").append(Hex.toHexString(txData));
       }
-      globalOutput.append("\n\n  Spent Energy: ").append(getResult().getEnergyUsed());
+      globalOutput.append("\n\n  Spent Energy: ").append(getResult().getEntropyUsed());
 
       if (listener != null) {
         listener.output(globalOutput.toString());
@@ -1542,7 +1542,7 @@ public class Program {
       }
     }
 
-    long requiredEnergy = contract.getEnergyForData(data);
+    long requiredEnergy = contract.getEntropyForData(data);
     if (requiredEnergy > msg.getEnergy().longValue()) {
       // Not need to throw an exception, method caller needn't know that
       // regard as consumed the energy

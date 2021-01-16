@@ -67,7 +67,7 @@ public class DelayTransaction005 {
     blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
   }
 
-  @Test(enabled = false, description = "Delay update energy limit contract")
+  @Test(enabled = false, description = "Delay update entropy limit contract")
   public void test1DelayUpdateSetting() {
     //get account
     ecKey = new ECKey(Utils.getRandom());
@@ -90,25 +90,25 @@ public class DelayTransaction005 {
         smartContractOwnerKey, smartContractOwnerAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    Long oldOriginEnergyLimit = 567L;
-    Assert.assertTrue(PublicMethed.updateEnergyLimit(contractAddress, oldOriginEnergyLimit,
+    Long oldOriginEntropyLimit = 567L;
+    Assert.assertTrue(PublicMethed.updateEntropyLimit(contractAddress, oldOriginEntropyLimit,
         smartContractOwnerKey, smartContractOwnerAddress, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEnergyLimit);
+    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEntropyLimit);
 
-    Long newOriginEnergyLimit = 8765L;
-    final String txid = PublicMethed.updateEnergyLimitDelayGetTxid(contractAddress,
-        newOriginEnergyLimit, delaySecond, smartContractOwnerKey, smartContractOwnerAddress,
+    Long newOriginEntropyLimit = 8765L;
+    final String txid = PublicMethed.updateEntropyLimitDelayGetTxid(contractAddress,
+        newOriginEntropyLimit, delaySecond, smartContractOwnerKey, smartContractOwnerAddress,
         blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEnergyLimit);
+    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEntropyLimit);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    logger.info("newOriginEnergyLimit: " + smartContract.getOriginEntropyLimit());
-    Assert.assertTrue(smartContract.getOriginEntropyLimit() == newOriginEnergyLimit);
+    logger.info("newOriginEntropyLimit: " + smartContract.getOriginEntropyLimit());
+    Assert.assertTrue(smartContract.getOriginEntropyLimit() == newOriginEntropyLimit);
 
     Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
         .getNetFee();
@@ -117,13 +117,13 @@ public class DelayTransaction005 {
 
   }
 
-  @Test(enabled = false, description = "Cancel delay energy limit contract")
+  @Test(enabled = false, description = "Cancel delay entropy limit contract")
   public void test2CancelDelayUpdateSetting() {
     //get account
-    final Long oldOriginEnergyLimit = smartContract.getOriginEntropyLimit();
-    final Long newOriginEnergyLimit = 466L;
+    final Long oldOriginEntropyLimit = smartContract.getOriginEntropyLimit();
+    final Long newOriginEntropyLimit = 466L;
 
-    String txid = PublicMethed.updateEnergyLimitDelayGetTxid(contractAddress, newOriginEnergyLimit,
+    String txid = PublicMethed.updateEntropyLimitDelayGetTxid(contractAddress, newOriginEntropyLimit,
         delaySecond, smartContractOwnerKey, smartContractOwnerAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Account ownerAccount = PublicMethed.queryAccount(smartContractOwnerKey, blockingStubFull);
@@ -139,8 +139,8 @@ public class DelayTransaction005 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    logger.info("newOriginEnergyLimit: " + smartContract.getOriginEntropyLimit());
-    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEnergyLimit);
+    logger.info("newOriginEntropyLimit: " + smartContract.getOriginEntropyLimit());
+    Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEntropyLimit);
 
     final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getReceipt().getNetFee();

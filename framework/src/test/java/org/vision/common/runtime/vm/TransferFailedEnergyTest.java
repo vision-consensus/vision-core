@@ -386,9 +386,9 @@ public class TransferFailedEnergyTest extends VMTestBase {
     Assert.assertEquals(receiptCapsule.getResult(), testCase.getReceiptResult(),
         testCase.getMethod());
     if (testCase.allEnergy) {
-      Assert.assertEquals(programResult.getEnergyUsed(), 1000000, testCase.getMethod());
+      Assert.assertEquals(programResult.getEntropyUsed(), 1000000, testCase.getMethod());
     } else {
-      Assert.assertTrue(programResult.getEnergyUsed() < allEnergy, testCase.getMethod());
+      Assert.assertTrue(programResult.getEntropyUsed() < allEnergy, testCase.getMethod());
     }
   }
 

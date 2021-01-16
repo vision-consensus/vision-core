@@ -74,7 +74,7 @@ public class ProposalService extends ProposalUtil {
           break;
         }
         case ENERGY_FEE: {
-          manager.getDynamicPropertiesStore().saveEnergyFee(entry.getValue());
+          manager.getDynamicPropertiesStore().saveEntropyFee(entry.getValue());
           break;
         }
         case EXCHANGE_CREATE_FEE: {
@@ -116,14 +116,14 @@ public class ProposalService extends ProposalUtil {
           break;
         }
         case ALLOW_ADAPTIVE_ENERGY: {
-          if (manager.getDynamicPropertiesStore().getAllowAdaptiveEnergy() == 0) {
-            manager.getDynamicPropertiesStore().saveAllowAdaptiveEnergy(entry.getValue());
+          if (manager.getDynamicPropertiesStore().getAllowAdaptiveEntropy() == 0) {
+            manager.getDynamicPropertiesStore().saveAllowAdaptiveEntropy(entry.getValue());
             if (manager.getChainBaseManager()
                 .getForkController().pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
               //24 * 60 * 2 . one minute,1/2 total limit.
               manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitTargetRatio(2880);
-              manager.getDynamicPropertiesStore().saveTotalEnergyTargetLimit(
-                  manager.getDynamicPropertiesStore().getTotalEnergyLimit() / 2880);
+              manager.getDynamicPropertiesStore().saveTotalEntropyTargetLimit(
+                  manager.getDynamicPropertiesStore().getTotalEntropyLimit() / 2880);
               manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitMultiplier(50);
             }
           }
@@ -157,8 +157,8 @@ public class ProposalService extends ProposalUtil {
         case ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO: {
           long ratio = 24 * 60 * entry.getValue();
           manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitTargetRatio(ratio);
-          manager.getDynamicPropertiesStore().saveTotalEnergyTargetLimit(
-              manager.getDynamicPropertiesStore().getTotalEnergyLimit() / ratio);
+          manager.getDynamicPropertiesStore().saveTotalEntropyTargetLimit(
+              manager.getDynamicPropertiesStore().getTotalEntropyLimit() / ratio);
           break;
         }
         case ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER: {

@@ -62,7 +62,7 @@ public class ContractScenario004 {
   public void deployErc20VisionTokenWithoutData() {
     Assert.assertTrue(PublicMethed.sendcoin(contract004Address, 200000000L, fromAddress,
         testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract004Address, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract004Address, 100000000L,
         3, 1, contract004Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract004Address,
         blockingStubFull);
@@ -92,7 +92,7 @@ public class ContractScenario004 {
   public void deployErc20VisionTokenWithData() {
     Assert.assertTrue(PublicMethed
         .sendcoin(contract004Address, 200000000L, fromAddress, testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract004Address, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract004Address, 100000000L,
         3, 1, contract004Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract004Address,
         blockingStubFull);

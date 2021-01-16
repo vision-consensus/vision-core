@@ -86,16 +86,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
             && dynamicStore.supportDR()) {
           delegateResource(ownerAddress, receiverAddress, false,
               frozenBalance, expireTime);
-          accountCapsule.addDelegatedFrozenBalanceForEnergy(frozenBalance);
+          accountCapsule.addDelegatedFrozenBalanceForEntropy(frozenBalance);
         } else {
           long newFrozenBalanceForEnergy =
               frozenBalance + accountCapsule.getAccountResource()
                   .getFrozenBalanceForEntropy()
                   .getFrozenBalance();
-          accountCapsule.setFrozenForEnergy(newFrozenBalanceForEnergy, expireTime);
+          accountCapsule.setFrozenForEntropy(newFrozenBalanceForEnergy, expireTime);
         }
         dynamicStore
-            .addTotalEnergyWeight(frozenBalance / VS_PRECISION);
+            .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
       default:
         logger.debug("Resource Code Error.");
@@ -246,7 +246,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       if (isBandwidth) {
         delegatedResourceCapsule.addFrozenBalanceForBandwidth(balance, expireTime);
       } else {
-        delegatedResourceCapsule.addFrozenBalanceForEnergy(balance, expireTime);
+        delegatedResourceCapsule.addFrozenBalanceForEntropy(balance, expireTime);
       }
     } else {
       delegatedResourceCapsule = new DelegatedResourceCapsule(
@@ -255,7 +255,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       if (isBandwidth) {
         delegatedResourceCapsule.setFrozenBalanceForBandwidth(balance, expireTime);
       } else {
-        delegatedResourceCapsule.setFrozenBalanceForEnergy(balance, expireTime);
+        delegatedResourceCapsule.setFrozenBalanceForEntropy(balance, expireTime);
       }
 
     }
@@ -298,7 +298,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (isBandwidth) {
       receiverCapsule.addAcquiredDelegatedFrozenBalanceForBandwidth(balance);
     } else {
-      receiverCapsule.addAcquiredDelegatedFrozenBalanceForEnergy(balance);
+      receiverCapsule.addAcquiredDelegatedFrozenBalanceForEntropy(balance);
     }
 
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);

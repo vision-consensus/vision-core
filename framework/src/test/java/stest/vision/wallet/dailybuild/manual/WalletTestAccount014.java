@@ -140,7 +140,7 @@ public class WalletTestAccount014 {
         account014Key, blockingStubFull));
     Assert.assertTrue(PublicMethed.sendcoin(account014SecondAddress, 1000000L,
         account014Address, account014Key, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account014Address, 1000000,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(account014Address, 1000000,
         3, 1, account014Key, blockingStubFull));
     Assert.assertTrue(PublicMethed.freezeBalanceForReceiver(account014Address, 1000000,
         3, 0, ByteString.copyFrom(

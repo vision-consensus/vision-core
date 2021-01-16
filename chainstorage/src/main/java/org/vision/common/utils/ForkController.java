@@ -52,7 +52,7 @@ public class ForkController {
   }
 
   private boolean passOld(int version) {
-    if (version == ForkBlockVersionConsts.ENERGY_LIMIT) {
+    if (version == ForkBlockVersionConsts.ENTROPY_LIMIT) {
       return checkForEnergyLimit();
     }
 
@@ -93,7 +93,7 @@ public class ForkController {
   // version !=5, skip this.
   private boolean checkForEnergyLimit() {
     long blockNum = manager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
-    return blockNum >= CommonParameter.getInstance().getBlockNumForEnergyLimit();
+    return blockNum >= CommonParameter.getInstance().getBlockNumForEntropyLimit();
   }
 
   private boolean check(byte[] stats) {
@@ -148,7 +148,7 @@ public class ForkController {
     }
 
     int version = blockCapsule.getInstance().getBlockHeader().getRawData().getVersion();
-    if (version < ForkBlockVersionConsts.ENERGY_LIMIT) {
+    if (version < ForkBlockVersionConsts.ENTROPY_LIMIT) {
       return;
     }
 

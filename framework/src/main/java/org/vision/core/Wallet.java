@@ -150,7 +150,7 @@ import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.TransactionRetCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.core.db.EnergyProcessor;
+import org.vision.core.db.EntropyProcessor;
 import org.vision.core.db.TransactionContext;
 import org.vision.core.exception.AccountResourceInsufficientException;
 import org.vision.core.exception.BadItemException;
@@ -318,18 +318,18 @@ public class Wallet {
     BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
-    EnergyProcessor energyProcessor = new EnergyProcessor(
+    EntropyProcessor entropyProcessor = new EntropyProcessor(
         chainBaseManager.getDynamicPropertiesStore(),
         chainBaseManager.getAccountStore());
-    energyProcessor.updateUsage(accountCapsule);
+    entropyProcessor.updateUsage(accountCapsule);
 
     long genesisTimeStamp = chainBaseManager.getGenesisBlock().getTimeStamp();
     accountCapsule.setLatestConsumeTime(genesisTimeStamp
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTime());
     accountCapsule.setLatestConsumeFreeTime(genesisTimeStamp
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeFreeTime());
-    accountCapsule.setLatestConsumeTimeForEnergy(genesisTimeStamp
-        + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEnergy());
+    accountCapsule.setLatestConsumeTimeForEntropy(genesisTimeStamp
+        + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEntropy());
 
     return accountCapsule.getInstance();
   }
@@ -348,18 +348,18 @@ public class Wallet {
     BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
-    EnergyProcessor energyProcessor = new EnergyProcessor(
+    EntropyProcessor entropyProcessor = new EntropyProcessor(
         chainBaseManager.getDynamicPropertiesStore(),
         chainBaseManager.getAccountStore());
-    energyProcessor.updateUsage(accountCapsule);
+    entropyProcessor.updateUsage(accountCapsule);
 
     long genesisTimeStamp = chainBaseManager.getGenesisBlock().getTimeStamp();
     accountCapsule.setLatestConsumeTime(genesisTimeStamp
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTime());
     accountCapsule.setLatestConsumeFreeTime(genesisTimeStamp
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeFreeTime());
-    accountCapsule.setLatestConsumeTimeForEnergy(genesisTimeStamp
-        + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEnergy());
+    accountCapsule.setLatestConsumeTimeForEntropy(genesisTimeStamp
+        + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEntropy());
 
     return accountCapsule.getInstance();
   }
@@ -770,11 +770,11 @@ public class Wallet {
             .setKey("getRemoveThePowerOfTheGr")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr())
             .build());
-    //    ENERGY_FEE, // VDT, 11
+    //    ENTROPY_FEE, // VDT, 11
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getEnergyFee")
-            .setValue(chainBaseManager.getDynamicPropertiesStore().getEnergyFee())
+            .setKey("getEntropyFee")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getEntropyFee())
             .build());
     //    EXCHANGE_CREATE_FEE, // VDT, 12
     builder.addChainParameter(
@@ -806,11 +806,11 @@ public class Wallet {
             .setKey("getAllowDelegateResource")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getAllowDelegateResource())
             .build());
-    //    TOTAL_ENERGY_LIMIT, // 50,000,000,000, 17
+    //    TOTAL_ENTROPY_LIMIT, // 50,000,000,000, 17
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getTotalEnergyLimit")
-            .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEnergyLimit())
+            .setKey("getTotalEntropyLimit")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEntropyLimit())
             .build());
     //    ALLOW_VVM_TRANSFER_VRC10, // 1, 18
     builder.addChainParameter(
@@ -818,11 +818,11 @@ public class Wallet {
             .setKey("getAllowVvmTransferVrc10")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getAllowVvmTransferVrc10())
             .build());
-    //    TOTAL_CURRENT_ENERGY_LIMIT, // 50,000,000,000, 19
+    //    TOTAL_CURRENT_ENTROPY_LIMIT, // 50,000,000,000, 19
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getTotalEnergyCurrentLimit")
-            .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit())
+            .setKey("getTotalEntropyCurrentLimit")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit())
             .build());
     //    ALLOW_MULTI_SIGN, // 1, 20
     builder.addChainParameter(
@@ -830,21 +830,21 @@ public class Wallet {
             .setKey("getAllowMultiSign")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getAllowMultiSign())
             .build());
-    //    ALLOW_ADAPTIVE_ENERGY, // 1, 21
+    //    ALLOW_ADAPTIVE_ENTROPY, // 1, 21
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowAdaptiveEnergy")
-            .setValue(chainBaseManager.getDynamicPropertiesStore().getAllowAdaptiveEnergy())
+            .setKey("getAllowAdaptiveEntropy")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getAllowAdaptiveEntropy())
             .build());
     //other chainParameters
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-        .setKey("getTotalEnergyTargetLimit")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEnergyTargetLimit())
+        .setKey("getTotalEntropyTargetLimit")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEntropyTargetLimit())
         .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-        .setKey("getTotalEnergyAverageUsage")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEnergyAverageUsage())
+        .setKey("getTotalEntropyAverageUsage")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getTotalEntropyAverageUsage())
         .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1088,22 +1088,22 @@ public class Wallet {
     BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
-    EnergyProcessor energyProcessor = new EnergyProcessor(
+    EntropyProcessor entropyProcessor = new EntropyProcessor(
         chainBaseManager.getDynamicPropertiesStore(),
         chainBaseManager.getAccountStore());
-    energyProcessor.updateUsage(accountCapsule);
+    entropyProcessor.updateUsage(accountCapsule);
 
     long netLimit = processor
         .calculateGlobalNetLimit(accountCapsule);
     long freeNetLimit = chainBaseManager.getDynamicPropertiesStore().getFreeNetLimit();
     long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalNetLimit();
     long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalNetWeight();
-    long energyLimit = energyProcessor
+    long energyLimit = entropyProcessor
         .calculateGlobalEnergyLimit(accountCapsule);
     long totalEnergyLimit =
-        chainBaseManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit();
+        chainBaseManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit();
     long totalEnergyWeight =
-        chainBaseManager.getDynamicPropertiesStore().getTotalEnergyWeight();
+        chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();

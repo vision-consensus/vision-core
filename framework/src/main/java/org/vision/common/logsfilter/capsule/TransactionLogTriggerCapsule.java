@@ -118,12 +118,12 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 
     // receipt
     if (Objects.nonNull(trxTrace) && Objects.nonNull(trxTrace.getReceipt())) {
-      transactionLogTrigger.setEnergyFee(trxTrace.getReceipt().getEnergyFee());
-      transactionLogTrigger.setOriginEnergyUsage(trxTrace.getReceipt().getOriginEnergyUsage());
-      transactionLogTrigger.setEnergyUsageTotal(trxTrace.getReceipt().getEntropyUsageTotal());
+      transactionLogTrigger.setEntropyFee(trxTrace.getReceipt().getEntropyFee());
+      transactionLogTrigger.setOriginEntropyUsage(trxTrace.getReceipt().getOriginEnergyUsage());
+      transactionLogTrigger.setEntropyUsageTotal(trxTrace.getReceipt().getEntropyUsageTotal());
       transactionLogTrigger.setNetUsage(trxTrace.getReceipt().getNetUsage());
       transactionLogTrigger.setNetFee(trxTrace.getReceipt().getNetFee());
-      transactionLogTrigger.setEnergyUsage(trxTrace.getReceipt().getEnergyUsage());
+      transactionLogTrigger.setEntropyUsage(trxTrace.getReceipt().getEntropyUsage());
     }
 
     // program result

@@ -86,7 +86,7 @@ public class WalletTestAccount009 {
     Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEntropy()
         .getExpireTime() == 0);
 
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account009Address, 1000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(account009Address, 1000000L,
         3, 1, account009Key, blockingStubFull));
     account009Info = PublicMethed.queryAccount(account009Key, blockingStubFull);
     Assert.assertTrue(account009Info.getAccountResource().getEntropyUsage() == 0);
@@ -103,11 +103,11 @@ public class WalletTestAccount009 {
   @Test(enabled = true)
   public void testGetEnergyInvalid() {
     //The resourceCode can only be 0 or 1
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account009InvalidAddress,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(account009InvalidAddress,
         1000000L, 3, 0, account009InvalidKey, blockingStubFull));
-    Assert.assertFalse(PublicMethed.freezeBalanceGetEnergy(account009InvalidAddress, 1000000L,
+    Assert.assertFalse(PublicMethed.freezeBalanceGetEntropy(account009InvalidAddress, 1000000L,
         3, -1, account009InvalidKey, blockingStubFull));
-    Assert.assertFalse(PublicMethed.freezeBalanceGetEnergy(account009InvalidAddress, 1000000L,
+    Assert.assertFalse(PublicMethed.freezeBalanceGetEntropy(account009InvalidAddress, 1000000L,
         3, 2, account009InvalidKey, blockingStubFull));
 
   }

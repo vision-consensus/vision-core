@@ -118,7 +118,7 @@ public class SendCoinShieldTest {
     wallet = context.getBean(Wallet.class);
     //init energy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(100_000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(100_000L);
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
   }
 

@@ -90,7 +90,7 @@ public class ContractLinkage005 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.freezeBalance(linkage005Address, 250000000000L,
         0, linkage005Key, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(linkage005Address, 250000000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(linkage005Address, 250000000000L,
         0, 1, linkage005Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

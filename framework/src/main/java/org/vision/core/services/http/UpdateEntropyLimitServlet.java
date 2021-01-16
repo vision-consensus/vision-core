@@ -15,7 +15,7 @@ import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitCont
 
 @Component
 @Slf4j(topic = "API")
-public class UpdateEnergyLimitServlet extends RateLimiterServlet {
+public class UpdateEntropyLimitServlet extends RateLimiterServlet {
 
   @Autowired
   private Wallet wallet;

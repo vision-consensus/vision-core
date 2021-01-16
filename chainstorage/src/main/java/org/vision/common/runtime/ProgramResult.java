@@ -22,7 +22,7 @@ import org.vision.protos.Protocol.Transaction.Result.contractResult;
 
 public class ProgramResult {
 
-  private long energyUsed = 0;
+  private long entropyUsed = 0;
   private long futureRefund = 0;
 
   private byte[] hReturn = EMPTY_BYTE_ARRAY;
@@ -63,7 +63,7 @@ public class ProgramResult {
   }
 
   public void spendEnergy(long energy) {
-    energyUsed += energy;
+    entropyUsed += energy;
   }
 
   public void setRevert() {
@@ -75,7 +75,7 @@ public class ProgramResult {
   }
 
   public void refundEnergy(long energy) {
-    energyUsed -= energy;
+    entropyUsed -= energy;
   }
 
   public byte[] getContractAddress() {
@@ -115,8 +115,8 @@ public class ProgramResult {
     this.exception = exception;
   }
 
-  public long getEnergyUsed() {
-    return energyUsed;
+  public long getEntropyUsed() {
+    return entropyUsed;
   }
 
   public Set<DataWord> getDeleteAccounts() {

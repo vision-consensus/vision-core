@@ -134,7 +134,7 @@ public class Args extends CommonParameter {
     PARAMETER.proposalExpireTime = 0;
     PARAMETER.checkFrozenTime = 1;
     PARAMETER.allowCreationOfContracts = 0;
-    PARAMETER.allowAdaptiveEnergy = 0;
+    PARAMETER.allowAdaptiveEntropy = 0;
     PARAMETER.allowVvmTransferVrc10 = 0;
     PARAMETER.allowVvmConstantinople = 0;
     PARAMETER.allowDelegateResource = 0;
@@ -531,7 +531,7 @@ public class Args extends CommonParameter {
         config.hasPath(Constant.COMMITTEE_ALLOW_MULTI_SIGN) ? config
             .getInt(Constant.COMMITTEE_ALLOW_MULTI_SIGN) : 0;
 
-    PARAMETER.allowAdaptiveEnergy =
+    PARAMETER.allowAdaptiveEntropy =
         config.hasPath(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENERGY) ? config
             .getInt(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENERGY) : 0;
 
@@ -617,7 +617,7 @@ public class Args extends CommonParameter {
     PARAMETER.minEffectiveConnection = config.hasPath(Constant.NODE_RPC_MIN_EFFECTIVE_CONNECTION)
         ? config.getInt(Constant.NODE_RPC_MIN_EFFECTIVE_CONNECTION) : 1;
 
-    PARAMETER.blockNumForEnergyLimit = config.hasPath(Constant.ENERGY_LIMIT_BLOCK_NUM)
+    PARAMETER.blockNumForEntropyLimit = config.hasPath(Constant.ENERGY_LIMIT_BLOCK_NUM)
         ? config.getInt(Constant.ENERGY_LIMIT_BLOCK_NUM) : 4727890L;
 
     PARAMETER.vmTrace =

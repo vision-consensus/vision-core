@@ -64,7 +64,7 @@ public class ContractScenario005 {
   public void deployIcoContract() {
     Assert.assertTrue(PublicMethed.sendcoin(contract005Address, 200000000L, fromAddress,
         testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract005Address, 10000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract005Address, 10000000L,
         3, 1, contract005Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract005Address,
         blockingStubFull);

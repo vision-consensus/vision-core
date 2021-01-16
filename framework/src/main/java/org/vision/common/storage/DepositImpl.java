@@ -338,7 +338,7 @@ public class DepositImpl implements Deposit {
     Storage storage;
     if (this.parent != null) {
       Storage parentStorage = parent.getStorage(address);
-      if (StorageUtils.getEnergyLimitHardFork()) {
+      if (StorageUtils.getEntropyLimitHardFork()) {
         // deep copy
         storage = new Storage(parentStorage);
       } else {

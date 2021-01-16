@@ -2131,9 +2131,9 @@ public class PublicMethed {
    * constructor.
    */
 
-  public static Boolean freezeBalanceGetEnergy(byte[] addRess, long freezeBalance,
-      long freezeDuration, int resourceCode, String priKey,
-      WalletGrpc.WalletBlockingStub blockingStubFull) {
+  public static Boolean freezeBalanceGetEntropy(byte[] addRess, long freezeBalance,
+                                                long freezeDuration, int resourceCode, String priKey,
+                                                WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
@@ -3065,9 +3065,9 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static String updateEnergyLimitDelayGetTxid(byte[] contractAddress, long originEnergyLimit,
-      long delaySeconds, String priKey, byte[] ownerAddress,
-      WalletGrpc.WalletBlockingStub blockingStubFull) {
+  public static String updateEntropyLimitDelayGetTxid(byte[] contractAddress, long originEnergyLimit,
+                                                      long delaySeconds, String priKey, byte[] ownerAddress,
+                                                      WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
@@ -4499,8 +4499,8 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static boolean updateEnergyLimit(byte[] contractAddress, long originEnergyLimit,
-      String priKey, byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull) {
+  public static boolean updateEntropyLimit(byte[] contractAddress, long originEnergyLimit,
+                                           String priKey, byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {

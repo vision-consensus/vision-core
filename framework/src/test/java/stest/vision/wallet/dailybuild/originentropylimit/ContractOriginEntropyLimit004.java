@@ -1,4 +1,4 @@
-package stest.vision.wallet.dailybuild.originenergylimit;
+package stest.vision.wallet.dailybuild.originentropylimit;
 
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
@@ -27,7 +27,7 @@ import stest.vision.wallet.common.client.Parameter;
 import stest.vision.wallet.common.client.utils.PublicMethed;
 
 @Slf4j
-public class ContractOriginEnergyLimit004 {
+public class ContractOriginEntropyLimit004 {
 
   private final String testKey002 = Configuration.getByPath("testng.conf")
       .getString("foundationAccount.key2");
@@ -71,22 +71,22 @@ public class ContractOriginEnergyLimit004 {
     blockingStubFull1 = WalletGrpc.newBlockingStub(channelFull1);
   }
 
-  private long getAvailableFrozenEnergy(byte[] accountAddress) {
+  private long getAvailableFrozenEntropy(byte[] accountAddress) {
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(accountAddress,
         blockingStubFull);
-    long energyLimit = resourceInfo.getEntropyLimit();
-    long energyUsed = resourceInfo.getEntropyUsed();
-    return energyLimit - energyUsed;
+    long entropyLimit = resourceInfo.getEntropyLimit();
+    long entropyUsed = resourceInfo.getEntropyUsed();
+    return entropyLimit - entropyUsed;
   }
 
-  private long getUserAvailableEnergy(byte[] userAddress) {
+  private long getUserAvailableEntropy(byte[] userAddress) {
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(userAddress,
         blockingStubFull);
     Account info = PublicMethed.queryAccount(userAddress, blockingStubFull);
     long balance = info.getBalance();
-    long energyLimit = resourceInfo.getEntropyLimit();
-    long userAvaliableFrozenEnergy = getAvailableFrozenEnergy(userAddress);
-    return balance / 100 + userAvaliableFrozenEnergy;
+    long entropyLimit = resourceInfo.getEntropyLimit();
+    long userAvaliableFrozenEntropy = getAvailableFrozenEntropy(userAddress);
+    return balance / 100 + userAvaliableFrozenEntropy;
   }
 
   private long getFeeLimit(String txid) {
@@ -96,11 +96,11 @@ public class ContractOriginEnergyLimit004 {
 
   private long getUserMax(byte[] userAddress, long feelimit) {
     logger.info("User feeLimit: " + feelimit / 100);
-    logger.info("User UserAvaliableEnergy: " + getUserAvailableEnergy(userAddress));
-    return Math.min(feelimit / 100, getUserAvailableEnergy(userAddress));
+    logger.info("User UserAvaliableEntropy: " + getUserAvailableEntropy(userAddress));
+    return Math.min(feelimit / 100, getUserAvailableEntropy(userAddress));
   }
 
-  private long getOriginalEnergyLimit(byte[] contractAddress) {
+  private long getOriginalEntropyLimit(byte[] contractAddress) {
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     return smartContract.getOriginEntropyLimit();
   }
@@ -112,21 +112,21 @@ public class ContractOriginEnergyLimit004 {
 
   private long getDevMax(byte[] devAddress, byte[] userAddress, long feeLimit,
       byte[] contractAddress) {
-    long devMax = Math.min(getAvailableFrozenEnergy(devAddress),
-        getOriginalEnergyLimit(contractAddress));
+    long devMax = Math.min(getAvailableFrozenEntropy(devAddress),
+        getOriginalEntropyLimit(contractAddress));
     long p = getConsumeUserResourcePercent(contractAddress);
     if (p != 0) {
       logger.info("p: " + p);
       devMax = Math.min(devMax, getUserMax(userAddress, feeLimit) * (100 - p) / p);
       logger.info("Dev byUserPercent: " + getUserMax(userAddress, feeLimit) * (100 - p) / p);
     }
-    logger.info("Dev AvaliableFrozenEnergy: " + getAvailableFrozenEnergy(devAddress));
-    logger.info("Dev OriginalEnergyLimit: " + getOriginalEnergyLimit(contractAddress));
+    logger.info("Dev AvaliableFrozenEntropy: " + getAvailableFrozenEntropy(devAddress));
+    logger.info("Dev OriginalEntropyLimit: " + getOriginalEntropyLimit(contractAddress));
     return devMax;
   }
 
-  @Test(enabled = true, description = "Contract use Origin_energy_limit")
-  public void testOriginEnergyLimit() {
+  @Test(enabled = true, description = "Contract use Origin_entropy_limit")
+  public void testOriginEntropyLimit() {
     Assert.assertTrue(PublicMethed.sendcoin(dev001Address, 1000000L, fromAddress,
         testKey002, blockingStubFull));
     Assert.assertTrue(PublicMethed.sendcoin(user001Address, 1000000L, fromAddress,
@@ -134,30 +134,30 @@ public class ContractOriginEnergyLimit004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     // A2B1
 
-    //dev balance and Energy
+    //dev balance and Entropy
     long devTargetBalance = 10_000_000;
-    long devTargetEnergy = 70000;
+    long devTargetEntropy = 70000;
 
     // deploy contract parameters
     final long deployFeeLimit = maxFeeLimit;
     final long consumeUserResourcePercent = 0;
-    final long originEnergyLimit = 1000;
+    final long originEntropyLimit = 1000;
 
-    //dev balance and Energy
+    //dev balance and Entropy
     final long devTriggerTargetBalance = 0;
-    final long devTriggerTargetEnergy = 592;
+    final long devTriggerTargetEntropy = 592;
 
-    // user balance and Energy
+    // user balance and Entropy
     final long userTargetBalance = 0;
-    final long userTargetEnergy = 2000L;
+    final long userTargetEntropy = 2000L;
 
     // trigger contract parameter, maxFeeLimit 10000000
     final long triggerFeeLimit = maxFeeLimit;
     final boolean expectRet = true;
 
-    // count dev energy, balance
+    // count dev entropy, balance
     long devFreezeBalanceVdt = PublicMethed.getFreezeBalanceCount(dev001Address, dev001Key,
-        devTargetEnergy, blockingStubFull);
+        devTargetEntropy, blockingStubFull);
 
     long devNeedBalance = devTargetBalance + devFreezeBalanceVdt;
 
@@ -167,8 +167,8 @@ public class ContractOriginEnergyLimit004 {
     Assert.assertTrue(PublicMethed.sendcoin(dev001Address, devNeedBalance, fromAddress,
         testKey002, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    // get energy
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(dev001Address, devFreezeBalanceVdt,
+    // get entropy
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(dev001Address, devFreezeBalanceVdt,
         0, 1, dev001Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -190,7 +190,7 @@ public class ContractOriginEnergyLimit004 {
 
     final String deployTxid = PublicMethed
         .deployContractAndGetTransactionInfoById(contractName, abi, code, "",
-            deployFeeLimit, 0L, consumeUserResourcePercent, originEnergyLimit, "0",
+            deployFeeLimit, 0L, consumeUserResourcePercent, originEntropyLimit, "0",
             0, null, dev001Key, dev001Address, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -218,14 +218,14 @@ public class ContractOriginEnergyLimit004 {
 
     // count dev energy, balance
     devFreezeBalanceVdt = PublicMethed.getFreezeBalanceCount(dev001Address, dev001Key,
-        devTriggerTargetEnergy, blockingStubFull);
+        devTriggerTargetEntropy, blockingStubFull);
 
     devNeedBalance = devTriggerTargetBalance + devFreezeBalanceVdt;
     logger.info("dev need  balance:" + devNeedBalance);
 
     // count user energy, balance
     long userFreezeBalanceVdt = PublicMethed.getFreezeBalanceCount(user001Address, user001Key,
-        userTargetEnergy, blockingStubFull);
+        userTargetEntropy, blockingStubFull);
 
     long userNeedBalance = userTargetBalance + userFreezeBalanceVdt;
 
@@ -239,9 +239,9 @@ public class ContractOriginEnergyLimit004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // get energy
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(dev001Address, devFreezeBalanceVdt,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(dev001Address, devFreezeBalanceVdt,
         0, 1, dev001Key, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(user001Address, userFreezeBalanceVdt,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(user001Address, userFreezeBalanceVdt,
         0, 1, user001Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -342,7 +342,7 @@ public class ContractOriginEnergyLimit004 {
     Assert.assertEquals(devBalanceBefore, devBalanceAfter);
 
     // dev original is the dev max expense A2B1
-    Assert.assertEquals(getOriginalEnergyLimit(contractAddress), devMax);
+    Assert.assertEquals(getOriginalEntropyLimit(contractAddress), devMax);
 
     // DEV is enough to pay
     Assert.assertEquals(originEnergyUsage, devExpectCost);

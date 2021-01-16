@@ -86,7 +86,7 @@ public class ContractLinkage006 {
     Assert.assertTrue(PublicMethed.freezeBalance(linkage006Address, 1000000L,
         0, linkage006Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(linkage006Address, 1000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(linkage006Address, 1000000L,
         0, 1, linkage006Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(linkage006Address,
@@ -170,7 +170,7 @@ public class ContractLinkage006 {
     Assert.assertTrue(PublicMethed.freezeBalance(linkage006Address2, 1000000L,
         0, linkage006Key2, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(linkage006Address2, 1000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(linkage006Address2, 1000000L,
         0, 1, linkage006Key2, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage resourceInfo1 = PublicMethed.getAccountResource(linkage006Address2,

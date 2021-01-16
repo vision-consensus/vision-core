@@ -14,14 +14,14 @@ import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
-import org.vision.core.db.EnergyProcessor;
+import org.vision.core.db.EntropyProcessor;
 import org.vision.core.db.Manager;
 import org.vision.common.application.VisionApplicationContext;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 
 @Slf4j
-public class EnergyProcessorTest {
+public class EntropyProcessorTest {
 
   private static final String dbPath = "EnergyProcessorTest";
   private static final String ASSET_NAME;
@@ -104,13 +104,13 @@ public class EnergyProcessorTest {
   @Test
   public void testUseContractCreatorEnergy() throws Exception {
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
     AccountCapsule ownerCapsule = dbManager.getAccountStore()
         .get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS));
     dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
-    EnergyProcessor processor = new EnergyProcessor(dbManager.getDynamicPropertiesStore(),
+    EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
     long energy = 10000;
     long now = 1526647838000L;
@@ -118,7 +118,7 @@ public class EnergyProcessorTest {
     boolean result = processor.useEnergy(ownerCapsule, energy, now);
     Assert.assertEquals(false, result);
 
-    ownerCapsule.setFrozenForEnergy(10_000_000L, 0L);
+    ownerCapsule.setFrozenForEntropy(10_000_000L, 0L);
     result = processor.useEnergy(ownerCapsule, energy, now);
     Assert.assertEquals(true, result);
 
@@ -134,50 +134,50 @@ public class EnergyProcessorTest {
 
   @Test
   public void updateAdaptiveTotalEnergyLimit() {
-    EnergyProcessor processor = new EnergyProcessor(dbManager.getDynamicPropertiesStore(),
+    EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
 
     // open
-    dbManager.getDynamicPropertiesStore().saveAllowAdaptiveEnergy(1);
+    dbManager.getDynamicPropertiesStore().saveAllowAdaptiveEntropy(1);
 
     // Test resource usage auto reply
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     long now = chainBaseManager.getHeadSlot();
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageTime(now);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageUsage(4000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageTime(now);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(4000L);
 
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(
         1526647838000L + Parameter.AdaptiveResourceLimitConstants.PERIODS_MS / 2);
     processor.updateTotalEnergyAverageUsage();
     Assert.assertEquals(2000L,
-        dbManager.getDynamicPropertiesStore().getTotalEnergyAverageUsage());
+        dbManager.getDynamicPropertiesStore().getTotalEntropyAverageUsage());
 
     // test saveTotalEnergyLimit
     long ratio = Parameter.ChainConstant.WINDOW_SIZE_MS / Parameter.AdaptiveResourceLimitConstants.PERIODS_MS;
     dbManager.getDynamicPropertiesStore().saveTotalEnergyLimit(10000L * ratio);
     Assert.assertEquals(1000L,
-        dbManager.getDynamicPropertiesStore().getTotalEnergyTargetLimit());
+        dbManager.getDynamicPropertiesStore().getTotalEntropyTargetLimit());
 
     //Test exceeds resource limit
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyCurrentLimit(10000L * ratio);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageUsage(3000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(10000L * ratio);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(3000L);
     processor.updateAdaptiveTotalEnergyLimit();
     Assert.assertEquals(10000L * ratio,
-        dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit());
+        dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
 
     //Test exceeds resource limit 2
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyCurrentLimit(20000L * ratio);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageUsage(3000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(20000L * ratio);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(3000L);
     processor.updateAdaptiveTotalEnergyLimit();
     Assert.assertEquals(20000L * ratio * 99 / 100L,
-        dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit());
+        dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
 
     //Test less than resource limit
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyCurrentLimit(20000L * ratio);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageUsage(500L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(20000L * ratio);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(500L);
     processor.updateAdaptiveTotalEnergyLimit();
     Assert.assertEquals(20000L * ratio * 1000 / 999L,
-        dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit());
+        dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
   }
 
 

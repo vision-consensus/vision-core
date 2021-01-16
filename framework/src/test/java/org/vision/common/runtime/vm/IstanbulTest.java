@@ -167,7 +167,7 @@ public class IstanbulTest extends VMTestBase {
   */
 
   @Test
-  public void altBn128AddMulEnergyChangeTest()
+  public void altBn128AddMulEntropyChangeTest()
       throws ContractExeException, ReceiptCheckErrException, VMIllegalException,
       ContractValidateException {
     ConfigLoader.disable = true;
@@ -271,17 +271,17 @@ public class IstanbulTest extends VMTestBase {
             0, fee, manager, null);
     Assert.assertNull(result4.getRuntime().getRuntimeError());
 
-    long energyAddFuncIstanbul = result1.getRuntime().getResult().getEnergyUsed();
-    long energyMulFuncIstanbul = result2.getRuntime().getResult().getEnergyUsed();
-    long energyAddFunc = result3.getRuntime().getResult().getEnergyUsed();
-    long energyMulFunc = result4.getRuntime().getResult().getEnergyUsed();
+    long entropyAddFuncIstanbul = result1.getRuntime().getResult().getEntropyUsed();
+    long entropyMulFuncIstanbul = result2.getRuntime().getResult().getEntropyUsed();
+    long entropyAddFunc = result3.getRuntime().getResult().getEntropyUsed();
+    long entropyMulFunc = result4.getRuntime().getResult().getEntropyUsed();
 
-    Assert.assertEquals(energyAddFunc - energyAddFuncIstanbul,500 - 150);
-    Assert.assertEquals(energyMulFunc - energyMulFuncIstanbul,40000 - 6000);
+    Assert.assertEquals(entropyAddFunc - entropyAddFuncIstanbul,500 - 150);
+    Assert.assertEquals(entropyMulFunc - entropyMulFuncIstanbul,40000 - 6000);
   }
 
   @Test
-  public void altBn128PairingEnergyChangeTest()
+  public void altBn128PairingEntropyChangeTest()
       throws ContractExeException, ReceiptCheckErrException, VMIllegalException,
       ContractValidateException {
     ConfigLoader.disable = true;
@@ -469,17 +469,17 @@ public class IstanbulTest extends VMTestBase {
                 null),
             0, fee, manager, null);
     Assert.assertNull(result2.getRuntime().getRuntimeError());
-    long energyParingFuncIstanbul = result1.getRuntime().getResult().getEnergyUsed();
-    long energyParingFunc = result2.getRuntime().getResult().getEnergyUsed();
+    long entropyParingFuncIstanbul = result1.getRuntime().getResult().getEntropyUsed();
+    long entropyParingFunc = result2.getRuntime().getResult().getEntropyUsed();
 
     //verifyBGLS2() = 3 * paring + 2 * mul
-    Assert.assertEquals(energyParingFunc - energyParingFuncIstanbul,
+    Assert.assertEquals(entropyParingFunc - entropyParingFuncIstanbul,
         (80000L * 3 + 100000) - (34000L * 3 + 45000) + (40000 - 6000) * 2);
   }
 
   /*
    pragma solidity ^0.4.14;
-  contract Alt_bn128PairingEnergyChangeTest {
+  contract Alt_bn128PairingEntropyChangeTest {
     struct G1Point {
       uint X;
       uint Y;

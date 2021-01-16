@@ -1,6 +1,6 @@
 package org.vision.common.utils;
 
-import static org.vision.common.parameter.CommonParameter.ENERGY_LIMIT_HARD_FORK;
+import static org.vision.common.parameter.CommonParameter.ENTROPY_LIMIT_HARD_FORK;
 import static org.vision.common.utils.DbOptionalsUtils.createDefaultDbOptions;
 
 import java.io.File;
@@ -11,8 +11,8 @@ import org.vision.common.parameter.CommonParameter;
 
 public class StorageUtils {
 
-  public static boolean getEnergyLimitHardFork() {
-    return ENERGY_LIMIT_HARD_FORK;
+  public static boolean getEntropyLimitHardFork() {
+    return ENTROPY_LIMIT_HARD_FORK;
   }
 
   public static String getOutputDirectoryByDbName(String dbName) {

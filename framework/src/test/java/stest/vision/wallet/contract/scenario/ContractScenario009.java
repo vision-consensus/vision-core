@@ -63,7 +63,7 @@ public class ContractScenario009 {
   public void deployContainLibraryContract() {
     Assert.assertTrue(PublicMethed.sendcoin(contract009Address, 20000000L, fromAddress,
         testKey002, blockingStubFull));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract009Address, 1000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract009Address, 1000000L,
         3, 1, contract009Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract009Address,
         blockingStubFull);

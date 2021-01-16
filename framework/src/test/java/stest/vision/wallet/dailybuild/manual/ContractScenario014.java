@@ -80,7 +80,7 @@ public class ContractScenario014 {
         testKey002, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed
-        .freezeBalanceGetEnergy(contract014Address, 10_000_000_000L, 0, 1, priKey014,
+        .freezeBalanceGetEntropy(contract014Address, 10_000_000_000L, 0, 1, priKey014,
             blockingStubFull));
 
     logger.info("contract014Address : == " + contract014Key);

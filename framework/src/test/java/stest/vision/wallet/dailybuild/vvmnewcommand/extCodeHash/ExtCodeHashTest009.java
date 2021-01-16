@@ -93,10 +93,10 @@ public class ExtCodeHashTest009 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEntropyLimit();
+    long entropyLimit = accountResource.getEntropyLimit();
     long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
-    logger.info("before energyLimit is " + Long.toString(energyLimit));
+    logger.info("before entropyLimit is " + Long.toString(entropyLimit));
     logger.info("before energyUsage is " + Long.toString(energyUsage));
     logger.info("before balanceBefore is " + Long.toString(balanceBefore));
 
@@ -115,11 +115,11 @@ public class ExtCodeHashTest009 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
+    entropyLimit = accountResource.getEntropyLimit();
     energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
-    logger.info("after energyLimit is " + Long.toString(energyLimit));
+    logger.info("after entropyLimit is " + Long.toString(entropyLimit));
     logger.info("after energyUsage is " + Long.toString(energyUsage));
     logger.info("after balanceAfter is " + Long.toString(balanceAfter));
 

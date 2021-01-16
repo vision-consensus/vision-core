@@ -157,7 +157,7 @@ public class ValidateMultiSignContractTest {
         .asList(address, permissionId, "0x" + Hex.toHexString(hash), signatures);
     byte[] input = Hex.decode(AbiUtil.parseParameters(METHOD_SIGN, parameters));
     Repository deposit = RepositoryImpl.createRoot(StoreFactory.getInstance());
-    logger.info("energy for data:{}", contract.getEnergyForData(input));
+    logger.info("entropy for data:{}", contract.getEntropyForData(input));
     contract.setRepository(deposit);
 
     Pair<Boolean, byte[]> ret = contract.execute(input);

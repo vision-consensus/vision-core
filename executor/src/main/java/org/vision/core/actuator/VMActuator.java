@@ -146,7 +146,7 @@ public class VMActuator implements Actuator2 {
       long energyLimit;
       // according to version
 
-      if (StorageUtils.getEnergyLimitHardFork()) {
+      if (StorageUtils.getEntropyLimitHardFork()) {
         if (callValue < 0) {
           throw new ContractValidateException("callValue must be >= 0");
         }
@@ -445,7 +445,7 @@ public class VMActuator implements Actuator2 {
       tokenId = contract.getTokenId();
     }
 
-    if (StorageUtils.getEnergyLimitHardFork()) {
+    if (StorageUtils.getEntropyLimitHardFork()) {
       if (callValue < 0) {
         throw new ContractValidateException("callValue must be >= 0");
       }
@@ -518,8 +518,8 @@ public class VMActuator implements Actuator2 {
                                                    long callValue) {
 
     long vdtPerEnergy = VMConstant.VDT_PER_ENERGY;
-    if (repository.getDynamicPropertiesStore().getEnergyFee() > 0) {
-      vdtPerEnergy = repository.getDynamicPropertiesStore().getEnergyFee();
+    if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
+      vdtPerEnergy = repository.getDynamicPropertiesStore().getEntropyFee();
     }
     // can change the calc way
     long leftEnergyFromFreeze = repository.getAccountLeftEnergyFromFreeze(account);
@@ -528,7 +528,7 @@ public class VMActuator implements Actuator2 {
             .floorDiv(max(account.getBalance() - callValue, 0), vdtPerEnergy);
 
     long energyFromFeeLimit;
-    long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEnergy();
+    long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEntropy();
     if (0 == totalBalanceForEnergyFreeze) {
       energyFromFeeLimit =
               feeLimit / vdtPerEnergy;
@@ -557,8 +557,8 @@ public class VMActuator implements Actuator2 {
       long callValue) {
 
     long vdtPerEnergy = VMConstant.VDT_PER_ENERGY;
-    if (repository.getDynamicPropertiesStore().getEnergyFee() > 0) {
-      vdtPerEnergy = repository.getDynamicPropertiesStore().getEnergyFee();
+    if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
+      vdtPerEnergy = repository.getDynamicPropertiesStore().getEntropyFee();
     }
 
     long leftFrozenEnergy = repository.getAccountLeftEnergyFromFreeze(account);
@@ -580,7 +580,7 @@ public class VMActuator implements Actuator2 {
       return getAccountEnergyLimitWithFixRatio(caller, feeLimit, callValue);
     }
     //  according to version
-    if (StorageUtils.getEnergyLimitHardFork()) {
+    if (StorageUtils.getEntropyLimitHardFork()) {
       return getTotalEnergyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
     } else {
       return getTotalEnergyLimitWithFloatRatio(creator, caller, contract, feeLimit, callValue);

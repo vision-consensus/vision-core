@@ -85,7 +85,7 @@ public class ContractVrcToken077 {
     Optional<TransactionInfo> deployInfo = PublicMethed
         .getTransactionInfoById(deployTxid, blockingStubFull);
     contractAddress = deployInfo.get().getContractAddress().toByteArray();
-    logger.info("Deploy energy is " + deployInfo.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Deploy entropy is " + deployInfo.get().getReceipt().getEntropyUsageTotal());
 
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,

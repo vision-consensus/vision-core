@@ -17,16 +17,16 @@ public class TransactionLogTrigger extends Trigger {
   private long blockNumber = -1;
   @Getter
   @Setter
-  private long energyUsage;
+  private long entropyUsage;
   @Getter
   @Setter
-  private long energyFee;
+  private long entropyFee;
   @Getter
   @Setter
-  private long originEnergyUsage;
+  private long originEntropyUsage;
   @Getter
   @Setter
-  private long energyUsageTotal;
+  private long entropyUsageTotal;
   @Getter
   @Setter
   private long netUsage;

@@ -175,7 +175,7 @@ public class TransferToAccountTest {
     Assert.assertEquals(100 + tokenValue - 9,
         chainBaseManager.getAccountStore().get(contractAddress)
             .getAssetMapV2().get(String.valueOf(id)).longValue());
-    long energyCostWhenExist = runtime.getResult().getEnergyUsed();
+    long energyCostWhenExist = runtime.getResult().getEntropyUsed();
 
     // 3.Test transferToken To Non-exist address
     ECKey ecKey = new ECKey(Utils.getRandom());
@@ -195,7 +195,7 @@ public class TransferToAccountTest {
     Assert.assertEquals(9,
         chainBaseManager.getAccountStore().get(ecKey.getAddress()).getAssetMapV2()
             .get(String.valueOf(id)).longValue());
-    long energyCostWhenNonExist = runtime.getResult().getEnergyUsed();
+    long energyCostWhenNonExist = runtime.getResult().getEntropyUsed();
     //4.Test Energy
     Assert.assertEquals(energyCostWhenNonExist - energyCostWhenExist,
         EnergyCost.getInstance().getNEW_ACCT_CALL());
@@ -213,7 +213,7 @@ public class TransferToAccountTest {
     Assert.assertNull(runtime.getRuntimeError());
     Assert.assertEquals(19,
         chainBaseManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getBalance());
-    energyCostWhenExist = runtime.getResult().getEnergyUsed();
+    energyCostWhenExist = runtime.getResult().getEntropyUsed();
 
     //6. Test  transfer Trx with non-exsit account
     selectorStr = "transferTo(address,uint256)";
@@ -229,7 +229,7 @@ public class TransferToAccountTest {
     Assert.assertNull(runtime.getRuntimeError());
     Assert.assertEquals(9,
         chainBaseManager.getAccountStore().get(ecKey.getAddress()).getBalance());
-    energyCostWhenNonExist = runtime.getResult().getEnergyUsed();
+    energyCostWhenNonExist = runtime.getResult().getEntropyUsed();
 
     //7.test energy
     Assert.assertEquals(energyCostWhenNonExist - energyCostWhenExist,

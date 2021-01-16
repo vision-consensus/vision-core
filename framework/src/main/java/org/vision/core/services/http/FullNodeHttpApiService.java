@@ -177,7 +177,7 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private UpdateSettingServlet updateSettingServlet;
   @Autowired
-  private UpdateEnergyLimitServlet updateEnergyLimitServlet;
+  private UpdateEntropyLimitServlet updateEntropyLimitServlet;
   @Autowired
   private GetDelegatedResourceAccountIndexServlet getDelegatedResourceAccountIndexServlet;
   @Autowired
@@ -424,7 +424,7 @@ public class FullNodeHttpApiService implements Service {
           "/wallet/accountpermissionupdate");
       context.addServlet(new ServletHolder(getNodeInfoServlet), "/wallet/getnodeinfo");
       context.addServlet(new ServletHolder(updateSettingServlet), "/wallet/updatesetting");
-      context.addServlet(new ServletHolder(updateEnergyLimitServlet), "/wallet/updateenergylimit");
+      context.addServlet(new ServletHolder(updateEntropyLimitServlet), "/wallet/updateenergylimit");
       context.addServlet(new ServletHolder(getDelegatedResourceServlet),
           "/wallet/getdelegatedresource");
       context.addServlet(

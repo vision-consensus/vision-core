@@ -56,7 +56,7 @@ public class VvmContract {
         testKey002, blockingStubFull));
     logger.info(Long.toString(PublicMethed.queryAccount(contract008Key, blockingStubFull)
         .getBalance()));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract008Address, 1000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract008Address, 1000000L,
         3, 1, contract008Key, blockingStubFull));
     Assert.assertTrue(PublicMethed.buyStorage(50000000L, contract008Address, contract008Key,
         blockingStubFull));

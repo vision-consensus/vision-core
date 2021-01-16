@@ -90,10 +90,10 @@ public class ContractVrcToken034 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // freeze balance
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(dev001Address, 204800000,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(dev001Address, 204800000,
         0, 1, dev001Key, blockingStubFull));
 
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(user001Address, 2048000000,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(user001Address, 2048000000,
         0, 1, user001Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

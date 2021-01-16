@@ -91,7 +91,7 @@ public class ContractScenario011 {
 
   @Test(enabled = true, description = "Deploy Erc721 contract \"Kitty Core\"")
   public void deployErc721KittyCore() {
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(deployAddress, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(deployAddress, 100000000L,
         0, 1, deployKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     Assert.assertTrue(PublicMethed.freezeBalance(deployAddress, 100000000L, 0,
@@ -442,7 +442,7 @@ public class ContractScenario011 {
     logger.info("before EnergyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(
-        PublicMethed.freezeBalanceGetEnergy(triggerUseTriggerEnergyUsageAddress, 100000000L,
+        PublicMethed.freezeBalanceGetEntropy(triggerUseTriggerEnergyUsageAddress, 100000000L,
             0, 1, triggerUseTriggerEnergyUsageKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     beforeBalance = PublicMethed.queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull)

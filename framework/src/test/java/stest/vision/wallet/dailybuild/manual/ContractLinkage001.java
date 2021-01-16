@@ -148,7 +148,7 @@ public class ContractLinkage001 {
     Assert.assertTrue(afterEnergyUsed == 0);
     Assert.assertTrue(afterFreeNetUsed > 0);
 
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(linkage001Address, 50000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(linkage001Address, 50000000L,
         0, 1, linkage001Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

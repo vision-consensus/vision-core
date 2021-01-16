@@ -142,15 +142,15 @@ public class VvmTestUtils {
     return trx;
   }
 
-  public static Transaction generateDeploySmartContractWithCreatorEnergyLimitAndGetTransaction(
+  public static Transaction generateDeploySmartContractWithCreatorEntropyLimitAndGetTransaction(
       String contractName,
       byte[] callerAddress,
       String abi, String code, long value, long feeLimit, long consumeUserResourcePercent,
-      String libraryAddressPair, long creatorEnergyLimit) {
+      String libraryAddressPair, long creatorEntropyLimit) {
 
-    CreateSmartContract contract = buildCreateSmartContractWithCreatorEnergyLimit(contractName,
+    CreateSmartContract contract = buildCreateSmartContractWithCreatorEntropyLimit(contractName,
         callerAddress, abi, code,
-        value, consumeUserResourcePercent, libraryAddressPair, creatorEnergyLimit);
+        value, consumeUserResourcePercent, libraryAddressPair, creatorEntropyLimit);
     TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
         ContractType.CreateSmartContract);
     Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
@@ -242,7 +242,7 @@ public class VvmTestUtils {
       String libraryAddressPair, Manager dbManager, BlockCapsule blockCap, long creatorEnergyLimit)
       throws ContractExeException, ReceiptCheckErrException,
       ContractValidateException, VMIllegalException {
-    Transaction trx = generateDeploySmartContractWithCreatorEnergyLimitAndGetTransaction(
+    Transaction trx = generateDeploySmartContractWithCreatorEntropyLimitAndGetTransaction(
         contractName, callerAddress, abi,
         code, value, feeLimit, consumeUserResourcePercent, libraryAddressPair, creatorEnergyLimit);
 
@@ -360,7 +360,7 @@ public class VvmTestUtils {
         libraryAddressPair, 0);
   }
 
-  public static CreateSmartContract buildCreateSmartContractWithCreatorEnergyLimit(
+  public static CreateSmartContract buildCreateSmartContractWithCreatorEntropyLimit(
       String contractName,
       byte[] address,
       String abiString, String code, long value, long consumeUserResourcePercent,

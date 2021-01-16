@@ -18,7 +18,7 @@
 package org.vision.core.vm.config;
 
 
-import static org.vision.common.parameter.CommonParameter.ENERGY_LIMIT_HARD_FORK;
+import static org.vision.common.parameter.CommonParameter.ENTROPY_LIMIT_HARD_FORK;
 
 import lombok.Setter;
 
@@ -66,7 +66,7 @@ public class VMConfig {
   }
 
   public static void initVmHardFork(boolean pass) {
-    ENERGY_LIMIT_HARD_FORK = pass;
+    ENTROPY_LIMIT_HARD_FORK = pass;
   }
 
   public static void initAllowMultiSign(long allow) {
@@ -102,7 +102,7 @@ public class VMConfig {
   }
 
   public static boolean getEnergyLimitHardFork() {
-    return ENERGY_LIMIT_HARD_FORK;
+    return ENTROPY_LIMIT_HARD_FORK;
   }
 
   public static boolean allowVvmTransferVrc10() {

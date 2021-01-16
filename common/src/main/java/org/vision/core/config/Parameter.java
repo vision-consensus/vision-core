@@ -5,7 +5,7 @@ import lombok.Getter;
 public class Parameter {
 
   public enum ForkBlockVersionEnum {
-    ENERGY_LIMIT(5, 0L, 0),
+    ENTROPY_LIMIT(5, 0L, 0),
     VERSION_3_2_2(6, 0L, 0),
     VERSION_3_5(7, 0L, 0),
     VERSION_3_6(8, 0L, 0),
@@ -106,7 +106,7 @@ public class Parameter {
   public class ForkBlockVersionConsts {
 
     public static final int START_NEW_TRANSACTION = 4;
-    public static final int ENERGY_LIMIT = 5;
+    public static final int ENTROPY_LIMIT = 5;
   }
 
 }

@@ -126,7 +126,7 @@ public class TransactionTraceTest {
     dbManager = context.getBean(Manager.class);
     //init energy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(100_000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(100_000L);
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
     VMConfig.initVmHardFork(false);
 
@@ -183,7 +183,7 @@ public class TransactionTraceTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
 
-    accountCapsule.setFrozenForEnergy(5_000_000_000L, 0L);
+    accountCapsule.setFrozenForEntropy(5_000_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(OwnerAddress), accountCapsule);
     String contractName = "tracetestContract";
@@ -220,13 +220,13 @@ public class TransactionTraceTest {
     trace.init(null);
     trace.exec();
     trace.pay();
-    Assert.assertEquals(2050831L, trace.getReceipt().getEnergyUsage());
-    Assert.assertEquals(0L, trace.getReceipt().getEnergyFee());
+    Assert.assertEquals(2050831L, trace.getReceipt().getEntropyUsage());
+    Assert.assertEquals(0L, trace.getReceipt().getEntropyFee());
     Assert.assertEquals(205083100L,
-        trace.getReceipt().getEnergyUsage() * 100 + trace.getReceipt().getEnergyFee());
+        trace.getReceipt().getEntropyUsage() * 100 + trace.getReceipt().getEntropyFee());
     accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
     Assert.assertEquals(totalBalance,
-        accountCapsule.getBalance() + trace.getReceipt().getEnergyFee());
+        accountCapsule.getBalance() + trace.getReceipt().getEntropyFee());
 
   }
 
@@ -267,8 +267,8 @@ public class TransactionTraceTest {
     AccountCapsule originCapsule = new AccountCapsule(ByteString.copyFrom("origin".getBytes()),
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
-    ownerCapsule.setFrozenForEnergy(5_000_000_000L, 0L);
-    originCapsule.setFrozenForEnergy(5_000_000_000L, 0L);
+    ownerCapsule.setFrozenForEntropy(5_000_000_000L, 0L);
+    originCapsule.setFrozenForEntropy(5_000_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(TriggerOwnerAddress), ownerCapsule);
     dbManager.getAccountStore()
@@ -285,11 +285,11 @@ public class TransactionTraceTest {
     trace.init(null);
     trace.exec();
     trace.pay();
-    Assert.assertEquals(20252, trace.getReceipt().getEnergyUsage());
-    Assert.assertEquals(0, trace.getReceipt().getEnergyFee());
+    Assert.assertEquals(20252, trace.getReceipt().getEntropyUsage());
+    Assert.assertEquals(0, trace.getReceipt().getEntropyFee());
     ownerCapsule = dbManager.getAccountStore().get(ownerCapsule.getAddress().toByteArray());
     Assert.assertEquals(totalBalance,
-        trace.getReceipt().getEnergyFee() + ownerCapsule
+        trace.getReceipt().getEntropyFee() + ownerCapsule
             .getBalance());
   }
 
@@ -330,7 +330,7 @@ public class TransactionTraceTest {
         AccountType.Normal,
         totalBalance);
 
-    accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule);
     TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
@@ -345,13 +345,13 @@ public class TransactionTraceTest {
     trace.init(null);
     trace.exec();
     trace.pay();
-    Assert.assertEquals(20252, trace.getReceipt().getEnergyUsage());
-    Assert.assertEquals(0, trace.getReceipt().getEnergyFee());
+    Assert.assertEquals(20252, trace.getReceipt().getEntropyUsage());
+    Assert.assertEquals(0, trace.getReceipt().getEntropyFee());
     Assert.assertEquals(2025200,
-        trace.getReceipt().getEnergyUsage() * 100 + trace.getReceipt().getEnergyFee());
+        trace.getReceipt().getEntropyUsage() * 100 + trace.getReceipt().getEntropyFee());
     accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
     Assert.assertEquals(totalBalance,
-        accountCapsule.getBalance() + trace.getReceipt().getEnergyFee());
+        accountCapsule.getBalance() + trace.getReceipt().getEntropyFee());
 
   }
 
@@ -371,11 +371,11 @@ public class TransactionTraceTest {
     trace.init(null);
     trace.exec();
     trace.pay();
-    Assert.assertEquals(0, trace.getReceipt().getEnergyUsage());
-    Assert.assertEquals(205083100L, trace.getReceipt().getEnergyFee());
+    Assert.assertEquals(0, trace.getReceipt().getEntropyUsage());
+    Assert.assertEquals(205083100L, trace.getReceipt().getEntropyFee());
     accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
     Assert.assertEquals(totalBalance,
-        trace.getReceipt().getEnergyFee() + accountCapsule
+        trace.getReceipt().getEntropyFee() + accountCapsule
             .getBalance());
     return trace.getRuntime().getResult().getContractAddress();
 

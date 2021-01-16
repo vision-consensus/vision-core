@@ -77,7 +77,7 @@ public class UpdateEntropyLimitContractActuatorTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     dbManager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     VMConfig.initVmHardFork(true);
   }
 
@@ -93,7 +93,7 @@ public class UpdateEntropyLimitContractActuatorTest {
     } else {
       logger.info("Release resources failure.");
     }
-    CommonParameter.setENERGY_LIMIT_HARD_FORK(false);
+    CommonParameter.setENTROPY_LIMIT_HARD_FORK(false);
   }
 
   /**

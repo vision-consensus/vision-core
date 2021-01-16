@@ -23,7 +23,7 @@ public class CommonParameter {
       "The localWitnessAccountAddress format is incorrect, ignored";
   public static CommonParameter PARAMETER = new CommonParameter();
   @Setter
-  public static boolean ENERGY_LIMIT_HARD_FORK = false;
+  public static boolean ENTROPY_LIMIT_HARD_FORK = false;
   @Parameter(names = {"-c", "--config"}, description = "Config File")
   public String shellConfFileName = "";
   @Getter
@@ -215,7 +215,7 @@ public class CommonParameter {
   public long allowCreationOfContracts; //committee parameter
   @Getter
   @Setter
-  public long allowAdaptiveEnergy; //committee parameter
+  public long allowAdaptiveEntropy; //committee parameter
   @Getter
   @Setter
   public long allowDelegateResource; //committee parameter
@@ -303,7 +303,7 @@ public class CommonParameter {
   public boolean fullNodeAllowShieldedTransactionArgs;
   @Getter
   @Setter
-  public long blockNumForEnergyLimit;
+  public long blockNumForEntropyLimit;
   @Getter
   @Setter
   @Parameter(names = {"--es"})

@@ -10,7 +10,7 @@ import org.vision.common.utils.Sha256Hash;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.Constant;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
-import org.vision.core.db.EnergyProcessor;
+import org.vision.core.db.EntropyProcessor;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
@@ -43,7 +43,7 @@ public class ReceiptCapsule {
   public static boolean checkForEnergyLimit(DynamicPropertiesStore ds) {
     long blockNum = ds.getLatestBlockHeaderNumber();
     return blockNum >= CommonParameter.getInstance()
-        .getBlockNumForEnergyLimit();
+        .getBlockNumForEntropyLimit();
   }
 
   public ResourceReceipt getReceipt() {
@@ -62,7 +62,7 @@ public class ReceiptCapsule {
     this.receipt = this.receipt.toBuilder().setNetFee(getNetFee() + netFee).build();
   }
 
-  public long getEnergyUsage() {
+  public long getEntropyUsage() {
     return this.receipt.getEntropyUsage();
   }
 
@@ -70,7 +70,7 @@ public class ReceiptCapsule {
     this.receipt = this.receipt.toBuilder().setEntropyUsage(energyUsage).build();
   }
 
-  public long getEnergyFee() {
+  public long getEntropyFee() {
     return this.receipt.getEntropyFee();
   }
 
@@ -116,7 +116,7 @@ public class ReceiptCapsule {
   public void payEnergyBill(DynamicPropertiesStore dynamicPropertiesStore,
                             AccountStore accountStore, ForkController forkController, AccountCapsule origin,
                             AccountCapsule caller,
-                            long percent, long originEnergyLimit, EnergyProcessor energyProcessor, long now)
+                            long percent, long originEnergyLimit, EntropyProcessor entropyProcessor, long now)
       throws BalanceInsufficientException {
     if (receipt.getEntropyUsageTotal() <= 0) {
       return;
@@ -124,36 +124,36 @@ public class ReceiptCapsule {
 
     if (Objects.isNull(origin) && dynamicPropertiesStore.getAllowVvmConstantinople() == 1) {
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEntropyUsageTotal(), energyProcessor, now);
+          receipt.getEntropyUsageTotal(), entropyProcessor, now);
       return;
     }
 
     if (caller.getAddress().equals(origin.getAddress())) {
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEntropyUsageTotal(), energyProcessor, now);
+          receipt.getEntropyUsageTotal(), entropyProcessor, now);
     } else {
       long originUsage = Math.multiplyExact(receipt.getEntropyUsageTotal(), percent) / 100;
       originUsage = getOriginUsage(dynamicPropertiesStore, origin, originEnergyLimit,
-          energyProcessor,
+              entropyProcessor,
           originUsage);
 
       long callerUsage = receipt.getEntropyUsageTotal() - originUsage;
-      energyProcessor.useEnergy(origin, originUsage, now);
+      entropyProcessor.useEnergy(origin, originUsage, now);
       this.setOriginEnergyUsage(originUsage);
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController,
-          caller, callerUsage, energyProcessor, now);
+          caller, callerUsage, entropyProcessor, now);
     }
   }
 
   private long getOriginUsage(DynamicPropertiesStore dynamicPropertiesStore, AccountCapsule origin,
-      long originEnergyLimit,
-      EnergyProcessor energyProcessor, long originUsage) {
+                              long originEnergyLimit,
+                              EntropyProcessor entropyProcessor, long originUsage) {
 
     if (checkForEnergyLimit(dynamicPropertiesStore)) {
       return Math.min(originUsage,
-          Math.min(energyProcessor.getAccountLeftEnergyFromFreeze(origin), originEnergyLimit));
+          Math.min(entropyProcessor.getAccountLeftEnergyFromFreeze(origin), originEnergyLimit));
     }
-    return Math.min(originUsage, energyProcessor.getAccountLeftEnergyFromFreeze(origin));
+    return Math.min(originUsage, entropyProcessor.getAccountLeftEnergyFromFreeze(origin));
   }
 
   private void payEnergyBill(
@@ -161,24 +161,24 @@ public class ReceiptCapsule {
       ForkController forkController,
       AccountCapsule account,
       long usage,
-      EnergyProcessor energyProcessor,
+      EntropyProcessor entropyProcessor,
       long now) throws BalanceInsufficientException {
-    long accountEnergyLeft = energyProcessor.getAccountLeftEnergyFromFreeze(account);
+    long accountEnergyLeft = entropyProcessor.getAccountLeftEnergyFromFreeze(account);
     if (accountEnergyLeft >= usage) {
-      energyProcessor.useEnergy(account, usage, now);
+      entropyProcessor.useEnergy(account, usage, now);
       this.setEnergyUsage(usage);
     } else {
-      energyProcessor.useEnergy(account, accountEnergyLeft, now);
+      entropyProcessor.useEnergy(account, accountEnergyLeft, now);
 
       if (forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5) &&
-          dynamicPropertiesStore.getAllowAdaptiveEnergy() == 1) {
+          dynamicPropertiesStore.getAllowAdaptiveEntropy() == 1) {
         long blockEnergyUsage =
-            dynamicPropertiesStore.getBlockEnergyUsage() + (usage - accountEnergyLeft);
-        dynamicPropertiesStore.saveBlockEnergyUsage(blockEnergyUsage);
+            dynamicPropertiesStore.getBlockEntropyUsage() + (usage - accountEnergyLeft);
+        dynamicPropertiesStore.saveBlockEntropyUsage(blockEnergyUsage);
       }
 
       long vdtPerEnergy = Constant.VDT_PER_ENERGY;
-      long dynamicEnergyFee = dynamicPropertiesStore.getEnergyFee();
+      long dynamicEnergyFee = dynamicPropertiesStore.getEntropyFee();
       if (dynamicEnergyFee > 0) {
         vdtPerEnergy = dynamicEnergyFee;
       }

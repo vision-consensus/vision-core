@@ -90,7 +90,7 @@ public class BandWidthRuntimeTest {
     chainBaseManager = context.getBean(ChainBaseManager.class);
     //init energy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526547838000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
 
@@ -98,7 +98,7 @@ public class BandWidthRuntimeTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
 
-    accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -107,7 +107,7 @@ public class BandWidthRuntimeTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
         totalBalance);
 
-    accountCapsule2.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule2.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
     AccountCapsule accountCapsule3 = new AccountCapsule(
@@ -117,7 +117,7 @@ public class BandWidthRuntimeTest {
         totalBalance);
     accountCapsule3.setNetUsage(5000L);
     accountCapsule3.setLatestConsumeFreeTime(chainBaseManager.getHeadSlot());
-    accountCapsule3.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule3.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(TriggerOwnerTwoAddress), accountCapsule3);
 
@@ -141,7 +141,7 @@ public class BandWidthRuntimeTest {
       byte[] contractAddress = createContract();
       AccountCapsule triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      long energy = triggerOwner.getEnergyUsage();
+      long energy = triggerOwner.getEntropyUsage();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
           "setCoin(uint256)", "3", false,
           0, Commons.decodeFromBase58Check(TriggerOwnerAddress));
@@ -161,7 +161,7 @@ public class BandWidthRuntimeTest {
 
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      energy = triggerOwner.getEnergyUsage();
+      energy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
       Assert.assertEquals(45706, trace.getReceipt().getEntropyUsageTotal());
       Assert.assertEquals(45706, energy);
@@ -199,9 +199,9 @@ public class BandWidthRuntimeTest {
 
       Assert.assertEquals(bandWidth, receipt.getNetUsage());
       Assert.assertEquals(522850, receipt.getEntropyUsageTotal());
-      Assert.assertEquals(50000, receipt.getEnergyUsage());
-      Assert.assertEquals(47285000, receipt.getEnergyFee());
-      Assert.assertEquals(totalBalance - receipt.getEnergyFee(),
+      Assert.assertEquals(50000, receipt.getEntropyUsage());
+      Assert.assertEquals(47285000, receipt.getEntropyFee());
+      Assert.assertEquals(totalBalance - receipt.getEntropyFee(),
           balance);
     } catch (VisionException e) {
       Assert.assertNotNull(e);
@@ -213,7 +213,7 @@ public class BandWidthRuntimeTest {
           TooBigTransactionResultException, ContractExeException, VMIllegalException {
     AccountCapsule owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    long energy = owner.getEnergyUsage();
+    long energy = owner.getEntropyUsage();
     long balance = owner.getBalance();
 
     String contractName = "foriContract";
@@ -248,7 +248,7 @@ public class BandWidthRuntimeTest {
     trace.finalization();
     owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    energy = owner.getEnergyUsage() - energy;
+    energy = owner.getEntropyUsage() - energy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
     Assert.assertEquals(52299, trace.getReceipt().getEntropyUsageTotal());

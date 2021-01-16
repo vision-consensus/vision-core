@@ -172,7 +172,7 @@ public class FreezeBalanceActuatorTest {
   }
 
   @Test
-  public void testFreezeBalanceForEnergy() {
+  public void testFreezeBalanceForEntropy() {
     long frozenBalance = 1_000_000_000L;
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
@@ -190,7 +190,7 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
-      Assert.assertEquals(frozenBalance, owner.getEnergyFrozenBalance());
+      Assert.assertEquals(frozenBalance, owner.getEntropyFrozenBalance());
       Assert.assertEquals(frozenBalance, owner.getVisionPower());
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
@@ -259,7 +259,7 @@ public class FreezeBalanceActuatorTest {
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
+      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 
       DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore()
@@ -310,7 +310,7 @@ public class FreezeBalanceActuatorTest {
         getDelegatedContractForCpu(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
-    long totalEnergyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
+    long totalEntropyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
     try {
       actuator.validate();
       actuator.execute(ret);
@@ -322,13 +322,13 @@ public class FreezeBalanceActuatorTest {
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForEnergy());
+      Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(frozenBalance, owner.getVisionPower());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
+      Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 
       DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore()
@@ -339,9 +339,9 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(0L, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
       Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForEntropy());
 
-      long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
-      Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,
-          totalEnergyWeightAfter);
+      long totalEntropyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
+      Assert.assertEquals(totalEntropyWeightBefore + frozenBalance / 1000_000L,
+          totalEntropyWeightAfter);
 
       //check DelegatedResourceAccountIndex
       DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleOwner = dbManager
@@ -381,7 +381,7 @@ public class FreezeBalanceActuatorTest {
         getDelegatedContractForCpu(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
-    long totalEnergyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
+    long totalEntropyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
     try {
       actuator.validate();
       actuator.execute(ret);
@@ -392,18 +392,18 @@ public class FreezeBalanceActuatorTest {
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEnergy());
-      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEnergy());
+      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEntropy());
+      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEntropy());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
+      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 
-      long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
-      Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,
-          totalEnergyWeightAfter);
+      long totalEntropyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
+      Assert.assertEquals(totalEntropyWeightBefore + frozenBalance / 1000_000L,
+          totalEntropyWeightAfter);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);

@@ -119,7 +119,7 @@ public class RepositoryImpl implements Repository {
   public long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule) {
     long now = getHeadSlot();
 
-    long energyUsage = accountCapsule.getEnergyUsage();
+    long energyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
     long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
@@ -467,7 +467,7 @@ public class RepositoryImpl implements Repository {
     Storage storage;
     if (this.parent != null) {
       Storage parentStorage = parent.getStorage(address);
-      if (StorageUtils.getEnergyLimitHardFork()) {
+      if (StorageUtils.getEntropyLimitHardFork()) {
         // deep copy
         storage = new Storage(parentStorage);
       } else {
@@ -682,13 +682,13 @@ public class RepositoryImpl implements Repository {
   }
 
   public long calculateGlobalEnergyLimit(AccountCapsule accountCapsule) {
-    long frozeBalance = accountCapsule.getAllFrozenBalanceForEnergy();
+    long frozeBalance = accountCapsule.getAllFrozenBalanceForEntropy();
     if (frozeBalance < 1_000_000L) {
       return 0;
     }
     long energyWeight = frozeBalance / 1_000_000L;
-    long totalEnergyLimit = getDynamicPropertiesStore().getTotalEnergyCurrentLimit();
-    long totalEnergyWeight = getDynamicPropertiesStore().getTotalEnergyWeight();
+    long totalEnergyLimit = getDynamicPropertiesStore().getTotalEntropyCurrentLimit();
+    long totalEnergyWeight = getDynamicPropertiesStore().getTotalEntropyWeight();
 
     assert totalEnergyWeight > 0;
 

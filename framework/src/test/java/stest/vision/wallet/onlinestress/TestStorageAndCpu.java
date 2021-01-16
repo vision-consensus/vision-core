@@ -94,7 +94,7 @@ public class TestStorageAndCpu {
     String abi = Configuration.getByPath("testng.conf")
         .getString("abi.abi_TestStorageAndCpu_storageAndCpu");
     PublicMethed
-        .freezeBalanceGetEnergy(fromAddress, 1000000000000L, 3, 1, testKey002, blockingStubFull);
+        .freezeBalanceGetEntropy(fromAddress, 1000000000000L, 3, 1, testKey002, blockingStubFull);
     byte[] contractAddress = PublicMethed.deployContract(contractName, abi, code,
         "", maxFeeLimit,
         0L, 100, null, testKey002, fromAddress, blockingStubFull);

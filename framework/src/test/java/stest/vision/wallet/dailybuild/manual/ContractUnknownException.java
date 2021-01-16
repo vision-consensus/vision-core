@@ -83,7 +83,7 @@ public class ContractUnknownException {
         .sendcoin(grammarAddress, 1000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(grammarAddress, 204800000,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(grammarAddress, 204800000,
         0, 1, testKeyForGrammarAddress, blockingStubFull));
     Account info;
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(grammarAddress,
@@ -144,7 +144,7 @@ public class ContractUnknownException {
         .sendcoin(grammarAddress2, 100000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(grammarAddress2, 10000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(grammarAddress2, 10000000L,
         0, 1, testKeyForGrammarAddress2, blockingStubFull));
     Account info;
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(grammarAddress2,
@@ -211,7 +211,7 @@ public class ContractUnknownException {
         .sendcoin(grammarAddress3, 100000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(grammarAddress3, 1000000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(grammarAddress3, 1000000000L,
         0, 1, testKeyForGrammarAddress3, blockingStubFull));
     Account info;
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(grammarAddress3,
@@ -276,7 +276,7 @@ public class ContractUnknownException {
         .sendcoin(grammarAddress4, 100000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(grammarAddress4, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(grammarAddress4, 100000000L,
         0, 1, testKeyForGrammarAddress4, blockingStubFull));
     Account info;
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(grammarAddress4,

@@ -2162,9 +2162,9 @@ public class PublicMethedForMutiSign {
    * constructor.
    */
 
-  public static boolean updateEnergyLimitWithPermissionId(byte[] contractAddress,
-      long originEnergyLimit, String priKey, byte[] ownerAddress, int permissionId,
-      WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
+  public static boolean updateEntropyLimitWithPermissionId(byte[] contractAddress,
+                                                           long originEnergyLimit, String priKey, byte[] ownerAddress, int permissionId,
+                                                           WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {

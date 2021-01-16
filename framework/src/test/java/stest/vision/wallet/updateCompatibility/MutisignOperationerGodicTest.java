@@ -224,7 +224,7 @@ public class MutisignOperationerGodicTest {
             contractAddress, 50, mutisignAccountKey,
             mutisignAccountAddress, 2, blockingStubFull, permissionKeyString));
     Assert.assertTrue(
-        PublicMethedForMutiSign.updateEnergyLimitWithPermissionId(
+        PublicMethedForMutiSign.updateEntropyLimitWithPermissionId(
             contractAddress, 50, mutisignAccountKey,
             mutisignAccountAddress, 2, blockingStubFull, permissionKeyString));
     PublicMethed.waitProduceNextBlock(blockingStubFull);

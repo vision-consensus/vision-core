@@ -153,7 +153,7 @@ public class BatchValidateSignContractTest {
       List<Object> addresses) {
     List<Object> parameters = Arrays.asList("0x" + Hex.toHexString(hash), signatures, addresses);
     byte[] input = Hex.decode(AbiUtil.parseParameters(METHOD_SIGN, parameters));
-    contract.getEnergyForData(input);
+    contract.getEntropyForData(input);
     contract.setVmShouldEndInUs(System.nanoTime() / 1000 + 500 * 1000);
     Pair<Boolean, byte[]> ret = contract.execute(input);
     logger.info("BytesArray:{}，HexString:{}", Arrays.toString(ret.getValue()),

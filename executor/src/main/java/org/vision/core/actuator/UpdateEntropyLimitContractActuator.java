@@ -37,12 +37,12 @@ public class UpdateEntropyLimitContractActuator extends AbstractActuator {
     ContractStore contractStore = chainBaseManager.getContractStore();
     try {
       UpdateEntropyLimitContract usContract = any.unpack(UpdateEntropyLimitContract.class);
-      long newOriginEnergyLimit = usContract.getOriginEntropyLimit();
+      long newOriginEntropyLimit = usContract.getOriginEntropyLimit();
       byte[] contractAddress = usContract.getContractAddress().toByteArray();
       ContractCapsule deployedContract = contractStore.get(contractAddress);
 
       contractStore.put(contractAddress, new ContractCapsule(
-          deployedContract.getInstance().toBuilder().setOriginEntropyLimit(newOriginEnergyLimit)
+          deployedContract.getInstance().toBuilder().setOriginEntropyLimit(newOriginEntropyLimit)
               .build()));
 
       ret.setStatus(fee, code.SUCESS);
@@ -56,7 +56,7 @@ public class UpdateEntropyLimitContractActuator extends AbstractActuator {
 
   @Override
   public boolean validate() throws ContractValidateException {
-    if (!StorageUtils.getEnergyLimitHardFork()) {
+    if (!StorageUtils.getEntropyLimitHardFork()) {
       throw new ContractValidateException(
           "contract type error, unexpected type [UpdateEntropyLimitContract]");
     }
@@ -92,10 +92,10 @@ public class UpdateEntropyLimitContractActuator extends AbstractActuator {
           ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] does not exist");
     }
 
-    long newOriginEnergyLimit = contract.getOriginEntropyLimit();
-    if (newOriginEnergyLimit <= 0) {
+    long newOriginEntropyLimit = contract.getOriginEntropyLimit();
+    if (newOriginEntropyLimit <= 0) {
       throw new ContractValidateException(
-          "origin energy limit must be > 0");
+          "origin entropy limit must be > 0");
     }
 
     byte[] contractAddress = contract.getContractAddress().toByteArray();

@@ -103,7 +103,7 @@ public class BandWidthRuntimeOutOfTimeTest {
     dbManager = context.getBean(Manager.class);
     //init energy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647828000L);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
 
@@ -111,7 +111,7 @@ public class BandWidthRuntimeOutOfTimeTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
 
-    accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -119,7 +119,7 @@ public class BandWidthRuntimeOutOfTimeTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
         totalBalance);
 
-    accountCapsule2.setFrozenForEnergy(10_000_000L, 0L);
+    accountCapsule2.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
         .put(Commons.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
     dbManager.getDynamicPropertiesStore()
@@ -142,7 +142,7 @@ public class BandWidthRuntimeOutOfTimeTest {
       byte[] contractAddress = createContract();
       AccountCapsule triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      long energy = triggerOwner.getEnergyUsage();
+      long energy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
           "fibonacciNotify(uint256)", "500000", false,
@@ -162,7 +162,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      energy = triggerOwner.getEnergyUsage() - energy;
+      energy = triggerOwner.getEntropyUsage() - energy;
       balance = balance - triggerOwner.getBalance();
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
@@ -181,7 +181,7 @@ public class BandWidthRuntimeOutOfTimeTest {
           TooBigTransactionResultException, ContractExeException, VMIllegalException {
     AccountCapsule owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    long energy = owner.getEnergyUsage();
+    long energy = owner.getEntropyUsage();
     long balance = owner.getBalance();
 
     String contractName = "Fibonacci3";
@@ -225,7 +225,7 @@ public class BandWidthRuntimeOutOfTimeTest {
     trace.finalization();
     owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    energy = owner.getEnergyUsage() - energy;
+    energy = owner.getEntropyUsage() - energy;
     balance = balance - owner.getBalance();
     Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(50000, energy);

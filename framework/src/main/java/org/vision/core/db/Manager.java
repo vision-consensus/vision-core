@@ -1292,7 +1292,7 @@ public class Manager {
       throw new ValidateScheduleException("validateWitnessSchedule error");
     }
     //reset BlockEnergyUsage
-    chainBaseManager.getDynamicPropertiesStore().saveBlockEnergyUsage(0);
+    chainBaseManager.getDynamicPropertiesStore().saveBlockEntropyUsage(0);
     //parallel check sign
     if (!block.generatedByMyself) {
       try {
@@ -1326,11 +1326,11 @@ public class Manager {
     }
     merkleContainer.saveCurrentMerkleTreeAsBestMerkleTree(block.getNum());
     block.setResult(transactionRetCapsule);
-    if (getDynamicPropertiesStore().getAllowAdaptiveEnergy() == 1) {
-      EnergyProcessor energyProcessor = new EnergyProcessor(
+    if (getDynamicPropertiesStore().getAllowAdaptiveEntropy() == 1) {
+      EntropyProcessor entropyProcessor = new EntropyProcessor(
           chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
-      energyProcessor.updateTotalEnergyAverageUsage();
-      energyProcessor.updateAdaptiveTotalEnergyLimit();
+      entropyProcessor.updateTotalEnergyAverageUsage();
+      entropyProcessor.updateAdaptiveTotalEnergyLimit();
     }
 
     payReward(block);

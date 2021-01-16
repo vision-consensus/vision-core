@@ -1,4 +1,4 @@
-package stest.vision.wallet.dailybuild.originenergylimit;
+package stest.vision.wallet.dailybuild.originentropylimit;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -22,7 +22,7 @@ import stest.vision.wallet.common.client.Parameter;
 import stest.vision.wallet.common.client.utils.PublicMethed;
 
 @Slf4j
-public class ContractOriginEnergyLimit001 {
+public class ContractOriginEntropyLimit001 {
 
 
   private final String testNetAccountKey = Configuration.getByPath("testng.conf")
@@ -69,13 +69,13 @@ public class ContractOriginEnergyLimit001 {
 
   //Origin_energy_limit001,028,029
   @Test(enabled = true, description = "Boundary value and update test")
-  public void testOrigin_energy_limit001() {
+  public void testOrigin_entropy_limit001() {
     Assert.assertTrue(PublicMethed
         .sendcoin(grammarAddress3, 100000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String filePath = "src/test/resources/soliditycode/contractOriginEnergyLimit001.sol";
+    String filePath = "src/test/resources/soliditycode/contractOriginEntropyLimit001.sol";
     String contractName = "findArgsContractTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
     String code = retMap.get("byteCode").toString();
@@ -105,28 +105,28 @@ public class ContractOriginEnergyLimit001 {
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    Assert.assertFalse(PublicMethed.updateEnergyLimit(contractAddress2, -1L,
+    Assert.assertFalse(PublicMethed.updateEntropyLimit(contractAddress2, -1L,
         testKeyForGrammarAddress3, grammarAddress3, blockingStubFull));
     SmartContract smartContract = PublicMethed.getContract(contractAddress2, blockingStubFull);
     Assert.assertTrue(smartContract.getOriginEntropyLimit() == 9223372036854775807L);
 
-    Assert.assertFalse(PublicMethed.updateEnergyLimit(contractAddress2, 0L,
+    Assert.assertFalse(PublicMethed.updateEntropyLimit(contractAddress2, 0L,
         testKeyForGrammarAddress3, grammarAddress3, blockingStubFull));
     SmartContract smartContract1 = PublicMethed.getContract(contractAddress2, blockingStubFull);
     Assert.assertTrue(smartContract1.getOriginEntropyLimit() == 9223372036854775807L);
 
-    Assert.assertTrue(PublicMethed.updateEnergyLimit(contractAddress2,
+    Assert.assertTrue(PublicMethed.updateEntropyLimit(contractAddress2,
         9223372036854775807L, testKeyForGrammarAddress3,
         grammarAddress3, blockingStubFull));
     SmartContract smartContract2 = PublicMethed.getContract(contractAddress2, blockingStubFull);
     Assert.assertTrue(smartContract2.getOriginEntropyLimit() == 9223372036854775807L);
 
-    Assert.assertTrue(PublicMethed.updateEnergyLimit(contractAddress2, 'c',
+    Assert.assertTrue(PublicMethed.updateEntropyLimit(contractAddress2, 'c',
         testKeyForGrammarAddress3, grammarAddress3, blockingStubFull));
     SmartContract smartContract3 = PublicMethed.getContract(contractAddress2, blockingStubFull);
     Assert.assertEquals(smartContract3.getOriginEntropyLimit(), 99);
 
-    Assert.assertFalse(PublicMethed.updateEnergyLimit(contractAddress2, 1L,
+    Assert.assertFalse(PublicMethed.updateEntropyLimit(contractAddress2, 1L,
         testNetAccountKey, testNetAccountAddress, blockingStubFull));
     SmartContract smartContract4 = PublicMethed.getContract(contractAddress2, blockingStubFull);
     Assert.assertEquals(smartContract4.getOriginEntropyLimit(), 99);

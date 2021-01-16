@@ -102,10 +102,10 @@ public class DepositTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     this.manager.getDynamicPropertiesStore()
         .saveLatestBlockHeaderNumber(CommonParameter.getInstance()
-            .getBlockNumForEnergyLimit() + 1);
+            .getBlockNumForEntropyLimit() + 1);
 
     String contractA = "A";
     String contractB = "B";
@@ -253,7 +253,7 @@ public class DepositTest {
     Assert
         .assertEquals(checkN2.getRuntime().getResult().getHReturn(),
             new DataWord(1000).getData());
-    CommonParameter.setENERGY_LIMIT_HARD_FORK(false);
+    CommonParameter.setENTROPY_LIMIT_HARD_FORK(false);
   }
 
   @Test
@@ -263,7 +263,7 @@ public class DepositTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 0);
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
 
     String contractA = "A";
     String contractB = "B";
@@ -408,7 +408,7 @@ public class DepositTest {
     Assert
         .assertEquals(checkN2.getRuntime().getResult().getHReturn(),
             new DataWord(1000).getData());
-    CommonParameter.setENERGY_LIMIT_HARD_FORK(false);
+    CommonParameter.setENTROPY_LIMIT_HARD_FORK(false);
   }
 
 

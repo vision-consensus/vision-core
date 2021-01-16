@@ -71,7 +71,7 @@ public class ContractScenario006 {
         testKey003, blockingStubFull);
     logger.info(Long.toString(PublicMethed.queryAccount(contract006Key, blockingStubFull)
         .getBalance()));
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(contract006Address, 100000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(contract006Address, 100000000L,
         0, 1, contract006Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract006Address,

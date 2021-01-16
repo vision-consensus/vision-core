@@ -90,7 +90,7 @@ public class ContractLinkage002 {
     Assert.assertEquals(ById.get().getRet(0).getContractRetValue(), SUCCESS_VALUE);
     Assert.assertEquals(ById.get().getRet(0).getContractRet(), contractResult.SUCCESS);
 
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(linkage002Address, 50000000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(linkage002Address, 50000000L,
         3, 1, linkage002Key, blockingStubFull));
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(linkage002Address,
         blockingStubFull);

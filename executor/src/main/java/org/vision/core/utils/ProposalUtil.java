@@ -94,7 +94,7 @@ public class ProposalUtil {
         break;
       }
       case TOTAL_ENERGY_LIMIT: { // deprecated
-        if (!forkController.pass(ForkBlockVersionConsts.ENERGY_LIMIT)) {
+        if (!forkController.pass(ForkBlockVersionConsts.ENTROPY_LIMIT)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
         if (forkController.pass(ForkBlockVersionEnum.VERSION_3_2_2)) {

@@ -263,7 +263,7 @@ public class PrecompiledContracts {
     @Setter
     private long vmShouldEndInUs;
 
-    public abstract long getEnergyForData(byte[] data);
+    public abstract long getEntropyForData(byte[] data);
 
     public abstract Pair<Boolean, byte[]> execute(byte[] data);
 
@@ -320,7 +320,7 @@ public class PrecompiledContracts {
     }
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
 
       // energy charge for the execution:
       // minimum 1 and additional 1 for each 32 bytes word (round  up)
@@ -340,7 +340,7 @@ public class PrecompiledContracts {
 
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
 
       // energy charge for the execution:
       // minimum 50 and additional 50 for each 32 bytes word (round  up)
@@ -366,7 +366,7 @@ public class PrecompiledContracts {
 
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
 
       // TODO #POC9 Replace magic numbers with constants
       // energy charge for the execution:
@@ -404,7 +404,7 @@ public class PrecompiledContracts {
     }
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       return 3000;
     }
 
@@ -459,7 +459,7 @@ public class PrecompiledContracts {
     private static final int ARGS_OFFSET = 32 * 3; // addresses length part
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
 
       if (data == null) {
         data = EMPTY_BYTE_ARRAY;
@@ -573,7 +573,7 @@ public class PrecompiledContracts {
   public static class BN128Addition extends PrecompiledContract {
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
         return getEnergyForDataIstanbul(data);
       }
@@ -627,7 +627,7 @@ public class PrecompiledContracts {
   public static class BN128Multiplication extends PrecompiledContract {
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
         return getEnergyForDataIstanbul(data);
       }
@@ -680,7 +680,7 @@ public class PrecompiledContracts {
     private static final int PAIR_SIZE = 192;
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
         return getEnergyForDataIstanbul(data);
       }
@@ -768,7 +768,7 @@ public class PrecompiledContracts {
 
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       int cnt = (data.length / WORD_SIZE - 5) / 5;
       // one sign 1500, half of ecrecover
       return (long) (cnt * ENGERYPERSIGN);
@@ -838,7 +838,7 @@ public class PrecompiledContracts {
     }
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       int cnt = (data.length / WORD_SIZE - 5) / 6;
       // one sign 1500, half of ecrecover
       return (long) (cnt * ENGERYPERSIGN);
@@ -1065,7 +1065,7 @@ public class PrecompiledContracts {
     private static final int SIZE = 1504;
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       return 150000;
     }
 
@@ -1141,7 +1141,7 @@ public class PrecompiledContracts {
     }
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       return 200000;
     }
 
@@ -1418,7 +1418,7 @@ public class PrecompiledContracts {
     private static final int SIZE = 512;
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       return 150000;
     }
 
@@ -1475,7 +1475,7 @@ public class PrecompiledContracts {
   public static class MerkleHash extends PrecompiledContract {
 
     @Override
-    public long getEnergyForData(byte[] data) {
+    public long getEntropyForData(byte[] data) {
       return 500;
     }
 

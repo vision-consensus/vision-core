@@ -2303,7 +2303,7 @@ public class ShieldedVRC20BuilderTest extends BlockGenerate {
   }
 
   private Pair<Boolean, byte[]> verifyTransfer(byte[] input) {
-    transferContract.getEnergyForData(input);
+    transferContract.getEntropyForData(input);
     transferContract.setVmShouldEndInUs(System.nanoTime() / 1000 + 50 * 1000);
     Pair<Boolean, byte[]> ret = transferContract.execute(input);
     return ret;

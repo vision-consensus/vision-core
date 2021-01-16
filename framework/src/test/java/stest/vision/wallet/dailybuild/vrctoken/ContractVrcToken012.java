@@ -275,7 +275,7 @@ public class ContractVrcToken012 {
 
   @Test(description = "TransferToken with correct value, get account tokenBalance")
   public void test03TriggerTokenBalanceContract() {
-    Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(user001Address, 1000_000_000L,
+    Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(user001Address, 1000_000_000L,
         0, 1, user001Key, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

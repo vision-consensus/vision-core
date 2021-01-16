@@ -188,7 +188,7 @@ public class StorageTest extends VMTestBase {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     VMConfig.initVmHardFork(true);
     byte[] address = Hex.decode(OWNER_ADDRESS);
     DataWord storageKey1 = new DataWord("key1".getBytes());
@@ -260,7 +260,7 @@ public class StorageTest extends VMTestBase {
         parentChangedVal);
     Assert
         .assertNull(DepositImpl.createRoot(manager).getStorageValue(address, storageParentZeroKey));
-    CommonParameter.setENERGY_LIMIT_HARD_FORK(false);
+    CommonParameter.setENTROPY_LIMIT_HARD_FORK(false);
   }
 
   @Test
@@ -268,7 +268,7 @@ public class StorageTest extends VMTestBase {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 0);
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     byte[] address = Hex.decode(OWNER_ADDRESS);
     DataWord storageKey1 = new DataWord("key1".getBytes());
     DataWord storageVal1 = new DataWord("val1".getBytes());
@@ -350,6 +350,6 @@ public class StorageTest extends VMTestBase {
         parentChangedVal);
     Assert
         .assertNull(DepositImpl.createRoot(manager).getStorageValue(address, storageParentZeroKey));
-    CommonParameter.setENERGY_LIMIT_HARD_FORK(false);
+    CommonParameter.setENTROPY_LIMIT_HARD_FORK(false);
   }
 }

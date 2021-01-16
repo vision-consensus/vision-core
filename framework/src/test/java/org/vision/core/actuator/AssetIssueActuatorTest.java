@@ -1686,7 +1686,7 @@ public class AssetIssueActuatorTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     dbManager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
 
     processAndCheckInvalid(actuator, ret, "precision cannot exceed 6", "precision cannot exceed 6");
@@ -1719,7 +1719,7 @@ public class AssetIssueActuatorTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     dbManager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
 
     processAndCheckInvalid(actuator, ret, "Invalid abbreviation for token",
         "Invalid abbreviation for token");
@@ -1800,7 +1800,7 @@ public class AssetIssueActuatorTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     dbManager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
     // PublicFreeAssetNetUsage must be 0!
@@ -1862,7 +1862,7 @@ public class AssetIssueActuatorTest {
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);
     dbManager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionConsts.ENERGY_LIMIT, stats);
+        .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
     // No enough balance for fee!
