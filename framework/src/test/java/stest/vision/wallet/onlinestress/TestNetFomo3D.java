@@ -70,9 +70,9 @@ public class TestNetFomo3D {
   public void deployErc721CryptoKitties() {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(testNetAccountAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
+    Long cpuLimit = accountResource.getEntropyLimit();
     //Long storageLimit = accountResource.getStorageLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuUsage = accountResource.getEntropyUsed();
     //Long storageUsage = accountResource.getStorageUsed();
     Account account = PublicMethed.queryAccount(testNetAccountKey, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
@@ -99,9 +99,9 @@ public class TestNetFomo3D {
 
     final SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     accountResource = PublicMethed.getAccountResource(testNetAccountAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
+    cpuLimit = accountResource.getEntropyLimit();
     //storageLimit = accountResource.getStorageLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuUsage = accountResource.getEntropyUsed();
     //storageUsage = accountResource.getStorageUsed();
     account = PublicMethed.queryAccount(testNetAccountKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
@@ -126,8 +126,8 @@ public class TestNetFomo3D {
   public void tooLargeStorage() throws IOException {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(testNetAccountAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuLimit = accountResource.getEntropyLimit();
+    Long cpuUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(testNetAccountKey, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before cpu limit is " + Long.toString(cpuLimit));
@@ -143,9 +143,9 @@ public class TestNetFomo3D {
         testNetAccountKey, testNetAccountAddress, blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     accountResource = PublicMethed.getAccountResource(testNetAccountAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
+    cpuLimit = accountResource.getEntropyLimit();
     //storageLimit = accountResource.getStorageLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuUsage = accountResource.getEntropyUsed();
     //storageUsage = accountResource.getStorageUsed();
     account = PublicMethed.queryAccount(testNetAccountKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));

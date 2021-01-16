@@ -166,7 +166,7 @@ public class BandWidthRuntimeOutOfTimeTest {
       balance = balance - triggerOwner.getBalance();
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
-      Assert.assertEquals(9950000, trace.getReceipt().getEnergyUsageTotal());
+      Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
       Assert.assertEquals(50000, energy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENERGY,
@@ -227,7 +227,7 @@ public class BandWidthRuntimeOutOfTimeTest {
         .get(Commons.decodeFromBase58Check(OwnerAddress));
     energy = owner.getEnergyUsage() - energy;
     balance = balance - owner.getBalance();
-    Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
+    Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(50000, energy);
     Assert.assertEquals(3852900, balance);
     Assert.assertEquals(88529 * 100, balance + energy * 100);

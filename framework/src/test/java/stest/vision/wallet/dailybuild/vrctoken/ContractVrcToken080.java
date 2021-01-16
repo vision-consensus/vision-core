@@ -102,8 +102,8 @@ public class ContractVrcToken080 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountBefore = PublicMethed.getAssetIssueValue(dev001Address,
         assetAccountId, blockingStubFull);
@@ -142,8 +142,8 @@ public class ContractVrcToken080 {
     Assert.assertNotNull(smartContract.getAbi());
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountAfter = PublicMethed.getAssetIssueValue(dev001Address,
         assetAccountId, blockingStubFull);

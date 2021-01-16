@@ -95,8 +95,8 @@ public class MultiValiSignPerformanceTest {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contractDepAddress,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(contractDepKey, blockingStubFull).getBalance();
     logger.info("before energyLimit is " + Long.toString(energyLimit));
     logger.info("before energyUsage is " + Long.toString(energyUsage));
@@ -117,8 +117,8 @@ public class MultiValiSignPerformanceTest {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(contractDepAddress, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(contractDepKey, blockingStubFull).getBalance();
 
     logger.info("after energyLimit is " + Long.toString(energyLimit));
@@ -133,7 +133,7 @@ public class MultiValiSignPerformanceTest {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     ecrecoverContractAddress = infoById.get().getContractAddress().toByteArray();
@@ -155,8 +155,8 @@ public class MultiValiSignPerformanceTest {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contractDepAddress,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(contractDepKey, blockingStubFull).getBalance();
     logger.info("before energyLimit is " + Long.toString(energyLimit));
     logger.info("before energyUsage is " + Long.toString(energyUsage));
@@ -177,8 +177,8 @@ public class MultiValiSignPerformanceTest {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(contractDepAddress, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(contractDepKey, blockingStubFull).getBalance();
 
     logger.info("after energyLimit is " + Long.toString(energyLimit));
@@ -193,7 +193,7 @@ public class MultiValiSignPerformanceTest {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     multiValiSignContractAddress = infoById.get().getContractAddress().toByteArray();

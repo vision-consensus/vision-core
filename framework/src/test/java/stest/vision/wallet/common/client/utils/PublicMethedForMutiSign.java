@@ -86,7 +86,7 @@ import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract.Builder;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import org.vision.protos.contract.SmartContractOuterClass.UpdateEnergyLimitContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitContract;
 import org.vision.protos.contract.SmartContractOuterClass.UpdateSettingContract;
 import org.vision.protos.contract.StorageContract.UpdateBrokerageContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
@@ -1629,7 +1629,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -1756,7 +1756,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -2176,14 +2176,14 @@ public class PublicMethedForMutiSign {
     final ECKey ecKey = temKey;
 
     byte[] owner = ownerAddress;
-    UpdateEnergyLimitContract.Builder builder = UpdateEnergyLimitContract.newBuilder();
+    UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
-    UpdateEnergyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEnergyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEnergyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {
@@ -2555,7 +2555,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -3795,7 +3795,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -3922,7 +3922,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(1000L);
+    builder.setOriginEntropyLimit(1000L);
 
     if (value != 0) {
 

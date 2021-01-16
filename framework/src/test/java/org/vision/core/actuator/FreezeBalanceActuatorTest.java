@@ -116,7 +116,7 @@ public class FreezeBalanceActuatorTest {
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
             .setFrozenBalance(frozenBalance)
             .setFrozenDuration(duration)
-            .setResource(ResourceCode.ENERGY)
+            .setResource(ResourceCode.ENTROPY)
             .build());
   }
 
@@ -141,7 +141,7 @@ public class FreezeBalanceActuatorTest {
             .setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
             .setFrozenBalance(frozenBalance)
             .setFrozenDuration(duration)
-            .setResource(ResourceCode.ENERGY)
+            .setResource(ResourceCode.ENTROPY)
             .build());
   }
 
@@ -337,7 +337,7 @@ public class FreezeBalanceActuatorTest {
                   ByteArray.fromHexString(RECEIVER_ADDRESS)));
 
       Assert.assertEquals(0L, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
-      Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForEnergy());
+      Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForEntropy());
 
       long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
       Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,

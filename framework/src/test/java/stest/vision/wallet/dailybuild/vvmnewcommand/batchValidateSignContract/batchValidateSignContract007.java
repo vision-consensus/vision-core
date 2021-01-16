@@ -81,7 +81,7 @@ public class batchValidateSignContract007 {
         .getAccountResource(contractExcAddress, blockingStubFull);
     Protocol.Account info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -117,9 +117,9 @@ public class batchValidateSignContract007 {
     Assert.assertEquals(0, infoById.get().getResultValue());
     Long fee1 = infoById.get().getFee();
     Long netUsed1 = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed1 = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed1 = infoById.get().getReceipt().getEntropyUsage();
     Long netFee1 = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal1 = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal1 = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee1:" + fee1);
     logger.info("netUsed1:" + netUsed1);
     logger.info("energyUsed1:" + energyUsed1);
@@ -153,9 +153,9 @@ public class batchValidateSignContract007 {
     }
     Long fee2 = infoById2.get().getFee();
     Long netUsed2 = infoById2.get().getReceipt().getNetUsage();
-    Long energyUsed2 = infoById2.get().getReceipt().getEnergyUsage();
+    Long energyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
     Long netFee2 = infoById2.get().getReceipt().getNetFee();
-    long energyUsageTotal2 = infoById2.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee2:" + fee2);
     logger.info("netUsed2:" + netUsed2);
     logger.info("energyUsed2:" + energyUsed2);
@@ -166,7 +166,7 @@ public class batchValidateSignContract007 {
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);

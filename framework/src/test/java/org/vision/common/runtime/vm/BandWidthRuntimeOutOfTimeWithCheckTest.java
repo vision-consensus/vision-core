@@ -152,7 +152,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
           Contract.newBuilder().setParameter(Any.pack(triggerContract))
               .setType(ContractType.TriggerSmartContract)).setFeeLimit(1000000000)).build();
       TransactionCapsule trxCap = new TransactionCapsule(transaction);
-      trxCap.setResultCode(contractResult.OUT_OF_ENERGY);
+      trxCap.setResultCode(contractResult.OUT_OF_ENTROPY);
       TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
           new RuntimeImpl());
       dbManager.consumeBandwidth(trxCap, trace);
@@ -167,7 +167,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
       balance = balance - triggerOwner.getBalance();
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
-      Assert.assertEquals(9950000, trace.getReceipt().getEnergyUsageTotal());
+      Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
       Assert.assertEquals(50000, energy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENERGY,
@@ -230,7 +230,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
         .get(Commons.decodeFromBase58Check(OwnerAddress));
     energy = owner.getEnergyUsage() - energy;
     balance = balance - owner.getBalance();
-    Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
+    Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(50000, energy);
     Assert.assertEquals(3852900, balance);
     Assert.assertEquals(88529 * 100, balance + energy * 100);

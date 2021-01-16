@@ -107,7 +107,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -127,7 +127,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -137,7 +137,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -173,7 +173,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -192,7 +192,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -202,7 +202,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -239,7 +239,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -259,7 +259,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -269,7 +269,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -306,7 +306,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -326,7 +326,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("energyUsed:" + energyUsed);
@@ -334,7 +334,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -359,7 +359,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -384,7 +384,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -394,7 +394,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -430,7 +430,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -452,7 +452,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -462,7 +462,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -512,7 +512,7 @@ public class RequireException {
     Account info;
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -532,7 +532,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -542,7 +542,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -591,7 +591,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -609,7 +609,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -619,7 +619,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -669,7 +669,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -687,7 +687,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -697,7 +697,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 
@@ -746,7 +746,7 @@ public class RequireException {
         blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
 
@@ -765,7 +765,7 @@ public class RequireException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -775,7 +775,7 @@ public class RequireException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(asset016Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
 

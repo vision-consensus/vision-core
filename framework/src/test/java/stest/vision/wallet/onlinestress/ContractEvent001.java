@@ -102,8 +102,8 @@ public class ContractEvent001 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(event001Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
     Long balanceBefore = PublicMethed.queryAccount(event001Key, blockingStubFull).getBalance();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));

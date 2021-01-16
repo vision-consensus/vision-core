@@ -143,7 +143,7 @@ public class ContractVrcToken041 {
         blockingStubFull);
     info = PublicMethed.queryAccount(user001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeAssetIssueCount = PublicMethed
@@ -176,7 +176,7 @@ public class ContractVrcToken041 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(user001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueCount = PublicMethed
         .getAssetIssueValue(user001Address, assetAccountId, blockingStubFull);
     Long afterNetUsed = resourceInfoafter.getNetUsed();

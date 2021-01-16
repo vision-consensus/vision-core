@@ -90,10 +90,10 @@ public class ContractUnknownException {
         blockingStubFull);
     info = PublicMethed.queryAccount(grammarAddress, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long beforeenergyLimit = resourceInfo.getEnergyLimit();
+    long beforeenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
@@ -115,16 +115,16 @@ public class ContractUnknownException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     final String s = infoById.get().getResMessage().toStringUtf8();
     long fee = infoById.get().getFee();
-    long energyUsage = infoById.get().getReceipt().getEnergyUsage();
-    long energyFee = infoById.get().getReceipt().getEnergyFee();
+    long energyUsage = infoById.get().getReceipt().getEntropyUsage();
+    long energyFee = infoById.get().getReceipt().getEntropyFee();
     Account infoafter = PublicMethed.queryAccount(grammarAddress, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(grammarAddress,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfo.getNetUsed();
     Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long aftereenergyLimit = resourceInfo.getEnergyLimit();
+    long aftereenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEnergyUsed:" + afterEnergyUsed);
@@ -151,10 +151,10 @@ public class ContractUnknownException {
         blockingStubFull);
     info = PublicMethed.queryAccount(grammarAddress2, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long beforeenergyLimit = resourceInfo.getEnergyLimit();
+    long beforeenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
@@ -175,8 +175,8 @@ public class ContractUnknownException {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     final long fee = infoById.get().getFee();
-    final long energyUsage = infoById.get().getReceipt().getEnergyUsage();
-    final long energyFee = infoById.get().getReceipt().getEnergyFee();
+    final long energyUsage = infoById.get().getReceipt().getEntropyUsage();
+    final long energyFee = infoById.get().getReceipt().getEntropyFee();
 
     final String s = infoById.get().getResMessage().toStringUtf8();
 
@@ -184,10 +184,10 @@ public class ContractUnknownException {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(grammarAddress2,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfo.getNetUsed();
     Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long aftereenergyLimit = resourceInfo.getEnergyLimit();
+    long aftereenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEnergyUsed:" + afterEnergyUsed);
@@ -218,10 +218,10 @@ public class ContractUnknownException {
         blockingStubFull);
     info = PublicMethed.queryAccount(grammarAddress3, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long beforeenergyLimit = resourceInfo.getEnergyLimit();
+    long beforeenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
@@ -242,17 +242,17 @@ public class ContractUnknownException {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     final long fee = infoById.get().getFee();
-    final long energyUsage = infoById.get().getReceipt().getEnergyUsage();
-    final long energyFee = infoById.get().getReceipt().getEnergyFee();
+    final long energyUsage = infoById.get().getReceipt().getEntropyUsage();
+    final long energyFee = infoById.get().getReceipt().getEntropyFee();
     String s = infoById.get().getResMessage().toStringUtf8();
     Account infoafter = PublicMethed.queryAccount(grammarAddress3, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(grammarAddress3,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfo.getNetUsed();
     Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long aftereenergyLimit = resourceInfo.getEnergyLimit();
+    long aftereenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEnergyUsed:" + afterEnergyUsed);
@@ -283,10 +283,10 @@ public class ContractUnknownException {
         blockingStubFull);
     info = PublicMethed.queryAccount(grammarAddress4, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long beforeenergyLimit = resourceInfo.getEnergyLimit();
+    long beforeenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
@@ -308,17 +308,17 @@ public class ContractUnknownException {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     final String s = infoById.get().getResMessage().toStringUtf8();
     final long fee = infoById.get().getFee();
-    long energyUsage = infoById.get().getReceipt().getEnergyUsage();
-    final long energyFee = infoById.get().getReceipt().getEnergyFee();
+    long energyUsage = infoById.get().getReceipt().getEntropyUsage();
+    final long energyFee = infoById.get().getReceipt().getEntropyFee();
 
     Account infoafter = PublicMethed.queryAccount(grammarAddress4, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(grammarAddress4,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfo.getNetUsed();
     Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
-    long aftereenergyLimit = resourceInfo.getEnergyLimit();
+    long aftereenergyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEnergyUsed:" + afterEnergyUsed);

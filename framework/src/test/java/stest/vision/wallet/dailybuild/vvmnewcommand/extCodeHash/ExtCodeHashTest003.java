@@ -99,8 +99,8 @@ public class ExtCodeHashTest003 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     logger.info("before energyLimit is " + Long.toString(energyLimit));
     logger.info("before energyUsage is " + Long.toString(energyUsage));
@@ -121,8 +121,8 @@ public class ExtCodeHashTest003 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("after energyLimit is " + Long.toString(energyLimit));
@@ -137,7 +137,7 @@ public class ExtCodeHashTest003 {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     extCodeHashContractAddress = infoById.get().getContractAddress().toByteArray();
@@ -155,8 +155,8 @@ public class ExtCodeHashTest003 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEnergyLimit();
-    long devEnergyUsageBefore = accountResource.getEnergyUsed();
+    long devEnergyLimitBefore = accountResource.getEntropyLimit();
+    long devEnergyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
@@ -164,8 +164,8 @@ public class ExtCodeHashTest003 {
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEnergyLimit();
-    long userEnergyUsageBefore = accountResource.getEnergyUsed();
+    long userEnergyLimitBefore = accountResource.getEntropyLimit();
+    long userEnergyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -184,8 +184,8 @@ public class ExtCodeHashTest003 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEnergyLimit();
-    long devEnergyUsageAfter = accountResource.getEnergyUsed();
+    long devEnergyLimitAfter = accountResource.getEntropyLimit();
+    long devEnergyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
@@ -193,8 +193,8 @@ public class ExtCodeHashTest003 {
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEnergyLimit();
-    long userEnergyUsageAfter = accountResource.getEnergyUsed();
+    long userEnergyLimitAfter = accountResource.getEntropyLimit();
+    long userEnergyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -206,7 +206,7 @@ public class ExtCodeHashTest003 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -241,8 +241,8 @@ public class ExtCodeHashTest003 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEnergyLimit();
-    long devEnergyUsageBefore = accountResource.getEnergyUsed();
+    long devEnergyLimitBefore = accountResource.getEntropyLimit();
+    long devEnergyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
@@ -250,8 +250,8 @@ public class ExtCodeHashTest003 {
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEnergyLimit();
-    long userEnergyUsageBefore = accountResource.getEnergyUsed();
+    long userEnergyLimitBefore = accountResource.getEntropyLimit();
+    long userEnergyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -270,8 +270,8 @@ public class ExtCodeHashTest003 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEnergyLimit();
-    long devEnergyUsageAfter = accountResource.getEnergyUsed();
+    long devEnergyLimitAfter = accountResource.getEntropyLimit();
+    long devEnergyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
@@ -279,8 +279,8 @@ public class ExtCodeHashTest003 {
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEnergyLimit();
-    long userEnergyUsageAfter = accountResource.getEnergyUsed();
+    long userEnergyLimitAfter = accountResource.getEntropyLimit();
+    long userEnergyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -292,7 +292,7 @@ public class ExtCodeHashTest003 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {

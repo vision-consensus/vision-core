@@ -104,7 +104,7 @@ public class TriggerConstant012 {
         blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -123,9 +123,9 @@ public class TriggerConstant012 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -137,7 +137,7 @@ public class TriggerConstant012 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);

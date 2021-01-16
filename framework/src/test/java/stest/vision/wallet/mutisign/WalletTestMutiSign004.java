@@ -168,7 +168,7 @@ public class WalletTestMutiSign004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(infoById.get().getBlockNumber() > 0);
     PublicMethedForMutiSign.updateSettingWithPermissionId(contractAddress, 50, ownerKey,

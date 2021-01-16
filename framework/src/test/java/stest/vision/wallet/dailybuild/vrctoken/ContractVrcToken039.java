@@ -157,7 +157,7 @@ public class ContractVrcToken039 {
         blockingStubFull);
     info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeAssetIssueDevAddress = PublicMethed
@@ -216,7 +216,7 @@ public class ContractVrcToken039 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
     Long afterNetUsed = resourceInfoafter.getNetUsed();
@@ -267,7 +267,7 @@ public class ContractVrcToken039 {
         blockingStubFull);
     info1 = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance1 = info1.getBalance();
-    Long beforeEnergyUsed1 = resourceInfo1.getEnergyUsed();
+    Long beforeEnergyUsed1 = resourceInfo1.getEntropyUsed();
     Long beforeNetUsed1 = resourceInfo1.getNetUsed();
     Long beforeFreeNetUsed1 = resourceInfo1.getFreeNetUsed();
     Long beforeAssetIssueDevAddress1 = PublicMethed
@@ -321,7 +321,7 @@ public class ContractVrcToken039 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterAssetIssueDevAddress1 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
     Long afterNetUsed1 = resourceInfoafter1.getNetUsed();

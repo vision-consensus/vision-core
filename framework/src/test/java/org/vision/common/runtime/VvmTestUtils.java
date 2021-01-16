@@ -297,7 +297,7 @@ public class VvmTestUtils {
     builder.setOriginAddress(ByteString.copyFrom(address));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(engeryLimit);
+    builder.setOriginEntropyLimit(engeryLimit);
 
     if (value != 0) {
       builder.setCallValue(value);
@@ -329,7 +329,7 @@ public class VvmTestUtils {
     builder.setOriginAddress(ByteString.copyFrom(address));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(engeryLimit);
+    builder.setOriginEntropyLimit(engeryLimit);
 
     if (value != 0) {
       builder.setCallValue(value);
@@ -376,7 +376,7 @@ public class VvmTestUtils {
     builder.setOriginAddress(ByteString.copyFrom(address));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(creatorEnergyLimit);
+    builder.setOriginEntropyLimit(creatorEnergyLimit);
 
     if (value != 0) {
       builder.setCallValue(value);

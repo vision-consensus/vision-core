@@ -67,8 +67,8 @@ public class ContractScenario009 {
         3, 1, contract009Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract009Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
     logger.info("before energy usage is " + Long.toString(energyUsage));
@@ -104,8 +104,8 @@ public class ContractScenario009 {
     Assert.assertFalse(smartContract.getBytecode().toString().isEmpty());
     logger.info(ByteArray.toHexString(smartContract.getContractAddress().toByteArray()));
     accountResource = PublicMethed.getAccountResource(contract009Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     Assert.assertTrue(energyLimit > 0);
     Assert.assertTrue(energyUsage > 0);
 

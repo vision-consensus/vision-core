@@ -99,8 +99,8 @@ public class ContractLinkage005 {
     Account info;
     info = PublicMethed.queryAccount(linkage005Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyLimit = resourceInfo.getEnergyLimit();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyLimit = resourceInfo.getEntropyLimit();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeFreeNetLimit = resourceInfo.getFreeNetLimit();
     Long beforeNetLimit = resourceInfo.getNetLimit();
     Long beforeNetUsed = resourceInfo.getNetUsed();
@@ -128,14 +128,14 @@ public class ContractLinkage005 {
 
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Account infoafter = PublicMethed.queryAccount(linkage005Address, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(linkage005Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyLimit = resourceInfoafter.getEnergyLimit();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyLimit = resourceInfoafter.getEntropyLimit();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterFreeNetLimit = resourceInfoafter.getFreeNetLimit();
     Long afterNetLimit = resourceInfoafter.getNetLimit();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
@@ -161,8 +161,8 @@ public class ContractLinkage005 {
         blockingStubFull);
     Account info1 = PublicMethed.queryAccount(linkage005Address, blockingStubFull);
     Long beforeBalance1 = info1.getBalance();
-    Long beforeEnergyLimit1 = resourceInfo1.getEnergyLimit();
-    Long beforeEnergyUsed1 = resourceInfo1.getEnergyUsed();
+    Long beforeEnergyLimit1 = resourceInfo1.getEntropyLimit();
+    Long beforeEnergyUsed1 = resourceInfo1.getEntropyUsed();
     Long beforeFreeNetLimit1 = resourceInfo1.getFreeNetLimit();
     Long beforeNetLimit1 = resourceInfo1.getNetLimit();
     Long beforeNetUsed1 = resourceInfo1.getNetUsed();
@@ -184,8 +184,8 @@ public class ContractLinkage005 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(linkage005Address,
         blockingStubFull1);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyLimit1 = resourceInfoafter1.getEnergyLimit();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyLimit1 = resourceInfoafter1.getEntropyLimit();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterFreeNetLimit1 = resourceInfoafter1.getFreeNetLimit();
     Long afterNetLimit1 = resourceInfoafter1.getNetLimit();
     Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
@@ -200,7 +200,7 @@ public class ContractLinkage005 {
     logger.info("---------------:");
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     fee = infoById.get().getFee();
-    firstForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    firstForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
     Assert.assertTrue((beforeBalance1 - fee) == afterBalance1);
     Assert.assertTrue(afterEnergyUsed1 > beforeEnergyUsed1);
     Assert.assertTrue(afterNetUsed1 > beforeNetUsed1);
@@ -216,10 +216,10 @@ public class ContractLinkage005 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     infoById = PublicMethed.getTransactionInfoById(txid6, blockingStubFull);
-    secondForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    secondForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     infoById = PublicMethed.getTransactionInfoById(txid7, blockingStubFull);
-    thirdForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    thirdForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     Assert.assertTrue(thirdForCycleCost - secondForCycleCost
         == secondForCycleCost - firstForCycleCost);
@@ -234,8 +234,8 @@ public class ContractLinkage005 {
         blockingStubFull);
     Account info4 = PublicMethed.queryAccount(linkage005Address, blockingStubFull);
     Long beforeBalance4 = info4.getBalance();
-    Long beforeEnergyLimit4 = resourceInfo4.getEnergyLimit();
-    Long beforeEnergyUsed4 = resourceInfo4.getEnergyUsed();
+    Long beforeEnergyLimit4 = resourceInfo4.getEntropyLimit();
+    Long beforeEnergyUsed4 = resourceInfo4.getEntropyUsed();
     Long beforeFreeNetLimit4 = resourceInfo4.getFreeNetLimit();
     Long beforeNetLimit4 = resourceInfo4.getNetLimit();
     Long beforeNetUsed4 = resourceInfo4.getNetUsed();
@@ -258,8 +258,8 @@ public class ContractLinkage005 {
     AccountResourceMessage resourceInfoafter4 = PublicMethed.getAccountResource(linkage005Address,
         blockingStubFull1);
     Long afterBalance4 = infoafter4.getBalance();
-    Long afterEnergyLimit4 = resourceInfoafter4.getEnergyLimit();
-    Long afterEnergyUsed4 = resourceInfoafter4.getEnergyUsed();
+    Long afterEnergyLimit4 = resourceInfoafter4.getEntropyLimit();
+    Long afterEnergyUsed4 = resourceInfoafter4.getEntropyUsed();
     Long afterFreeNetLimit4 = resourceInfoafter4.getFreeNetLimit();
     Long afterNetLimit4 = resourceInfoafter4.getNetLimit();
     Long afterNetUsed4 = resourceInfoafter4.getNetUsed();
@@ -277,7 +277,7 @@ public class ContractLinkage005 {
     Assert.assertTrue(afterNetUsed4 > beforeNetUsed4);
 
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    zeroForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    zeroForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     String txid1 = PublicMethed.triggerContract(contractAddress,
         "testUseStorage(uint256)", firstForCycleTimes.toString(), false,
@@ -302,19 +302,19 @@ public class ContractLinkage005 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     infoById = PublicMethed.getTransactionInfoById(txid1, blockingStubFull);
-    firstForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    firstForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     infoById = PublicMethed.getTransactionInfoById(txid2, blockingStubFull);
-    secondForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    secondForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     infoById = PublicMethed.getTransactionInfoById(txid3, blockingStubFull);
-    thirdForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    thirdForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     infoById = PublicMethed.getTransactionInfoById(txid4, blockingStubFull);
-    forthForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    forthForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     infoById = PublicMethed.getTransactionInfoById(txid5, blockingStubFull);
-    fifthForCycleCost = infoById.get().getReceipt().getEnergyUsageTotal();
+    fifthForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
 
     Assert.assertTrue(thirdForCycleCost - secondForCycleCost
         == secondForCycleCost - firstForCycleCost);

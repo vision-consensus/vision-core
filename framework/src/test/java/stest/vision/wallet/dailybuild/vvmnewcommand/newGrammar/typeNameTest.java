@@ -79,7 +79,7 @@ public class typeNameTest {
         blockingStubFull);
     Protocol.Account info = PublicMethed.queryAccount(dev001Key, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = accountResource.getEnergyUsed();
+    Long beforeEnergyUsed = accountResource.getEntropyUsed();
     Long beforeNetUsed = accountResource.getNetUsed();
     Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -108,7 +108,7 @@ public class typeNameTest {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEnergyUsageTotal());
+    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
@@ -118,9 +118,9 @@ public class typeNameTest {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("energyUsed:" + energyUsed);
@@ -132,7 +132,7 @@ public class typeNameTest {
         .getAccountResource(dev001Address,
             blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);

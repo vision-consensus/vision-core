@@ -74,8 +74,8 @@ public class ContractOriginEnergyLimit004 {
   private long getAvailableFrozenEnergy(byte[] accountAddress) {
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(accountAddress,
         blockingStubFull);
-    long energyLimit = resourceInfo.getEnergyLimit();
-    long energyUsed = resourceInfo.getEnergyUsed();
+    long energyLimit = resourceInfo.getEntropyLimit();
+    long energyUsed = resourceInfo.getEntropyUsed();
     return energyLimit - energyUsed;
   }
 
@@ -84,7 +84,7 @@ public class ContractOriginEnergyLimit004 {
         blockingStubFull);
     Account info = PublicMethed.queryAccount(userAddress, blockingStubFull);
     long balance = info.getBalance();
-    long energyLimit = resourceInfo.getEnergyLimit();
+    long energyLimit = resourceInfo.getEntropyLimit();
     long userAvaliableFrozenEnergy = getAvailableFrozenEnergy(userAddress);
     return balance / 100 + userAvaliableFrozenEnergy;
   }
@@ -102,7 +102,7 @@ public class ContractOriginEnergyLimit004 {
 
   private long getOriginalEnergyLimit(byte[] contractAddress) {
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
-    return smartContract.getOriginEnergyLimit();
+    return smartContract.getOriginEntropyLimit();
   }
 
   private long getConsumeUserResourcePercent(byte[] contractAddress) {
@@ -174,8 +174,8 @@ public class ContractOriginEnergyLimit004 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEnergyLimit();
-    long devEnergyUsageBefore = accountResource.getEnergyUsed();
+    long devEnergyLimitBefore = accountResource.getEntropyLimit();
+    long devEnergyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("before deploy, dev energy limit is " + Long.toString(devEnergyLimitBefore));
@@ -195,8 +195,8 @@ public class ContractOriginEnergyLimit004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEnergyLimit();
-    long devEnergyUsageAfter = accountResource.getEnergyUsed();
+    long devEnergyLimitAfter = accountResource.getEntropyLimit();
+    long devEnergyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("after deploy, dev energy limit is " + Long.toString(devEnergyLimitAfter));
@@ -246,8 +246,8 @@ public class ContractOriginEnergyLimit004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    devEnergyLimitBefore = accountResource.getEnergyLimit();
-    devEnergyUsageBefore = accountResource.getEnergyUsed();
+    devEnergyLimitBefore = accountResource.getEntropyLimit();
+    devEnergyUsageBefore = accountResource.getEntropyUsed();
     devBalanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("before trigger, dev devEnergyLimitBefore is "
@@ -257,8 +257,8 @@ public class ContractOriginEnergyLimit004 {
     logger.info("before trigger, dev devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEnergyLimit();
-    long userEnergyUsageBefore = accountResource.getEnergyUsed();
+    long userEnergyLimitBefore = accountResource.getEntropyLimit();
+    long userEnergyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(
         user001Address, blockingStubFull).getBalance();
 
@@ -284,8 +284,8 @@ public class ContractOriginEnergyLimit004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    devEnergyLimitAfter = accountResource.getEnergyLimit();
-    devEnergyUsageAfter = accountResource.getEnergyUsed();
+    devEnergyLimitAfter = accountResource.getEntropyLimit();
+    devEnergyUsageAfter = accountResource.getEntropyUsed();
     devBalanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("after trigger, dev devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
@@ -293,8 +293,8 @@ public class ContractOriginEnergyLimit004 {
     logger.info("after trigger, dev devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEnergyLimit();
-    long userEnergyUsageAfter = accountResource.getEnergyUsed();
+    long userEnergyLimitAfter = accountResource.getEntropyLimit();
+    long userEnergyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address,
         blockingStubFull).getBalance();
 
@@ -312,10 +312,10 @@ public class ContractOriginEnergyLimit004 {
     }
 
     long fee = infoById.get().getFee();
-    long energyFee = infoById.get().getReceipt().getEnergyFee();
-    long energyUsage = infoById.get().getReceipt().getEnergyUsage();
-    long originEnergyUsage = infoById.get().getReceipt().getOriginEnergyUsage();
-    long energyTotalUsage = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyFee = infoById.get().getReceipt().getEntropyFee();
+    long energyUsage = infoById.get().getReceipt().getEntropyUsage();
+    long originEnergyUsage = infoById.get().getReceipt().getOriginEntropyUsage();
+    long energyTotalUsage = infoById.get().getReceipt().getEntropyUsageTotal();
     long netUsage = infoById.get().getReceipt().getNetUsage();
     long netFee = infoById.get().getReceipt().getNetFee();
 

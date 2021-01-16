@@ -190,7 +190,7 @@ public class NodeInfo {
       configBuilder.setMinTimeRatio(configNodeInfo.getMinTimeRatio());
       configBuilder.setMaxTimeRatio(configNodeInfo.getMaxTimeRatio());
       configBuilder.setAllowCreationOfContracts(configNodeInfo.getAllowCreationOfContracts());
-      configBuilder.setAllowAdaptiveEnergy(configNodeInfo.getAllowAdaptiveEnergy());
+      configBuilder.setAllowAdaptiveEntropy(configNodeInfo.getAllowAdaptiveEntropy());
       builder.setConfigNodeInfo(configBuilder.build());
     }
     MachineInfo machineInfo = getMachineInfo();
@@ -522,7 +522,7 @@ public class NodeInfo {
     private double minTimeRatio;
     private double maxTimeRatio;
     private long allowCreationOfContracts;
-    private long allowAdaptiveEnergy;
+    private long allowAdaptiveEntropy;
 
     public String getCodeVersion() {
       return codeVersion;
@@ -694,12 +694,12 @@ public class NodeInfo {
       return this;
     }
 
-    public long getAllowAdaptiveEnergy() {
-      return allowAdaptiveEnergy;
+    public long getAllowAdaptiveEntropy() {
+      return allowAdaptiveEntropy;
     }
 
-    public ConfigNodeInfo setAllowAdaptiveEnergy(long allowAdaptiveEnergy) {
-      this.allowAdaptiveEnergy = allowAdaptiveEnergy;
+    public ConfigNodeInfo setAllowAdaptiveEntropy(long allowAdaptiveEntropy) {
+      this.allowAdaptiveEntropy = allowAdaptiveEntropy;
       return this;
     }
 

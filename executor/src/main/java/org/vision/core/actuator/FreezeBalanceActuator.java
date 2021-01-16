@@ -67,7 +67,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
 
     switch (freezeBalanceContract.getResource()) {
-      case BANDWIDTH:
+      case PHOTON:
         if (!ArrayUtils.isEmpty(receiverAddress)
             && dynamicStore.supportDR()) {
           delegateResource(ownerAddress, receiverAddress, true,
@@ -81,7 +81,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalNetWeight(frozenBalance / VS_PRECISION);
         break;
-      case ENERGY:
+      case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
             && dynamicStore.supportDR()) {
           delegateResource(ownerAddress, receiverAddress, false,
@@ -90,7 +90,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         } else {
           long newFrozenBalanceForEnergy =
               frozenBalance + accountCapsule.getAccountResource()
-                  .getFrozenBalanceForEnergy()
+                  .getFrozenBalanceForEntropy()
                   .getFrozenBalance();
           accountCapsule.setFrozenForEnergy(newFrozenBalanceForEnergy, expireTime);
         }
@@ -180,9 +180,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     switch (freezeBalanceContract.getResource()) {
-      case BANDWIDTH:
+      case PHOTON:
         break;
-      case ENERGY:
+      case ENTROPY:
         break;
       default:
         throw new ContractValidateException(

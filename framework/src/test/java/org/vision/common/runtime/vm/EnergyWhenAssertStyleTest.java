@@ -108,7 +108,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 39487;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -119,7 +119,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -163,7 +163,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 31875;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -174,7 +174,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -216,7 +216,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 27875;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -227,7 +227,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -271,7 +271,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 28475;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -282,7 +282,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -326,7 +326,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 27475;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -337,7 +337,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -380,7 +380,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 30475;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -391,7 +391,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -433,7 +433,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 26675;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -444,7 +444,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
@@ -501,7 +501,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 89214;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -516,7 +516,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.PrecompiledContractException);
@@ -561,7 +561,7 @@ public class EnergyWhenAssertStyleTest {
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
     long expectEnergyUsageTotal = 40487;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
         totalBalance - expectEnergyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
@@ -572,7 +572,7 @@ public class EnergyWhenAssertStyleTest {
             triggerData, 0, feeLimit, dbManager, null);
 
     long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert
         .assertTrue(result.getRuntime().getResult().getException() instanceof Program.OutOfMemoryException);

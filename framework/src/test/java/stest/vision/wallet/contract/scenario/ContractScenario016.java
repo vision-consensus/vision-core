@@ -1,7 +1,7 @@
 package stest.vision.wallet.contract.scenario;
 
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.BAD_JUMP_DESTINATION_VALUE;
-import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_ENERGY_VALUE;
+import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_ENTROPY_VALUE;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -114,7 +114,7 @@ public class ContractScenario016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -156,7 +156,7 @@ public class ContractScenario016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -167,13 +167,13 @@ public class ContractScenario016 {
 
     logger.info("infoById:" + infoById);
 
-    Assert.assertEquals(byId.get().getRet(0).getContractRetValue(), OUT_OF_ENERGY_VALUE);
-    Assert.assertEquals(byId.get().getRet(0).getContractRet(), contractResult.OUT_OF_ENERGY);
+    Assert.assertEquals(byId.get().getRet(0).getContractRetValue(), OUT_OF_ENTROPY_VALUE);
+    Assert.assertEquals(byId.get().getRet(0).getContractRet(), contractResult.OUT_OF_ENTROPY);
 
     Assert
         .assertEquals(ByteArray.toHexString(infoById.get().getContractResult(0).toByteArray()), "");
     Assert
-        .assertEquals(contractResult.OUT_OF_ENERGY, infoById.get().getReceipt().getResult());
+        .assertEquals(contractResult.OUT_OF_ENTROPY, infoById.get().getReceipt().getResult());
 
     Assert.assertEquals(byId.get().getRet(0).getRet().getNumber(), 0);
     Assert.assertEquals(byId.get().getRet(0).getRetValue(), 0);

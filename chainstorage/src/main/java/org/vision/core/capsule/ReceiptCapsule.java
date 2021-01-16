@@ -63,35 +63,35 @@ public class ReceiptCapsule {
   }
 
   public long getEnergyUsage() {
-    return this.receipt.getEnergyUsage();
+    return this.receipt.getEntropyUsage();
   }
 
   public void setEnergyUsage(long energyUsage) {
-    this.receipt = this.receipt.toBuilder().setEnergyUsage(energyUsage).build();
+    this.receipt = this.receipt.toBuilder().setEntropyUsage(energyUsage).build();
   }
 
   public long getEnergyFee() {
-    return this.receipt.getEnergyFee();
+    return this.receipt.getEntropyFee();
   }
 
   public void setEnergyFee(long energyFee) {
-    this.receipt = this.receipt.toBuilder().setEnergyFee(energyFee).build();
+    this.receipt = this.receipt.toBuilder().setEntropyFee(energyFee).build();
   }
 
   public long getOriginEnergyUsage() {
-    return this.receipt.getOriginEnergyUsage();
+    return this.receipt.getOriginEntropyUsage();
   }
 
   public void setOriginEnergyUsage(long energyUsage) {
-    this.receipt = this.receipt.toBuilder().setOriginEnergyUsage(energyUsage).build();
+    this.receipt = this.receipt.toBuilder().setOriginEntropyUsage(energyUsage).build();
   }
 
-  public long getEnergyUsageTotal() {
-    return this.receipt.getEnergyUsageTotal();
+  public long getEntropyUsageTotal() {
+    return this.receipt.getEntropyUsageTotal();
   }
 
   public void setEnergyUsageTotal(long energyUsage) {
-    this.receipt = this.receipt.toBuilder().setEnergyUsageTotal(energyUsage).build();
+    this.receipt = this.receipt.toBuilder().setEntropyUsageTotal(energyUsage).build();
   }
 
   public long getNetUsage() {
@@ -118,26 +118,26 @@ public class ReceiptCapsule {
                             AccountCapsule caller,
                             long percent, long originEnergyLimit, EnergyProcessor energyProcessor, long now)
       throws BalanceInsufficientException {
-    if (receipt.getEnergyUsageTotal() <= 0) {
+    if (receipt.getEntropyUsageTotal() <= 0) {
       return;
     }
 
     if (Objects.isNull(origin) && dynamicPropertiesStore.getAllowVvmConstantinople() == 1) {
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEnergyUsageTotal(), energyProcessor, now);
+          receipt.getEntropyUsageTotal(), energyProcessor, now);
       return;
     }
 
     if (caller.getAddress().equals(origin.getAddress())) {
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEnergyUsageTotal(), energyProcessor, now);
+          receipt.getEntropyUsageTotal(), energyProcessor, now);
     } else {
-      long originUsage = Math.multiplyExact(receipt.getEnergyUsageTotal(), percent) / 100;
+      long originUsage = Math.multiplyExact(receipt.getEntropyUsageTotal(), percent) / 100;
       originUsage = getOriginUsage(dynamicPropertiesStore, origin, originEnergyLimit,
           energyProcessor,
           originUsage);
 
-      long callerUsage = receipt.getEnergyUsageTotal() - originUsage;
+      long callerUsage = receipt.getEntropyUsageTotal() - originUsage;
       energyProcessor.useEnergy(origin, originUsage, now);
       this.setOriginEnergyUsage(originUsage);
       payEnergyBill(dynamicPropertiesStore, accountStore, forkController,

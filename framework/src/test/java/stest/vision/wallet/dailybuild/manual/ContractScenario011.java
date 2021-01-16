@@ -102,8 +102,8 @@ public class ContractScenario011 {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(deployAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuLimit = accountResource.getEntropyLimit();
+    Long cpuUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(deployAddress, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before cpu limit is " + Long.toString(cpuLimit));
@@ -125,8 +125,8 @@ public class ContractScenario011 {
 
     Assert.assertTrue(smartContract.getAbi() != null);
     accountResource = PublicMethed.getAccountResource(deployAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuLimit = accountResource.getEntropyLimit();
+    cpuUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
     logger.info("after cpu limit is " + Long.toString(cpuLimit));
@@ -144,8 +144,8 @@ public class ContractScenario011 {
   public void deploySaleClockAuction() {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(deployAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuLimit = accountResource.getEntropyLimit();
+    Long cpuUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before cpu limit is " + Long.toString(cpuLimit));
@@ -175,8 +175,8 @@ public class ContractScenario011 {
     Assert.assertFalse(StringUtils.isEmpty(smartContract.getBytecode()));
     Assert.assertTrue(smartContract.getAbi() != null);
     accountResource = PublicMethed.getAccountResource(deployAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuLimit = accountResource.getEntropyLimit();
+    cpuUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
     logger.info("after cpu limit is " + Long.toString(cpuLimit));
@@ -195,8 +195,8 @@ public class ContractScenario011 {
   public void deploySiringClockAuction() {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(deployAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuLimit = accountResource.getEntropyLimit();
+    Long cpuUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before cpu limit is " + Long.toString(cpuLimit));
@@ -223,8 +223,8 @@ public class ContractScenario011 {
     Assert.assertFalse(StringUtils.isEmpty(smartContract.getBytecode()));
     Assert.assertTrue(smartContract.getAbi() != null);
     accountResource = PublicMethed.getAccountResource(deployAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuLimit = accountResource.getEntropyLimit();
+    cpuUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
     logger.info("after cpu limit is " + Long.toString(cpuLimit));
@@ -235,8 +235,8 @@ public class ContractScenario011 {
   public void deployGeneScienceInterface() {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(deployAddress,
         blockingStubFull);
-    Long cpuLimit = accountResource.getEnergyLimit();
-    Long cpuUsage = accountResource.getEnergyUsed();
+    Long cpuLimit = accountResource.getEntropyLimit();
+    Long cpuUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before cpu limit is " + Long.toString(cpuLimit));
@@ -262,8 +262,8 @@ public class ContractScenario011 {
     Assert.assertFalse(StringUtils.isEmpty(smartContract.getBytecode()));
     Assert.assertTrue(smartContract.getAbi() != null);
     accountResource = PublicMethed.getAccountResource(deployAddress, blockingStubFull);
-    cpuLimit = accountResource.getEnergyLimit();
-    cpuUsage = accountResource.getEnergyUsed();
+    cpuLimit = accountResource.getEntropyLimit();
+    cpuUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(deployKey, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
     logger.info("after cpu limit is " + Long.toString(cpuLimit));
@@ -420,13 +420,13 @@ public class ContractScenario011 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull1);
     logger.info("Q " + Long
-        .toString(infoById.get().getReceipt().getEnergyFee()));
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsage() == 0);
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyFee() > 10000);
+        .toString(infoById.get().getReceipt().getEntropyFee()));
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() == 0);
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyFee() > 10000);
     //    Assert.assertTrue(infoById.get().getReceipt().getOriginEnergyUsage() > 10000);
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsageTotal()
-        == infoById.get().getReceipt().getEnergyFee() / 100 + infoById.get().getReceipt()
-        .getOriginEnergyUsage());
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal()
+        == infoById.get().getReceipt().getEntropyFee() / 100 + infoById.get().getReceipt()
+        .getOriginEntropyUsage());
 
     Long fee = infoById.get().getFee();
     Long afterBalance = PublicMethed
@@ -435,11 +435,11 @@ public class ContractScenario011 {
     logger.info("fee is " + Long.toString(fee));
     Assert.assertTrue(beforeBalance == afterBalance + fee);
 
-    logger.info("before EnergyUsage is " + infoById.get().getReceipt().getEnergyUsage());
-    logger.info("before EnergyFee is " + infoById.get().getReceipt().getEnergyFee());
+    logger.info("before EnergyUsage is " + infoById.get().getReceipt().getEntropyUsage());
+    logger.info("before EnergyFee is " + infoById.get().getReceipt().getEntropyFee());
     logger.info("before OriginEnergyUsage is " + infoById.get().getReceipt()
-        .getOriginEnergyUsage());
-    logger.info("before EnergyTotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+        .getOriginEntropyUsage());
+    logger.info("before EnergyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(
         PublicMethed.freezeBalanceGetEnergy(triggerUseTriggerEnergyUsageAddress, 100000000L,
@@ -451,7 +451,7 @@ public class ContractScenario011 {
 
     AccountResourceMessage accountResource = PublicMethed
         .getAccountResource(triggerUseTriggerEnergyUsageAddress, blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
+    Long energyLimit = accountResource.getEntropyLimit();
     logger.info("before EnergyLimit is " + Long.toString(energyLimit));
 
     txid = PublicMethed.triggerContract(kittyCoreContractAddress,
@@ -461,10 +461,10 @@ public class ContractScenario011 {
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull1);
-    logger.info("after EnergyUsage is " + infoById.get().getReceipt().getEnergyUsage());
-    logger.info("after EnergyFee is " + infoById.get().getReceipt().getEnergyFee());
-    logger.info("after OriginEnergyUsage is " + infoById.get().getReceipt().getOriginEnergyUsage());
-    logger.info("after EnergyTotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("after EnergyUsage is " + infoById.get().getReceipt().getEntropyUsage());
+    logger.info("after EnergyFee is " + infoById.get().getReceipt().getEntropyFee());
+    logger.info("after OriginEnergyUsage is " + infoById.get().getReceipt().getOriginEntropyUsage());
+    logger.info("after EnergyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     fee = infoById.get().getFee();
     afterBalance = PublicMethed.queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull1)
         .getBalance();
@@ -473,17 +473,17 @@ public class ContractScenario011 {
 
     accountResource = PublicMethed
         .getAccountResource(triggerUseTriggerEnergyUsageAddress, blockingStubFull1);
-    energyLimit = accountResource.getEnergyLimit();
+    energyLimit = accountResource.getEntropyLimit();
 
     logger.info("after EnergyLimit is " + Long.toString(energyLimit));
 
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsage() > 10000);
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyFee() == 0);
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() > 10000);
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyFee() == 0);
 
     //Assert.assertTrue(infoById.get().getReceipt().getOriginEnergyUsage() > 10000);
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsageTotal() == infoById.get()
-        .getReceipt().getEnergyUsage() + infoById.get().getReceipt().getOriginEnergyUsage());
-    //    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsage() == infoById.get()
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() == infoById.get()
+        .getReceipt().getEntropyUsage() + infoById.get().getReceipt().getOriginEntropyUsage());
+    //    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() == infoById.get()
     //        .getReceipt().getOriginEnergyUsage());
 
     Assert.assertTrue(beforeBalance == afterBalance + fee);

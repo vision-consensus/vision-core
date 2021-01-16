@@ -81,23 +81,23 @@ public class WalletTestAccount009 {
 
     Account account009Info = PublicMethed.queryAccount(account009Key, blockingStubFull);
     logger.info(Long.toString(
-        account009Info.getAccountResource().getFrozenBalanceForEnergy().getExpireTime()));
-    Assert.assertTrue(account009Info.getAccountResource().getEnergyUsage() == 0);
-    Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEnergy()
+        account009Info.getAccountResource().getFrozenBalanceForEntropy().getExpireTime()));
+    Assert.assertTrue(account009Info.getAccountResource().getEntropyUsage() == 0);
+    Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEntropy()
         .getExpireTime() == 0);
 
     Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account009Address, 1000000L,
         3, 1, account009Key, blockingStubFull));
     account009Info = PublicMethed.queryAccount(account009Key, blockingStubFull);
-    Assert.assertTrue(account009Info.getAccountResource().getEnergyUsage() == 0);
-    Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEnergy()
+    Assert.assertTrue(account009Info.getAccountResource().getEntropyUsage() == 0);
+    Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEntropy()
         .getFrozenBalance() == 1000000L);
 
     AccountResourceMessage account009Resource = PublicMethed.getAccountResource(account009Address,
         blockingStubFull);
-    Assert.assertTrue(account009Resource.getTotalEnergyLimit() >= 50000000000L);
-    Assert.assertTrue(account009Resource.getEnergyLimit() > 0);
-    Assert.assertTrue(account009Resource.getTotalEnergyWeight() >= 1);
+    Assert.assertTrue(account009Resource.getTotalEntropyLimit() >= 50000000000L);
+    Assert.assertTrue(account009Resource.getEntropyLimit() > 0);
+    Assert.assertTrue(account009Resource.getTotalEntropyWeight() >= 1);
   }
 
   @Test(enabled = true)

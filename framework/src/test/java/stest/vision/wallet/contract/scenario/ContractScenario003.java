@@ -79,8 +79,8 @@ public class ContractScenario003 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract003Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
     Long balanceBefore = PublicMethed.queryAccount(contract003Key, blockingStubFull).getBalance();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
@@ -100,7 +100,7 @@ public class ContractScenario003 {
     logger.info(txid);
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     com.google.protobuf.ByteString contractAddress = infoById.get().getContractAddress();
     SmartContract smartContract = PublicMethed
@@ -111,8 +111,8 @@ public class ContractScenario003 {
 
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     accountResource = PublicMethed.getAccountResource(contract003Address, blockingStubFull1);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     Long balanceAfter = PublicMethed.queryAccount(contract003Address, blockingStubFull1)
         .getBalance();
 

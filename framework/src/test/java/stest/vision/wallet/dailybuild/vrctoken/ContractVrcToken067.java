@@ -112,8 +112,8 @@ public class ContractVrcToken067 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountBefore = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
@@ -140,7 +140,7 @@ public class ContractVrcToken067 {
 
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(transferTokenTxid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     if (transferTokenTxid == null || infoById.get().getResultValue() != 0) {
       Assert.fail("deploy transaction failed with message: " + infoById.get().getResMessage());
@@ -152,8 +152,8 @@ public class ContractVrcToken067 {
     Assert.assertNotNull(smartContract.getAbi());
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountAfter = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
@@ -184,8 +184,8 @@ public class ContractVrcToken067 {
     // before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEnergyLimit();
-    long energyUsage = accountResource.getEnergyUsed();
+    long energyLimit = accountResource.getEntropyLimit();
+    long energyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountBefore = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
@@ -211,7 +211,7 @@ public class ContractVrcToken067 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(recieveTokenTxid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     if (recieveTokenTxid == null || infoById.get().getResultValue() != 0) {
       Assert.fail("deploy receive failed with message: " + infoById.get().getResMessage());
@@ -219,8 +219,8 @@ public class ContractVrcToken067 {
 
     // after deploy, check account resource
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountAfter = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
@@ -261,8 +261,8 @@ public class ContractVrcToken067 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEnergyLimit();
-    long devEnergyUsageBefore = accountResource.getEnergyUsed();
+    long devEnergyLimitBefore = accountResource.getEntropyLimit();
+    long devEnergyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
@@ -270,8 +270,8 @@ public class ContractVrcToken067 {
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEnergyLimit();
-    long userEnergyUsageBefore = accountResource.getEnergyUsed();
+    long userEnergyLimitBefore = accountResource.getEntropyLimit();
+    long userEnergyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -304,7 +304,7 @@ public class ContractVrcToken067 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(triggerTxid, blockingStubFull);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     if (triggerTxid == null || infoById.get().getResultValue() != 0) {
       Assert.fail("transaction failed with message: " + infoById.get().getResMessage());
@@ -331,8 +331,8 @@ public class ContractVrcToken067 {
     Assert.assertEquals(callValue, msgCallValue);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEnergyLimit();
-    long devEnergyUsageAfter = accountResource.getEnergyUsed();
+    long devEnergyLimitAfter = accountResource.getEntropyLimit();
+    long devEnergyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
     logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
@@ -340,8 +340,8 @@ public class ContractVrcToken067 {
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEnergyLimit();
-    long userEnergyUsageAfter = accountResource.getEnergyUsed();
+    long userEnergyLimitAfter = accountResource.getEntropyLimit();
+    long userEnergyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
@@ -373,15 +373,15 @@ public class ContractVrcToken067 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEnergyLimit();
-    long devEnergyUsageBefore = accountResource.getEnergyUsed();
+    long devEnergyLimitBefore = accountResource.getEntropyLimit();
+    long devEnergyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     logger.info("before trigger, dev energy limit is " + Long.toString(devEnergyLimitBefore));
     logger.info("before trigger, dev energy usage is " + Long.toString(devEnergyUsageBefore));
     logger.info("before trigger, dev balance is " + Long.toString(devBalanceBefore));
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEnergyLimit();
-    long userEnergyUsageBefore = accountResource.getEnergyUsed();
+    long userEnergyLimitBefore = accountResource.getEntropyLimit();
+    long userEnergyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address,
         blockingStubFull).getBalance();
     logger.info("before trigger, user energy limit is " + Long.toString(userEnergyLimitBefore));
@@ -399,15 +399,15 @@ public class ContractVrcToken067 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Optional<TransactionInfo> infoById = PublicMethed.getTransactionInfoById(triggerTxid,
         blockingStubFull);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     if (triggerTxid == null || infoById.get().getResultValue() != 0) {
       Assert.fail("transaction failed with message: " + infoById.get().getResMessage());
     }
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEnergyLimit();
-    long devEnergyUsageAfter = accountResource.getEnergyUsed();
+    long devEnergyLimitAfter = accountResource.getEntropyLimit();
+    long devEnergyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
 
     logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
@@ -415,8 +415,8 @@ public class ContractVrcToken067 {
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEnergyLimit();
-    long userEnergyUsageAfter = accountResource.getEnergyUsed();
+    long userEnergyLimitAfter = accountResource.getEntropyLimit();
+    long userEnergyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 

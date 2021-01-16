@@ -45,64 +45,64 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
     return this.delegatedResource.getTo();
   }
 
-  public long getFrozenBalanceForEnergy() {
-    return this.delegatedResource.getFrozenBalanceForEnergy();
+  public long getFrozenBalanceForEntropy() {
+    return this.delegatedResource.getFrozenBalanceForEntropy();
   }
 
   public void setFrozenBalanceForEnergy(long energy, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForEnergy(energy)
-        .setExpireTimeForEnergy(expireTime)
+        .setFrozenBalanceForEntropy(energy)
+        .setExpireTimeForEntropy(expireTime)
         .build();
   }
 
   public void addFrozenBalanceForEnergy(long energy, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForEnergy(this.delegatedResource.getFrozenBalanceForEnergy() + energy)
-        .setExpireTimeForEnergy(expireTime)
+        .setFrozenBalanceForEntropy(this.delegatedResource.getFrozenBalanceForEntropy() + energy)
+        .setExpireTimeForEntropy(expireTime)
         .build();
   }
 
   public long getFrozenBalanceForBandwidth() {
-    return this.delegatedResource.getFrozenBalanceForBandwidth();
+    return this.delegatedResource.getFrozenBalanceForPhoton();
   }
 
   public void setFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForBandwidth(Bandwidth)
-        .setExpireTimeForBandwidth(expireTime)
+        .setFrozenBalanceForPhoton(Bandwidth)
+        .setExpireTimeForPhoton(expireTime)
         .build();
   }
 
   public void addFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForBandwidth(this.delegatedResource.getFrozenBalanceForBandwidth()
+        .setFrozenBalanceForPhoton(this.delegatedResource.getFrozenBalanceForPhoton()
             + Bandwidth)
-        .setExpireTimeForBandwidth(expireTime)
+        .setExpireTimeForPhoton(expireTime)
         .build();
   }
 
   public long getExpireTimeForBandwidth() {
-    return this.delegatedResource.getExpireTimeForBandwidth();
+    return this.delegatedResource.getExpireTimeForPhoton();
   }
 
   public void setExpireTimeForBandwidth(long ExpireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setExpireTimeForBandwidth(ExpireTime)
+        .setExpireTimeForPhoton(ExpireTime)
         .build();
   }
 
   public long getExpireTimeForEnergy(DynamicPropertiesStore dynamicPropertiesStore) {
     if (dynamicPropertiesStore.getAllowMultiSign() == 0) {
-      return this.delegatedResource.getExpireTimeForBandwidth();
+      return this.delegatedResource.getExpireTimeForPhoton();
     } else {
-      return this.delegatedResource.getExpireTimeForEnergy();
+      return this.delegatedResource.getExpireTimeForEntropy();
     }
   }
 
   public void setExpireTimeForEnergy(long ExpireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setExpireTimeForEnergy(ExpireTime)
+        .setExpireTimeForEntropy(ExpireTime)
         .build();
   }
 

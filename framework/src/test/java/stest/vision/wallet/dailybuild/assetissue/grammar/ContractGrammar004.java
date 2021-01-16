@@ -2,7 +2,7 @@ package stest.vision.wallet.dailybuild.assetissue.grammar;
 
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.BAD_JUMP_DESTINATION_VALUE;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.ILLEGAL_OPERATION_VALUE;
-import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_ENERGY_VALUE;
+import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_ENTROPY_VALUE;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_MEMORY_VALUE;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.OUT_OF_TIME_VALUE;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.REVERT_VALUE;
@@ -110,7 +110,7 @@ public class ContractGrammar004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -158,7 +158,7 @@ public class ContractGrammar004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -217,7 +217,7 @@ public class ContractGrammar004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -258,7 +258,7 @@ public class ContractGrammar004 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -269,12 +269,12 @@ public class ContractGrammar004 {
 
     logger.info("infoById:" + infoById);
 
-    Assert.assertEquals(byId.get().getRet(0).getContractRetValue(), OUT_OF_ENERGY_VALUE);
-    Assert.assertEquals(byId.get().getRet(0).getContractRet(), contractResult.OUT_OF_ENERGY);
+    Assert.assertEquals(byId.get().getRet(0).getContractRetValue(), OUT_OF_ENTROPY_VALUE);
+    Assert.assertEquals(byId.get().getRet(0).getContractRet(), contractResult.OUT_OF_ENTROPY);
 
     Assert
         .assertEquals(ByteArray.toHexString(infoById.get().getContractResult(0).toByteArray()), "");
-    Assert.assertEquals(contractResult.OUT_OF_ENERGY, infoById.get().getReceipt().getResult());
+    Assert.assertEquals(contractResult.OUT_OF_ENTROPY, infoById.get().getReceipt().getResult());
 
     Assert.assertEquals(byId.get().getRet(0).getRet().getNumber(), 0);
     Assert.assertEquals(byId.get().getRet(0).getRetValue(), 0);
@@ -423,7 +423,7 @@ public class ContractGrammar004 {
         .getAccountResource(grammarAddress, blockingStubFull);
     info = PublicMethed.queryAccount(testKeyForGrammarAddress, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -445,9 +445,9 @@ public class ContractGrammar004 {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("energyUsed:" + energyUsed);
@@ -458,7 +458,7 @@ public class ContractGrammar004 {
     AccountResourceMessage resourceInfoafter = PublicMethed
         .getAccountResource(grammarAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);

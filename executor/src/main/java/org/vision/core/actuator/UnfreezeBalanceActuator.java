@@ -85,13 +85,13 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           .get(key);
 
       switch (unfreezeBalanceContract.getResource()) {
-        case BANDWIDTH:
+        case PHOTON:
           unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForBandwidth();
           delegatedResourceCapsule.setFrozenBalanceForBandwidth(0, 0);
           accountCapsule.addDelegatedFrozenBalanceForBandwidth(-unfreezeBalance);
           break;
-        case ENERGY:
-          unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForEnergy();
+        case ENTROPY:
+          unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForEntropy();
           delegatedResourceCapsule.setFrozenBalanceForEnergy(0, 0);
           accountCapsule.addDelegatedFrozenBalanceForEnergy(-unfreezeBalance);
           break;
@@ -104,7 +104,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       if (dynamicStore.getAllowVvmConstantinople() == 0 ||
           (receiverCapsule != null && receiverCapsule.getType() != AccountType.Contract)) {
         switch (unfreezeBalanceContract.getResource()) {
-          case BANDWIDTH:
+          case PHOTON:
             if (dynamicStore.getAllowVvmSolidity059() == 1
                 && receiverCapsule.getAcquiredDelegatedFrozenBalanceForBandwidth()
                 < unfreezeBalance) {
@@ -113,7 +113,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               receiverCapsule.addAcquiredDelegatedFrozenBalanceForBandwidth(-unfreezeBalance);
             }
             break;
-          case ENERGY:
+          case ENTROPY:
             if (dynamicStore.getAllowVvmSolidity059() == 1
                 && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy() < unfreezeBalance) {
               receiverCapsule.setAcquiredDelegatedFrozenBalanceForEnergy(0);
@@ -131,7 +131,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       accountCapsule.setBalance(oldBalance + unfreezeBalance);
 
       if (delegatedResourceCapsule.getFrozenBalanceForBandwidth() == 0
-          && delegatedResourceCapsule.getFrozenBalanceForEnergy() == 0) {
+          && delegatedResourceCapsule.getFrozenBalanceForEntropy() == 0) {
         delegatedResourceStore.delete(key);
 
         //modify DelegatedResourceAccountIndexStore
@@ -166,7 +166,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       }
     } else {
       switch (unfreezeBalanceContract.getResource()) {
-        case BANDWIDTH:
+        case PHOTON:
 
           List<Frozen> frozenList = Lists.newArrayList();
           frozenList.addAll(accountCapsule.getFrozenList());
@@ -185,12 +185,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .clearFrozen().addAllFrozen(frozenList).build());
 
           break;
-        case ENERGY:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForEnergy()
+        case ENTROPY:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForEntropy()
               .getFrozenBalance();
 
           AccountResource newAccountResource = accountCapsule.getAccountResource().toBuilder()
-              .clearFrozenBalanceForEnergy().build();
+              .clearFrozenBalanceForEntropy().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + unfreezeBalance)
               .setAccountResource(newAccountResource).build());
@@ -204,11 +204,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     }
 
     switch (unfreezeBalanceContract.getResource()) {
-      case BANDWIDTH:
+      case PHOTON:
         dynamicStore
             .addTotalNetWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case ENERGY:
+      case ENTROPY:
         dynamicStore
             .addTotalEnergyWeight(-unfreezeBalance / VS_PRECISION);
         break;
@@ -304,9 +304,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       }
 
       switch (unfreezeBalanceContract.getResource()) {
-        case BANDWIDTH:
+        case PHOTON:
           if (delegatedResourceCapsule.getFrozenBalanceForBandwidth() <= 0) {
-            throw new ContractValidateException("no delegatedFrozenBalance(BANDWIDTH)");
+            throw new ContractValidateException("no delegatedFrozenBalance(PHOTON)");
           }
 
           if (dynamicStore.getAllowVvmConstantinople() == 0) {
@@ -336,17 +336,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze.");
           }
           break;
-        case ENERGY:
-          if (delegatedResourceCapsule.getFrozenBalanceForEnergy() <= 0) {
-            throw new ContractValidateException("no delegateFrozenBalance(Energy)");
+        case ENTROPY:
+          if (delegatedResourceCapsule.getFrozenBalanceForEntropy() <= 0) {
+            throw new ContractValidateException("no delegateFrozenBalance(Entropy)");
           }
           if (dynamicStore.getAllowVvmConstantinople() == 0) {
             if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy()
-                < delegatedResourceCapsule.getFrozenBalanceForEnergy()) {
+                < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
                       .getAcquiredDelegatedFrozenBalanceForEnergy() + "] < delegatedEnergy["
-                      + delegatedResourceCapsule.getFrozenBalanceForEnergy() +
+                      + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }
           } else {
@@ -354,11 +354,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 && receiverCapsule != null
                 && receiverCapsule.getType() != AccountType.Contract
                 && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy()
-                < delegatedResourceCapsule.getFrozenBalanceForEnergy()) {
+                < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
                       .getAcquiredDelegatedFrozenBalanceForEnergy() + "] < delegatedEnergy["
-                      + delegatedResourceCapsule.getFrozenBalanceForEnergy() +
+                      + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }
           }
@@ -369,25 +369,25 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           break;
         default:
           throw new ContractValidateException(
-              "ResourceCode error.valid ResourceCode[BANDWIDTH、Energy]");
+              "ResourceCode error.valid ResourceCode[PHOTON、Energy]");
       }
 
     } else {
       switch (unfreezeBalanceContract.getResource()) {
-        case BANDWIDTH:
+        case PHOTON:
           if (accountCapsule.getFrozenCount() <= 0) {
-            throw new ContractValidateException("no frozenBalance(BANDWIDTH)");
+            throw new ContractValidateException("no frozenBalance(PHOTON)");
           }
 
           long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
               .filter(frozen -> frozen.getExpireTime() <= now).count();
           if (allowedUnfreezeCount <= 0) {
-            throw new ContractValidateException("It's not time to unfreeze(BANDWIDTH).");
+            throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
           }
           break;
-        case ENERGY:
+        case ENTROPY:
           Frozen frozenBalanceForEnergy = accountCapsule.getAccountResource()
-              .getFrozenBalanceForEnergy();
+              .getFrozenBalanceForEntropy();
           if (frozenBalanceForEnergy.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(Energy)");
           }
@@ -398,7 +398,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           break;
         default:
           throw new ContractValidateException(
-              "ResourceCode error.valid ResourceCode[BANDWIDTH、Energy]");
+              "ResourceCode error.valid ResourceCode[PHOTON、Energy]");
       }
 
     }

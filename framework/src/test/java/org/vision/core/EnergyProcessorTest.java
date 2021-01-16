@@ -127,8 +127,8 @@ public class EnergyProcessorTest {
 
     Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(1526647838000L,
-        ownerCapsuleNew.getAccountResource().getLatestConsumeTimeForEnergy());
-    Assert.assertEquals(10000L, ownerCapsuleNew.getAccountResource().getEnergyUsage());
+        ownerCapsuleNew.getAccountResource().getLatestConsumeTimeForEntropy());
+    Assert.assertEquals(10000L, ownerCapsuleNew.getAccountResource().getEntropyUsage());
 
   }
 

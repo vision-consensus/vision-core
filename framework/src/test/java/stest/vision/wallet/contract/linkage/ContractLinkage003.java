@@ -76,8 +76,8 @@ public class ContractLinkage003 {
         blockingStubFull);
     info = PublicMethed.queryAccount(linkage003Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyLimit = resourceInfo.getEnergyLimit();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyLimit = resourceInfo.getEntropyLimit();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeFreeNetLimit = resourceInfo.getFreeNetLimit();
     Long beforeNetLimit = resourceInfo.getNetLimit();
     Long beforeNetUsed = resourceInfo.getNetUsed();
@@ -105,11 +105,11 @@ public class ContractLinkage003 {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     byte[] contractAddress = infoById.get().getContractAddress().toByteArray();
-    Long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    Long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     Long fee = infoById.get().getFee();
-    Long energyFee = infoById.get().getReceipt().getEnergyFee();
+    Long energyFee = infoById.get().getReceipt().getEntropyFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
     logger.info("energyUsageTotal:" + energyUsageTotal);
     logger.info("fee:" + fee);
@@ -122,8 +122,8 @@ public class ContractLinkage003 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(linkage003Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyLimit = resourceInfoafter.getEnergyLimit();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyLimit = resourceInfoafter.getEntropyLimit();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterFreeNetLimit = resourceInfoafter.getFreeNetLimit();
     Long afterNetLimit = resourceInfoafter.getNetLimit();
     Long afterNetUsed = resourceInfoafter.getNetUsed();

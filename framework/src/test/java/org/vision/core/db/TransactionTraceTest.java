@@ -388,8 +388,8 @@ public class TransactionTraceTest {
         .setBalance(1000000)
         .setAccountResource(
             AccountResource.newBuilder()
-                .setEnergyUsage(1111111L)
-                .setFrozenBalanceForEnergy(
+                .setEntropyUsage(1111111L)
+                .setFrozenBalanceForEntropy(
                     Frozen.newBuilder()
                         .setExpireTime(100000)
                         .setFrozenBalance(100000)

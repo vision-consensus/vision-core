@@ -114,7 +114,7 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
   }
 
   public long getOriginEnergyLimit() {
-    long originEnergyLimit = this.smartContract.getOriginEnergyLimit();
+    long originEnergyLimit = this.smartContract.getOriginEntropyLimit();
     if (originEnergyLimit == Constant.PB_DEFAULT_ENERGY_LIMIT) {
       originEnergyLimit = Constant.CREATOR_DEFAULT_ENERGY_LIMIT;
     }

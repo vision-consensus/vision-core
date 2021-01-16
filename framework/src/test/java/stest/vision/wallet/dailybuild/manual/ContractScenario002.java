@@ -111,8 +111,8 @@ public class ContractScenario002 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract002Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
     Long balanceBefore = PublicMethed.queryAccount(contract002Key, blockingStubFull).getBalance();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
@@ -140,8 +140,8 @@ public class ContractScenario002 {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     accountResource = PublicMethed.getAccountResource(contract002Address, blockingStubFull1);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     Long balanceAfter = PublicMethed.queryAccount(contract002Address, blockingStubFull1)
         .getBalance();
 
@@ -213,10 +213,10 @@ public class ContractScenario002 {
   public void test06GetTransactionInfoByIdFromPbft() {
     long energyUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
         .getReceipt()
-        .getEnergyUsage();
+        .getEntropyUsage();
 
     Assert.assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubPbft)
-        .get().getReceipt().getEnergyUsage(), energyUsage);
+        .get().getReceipt().getEntropyUsage(), energyUsage);
   }
 
 

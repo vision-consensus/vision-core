@@ -68,8 +68,8 @@ public class ContractScenario008 {
         3, 1, contract008Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract008Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
     logger.info("before energy limit is " + Long.toString(energyLimit));
@@ -90,8 +90,8 @@ public class ContractScenario008 {
 
     final SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
     logger.info("after energy limit is " + Long.toString(energyLimit));

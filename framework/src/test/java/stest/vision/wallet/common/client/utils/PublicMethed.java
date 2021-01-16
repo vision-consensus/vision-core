@@ -121,7 +121,7 @@ import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract.Bu
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import org.vision.protos.contract.SmartContractOuterClass.UpdateEnergyLimitContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitContract;
 import org.vision.protos.contract.SmartContractOuterClass.UpdateSettingContract;
 import org.vision.protos.contract.StorageContract.BuyStorageContract;
 import org.vision.protos.contract.StorageContract.SellStorageContract;
@@ -2290,7 +2290,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -2419,7 +2419,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(1000L);
+    builder.setOriginEntropyLimit(1000L);
 
     if (value != 0) {
 
@@ -2557,7 +2557,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -3079,14 +3079,14 @@ public class PublicMethed {
     final ECKey ecKey = temKey;
 
     byte[] owner = ownerAddress;
-    UpdateEnergyLimitContract.Builder builder = UpdateEnergyLimitContract.newBuilder();
+    UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
-    UpdateEnergyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEnergyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEnergyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {
@@ -3768,7 +3768,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -4200,11 +4200,11 @@ public class PublicMethed {
     Account getAccount = queryAccount(ecKey, blockingStubFull);
 
     long balance = info.getBalance();
-    long frozenBalance = info.getAccountResource().getFrozenBalanceForEnergy().getFrozenBalance();
-    long totalEnergyLimit = resourceInfo.getTotalEnergyLimit();
-    long totalEnergyWeight = resourceInfo.getTotalEnergyWeight();
-    long energyUsed = resourceInfo.getEnergyUsed();
-    long energyLimit = resourceInfo.getEnergyLimit();
+    long frozenBalance = info.getAccountResource().getFrozenBalanceForEntropy().getFrozenBalance();
+    long totalEnergyLimit = resourceInfo.getTotalEntropyLimit();
+    long totalEnergyWeight = resourceInfo.getTotalEntropyWeight();
+    long energyUsed = resourceInfo.getEntropyUsed();
+    long energyLimit = resourceInfo.getEntropyLimit();
 
     if (energyUsed > energyLimit) {
       targetEnergy = energyUsed - energyLimit + targetEnergy;
@@ -4326,7 +4326,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
     if (value != 0) {
 
@@ -4512,14 +4512,14 @@ public class PublicMethed {
     final ECKey ecKey = temKey;
 
     byte[] owner = ownerAddress;
-    UpdateEnergyLimitContract.Builder builder = UpdateEnergyLimitContract.newBuilder();
+    UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEnergyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEnergyLimit);
 
-    UpdateEnergyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEnergyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEnergyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {

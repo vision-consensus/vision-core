@@ -153,7 +153,7 @@ public class VMActuator implements Actuator2 {
         if (tokenValue < 0) {
           throw new ContractValidateException("tokenValue must be >= 0");
         }
-        if (newSmartContract.getOriginEnergyLimit() <= 0) {
+        if (newSmartContract.getOriginEntropyLimit() <= 0) {
           throw new ContractValidateException("The originEnergyLimit must be > 0");
         }
         energyLimit = getAccountEnergyLimitWithFixRatio(creator, feeLimit, callValue);

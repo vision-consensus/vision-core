@@ -99,7 +99,7 @@ public class TransferFailed007 {
         blockingStubFull);
     info = PublicMethed.queryAccount(accountExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -131,9 +131,9 @@ public class TransferFailed007 {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("energyUsed:" + energyUsed);
@@ -151,7 +151,7 @@ public class TransferFailed007 {
     Assert.assertEquals("SUCESS", infoById.get().getResult().toString());
     Assert.assertEquals(5L, afterBalance);
     Assert.assertFalse(infoById.get().getInternalTransactions(0).getRejected());
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsageTotal() < 10000000);
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() < 10000000);
 
     triggerTxid = PublicMethed.triggerContract(contractAddress,
         "deploy(bytes,uint256)", param, false, 0L,
@@ -162,9 +162,9 @@ public class TransferFailed007 {
 
     fee = infoById.get().getFee();
     netUsed = infoById.get().getReceipt().getNetUsage();
-    energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    energyUsed = infoById.get().getReceipt().getEntropyUsage();
     netFee = infoById.get().getReceipt().getNetFee();
-    energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("energyUsed:" + energyUsed);
@@ -180,7 +180,7 @@ public class TransferFailed007 {
     Assert.assertEquals("SUCESS", infoById.get().getResult().toString());
     Assert.assertEquals(5L, afterBalance);
     Assert.assertEquals(0, ByteArray.toInt(infoById.get().getContractResult(0).toByteArray()));
-    Assert.assertTrue(infoById.get().getReceipt().getEnergyUsageTotal() < 10000000);
+    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() < 10000000);
 
   }
 

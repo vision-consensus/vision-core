@@ -17,13 +17,13 @@ import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
-import org.vision.protos.contract.SmartContractOuterClass.UpdateEnergyLimitContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitContract;
 
 @Slf4j(topic = "actuator")
-public class UpdateEnergyLimitContractActuator extends AbstractActuator {
+public class UpdateEntropyLimitContractActuator extends AbstractActuator {
 
-  public UpdateEnergyLimitContractActuator() {
-    super(ContractType.UpdateEnergyLimitContract, UpdateEnergyLimitContract.class);
+  public UpdateEntropyLimitContractActuator() {
+    super(ContractType.UpdateEntropyLimitContract, UpdateEntropyLimitContract.class);
   }
 
   @Override
@@ -36,13 +36,13 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
     long fee = calcFee();
     ContractStore contractStore = chainBaseManager.getContractStore();
     try {
-      UpdateEnergyLimitContract usContract = any.unpack(UpdateEnergyLimitContract.class);
-      long newOriginEnergyLimit = usContract.getOriginEnergyLimit();
+      UpdateEntropyLimitContract usContract = any.unpack(UpdateEntropyLimitContract.class);
+      long newOriginEnergyLimit = usContract.getOriginEntropyLimit();
       byte[] contractAddress = usContract.getContractAddress().toByteArray();
       ContractCapsule deployedContract = contractStore.get(contractAddress);
 
       contractStore.put(contractAddress, new ContractCapsule(
-          deployedContract.getInstance().toBuilder().setOriginEnergyLimit(newOriginEnergyLimit)
+          deployedContract.getInstance().toBuilder().setOriginEntropyLimit(newOriginEnergyLimit)
               .build()));
 
       ret.setStatus(fee, code.SUCESS);
@@ -58,7 +58,7 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
   public boolean validate() throws ContractValidateException {
     if (!StorageUtils.getEnergyLimitHardFork()) {
       throw new ContractValidateException(
-          "contract type error, unexpected type [UpdateEnergyLimitContract]");
+          "contract type error, unexpected type [UpdateEntropyLimitContract]");
     }
     if (this.any == null) {
       throw new ContractValidateException(ActuatorConstant.CONTRACT_NOT_EXIST);
@@ -68,14 +68,14 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
     }
     AccountStore accountStore = chainBaseManager.getAccountStore();
     ContractStore contractStore = chainBaseManager.getContractStore();
-    if (!this.any.is(UpdateEnergyLimitContract.class)) {
+    if (!this.any.is(UpdateEntropyLimitContract.class)) {
       throw new ContractValidateException(
-          "contract type error, expected type [UpdateEnergyLimitContract],real type["
+          "contract type error, expected type [UpdateEntropyLimitContract],real type["
               + any.getClass() + "]");
     }
-    final UpdateEnergyLimitContract contract;
+    final UpdateEntropyLimitContract contract;
     try {
-      contract = this.any.unpack(UpdateEnergyLimitContract.class);
+      contract = this.any.unpack(UpdateEntropyLimitContract.class);
     } catch (InvalidProtocolBufferException e) {
       logger.debug(e.getMessage(), e);
       throw new ContractValidateException(e.getMessage());
@@ -92,7 +92,7 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
           ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] does not exist");
     }
 
-    long newOriginEnergyLimit = contract.getOriginEnergyLimit();
+    long newOriginEnergyLimit = contract.getOriginEntropyLimit();
     if (newOriginEnergyLimit <= 0) {
       throw new ContractValidateException(
           "origin energy limit must be > 0");
@@ -120,7 +120,7 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
 
   @Override
   public ByteString getOwnerAddress() throws InvalidProtocolBufferException {
-    return any.unpack(UpdateEnergyLimitContract.class).getOwnerAddress();
+    return any.unpack(UpdateEntropyLimitContract.class).getOwnerAddress();
   }
 
   @Override

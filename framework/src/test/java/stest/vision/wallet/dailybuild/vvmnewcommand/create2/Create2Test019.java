@@ -123,7 +123,7 @@ public class Create2Test019 {
         blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
@@ -147,9 +147,9 @@ public class Create2Test019 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -161,7 +161,7 @@ public class Create2Test019 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
@@ -187,9 +187,9 @@ public class Create2Test019 {
     infoById1 = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee1 = infoById1.get().getFee();
     Long netUsed1 = infoById1.get().getReceipt().getNetUsage();
-    Long energyUsed1 = infoById1.get().getReceipt().getEnergyUsage();
+    Long energyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
     Long netFee1 = infoById1.get().getReceipt().getNetFee();
-    long energyUsageTotal1 = infoById1.get().getReceipt().getEnergyUsageTotal();
+    long energyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee1:" + fee1);
     logger.info("netUsed1:" + netUsed1);
@@ -201,7 +201,7 @@ public class Create2Test019 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
     Long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance1);

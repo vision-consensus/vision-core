@@ -1234,9 +1234,9 @@ public class RpcApiService implements Service {
     }
 
     @Override
-    public void updateEnergyLimit(UpdateEnergyLimitContract request,
-        StreamObserver<TransactionExtention> responseObserver) {
-      createTransactionExtention(request, ContractType.UpdateEnergyLimitContract,
+    public void updateEntropyLimit(UpdateEntropyLimitContract request,
+                                   StreamObserver<TransactionExtention> responseObserver) {
+      createTransactionExtention(request, ContractType.UpdateEntropyLimitContract,
           responseObserver);
     }
 

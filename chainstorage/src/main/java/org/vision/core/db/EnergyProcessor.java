@@ -38,8 +38,8 @@ public class EnergyProcessor extends ResourceProcessor {
   private void updateUsage(AccountCapsule accountCapsule, long now) {
     AccountResource accountResource = accountCapsule.getAccountResource();
 
-    long oldEnergyUsage = accountResource.getEnergyUsage();
-    long latestConsumeTime = accountResource.getLatestConsumeTimeForEnergy();
+    long oldEnergyUsage = accountResource.getEntropyUsage();
+    long latestConsumeTime = accountResource.getLatestConsumeTimeForEntropy();
 
     accountCapsule.setEnergyUsage(increase(oldEnergyUsage, 0, latestConsumeTime, now));
   }
@@ -98,7 +98,7 @@ public class EnergyProcessor extends ResourceProcessor {
   public boolean useEnergy(AccountCapsule accountCapsule, long energy, long now) {
 
     long energyUsage = accountCapsule.getEnergyUsage();
-    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEnergy();
+    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
     long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
     long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
@@ -142,7 +142,7 @@ public class EnergyProcessor extends ResourceProcessor {
   public long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule) {
     long now = getHeadSlot();
     long energyUsage = accountCapsule.getEnergyUsage();
-    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEnergy();
+    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
     long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
     long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);

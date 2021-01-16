@@ -157,7 +157,7 @@ public class StorageTest extends VMTestBase {
             contractAddress, triggerData, 0, fee, manager, null);
 
     Assert.assertNull(result.getRuntime().getRuntimeError());
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), 10855);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), 10855);
 
     // overwrite storage with same value
     // testPut(uint256,string) 1,"123"
@@ -168,7 +168,7 @@ public class StorageTest extends VMTestBase {
             contractAddress, triggerData, 0, fee, manager, null);
 
     Assert.assertNull(result.getRuntime().getRuntimeError());
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), 10855);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), 10855);
 
     // delete storage
     // testDelete(uint256) 1
@@ -179,7 +179,7 @@ public class StorageTest extends VMTestBase {
             contractAddress, triggerData, 0, fee, manager, null);
     Assert.assertNull(result.getRuntime().getRuntimeError());
     Assert.assertNull(result.getRuntime().getResult().getException());
-    Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), 5389);
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), 5389);
   }
 
   @Test

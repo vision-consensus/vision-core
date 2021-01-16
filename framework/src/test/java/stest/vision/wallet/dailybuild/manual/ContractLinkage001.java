@@ -83,8 +83,8 @@ public class ContractLinkage001 {
     Long beforeFreeNetLimit = resourceInfo.getFreeNetLimit();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeEnergyLimit = resourceInfo.getEnergyLimit();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyLimit = resourceInfo.getEntropyLimit();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEnergyLimit:" + beforeEnergyLimit);
     logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
@@ -110,11 +110,11 @@ public class ContractLinkage001 {
 
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    Long energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
+    Long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     Long fee = infoById.get().getFee();
-    Long energyFee = infoById.get().getReceipt().getEnergyFee();
+    Long energyFee = infoById.get().getReceipt().getEntropyFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
+    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
     logger.info("energyUsageTotal:" + energyUsageTotal);
     logger.info("fee:" + fee);
@@ -127,8 +127,8 @@ public class ContractLinkage001 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(linkage001Address,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyLimit = resourceInfoafter.getEnergyLimit();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyLimit = resourceInfoafter.getEntropyLimit();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterFreeNetLimit = resourceInfoafter.getFreeNetLimit();
     Long afterNetLimit = resourceInfoafter.getNetLimit();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
@@ -158,8 +158,8 @@ public class ContractLinkage001 {
         blockingStubFull);
     Account info1 = PublicMethed.queryAccount(linkage001Address, blockingStubFull);
     Long beforeBalance1 = info1.getBalance();
-    Long beforeEnergyLimit1 = resourceInfo1.getEnergyLimit();
-    Long beforeEnergyUsed1 = resourceInfo1.getEnergyUsed();
+    Long beforeEnergyLimit1 = resourceInfo1.getEntropyLimit();
+    Long beforeEnergyUsed1 = resourceInfo1.getEntropyUsed();
     Long beforeFreeNetLimit1 = resourceInfo1.getFreeNetLimit();
     Long beforeNetLimit1 = resourceInfo1.getNetLimit();
     Long beforeNetUsed1 = resourceInfo1.getNetUsed();
@@ -180,11 +180,11 @@ public class ContractLinkage001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Optional<TransactionInfo> infoById1 = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
-    Long energyUsageTotal1 = infoById1.get().getReceipt().getEnergyUsageTotal();
+    Long energyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
     Long fee1 = infoById1.get().getFee();
-    Long energyFee1 = infoById1.get().getReceipt().getEnergyFee();
+    Long energyFee1 = infoById1.get().getReceipt().getEntropyFee();
     Long netUsed1 = infoById1.get().getReceipt().getNetUsage();
-    Long energyUsed1 = infoById1.get().getReceipt().getEnergyUsage();
+    Long energyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
     Long netFee1 = infoById1.get().getReceipt().getNetFee();
     logger.info("energyUsageTotal1:" + energyUsageTotal1);
     logger.info("fee1:" + fee1);
@@ -198,8 +198,8 @@ public class ContractLinkage001 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(linkage001Address,
         blockingStubFull1);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyLimit1 = resourceInfoafter1.getEnergyLimit();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyLimit1 = resourceInfoafter1.getEntropyLimit();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterFreeNetLimit1 = resourceInfoafter1.getFreeNetLimit();
     Long afterNetLimit1 = resourceInfoafter1.getNetLimit();
     Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
@@ -225,8 +225,8 @@ public class ContractLinkage001 {
         blockingStubFull);
     Account info2 = PublicMethed.queryAccount(linkage001Address, blockingStubFull);
     Long beforeBalance2 = info2.getBalance();
-    Long beforeEnergyLimit2 = resourceInfo2.getEnergyLimit();
-    Long beforeEnergyUsed2 = resourceInfo2.getEnergyUsed();
+    Long beforeEnergyLimit2 = resourceInfo2.getEntropyLimit();
+    Long beforeEnergyUsed2 = resourceInfo2.getEntropyUsed();
     Long beforeFreeNetLimit2 = resourceInfo2.getFreeNetLimit();
     Long beforeNetLimit2 = resourceInfo2.getNetLimit();
     Long beforeNetUsed2 = resourceInfo2.getNetUsed();
@@ -251,8 +251,8 @@ public class ContractLinkage001 {
     AccountResourceMessage resourceInfoafter2 = PublicMethed.getAccountResource(linkage001Address,
         blockingStubFull1);
     Long afterBalance2 = infoafter2.getBalance();
-    Long afterEnergyLimit2 = resourceInfoafter2.getEnergyLimit();
-    Long afterEnergyUsed2 = resourceInfoafter2.getEnergyUsed();
+    Long afterEnergyLimit2 = resourceInfoafter2.getEntropyLimit();
+    Long afterEnergyUsed2 = resourceInfoafter2.getEntropyUsed();
     Long afterFreeNetLimit2 = resourceInfoafter2.getFreeNetLimit();
     Long afterNetLimit2 = resourceInfoafter2.getNetLimit();
     Long afterNetUsed2 = resourceInfoafter2.getNetUsed();
@@ -277,8 +277,8 @@ public class ContractLinkage001 {
         blockingStubFull);
     Account info3 = PublicMethed.queryAccount(linkage001Address, blockingStubFull);
     Long beforeBalance3 = info3.getBalance();
-    Long beforeEnergyLimit3 = resourceInfo3.getEnergyLimit();
-    Long beforeEnergyUsed3 = resourceInfo3.getEnergyUsed();
+    Long beforeEnergyLimit3 = resourceInfo3.getEntropyLimit();
+    Long beforeEnergyUsed3 = resourceInfo3.getEntropyUsed();
     Long beforeFreeNetLimit3 = resourceInfo3.getFreeNetLimit();
     Long beforeNetLimit3 = resourceInfo3.getNetLimit();
     Long beforeNetUsed3 = resourceInfo3.getNetUsed();
@@ -305,8 +305,8 @@ public class ContractLinkage001 {
     AccountResourceMessage resourceInfoafter3 = PublicMethed.getAccountResource(linkage001Address,
         blockingStubFull1);
     Long afterBalance3 = infoafter3.getBalance();
-    Long afterEnergyLimit3 = resourceInfoafter3.getEnergyLimit();
-    Long afterEnergyUsed3 = resourceInfoafter3.getEnergyUsed();
+    Long afterEnergyLimit3 = resourceInfoafter3.getEntropyLimit();
+    Long afterEnergyUsed3 = resourceInfoafter3.getEntropyUsed();
     Long afterFreeNetLimit3 = resourceInfoafter3.getFreeNetLimit();
     Long afterNetLimit3 = resourceInfoafter3.getNetLimit();
     Long afterNetUsed3 = resourceInfoafter3.getNetUsed();

@@ -69,9 +69,9 @@ public class VvmContract {
   public void deployErc721CryptoKitties() {
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract008Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
+    Long energyLimit = accountResource.getEntropyLimit();
     Long storageLimit = accountResource.getStorageLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyUsage = accountResource.getEntropyUsed();
     Long storageUsage = accountResource.getStorageUsed();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
@@ -98,7 +98,7 @@ public class VvmContract {
           30000000L, 0L, 1, null, contract008Key, contract008Address, blockingStubFull);
       accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
       freeNet = accountResource.getFreeNetUsed();
-      energyUsage = accountResource.getEnergyUsed();
+      energyUsage = accountResource.getEntropyUsed();
       logger.info(
           "Time " + Integer.toString(i) + ": energy usage is " + Long.toString(energyUsage - m));
       logger.info("Time " + Integer.toString(i) + ": free net used is " + Long
@@ -124,9 +124,9 @@ public class VvmContract {
     //logger.info(smartContract.getName());
     //logger.info(smartContract.getAbi().toString());
     accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
+    energyLimit = accountResource.getEntropyLimit();
     storageLimit = accountResource.getStorageLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyUsage = accountResource.getEntropyUsed();
     storageUsage = accountResource.getStorageUsed();
     //Assert.assertTrue(storageUsage > 0);
     //Assert.assertTrue(storageLimit > 0);

@@ -108,7 +108,7 @@ public class UnfreezeBalanceActuatorTest {
   private Any getContractForCpu(String ownerAddress) {
     return Any.pack(UnfreezeBalanceContract.newBuilder()
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-        .setResource(ResourceCode.ENERGY).build());
+        .setResource(ResourceCode.ENTROPY).build());
   }
 
   private Any getDelegatedContractForBandwidth(String ownerAddress, String receiverAddress) {
@@ -121,7 +121,7 @@ public class UnfreezeBalanceActuatorTest {
     return Any.pack(UnfreezeBalanceContract.newBuilder()
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
         .setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
-        .setResource(ResourceCode.ENERGY).build());
+        .setResource(ResourceCode.ENTROPY).build());
   }
 
   private Any getContract(String ownerAddress, ResourceCode resourceCode) {

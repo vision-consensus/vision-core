@@ -524,7 +524,7 @@ public class Wallet {
           .build();
     } catch (AccountResourceInsufficientException e) {
       logger.error(BROADCAST_TRANS_FAILED, trx.getTransactionId(), e.getMessage());
-      return builder.setResult(false).setCode(response_code.BANDWITH_ERROR)
+      return builder.setResult(false).setCode(response_code.PHOTON_ERROR)
           .setMessage(ByteString.copyFromUtf8("AccountResourceInsufficient error"))
           .build();
     } catch (DupTransactionException e) {
@@ -1117,10 +1117,10 @@ public class Wallet {
         .setNetLimit(netLimit)
         .setTotalNetLimit(totalNetLimit)
         .setTotalNetWeight(totalNetWeight)
-        .setEnergyLimit(energyLimit)
-        .setEnergyUsed(accountCapsule.getAccountResource().getEnergyUsage())
-        .setTotalEnergyLimit(totalEnergyLimit)
-        .setTotalEnergyWeight(totalEnergyWeight)
+        .setEntropyLimit(energyLimit)
+        .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
+        .setTotalEntropyLimit(totalEnergyLimit)
+        .setTotalEntropyWeight(totalEnergyWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetNetUsed(allFreeAssetNetUsage)

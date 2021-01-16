@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.vision.core.Wallet;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
-import org.vision.protos.contract.SmartContractOuterClass.UpdateEnergyLimitContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitContract;
 
 
 @Component
@@ -30,10 +30,10 @@ public class UpdateEnergyLimitServlet extends RateLimiterServlet {
           .collect(Collectors.joining(System.lineSeparator()));
       Util.checkBodySize(contract);
       boolean visible = Util.getVisiblePost(contract);
-      UpdateEnergyLimitContract.Builder build = UpdateEnergyLimitContract.newBuilder();
+      UpdateEntropyLimitContract.Builder build = UpdateEntropyLimitContract.newBuilder();
       JsonFormat.merge(contract, build, visible);
       Transaction tx = wallet
-          .createTransactionCapsule(build.build(), ContractType.UpdateEnergyLimitContract)
+          .createTransactionCapsule(build.build(), ContractType.UpdateEntropyLimitContract)
           .getInstance();
       JSONObject jsonObject = JSONObject.parseObject(contract);
       tx = Util.setTransactionPermissionId(jsonObject, tx);

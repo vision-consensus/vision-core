@@ -176,7 +176,7 @@ public class BandWidthRuntimeWithCheckTest {
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
       energy = triggerOwner.getEnergyUsage() - energy;
       balance = balance - triggerOwner.getBalance();
-      Assert.assertEquals(624668, trace.getReceipt().getEnergyUsageTotal());
+      Assert.assertEquals(624668, trace.getReceipt().getEntropyUsageTotal());
       Assert.assertEquals(50000, energy);
       Assert.assertEquals(57466800, balance);
       Assert.assertEquals(624668 * Constant.VDT_PER_ENERGY,
@@ -217,7 +217,7 @@ public class BandWidthRuntimeWithCheckTest {
       ReceiptCapsule receipt = trace.getReceipt();
       Assert.assertNull(trace.getRuntimeError());
       Assert.assertEquals(bandWidth, receipt.getNetUsage());
-      Assert.assertEquals(6118, receipt.getEnergyUsageTotal());
+      Assert.assertEquals(6118, receipt.getEntropyUsageTotal());
       Assert.assertEquals(6118, receipt.getEnergyUsage());
       Assert.assertEquals(0, receipt.getEnergyFee());
       Assert.assertEquals(totalBalance,
@@ -284,7 +284,7 @@ public class BandWidthRuntimeWithCheckTest {
     energy = owner.getEnergyUsage() - energy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
-    Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
+    Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(50000, energy);
     Assert.assertEquals(3852900, balance);
     Assert

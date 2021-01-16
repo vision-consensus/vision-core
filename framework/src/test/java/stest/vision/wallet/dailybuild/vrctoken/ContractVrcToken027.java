@@ -166,7 +166,7 @@ public class ContractVrcToken027 {
         blockingStubFull);
     info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeAssetIssueDevAddress = PublicMethed
@@ -221,7 +221,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -275,7 +275,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -317,7 +317,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterAssetIssueDevAddress1 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -372,7 +372,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
+    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterAssetIssueDevAddress1 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -414,7 +414,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter2 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance2 = infoafter2.getBalance();
-    Long afterEnergyUsed2 = resourceInfoafter2.getEnergyUsed();
+    Long afterEnergyUsed2 = resourceInfoafter2.getEntropyUsed();
     Long afterAssetIssueDevAddress2 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -467,7 +467,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter2 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance2 = infoafter2.getBalance();
-    Long afterEnergyUsed2 = resourceInfoafter2.getEnergyUsed();
+    Long afterEnergyUsed2 = resourceInfoafter2.getEntropyUsed();
     Long afterAssetIssueDevAddress2 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -511,7 +511,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter3 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance3 = infoafter3.getBalance();
-    Long afterEnergyUsed3 = resourceInfoafter3.getEnergyUsed();
+    Long afterEnergyUsed3 = resourceInfoafter3.getEntropyUsed();
     Long afterAssetIssueDevAddress3 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -564,7 +564,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter3 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance3 = infoafter3.getBalance();
-    Long afterEnergyUsed3 = resourceInfoafter3.getEnergyUsed();
+    Long afterEnergyUsed3 = resourceInfoafter3.getEntropyUsed();
     Long afterAssetIssueDevAddress3 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -608,7 +608,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter4 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance4 = infoafter4.getBalance();
-    Long afterEnergyUsed4 = resourceInfoafter4.getEnergyUsed();
+    Long afterEnergyUsed4 = resourceInfoafter4.getEntropyUsed();
     Long afterAssetIssueDevAddress4 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -661,7 +661,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter4 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance4 = infoafter4.getBalance();
-    Long afterEnergyUsed4 = resourceInfoafter4.getEnergyUsed();
+    Long afterEnergyUsed4 = resourceInfoafter4.getEntropyUsed();
     final Long afterAssetIssueDevAddress4 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -705,7 +705,7 @@ public class ContractVrcToken027 {
     AccountResourceMessage resourceInfoafter5 = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance5 = infoafter5.getBalance();
-    Long afterEnergyUsed5 = resourceInfoafter5.getEnergyUsed();
+    Long afterEnergyUsed5 = resourceInfoafter5.getEntropyUsed();
     Long afterAssetIssueDevAddress5 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);

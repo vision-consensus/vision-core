@@ -66,8 +66,8 @@ public class ContractScenario004 {
         3, 1, contract004Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract004Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
     logger.info("before energy usage is " + Long.toString(energyUsage));
@@ -96,8 +96,8 @@ public class ContractScenario004 {
         3, 1, contract004Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract004Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
     logger.info("before energy usage is " + Long.toString(energyUsage));

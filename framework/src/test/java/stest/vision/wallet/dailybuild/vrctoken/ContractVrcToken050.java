@@ -128,7 +128,7 @@ public class ContractVrcToken050 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     transferTokenContractAddress = infoById.get().getContractAddress().toByteArray();
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     // devAddress transfer token to userAddress
     PublicMethed
@@ -143,7 +143,7 @@ public class ContractVrcToken050 {
         blockingStubFull);
     info = PublicMethed.queryAccount(user001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
+    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeAssetIssueCount = PublicMethed
@@ -181,7 +181,7 @@ public class ContractVrcToken050 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(user001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
+    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueCount = PublicMethed
         .getAssetIssueValue(user001Address, assetAccountId,
             blockingStubFull);
@@ -203,7 +203,7 @@ public class ContractVrcToken050 {
     logger.info("afterAssetIssueDev:" + afterAssetIssueDev);
 
     infoById = PublicMethed.getTransactionInfoById(triggerTxid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(infoById.get().getResultValue() == 1);
     Assert.assertEquals(beforeAssetIssueCount, afterAssetIssueCount);

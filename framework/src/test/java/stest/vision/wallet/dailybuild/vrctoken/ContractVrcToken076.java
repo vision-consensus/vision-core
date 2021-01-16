@@ -86,7 +86,7 @@ public class ContractVrcToken076 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
 
@@ -101,7 +101,7 @@ public class ContractVrcToken076 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     logger.info("infoById:" + infoById);
     Long returnnumber = ByteArray.toLong(ByteArray.fromHexString(ByteArray.toHexString(
@@ -115,7 +115,7 @@ public class ContractVrcToken076 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     logger.info("-------------------------");
 

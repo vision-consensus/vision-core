@@ -68,8 +68,8 @@ public class ContractScenario005 {
         3, 1, contract005Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract005Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEnergyLimit();
-    Long energyUsage = accountResource.getEnergyUsed();
+    Long energyLimit = accountResource.getEntropyLimit();
+    Long energyUsage = accountResource.getEntropyUsed();
 
     logger.info("before energy limit is " + Long.toString(energyLimit));
     logger.info("before energy usage is " + Long.toString(energyUsage));
@@ -88,11 +88,11 @@ public class ContractScenario005 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEnergyUsageTotal());
+    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(1, infoById.get().getResultValue());
     accountResource = PublicMethed.getAccountResource(contract005Address, blockingStubFull);
-    energyLimit = accountResource.getEnergyLimit();
-    energyUsage = accountResource.getEnergyUsed();
+    energyLimit = accountResource.getEntropyLimit();
+    energyUsage = accountResource.getEntropyUsed();
     Assert.assertTrue(energyLimit > 0);
     Assert.assertTrue(energyUsage > 0);
     logger.info("after energy limit is " + Long.toString(energyLimit));

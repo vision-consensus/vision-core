@@ -120,7 +120,7 @@ public class RepositoryImpl implements Repository {
     long now = getHeadSlot();
 
     long energyUsage = accountCapsule.getEnergyUsage();
-    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEnergy();
+    long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
     long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
     long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
