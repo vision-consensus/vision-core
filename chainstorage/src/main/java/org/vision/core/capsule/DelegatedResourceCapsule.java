@@ -56,9 +56,9 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
         .build();
   }
 
-  public void addFrozenBalanceForEntropy(long energy, long expireTime) {
+  public void addFrozenBalanceForEntropy(long entropy, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForEntropy(this.delegatedResource.getFrozenBalanceForEntropy() + energy)
+        .setFrozenBalanceForEntropy(this.delegatedResource.getFrozenBalanceForEntropy() + entropy)
         .setExpireTimeForEntropy(expireTime)
         .build();
   }
@@ -100,7 +100,7 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
     }
   }
 
-  public void setExpireTimeForEnergy(long ExpireTime) {
+  public void setExpireTimeForEntropy(long ExpireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
         .setExpireTimeForEntropy(ExpireTime)
         .build();

@@ -53,7 +53,7 @@ public class ForkController {
 
   private boolean passOld(int version) {
     if (version == ForkBlockVersionConsts.ENTROPY_LIMIT) {
-      return checkForEnergyLimit();
+      return checkForEntropyLimit();
     }
 
     byte[] stats = manager.getDynamicPropertiesStore().statsByVersion(version);
@@ -89,9 +89,9 @@ public class ForkController {
 
 
   // when block.version = 5,
-  // it make block use new energy to handle transaction when block number >= 4727890L.
+  // it make block use new entropy to handle transaction when block number >= 4727890L.
   // version !=5, skip this.
-  private boolean checkForEnergyLimit() {
+  private boolean checkForEntropyLimit() {
     long blockNum = manager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
     return blockNum >= CommonParameter.getInstance().getBlockNumForEntropyLimit();
   }

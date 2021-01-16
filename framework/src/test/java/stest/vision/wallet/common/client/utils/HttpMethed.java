@@ -624,7 +624,7 @@ public class HttpMethed {
    */
   public static HttpResponse deployContract(String httpNode, String name, String abi,
       String bytecode, Long bandwidthLimit, Long feeLimit, Integer consumeUserResourcePercent,
-      Long originEnergyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
+      Long originEntropyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
       String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/deploycontract";
@@ -636,7 +636,7 @@ public class HttpMethed {
       userBaseObj2.addProperty("bandwidth_limit", bandwidthLimit);
       userBaseObj2.addProperty("fee_limit", feeLimit);
       userBaseObj2.addProperty("consume_user_resource_percent", consumeUserResourcePercent);
-      userBaseObj2.addProperty("origin_energy_limit", originEnergyLimit);
+      userBaseObj2.addProperty("origin_entropy_limit", originEntropyLimit);
       userBaseObj2.addProperty("call_value", callValue);
       userBaseObj2.addProperty("token_id", tokenId);
       userBaseObj2.addProperty("tokenValue", tokenValue);
@@ -660,7 +660,7 @@ public class HttpMethed {
    */
   public static String deployContractGetTxid(String httpNode, String name, String abi,
       String bytecode, Long bandwidthLimit, Long feeLimit, Integer consumeUserResourcePercent,
-      Long originEnergyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
+      Long originEntropyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
       String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/deploycontract";
@@ -672,7 +672,7 @@ public class HttpMethed {
       userBaseObj2.addProperty("bandwidth_limit", bandwidthLimit);
       userBaseObj2.addProperty("fee_limit", feeLimit);
       userBaseObj2.addProperty("consume_user_resource_percent", consumeUserResourcePercent);
-      userBaseObj2.addProperty("origin_energy_limit", originEnergyLimit);
+      userBaseObj2.addProperty("origin_entropy_limit", originEntropyLimit);
       userBaseObj2.addProperty("call_value", callValue);
       userBaseObj2.addProperty("token_id", tokenId);
       userBaseObj2.addProperty("call_token_value", tokenValue);
@@ -699,7 +699,7 @@ public class HttpMethed {
    */
   public static HttpResponse deployContractGetTxidWithTooBigLong(String httpNode, String name,
       String abi, String bytecode, Long bandwidthLimit, Long feeLimit,
-      Integer consumeUserResourcePercent, Long originEnergyLimit, Long callValue, Integer tokenId,
+      Integer consumeUserResourcePercent, Long originEntropyLimit, Long callValue, Integer tokenId,
       Long tokenValue, byte[] ownerAddress, String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/deploycontract";
@@ -713,7 +713,7 @@ public class HttpMethed {
       jsonObject.put("bandwidth_limit", bandwidthLimit);
       jsonObject.put("fee_limit", feeLimit);
       jsonObject.put("consume_user_resource_percent", consumeUserResourcePercent);
-      jsonObject.put("origin_energy_limit", originEnergyLimit);
+      jsonObject.put("origin_entropy_limit", originEntropyLimit);
       jsonObject.put("call_value", callValue);
       jsonObject.put("token_id", tokenId);
       jsonObject.put("owner_address", ByteArray.toHexString(ownerAddress));
@@ -2824,13 +2824,13 @@ public class HttpMethed {
    * constructor.
    */
   public static HttpResponse updateEntropyLimit(String httpNode, byte[] ownerAddress,
-                                                String contractAddress, Integer originEnergyLimit, String fromKey) {
+                                                String contractAddress, Integer originEntropyLimit, String fromKey) {
     try {
-      final String requestUrl = "http://" + httpNode + "/wallet/updateenergylimit";
+      final String requestUrl = "http://" + httpNode + "/wallet/updateentropylimit";
       JsonObject userBaseObj2 = new JsonObject();
       userBaseObj2.addProperty("owner_address", ByteArray.toHexString(ownerAddress));
       userBaseObj2.addProperty("contract_address", contractAddress);
-      userBaseObj2.addProperty("origin_energy_limit", originEnergyLimit);
+      userBaseObj2.addProperty("origin_entropy_limit", originEntropyLimit);
       logger.info(userBaseObj2.toString());
       response = createConnect(requestUrl, userBaseObj2);
       transactionString = EntityUtils.toString(response.getEntity());

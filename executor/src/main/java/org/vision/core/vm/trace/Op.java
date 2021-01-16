@@ -25,7 +25,7 @@ public class Op {
   private OpCode code;
   private int deep;
   private int pc;
-  private BigInteger energy;
+  private BigInteger entropy;
   private OpActions actions;
 
   public OpCode getCode() {
@@ -52,12 +52,12 @@ public class Op {
     this.pc = pc;
   }
 
-  public BigInteger getEnergy() {
-    return energy;
+  public BigInteger getEntropy() {
+    return entropy;
   }
 
-  public void setEnergy(BigInteger energy) {
-    this.energy = energy;
+  public void setEntropy(BigInteger entropy) {
+    this.entropy = entropy;
   }
 
   public OpActions getActions() {

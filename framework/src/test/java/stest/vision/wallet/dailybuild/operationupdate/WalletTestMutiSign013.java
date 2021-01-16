@@ -155,17 +155,17 @@ public class WalletTestMutiSign013 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
-    long energyFee = infoById.get().getReceipt().getEntropyFee();
+    long entropyFee = infoById.get().getReceipt().getEntropyFee();
     long netFee = infoById.get().getReceipt().getNetFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
-    logger.info("energyFee: " + energyFee);
+    logger.info("entropyFee: " + entropyFee);
     logger.info("netFee: " + netFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee);
-    Assert.assertEquals(fee, energyFee + netFee + updateAccountPermissionFee);
+    Assert.assertEquals(fee, entropyFee + netFee + updateAccountPermissionFee);
 
     balanceBefore = balanceAfter;
     byte[] accountName = "11z2122328".getBytes();

@@ -92,11 +92,11 @@ public class TestValidatemultisign003 {
         blockingStubFull);
     Protocol.Account info = PublicMethed.queryAccount(dev001Key, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = accountResource.getEntropyUsed();
+    Long beforeEntropyUsed = accountResource.getEntropyUsed();
     Long beforeNetUsed = accountResource.getNetUsed();
     Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 

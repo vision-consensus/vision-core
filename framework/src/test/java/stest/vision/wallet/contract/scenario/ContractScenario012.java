@@ -81,11 +81,11 @@ public class ContractScenario012 {
         testKey002, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract012Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
 
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
     String filePath = "./src/test/resources/soliditycode/contractScenario012.sol";
     String contractName = "PayTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -99,7 +99,7 @@ public class ContractScenario012 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("infobyid : --- " + infoById);
     Assert.assertTrue(infoById.get().getResultValue() == 0);
-    logger.info("energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
@@ -122,7 +122,7 @@ public class ContractScenario012 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("infobyid : --- " + infoById);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    logger.info("energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() > 0);
     Assert.assertTrue(infoById.get().getFee() == infoById.get().getReceipt().getEntropyFee());
     Assert.assertFalse(infoById.get().getContractAddress().isEmpty());
@@ -149,7 +149,7 @@ public class ContractScenario012 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("infobyid : --- " + infoById);
     logger.info("result is " + infoById.get().getResultValue());
-    logger.info("energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() > 0);
     Assert.assertTrue(infoById.get().getFee() == infoById.get().getReceipt().getEntropyFee());
@@ -178,7 +178,7 @@ public class ContractScenario012 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("infobyid : --- " + infoById);
     logger.info("result is " + infoById.get().getResultValue());
-    logger.info("energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() > 0);
     Assert.assertTrue(infoById.get().getFee() == infoById.get().getReceipt().getEntropyFee());

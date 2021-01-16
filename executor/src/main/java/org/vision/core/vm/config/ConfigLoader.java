@@ -18,7 +18,7 @@ public class ConfigLoader {
       DynamicPropertiesStore ds = storeFactory.getChainBaseManager().getDynamicPropertiesStore();
       VMConfig.setVmTrace(CommonParameter.getInstance().isVmTrace());
       if (ds != null) {
-        VMConfig.initVmHardFork(ReceiptCapsule.checkForEnergyLimit(ds));
+        VMConfig.initVmHardFork(ReceiptCapsule.checkForEntropyLimit(ds));
         VMConfig.initAllowMultiSign(ds.getAllowMultiSign());
         VMConfig.initAllowVvmTransferVrc10(ds.getAllowVvmTransferVrc10());
         VMConfig.initAllowVvmConstantinople(ds.getAllowVvmConstantinople());

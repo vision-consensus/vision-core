@@ -2266,7 +2266,7 @@ public class PublicMethed {
    */
   public static byte[] deployContract(String contractName, String abiString, String code,
       String data, Long feeLimit, long value, long consumeUserResourcePercent,
-      long originEnergyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
+      long originEntropyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
       byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -2290,7 +2290,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -2532,7 +2532,7 @@ public class PublicMethed {
 
   public static String deployContractAndGetTransactionInfoById(String contractName,
       String abiString, String code, String data, Long feeLimit, long value,
-      long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+      long consumeUserResourcePercent, long originEntropyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -2557,7 +2557,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -3065,7 +3065,7 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static String updateEntropyLimitDelayGetTxid(byte[] contractAddress, long originEnergyLimit,
+  public static String updateEntropyLimitDelayGetTxid(byte[] contractAddress, long originEntropyLimit,
                                                       long delaySeconds, String priKey, byte[] ownerAddress,
                                                       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -3082,11 +3082,11 @@ public class PublicMethed {
     UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
-    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEntropyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEntropyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEntropyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {
@@ -3742,7 +3742,7 @@ public class PublicMethed {
 
   public static String deployContractWithConstantParame(String contractName, String abiString,
       String code, String constructorStr, String argsStr, String data, Long feeLimit, long value,
-      long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+      long consumeUserResourcePercent, long originEntropyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -3768,7 +3768,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -4190,7 +4190,7 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static long getFreezeBalanceCount(byte[] accountAddress, String ecKey, Long targetEnergy,
+  public static long getFreezeBalanceCount(byte[] accountAddress, String ecKey, Long targetEntropy,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     //Precision change as the entire network freezes
     AccountResourceMessage resourceInfo = getAccountResource(accountAddress, blockingStubFull);
@@ -4201,24 +4201,24 @@ public class PublicMethed {
 
     long balance = info.getBalance();
     long frozenBalance = info.getAccountResource().getFrozenBalanceForEntropy().getFrozenBalance();
-    long totalEnergyLimit = resourceInfo.getTotalEntropyLimit();
-    long totalEnergyWeight = resourceInfo.getTotalEntropyWeight();
-    long energyUsed = resourceInfo.getEntropyUsed();
-    long energyLimit = resourceInfo.getEntropyLimit();
+    long totalEntropyLimit = resourceInfo.getTotalEntropyLimit();
+    long totalEntropyWeight = resourceInfo.getTotalEntropyWeight();
+    long entropyUsed = resourceInfo.getEntropyUsed();
+    long entropyLimit = resourceInfo.getEntropyLimit();
 
-    if (energyUsed > energyLimit) {
-      targetEnergy = energyUsed - energyLimit + targetEnergy;
+    if (entropyUsed > entropyLimit) {
+      targetEntropy = entropyUsed - entropyLimit + targetEntropy;
     }
 
-    if (totalEnergyWeight == 0) {
+    if (totalEntropyWeight == 0) {
       return 1000_000L;
     }
 
-    // totalEnergyLimit / (totalEnergyWeight + needBalance) = needEnergy / needBalance
-    final BigInteger totalEnergyWeightBi = BigInteger.valueOf(totalEnergyWeight);
-    long needBalance = totalEnergyWeightBi.multiply(BigInteger.valueOf(1_000_000))
-        .multiply(BigInteger.valueOf(targetEnergy))
-        .divide(BigInteger.valueOf(totalEnergyLimit - targetEnergy)).longValue();
+    // totalEntropyLimit / (totalEntropyWeight + needBalance) = needEntropy / needBalance
+    final BigInteger totalEntropyWeightBi = BigInteger.valueOf(totalEntropyWeight);
+    long needBalance = totalEntropyWeightBi.multiply(BigInteger.valueOf(1_000_000))
+        .multiply(BigInteger.valueOf(targetEntropy))
+        .divide(BigInteger.valueOf(totalEntropyLimit - targetEntropy)).longValue();
 
     logger.info("getFreezeBalanceCount, needBalance: " + needBalance);
 
@@ -4302,7 +4302,7 @@ public class PublicMethed {
    */
   public static GrpcAPI.Return deployContractAndGetResponse(String contractName, String abiString,
       String code, String data, Long feeLimit, long value, long consumeUserResourcePercent,
-      long originEnergyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
+      long originEntropyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
       byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -4326,7 +4326,7 @@ public class PublicMethed {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -4499,7 +4499,7 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static boolean updateEntropyLimit(byte[] contractAddress, long originEnergyLimit,
+  public static boolean updateEntropyLimit(byte[] contractAddress, long originEntropyLimit,
                                            String priKey, byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -4515,11 +4515,11 @@ public class PublicMethed {
     UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
-    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEntropyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEntropyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEntropyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {

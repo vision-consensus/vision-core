@@ -102,7 +102,7 @@ public class Create2Test001 {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     factoryContractAddress = infoById.get().getContractAddress().toByteArray();
@@ -136,7 +136,7 @@ public class Create2Test001 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -208,7 +208,7 @@ public class Create2Test001 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -277,13 +277,13 @@ public class Create2Test001 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     Assert.assertEquals(1, infoById.get().getResultValue());
     Assert
         .assertThat(infoById.get().getResMessage().toStringUtf8(),
-            containsString("Not enough energy for 'SWAP1' operation executing"));
+            containsString("Not enough entropy for 'SWAP1' operation executing"));
   }
 
   @Test(enabled = true, description = "Trigger create2 command without meta data hash in bytecode")
@@ -291,22 +291,22 @@ public class Create2Test001 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEntropyLimit();
-    long devEnergyUsageBefore = accountResource.getEntropyUsed();
+    long devEntropyLimitBefore = accountResource.getEntropyLimit();
+    long devEntropyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
-    logger.info("before trigger, devEnergyUsageBefore is " + Long.toString(devEnergyUsageBefore));
+    logger.info("before trigger, devEntropyLimitBefore is " + Long.toString(devEntropyLimitBefore));
+    logger.info("before trigger, devEntropyUsageBefore is " + Long.toString(devEntropyUsageBefore));
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEntropyLimit();
-    long userEnergyUsageBefore = accountResource.getEntropyUsed();
+    long userEntropyLimitBefore = accountResource.getEntropyLimit();
+    long userEntropyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
-    logger.info("before trigger, userEnergyLimitBefore is " + Long.toString(userEnergyLimitBefore));
-    logger.info("before trigger, userEnergyUsageBefore is " + Long.toString(userEnergyUsageBefore));
+    logger.info("before trigger, userEntropyLimitBefore is " + Long.toString(userEntropyLimitBefore));
+    logger.info("before trigger, userEntropyUsageBefore is " + Long.toString(userEntropyUsageBefore));
     logger.info("before trigger, userBalanceBefore is " + Long.toString(userBalanceBefore));
 
     Long callValue = Long.valueOf(0);
@@ -329,29 +329,29 @@ public class Create2Test001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEntropyLimit();
-    long devEnergyUsageAfter = accountResource.getEntropyUsed();
+    long devEntropyLimitAfter = accountResource.getEntropyLimit();
+    long devEntropyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
-    logger.info("after trigger, devEnergyUsageAfter is " + Long.toString(devEnergyUsageAfter));
+    logger.info("after trigger, devEntropyLimitAfter is " + Long.toString(devEntropyLimitAfter));
+    logger.info("after trigger, devEntropyUsageAfter is " + Long.toString(devEntropyUsageAfter));
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEntropyLimit();
-    long userEnergyUsageAfter = accountResource.getEntropyUsed();
+    long userEntropyLimitAfter = accountResource.getEntropyLimit();
+    long userEntropyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
-    logger.info("after trigger, userEnergyLimitAfter is " + Long.toString(userEnergyLimitAfter));
-    logger.info("after trigger, userEnergyUsageAfter is " + Long.toString(userEnergyUsageAfter));
+    logger.info("after trigger, userEntropyLimitAfter is " + Long.toString(userEntropyLimitAfter));
+    logger.info("after trigger, userEntropyUsageAfter is " + Long.toString(userEntropyUsageAfter));
     logger.info("after trigger, userBalanceAfter is " + Long.toString(userBalanceAfter));
 
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -422,7 +422,7 @@ public class Create2Test001 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -471,22 +471,22 @@ public class Create2Test001 {
 
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEntropyLimit();
-    long devEnergyUsageBefore = accountResource.getEntropyUsed();
+    long devEntropyLimitBefore = accountResource.getEntropyLimit();
+    long devEntropyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
-    logger.info("before trigger, devEnergyUsageBefore is " + Long.toString(devEnergyUsageBefore));
+    logger.info("before trigger, devEntropyLimitBefore is " + Long.toString(devEntropyLimitBefore));
+    logger.info("before trigger, devEntropyUsageBefore is " + Long.toString(devEntropyUsageBefore));
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitBefore = accountResource.getEntropyLimit();
-    long userEnergyUsageBefore = accountResource.getEntropyUsed();
+    long userEntropyLimitBefore = accountResource.getEntropyLimit();
+    long userEntropyUsageBefore = accountResource.getEntropyUsed();
     long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
-    logger.info("before trigger, userEnergyLimitBefore is " + Long.toString(userEnergyLimitBefore));
-    logger.info("before trigger, userEnergyUsageBefore is " + Long.toString(userEnergyUsageBefore));
+    logger.info("before trigger, userEntropyLimitBefore is " + Long.toString(userEntropyLimitBefore));
+    logger.info("before trigger, userEntropyUsageBefore is " + Long.toString(userEntropyUsageBefore));
     logger.info("before trigger, userBalanceBefore is " + Long.toString(userBalanceBefore));
 
     Long callValue = Long.valueOf(0);
@@ -498,29 +498,29 @@ public class Create2Test001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEntropyLimit();
-    long devEnergyUsageAfter = accountResource.getEntropyUsed();
+    long devEntropyLimitAfter = accountResource.getEntropyLimit();
+    long devEntropyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
-    logger.info("after trigger, devEnergyUsageAfter is " + Long.toString(devEnergyUsageAfter));
+    logger.info("after trigger, devEntropyLimitAfter is " + Long.toString(devEntropyLimitAfter));
+    logger.info("after trigger, devEntropyUsageAfter is " + Long.toString(devEntropyUsageAfter));
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEntropyLimit();
-    long userEnergyUsageAfter = accountResource.getEntropyUsed();
+    long userEntropyLimitAfter = accountResource.getEntropyLimit();
+    long userEntropyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
-    logger.info("after trigger, userEnergyLimitAfter is " + Long.toString(userEnergyLimitAfter));
-    logger.info("after trigger, userEnergyUsageAfter is " + Long.toString(userEnergyUsageAfter));
+    logger.info("after trigger, userEntropyLimitAfter is " + Long.toString(userEntropyLimitAfter));
+    logger.info("after trigger, userEntropyUsageAfter is " + Long.toString(userEntropyUsageAfter));
     logger.info("after trigger, userBalanceAfter is " + Long.toString(userBalanceAfter));
 
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     logger.info(

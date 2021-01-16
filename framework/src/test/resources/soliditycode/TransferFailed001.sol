@@ -1,4 +1,4 @@
-contract EnergyOfTransferFailedTest {
+contract EntropyOfTransferFailedTest {
     constructor() payable public {
 
     }

@@ -455,20 +455,20 @@ public class ExtCodeHashTest008 {
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
-    long userEnergyLimitAfter = accountResource.getEntropyLimit();
-    long userEnergyUsageAfter = accountResource.getEntropyUsed();
+    long userEntropyLimitAfter = accountResource.getEntropyLimit();
+    long userEntropyUsageAfter = accountResource.getEntropyUsed();
     long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
 
-    logger.info("after trigger, userEnergyLimitAfter is " + Long.toString(userEnergyLimitAfter));
-    logger.info("after trigger, userEnergyUsageAfter is " + Long.toString(userEnergyUsageAfter));
+    logger.info("after trigger, userEntropyLimitAfter is " + Long.toString(userEntropyLimitAfter));
+    logger.info("after trigger, userEntropyUsageAfter is " + Long.toString(userEntropyUsageAfter));
     logger.info("after trigger, userBalanceAfter is " + Long.toString(userBalanceAfter));
 
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {

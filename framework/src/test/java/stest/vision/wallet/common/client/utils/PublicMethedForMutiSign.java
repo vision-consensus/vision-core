@@ -1604,7 +1604,7 @@ public class PublicMethedForMutiSign {
 
   public static byte[] deployContract(String contractName, String abiString, String code,
       String data, Long feeLimit, long value, long consumeUserResourcePercent,
-      long originEnergyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
+      long originEntropyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
       byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -1629,7 +1629,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -1731,7 +1731,7 @@ public class PublicMethedForMutiSign {
 
   public static String deployContractAndGetTransactionInfoById(String contractName,
       String abiString, String code, String data, Long feeLimit, long value,
-      long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+      long consumeUserResourcePercent, long originEntropyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -1756,7 +1756,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -2163,7 +2163,7 @@ public class PublicMethedForMutiSign {
    */
 
   public static boolean updateEntropyLimitWithPermissionId(byte[] contractAddress,
-                                                           long originEnergyLimit, String priKey, byte[] ownerAddress, int permissionId,
+                                                           long originEntropyLimit, String priKey, byte[] ownerAddress, int permissionId,
                                                            WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -2179,11 +2179,11 @@ public class PublicMethedForMutiSign {
     UpdateEntropyLimitContract.Builder builder = UpdateEntropyLimitContract.newBuilder();
     builder.setOwnerAddress(ByteString.copyFrom(owner));
     builder.setContractAddress(ByteString.copyFrom(contractAddress));
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
-    UpdateEntropyLimitContract updateEnergyLimitContract = builder.build();
+    UpdateEntropyLimitContract updateEntropyLimitContract = builder.build();
     TransactionExtention transactionExtention = blockingStubFull
-        .updateEntropyLimit(updateEnergyLimitContract);
+        .updateEntropyLimit(updateEntropyLimitContract);
     if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
       System.out.println("RPC create trx failed!");
       if (transactionExtention != null) {
@@ -2529,7 +2529,7 @@ public class PublicMethedForMutiSign {
 
   public static String deployContractWithConstantParame(String contractName, String abiString,
       String code, String constructorStr, String argsStr, String data, Long feeLimit, long value,
-      long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+      long consumeUserResourcePercent, long originEntropyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -2555,7 +2555,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 
@@ -3770,7 +3770,7 @@ public class PublicMethedForMutiSign {
 
   public static byte[] deployContractWithPermissionId(String contractName, String abiString,
       String code, String data, Long feeLimit, long value, long consumeUserResourcePercent,
-      long originEnergyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
+      long originEntropyLimit, String tokenId, long tokenValue, String libraryAddress, String priKey,
       byte[] ownerAddress, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString, int permissionId) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -3795,7 +3795,7 @@ public class PublicMethedForMutiSign {
     builder.setOriginAddress(ByteString.copyFrom(owner));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(originEnergyLimit);
+    builder.setOriginEntropyLimit(originEntropyLimit);
 
     if (value != 0) {
 

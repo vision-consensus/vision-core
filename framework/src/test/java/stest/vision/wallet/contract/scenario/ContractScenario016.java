@@ -114,7 +114,7 @@ public class ContractScenario016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Trigger entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));
@@ -156,7 +156,7 @@ public class ContractScenario016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Trigger energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Trigger entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Optional<Transaction> byId = PublicMethed.getTransactionById(txid, blockingStubFull);
     logger.info("getRet:" + byId.get().getRet(0));

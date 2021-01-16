@@ -31,9 +31,9 @@ public class MessageCall {
   private final OpCode type;
 
   /**
-   * energy to pay for the call, remaining energy will be refunded to the caller
+   * entropy to pay for the call, remaining entropy will be refunded to the caller
    */
-  private final DataWord energy;
+  private final DataWord entropy;
   /**
    * address of account which code to call
    */
@@ -63,11 +63,11 @@ public class MessageCall {
 
   private boolean isTokenTransferMsg;
 
-  public MessageCall(OpCode type, DataWord energy, DataWord codeAddress,
-      DataWord endowment, DataWord inDataOffs, DataWord inDataSize, DataWord tokenId,
-      boolean isTokenTransferMsg) {
+  public MessageCall(OpCode type, DataWord entropy, DataWord codeAddress,
+                     DataWord endowment, DataWord inDataOffs, DataWord inDataSize, DataWord tokenId,
+                     boolean isTokenTransferMsg) {
     this.type = type;
-    this.energy = energy;
+    this.entropy = entropy;
     this.codeAddress = codeAddress;
     this.endowment = endowment;
     this.inDataOffs = inDataOffs;
@@ -76,10 +76,10 @@ public class MessageCall {
     this.isTokenTransferMsg = isTokenTransferMsg;
   }
 
-  public MessageCall(OpCode type, DataWord energy, DataWord codeAddress,
-      DataWord endowment, DataWord inDataOffs, DataWord inDataSize,
-      DataWord outDataOffs, DataWord outDataSize, DataWord tokenId, boolean isTokenTransferMsg) {
-    this(type, energy, codeAddress, endowment, inDataOffs, inDataSize, tokenId, isTokenTransferMsg);
+  public MessageCall(OpCode type, DataWord entropy, DataWord codeAddress,
+                     DataWord endowment, DataWord inDataOffs, DataWord inDataSize,
+                     DataWord outDataOffs, DataWord outDataSize, DataWord tokenId, boolean isTokenTransferMsg) {
+    this(type, entropy, codeAddress, endowment, inDataOffs, inDataSize, tokenId, isTokenTransferMsg);
     this.outDataOffs = outDataOffs;
     this.outDataSize = outDataSize;
   }
@@ -88,8 +88,8 @@ public class MessageCall {
     return type;
   }
 
-  public DataWord getEnergy() {
-    return energy;
+  public DataWord getEntropy() {
+    return entropy;
   }
 
   public DataWord getCodeAddress() {

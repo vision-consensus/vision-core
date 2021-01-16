@@ -210,24 +210,24 @@ public class TransferFailed004 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
     entropyUsageTotal2 = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + entropyUsageTotal2);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal2);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Account contractafter = PublicMethed.queryAccount(contractAddress2, blockingStubFull1);
@@ -235,7 +235,7 @@ public class TransferFailed004 {
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertEquals(contractBalance, 0);
 
-    Assert.assertTrue(beforeEntropyUsed + energyUsed >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
 
@@ -250,7 +250,7 @@ public class TransferFailed004 {
         .sendcoin(contractExcAddress, 10000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     String filePath = "src/test/resources/soliditycode/TransferFailed001.sol";
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
     String code = retMap.get("byteCode").toString();
     String abi = retMap.get("abI").toString();
@@ -269,11 +269,11 @@ public class TransferFailed004 {
         blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -293,31 +293,31 @@ public class TransferFailed004 {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
     entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + entropyUsageTotal);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertEquals(0, infoById.get().getResultValue());
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
     Assert.assertTrue(entropyUsageTotal < 1000000000L);
@@ -333,7 +333,7 @@ public class TransferFailed004 {
         .sendcoin(contractExcAddress, 10000000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     String filePath = "src/test/resources/soliditycode/TransferFailed001.sol";
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
     String code = retMap.get("byteCode").toString();
     String abi = retMap.get("abI").toString();
@@ -349,11 +349,11 @@ public class TransferFailed004 {
         blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -369,24 +369,24 @@ public class TransferFailed004 {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + energyUsageTotal);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     logger.info("infoById:" + infoById);
@@ -394,10 +394,10 @@ public class TransferFailed004 {
     Assert.assertEquals(contractResult.SUCCESS, infoById.get().getReceipt().getResult());
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
-    Assert.assertNotEquals(10000000, energyUsageTotal);
+    Assert.assertNotEquals(10000000, entropyUsageTotal);
 
   }
 

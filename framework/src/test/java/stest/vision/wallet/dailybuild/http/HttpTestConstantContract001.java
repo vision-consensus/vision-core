@@ -77,7 +77,7 @@ public class HttpTestConstantContract001 {
     Assert.assertEquals(responseContent.getString("contract_address"), contractAddress);
     Assert.assertEquals(responseContent.getString("origin_address"),
         ByteArray.toHexString(assetOwnerAddress));
-    Assert.assertEquals(responseContent.getString("origin_energy_limit"), "11111111111111");
+    Assert.assertEquals(responseContent.getString("origin_entropy_limit"), "11111111111111");
     Assert.assertEquals(responseContent.getString("name"), contractName);
   }
 

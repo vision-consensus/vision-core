@@ -107,11 +107,11 @@ public class ConstantCallStorage001 {
         blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -198,7 +198,7 @@ public class ConstantCallStorage001 {
     logger.info("transactionExtention: " + transactionExtention);
     Assert.assertFalse(transactionExtention.getResult().getResult());
     Assert.assertThat(ByteArray.toStr(transactionExtention.getResult().getMessage().toByteArray()),
-        containsString("Not enough energy"));
+        containsString("Not enough entropy"));
   }
 
 

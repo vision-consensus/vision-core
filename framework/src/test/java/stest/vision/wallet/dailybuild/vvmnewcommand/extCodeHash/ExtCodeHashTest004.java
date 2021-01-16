@@ -215,7 +215,7 @@ public class ExtCodeHashTest004 {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {

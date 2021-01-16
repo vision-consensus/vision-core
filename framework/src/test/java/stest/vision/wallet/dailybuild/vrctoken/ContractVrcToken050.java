@@ -128,7 +128,7 @@ public class ContractVrcToken050 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     transferTokenContractAddress = infoById.get().getContractAddress().toByteArray();
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Deploy entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     // devAddress transfer token to userAddress
     PublicMethed
@@ -203,7 +203,7 @@ public class ContractVrcToken050 {
     logger.info("afterAssetIssueDev:" + afterAssetIssueDev);
 
     infoById = PublicMethed.getTransactionInfoById(triggerTxid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Deploy entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(infoById.get().getResultValue() == 1);
     Assert.assertEquals(beforeAssetIssueCount, afterAssetIssueCount);

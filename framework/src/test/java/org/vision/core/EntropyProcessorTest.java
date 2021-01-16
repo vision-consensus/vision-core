@@ -23,7 +23,7 @@ import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContrac
 @Slf4j
 public class EntropyProcessorTest {
 
-  private static final String dbPath = "EnergyProcessorTest";
+  private static final String dbPath = "EntropyProcessorTest";
   private static final String ASSET_NAME;
   private static final String CONTRACT_PROVIDER_ADDRESS;
   private static final String USER_ADDRESS;
@@ -102,7 +102,7 @@ public class EntropyProcessorTest {
   }
 
   @Test
-  public void testUseContractCreatorEnergy() throws Exception {
+  public void testUseContractCreatorEntropy() throws Exception {
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
@@ -112,14 +112,14 @@ public class EntropyProcessorTest {
 
     EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
-    long energy = 10000;
+    long entropy = 10000;
     long now = 1526647838000L;
 
-    boolean result = processor.useEnergy(ownerCapsule, energy, now);
+    boolean result = processor.useEntropy(ownerCapsule, entropy, now);
     Assert.assertEquals(false, result);
 
     ownerCapsule.setFrozenForEntropy(10_000_000L, 0L);
-    result = processor.useEnergy(ownerCapsule, energy, now);
+    result = processor.useEntropy(ownerCapsule, entropy, now);
     Assert.assertEquals(true, result);
 
     AccountCapsule ownerCapsuleNew = dbManager.getAccountStore()
@@ -133,7 +133,7 @@ public class EntropyProcessorTest {
   }
 
   @Test
-  public void updateAdaptiveTotalEnergyLimit() {
+  public void updateAdaptiveTotalEntropyLimit() {
     EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
 
@@ -152,7 +152,7 @@ public class EntropyProcessorTest {
     Assert.assertEquals(2000L,
         dbManager.getDynamicPropertiesStore().getTotalEntropyAverageUsage());
 
-    // test saveTotalEnergyLimit
+    // test saveTotalEntropyLimit
     long ratio = Parameter.ChainConstant.WINDOW_SIZE_MS / Parameter.AdaptiveResourceLimitConstants.PERIODS_MS;
     dbManager.getDynamicPropertiesStore().saveTotalEntropyLimit(10000L * ratio);
     Assert.assertEquals(1000L,

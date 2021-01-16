@@ -119,7 +119,7 @@ public class TestStorageAndCpu {
       txid = PublicMethed.triggerContract(contractAddress,
           "storage8Char()", "", false,
           0, maxFeeLimit, fromAddress, testKey002, blockingStubFull);
-      //storage 9 EnergyUsageTotal is  211533, 10 is 236674, 5 is 110969,21 is 500000
+      //storage 9 EntropyUsageTotal is  211533, 10 is 236674, 5 is 110969,21 is 500000
       txid = PublicMethed.triggerContract(contractAddress,
           "testUseStorage(uint256)", "21", false,
           0, maxFeeLimit, fromAddress, testKey002, blockingStubFull);
@@ -162,7 +162,7 @@ public class TestStorageAndCpu {
     Integer txsNum = 0;
     Integer topNum = 0;
     Integer totalNum = 0;
-    Long energyTotal = 0L;
+    Long entropyTotal = 0L;
     String findOneTxid = "";
 
     NumberMessage.Builder builder = NumberMessage.newBuilder();
@@ -188,9 +188,9 @@ public class TestStorageAndCpu {
     logger.info("Average Tps is " + (totalNum / costTime));
 
     infoById = PublicMethed.getTransactionInfoById(findOneTxid, blockingStubFull1);
-    Long oneEnergyTotal = infoById.get().getReceipt().getEnergyUsageTotal();
-    logger.info("EnergyTotal is " + oneEnergyTotal);
-    logger.info("Average energy is " + oneEnergyTotal * (totalNum / costTime));
+    Long oneEntropyTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    logger.info("EntropyTotal is " + oneEntropyTotal);
+    logger.info("Average entropy is " + oneEntropyTotal * (totalNum / costTime));
 */
 
     if (channelFull != null) {

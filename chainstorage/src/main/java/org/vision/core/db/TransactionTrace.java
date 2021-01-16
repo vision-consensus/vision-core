@@ -146,11 +146,11 @@ public class TransactionTrace {
   }
 
   //set bill
-  public void setBill(long energyUsage) {
-    if (energyUsage < 0) {
-      energyUsage = 0L;
+  public void setBill(long entropyUsage) {
+    if (entropyUsage < 0) {
+      entropyUsage = 0L;
     }
-    receipt.setEnergyUsageTotal(energyUsage);
+    receipt.setEntropyUsageTotal(entropyUsage);
   }
 
   //set net bill
@@ -207,7 +207,7 @@ public class TransactionTrace {
     byte[] originAccount;
     byte[] callerAccount;
     long percent = 0;
-    long originEnergyLimit = 0;
+    long originEntropyLimit = 0;
     switch (trxType) {
       case TRX_CONTRACT_CREATION_TYPE:
         callerAccount = TransactionCapsule.getOwner(trx.getInstance().getRawData().getContract(0));
@@ -224,7 +224,7 @@ public class TransactionTrace {
         percent = Math
             .max(Constant.ONE_HUNDRED - contractCapsule.getConsumeUserResourcePercent(), 0);
         percent = Math.min(percent, Constant.ONE_HUNDRED);
-        originEnergyLimit = contractCapsule.getOriginEntropyLimit();
+        originEntropyLimit = contractCapsule.getOriginEntropyLimit();
         break;
       default:
         return;
@@ -233,11 +233,11 @@ public class TransactionTrace {
     // originAccount Percent = 30%
     AccountCapsule origin = accountStore.get(originAccount);
     AccountCapsule caller = accountStore.get(callerAccount);
-    receipt.payEnergyBill(
+    receipt.payEntropyBill(
         dynamicPropertiesStore, accountStore, forkController,
         origin,
         caller,
-        percent, originEnergyLimit,
+        percent, originEntropyLimit,
             entropyProcessor,
         EntropyProcessor.getHeadSlot(dynamicPropertiesStore));
   }

@@ -74,8 +74,8 @@ public class ProgramResult {
     return revert;
   }
 
-  public void refundEnergy(long energy) {
-    entropyUsed -= energy;
+  public void refundEntropy(long entropy) {
+    entropyUsed -= entropy;
   }
 
   public byte[] getContractAddress() {
@@ -208,8 +208,8 @@ public class ProgramResult {
     return callCreateList;
   }
 
-  public void addCallCreate(byte[] data, byte[] destination, byte[] energyLimit, byte[] value) {
-    getCallCreateList().add(new CallCreate(data, destination, energyLimit, value));
+  public void addCallCreate(byte[] data, byte[] destination, byte[] entropyLimit, byte[] value) {
+    getCallCreateList().add(new CallCreate(data, destination, entropyLimit, value));
   }
 
   public List<InternalTransaction> getInternalTransactions() {
@@ -243,8 +243,8 @@ public class ProgramResult {
     }
   }
 
-  public void addFutureRefund(long energyValue) {
-    futureRefund += energyValue;
+  public void addFutureRefund(long entropyValue) {
+    futureRefund += entropyValue;
   }
 
   public long getFutureRefund() {

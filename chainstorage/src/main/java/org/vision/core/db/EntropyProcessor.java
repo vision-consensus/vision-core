@@ -38,10 +38,10 @@ public class EntropyProcessor extends ResourceProcessor {
   private void updateUsage(AccountCapsule accountCapsule, long now) {
     AccountResource accountResource = accountCapsule.getAccountResource();
 
-    long oldEnergyUsage = accountResource.getEntropyUsage();
+    long oldEntropyUsage = accountResource.getEntropyUsage();
     long latestConsumeTime = accountResource.getLatestConsumeTimeForEntropy();
 
-    accountCapsule.setEntropyUsage(increase(oldEnergyUsage, 0, latestConsumeTime, now));
+    accountCapsule.setEntropyUsage(increase(oldEntropyUsage, 0, latestConsumeTime, now));
   }
 
   public void updateTotalEntropyAverageUsage() {
@@ -61,20 +61,20 @@ public class EntropyProcessor extends ResourceProcessor {
   public void updateAdaptiveTotalEntropyLimit() {
     long totalEntropyAverageUsage = dynamicPropertiesStore
         .getTotalEntropyAverageUsage();
-    long targetTotalEnergyLimit = dynamicPropertiesStore.getTotalEntropyTargetLimit();
-    long totalEnergyCurrentLimit = dynamicPropertiesStore
+    long targetTotalEntropyLimit = dynamicPropertiesStore.getTotalEntropyTargetLimit();
+    long totalEntropyCurrentLimit = dynamicPropertiesStore
         .getTotalEntropyCurrentLimit();
     long totalEntropyLimit = dynamicPropertiesStore.getTotalEntropyLimit();
 
     long result;
-    if (totalEntropyAverageUsage > targetTotalEnergyLimit) {
-      result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.CONTRACT_RATE_NUMERATOR
+    if (totalEntropyAverageUsage > targetTotalEntropyLimit) {
+      result = totalEntropyCurrentLimit * AdaptiveResourceLimitConstants.CONTRACT_RATE_NUMERATOR
           / AdaptiveResourceLimitConstants.CONTRACT_RATE_DENOMINATOR;
-      // logger.info(totalEntropyAverageUsage + ">" + targetTotalEnergyLimit + "\n" + result);
+      // logger.info(totalEntropyAverageUsage + ">" + targetTotalEntropyLimit + "\n" + result);
     } else {
-      result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.EXPAND_RATE_NUMERATOR
+      result = totalEntropyCurrentLimit * AdaptiveResourceLimitConstants.EXPAND_RATE_NUMERATOR
           / AdaptiveResourceLimitConstants.EXPAND_RATE_DENOMINATOR;
-      // logger.info(totalEntropyAverageUsage + "<" + targetTotalEnergyLimit + "\n" + result);
+      // logger.info(totalEntropyAverageUsage + "<" + targetTotalEntropyLimit + "\n" + result);
     }
 
     result = Math.min(
@@ -84,7 +84,7 @@ public class EntropyProcessor extends ResourceProcessor {
 
     dynamicPropertiesStore.saveTotalEntropyCurrentLimit(result);
     logger.debug(
-        "adjust totalEnergyCurrentLimit, old[" + totalEnergyCurrentLimit + "], new[" + result
+        "adjust totalEntropyCurrentLimit, old[" + totalEntropyCurrentLimit + "], new[" + result
             + "]");
   }
 
@@ -95,30 +95,30 @@ public class EntropyProcessor extends ResourceProcessor {
     throw new RuntimeException("Not support");
   }
 
-  public boolean useEnergy(AccountCapsule accountCapsule, long energy, long now) {
+  public boolean useEntropy(AccountCapsule accountCapsule, long entropy, long now) {
 
-    long energyUsage = accountCapsule.getEntropyUsage();
+    long entropyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
-    long energyLimit = calculateGlobalEntropyLimit(accountCapsule);
+    long entropyLimit = calculateGlobalEntropyLimit(accountCapsule);
 
-    long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
+    long newEntropyUsage = increase(entropyUsage, 0, latestConsumeTime, now);
 
-    if (energy > (energyLimit - newEnergyUsage)) {
+    if (entropy > (entropyLimit - newEntropyUsage)) {
       return false;
     }
 
     latestConsumeTime = now;
     long latestOperationTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
-    newEnergyUsage = increase(newEnergyUsage, energy, latestConsumeTime, now);
-    accountCapsule.setEntropyUsage(newEnergyUsage);
+    newEntropyUsage = increase(newEntropyUsage, entropy, latestConsumeTime, now);
+    accountCapsule.setEntropyUsage(newEntropyUsage);
     accountCapsule.setLatestOperationTime(latestOperationTime);
     accountCapsule.setLatestConsumeTimeForEntropy(latestConsumeTime);
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
 
     if (dynamicPropertiesStore.getAllowAdaptiveEntropy() == 1) {
-      long blockEnergyUsage = dynamicPropertiesStore.getBlockEntropyUsage() + energy;
-      dynamicPropertiesStore.saveBlockEntropyUsage(blockEnergyUsage);
+      long blockEntropyUsage = dynamicPropertiesStore.getBlockEntropyUsage() + entropy;
+      dynamicPropertiesStore.saveBlockEntropyUsage(blockEntropyUsage);
     }
 
     return true;
@@ -130,24 +130,24 @@ public class EntropyProcessor extends ResourceProcessor {
       return 0;
     }
 
-    long energyWeight = frozeBalance / VS_PRECISION;
-    long totalEnergyLimit = dynamicPropertiesStore.getTotalEntropyCurrentLimit();
-    long totalEnergyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
+    long entropyWeight = frozeBalance / VS_PRECISION;
+    long totalEntropyLimit = dynamicPropertiesStore.getTotalEntropyCurrentLimit();
+    long totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
 
-    assert totalEnergyWeight > 0;
+    assert totalEntropyWeight > 0;
 
-    return (long) (energyWeight * ((double) totalEnergyLimit / totalEnergyWeight));
+    return (long) (entropyWeight * ((double) totalEntropyLimit / totalEntropyWeight));
   }
 
-  public long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule) {
+  public long getAccountLeftEntropyFromFreeze(AccountCapsule accountCapsule) {
     long now = getHeadSlot();
-    long energyUsage = accountCapsule.getEntropyUsage();
+    long entropyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
-    long energyLimit = calculateGlobalEntropyLimit(accountCapsule);
+    long entropyLimit = calculateGlobalEntropyLimit(accountCapsule);
 
-    long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
+    long newEntropyUsage = increase(entropyUsage, 0, latestConsumeTime, now);
 
-    return max(energyLimit - newEnergyUsage, 0); // us
+    return max(entropyLimit - newEntropyUsage, 0); // us
   }
 
   private long getHeadSlot() {

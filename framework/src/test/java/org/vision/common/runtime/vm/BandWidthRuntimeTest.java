@@ -88,7 +88,7 @@ public class BandWidthRuntimeTest {
   public static void init() {
     dbManager = context.getBean(Manager.class);
     chainBaseManager = context.getBean(ChainBaseManager.class);
-    //init energy
+    //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526547838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
@@ -141,7 +141,7 @@ public class BandWidthRuntimeTest {
       byte[] contractAddress = createContract();
       AccountCapsule triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      long energy = triggerOwner.getEntropyUsage();
+      long entropy = triggerOwner.getEntropyUsage();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
           "setCoin(uint256)", "3", false,
           0, Commons.decodeFromBase58Check(TriggerOwnerAddress));
@@ -161,10 +161,10 @@ public class BandWidthRuntimeTest {
 
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      energy = triggerOwner.getEntropyUsage();
+      entropy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
       Assert.assertEquals(45706, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(45706, energy);
+      Assert.assertEquals(45706, entropy);
       Assert.assertEquals(totalBalance, balance);
     } catch (VisionException e) {
       Assert.assertNotNull(e);
@@ -213,7 +213,7 @@ public class BandWidthRuntimeTest {
           TooBigTransactionResultException, ContractExeException, VMIllegalException {
     AccountCapsule owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    long energy = owner.getEntropyUsage();
+    long entropy = owner.getEntropyUsage();
     long balance = owner.getBalance();
 
     String contractName = "foriContract";
@@ -248,15 +248,15 @@ public class BandWidthRuntimeTest {
     trace.finalization();
     owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    energy = owner.getEntropyUsage() - energy;
+    entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
     Assert.assertEquals(52299, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(50000, energy);
+    Assert.assertEquals(50000, entropy);
     Assert.assertEquals(229900, balance);
     Assert
         .assertEquals(52299 * Constant.VDT_PER_ENTROPY,
-            balance + energy * Constant.VDT_PER_ENTROPY);
+            balance + entropy * Constant.VDT_PER_ENTROPY);
     Assert.assertNull(trace.getRuntimeError());
     return trace.getRuntimeResult().getContractAddress();
   }

@@ -81,11 +81,11 @@ public class batchValidateSignContract007 {
         .getAccountResource(contractExcAddress, blockingStubFull);
     Protocol.Account info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -117,14 +117,14 @@ public class batchValidateSignContract007 {
     Assert.assertEquals(0, infoById.get().getResultValue());
     Long fee1 = infoById.get().getFee();
     Long netUsed1 = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed1 = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed1 = infoById.get().getReceipt().getEntropyUsage();
     Long netFee1 = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal1 = infoById.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal1 = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee1:" + fee1);
     logger.info("netUsed1:" + netUsed1);
-    logger.info("energyUsed1:" + energyUsed1);
+    logger.info("entropyUsed1:" + entropyUsed1);
     logger.info("netFee1:" + netFee1);
-    logger.info("energyUsageTotal1:" + energyUsageTotal1);
+    logger.info("entropyUsageTotal1:" + entropyUsageTotal1);
     contractAddress = infoById.get().getContractAddress().toByteArray();
 
     TransactionExtention transactionExtention = PublicMethed
@@ -153,28 +153,28 @@ public class batchValidateSignContract007 {
     }
     Long fee2 = infoById2.get().getFee();
     Long netUsed2 = infoById2.get().getReceipt().getNetUsage();
-    Long energyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
+    Long entropyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
     Long netFee2 = infoById2.get().getReceipt().getNetFee();
-    long energyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee2:" + fee2);
     logger.info("netUsed2:" + netUsed2);
-    logger.info("energyUsed2:" + energyUsed2);
+    logger.info("entropyUsed2:" + entropyUsed2);
     logger.info("netFee2:" + netFee2);
-    logger.info("energyUsageTotal2:" + energyUsageTotal2);
+    logger.info("entropyUsageTotal2:" + entropyUsageTotal2);
 
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee1 + fee2 == beforeBalance);
-    Assert.assertTrue(beforeEnergyUsed + energyUsed1 + energyUsed2 >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed1 + entropyUsed2 >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed1 + netUsed2 >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed1 + netUsed2 >= afterNetUsed);
   }

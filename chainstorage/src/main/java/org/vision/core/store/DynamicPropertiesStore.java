@@ -357,7 +357,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getEntropyFee();
     } catch (IllegalArgumentException e) {
-      this.saveEntropyFee(100L);// 100 vdt per energy
+      this.saveEntropyFee(100L);// 100 vdt per entropy
     }
 
     try {

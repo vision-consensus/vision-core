@@ -64,9 +64,9 @@ public final class Serializers {
   public static class DataWordSerializer extends JsonSerializer<DataWord> {
 
     @Override
-    public void serialize(DataWord energy, JsonGenerator jgen, SerializerProvider provider)
+    public void serialize(DataWord entropy, JsonGenerator jgen, SerializerProvider provider)
         throws IOException, JsonProcessingException {
-      jgen.writeString(energy.value().toString());
+      jgen.writeString(entropy.value().toString());
     }
   }
 

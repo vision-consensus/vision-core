@@ -221,7 +221,7 @@ public class WalletTestAccount013 {
     logger.info("After 013 net limit is " + account013Resource.getNetLimit());
 
     receiverResource = PublicMethed.getAccountResource(receiverDelegateAddress, blockingStubFull);
-    logger.info("After receiver energy limit is " + receiverResource.getEntropyLimit());
+    logger.info("After receiver entropy limit is " + receiverResource.getEntropyLimit());
     logger.info("After receiver net limit is " + receiverResource.getNetLimit());
   }
 
@@ -256,7 +256,7 @@ public class WalletTestAccount013 {
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
             ByteString.copyFrom(account4DelegatedResourceAddress), testKeyForAccount013,
             blockingStubFull));
-    //Account4 DelegateResource of energy to Account5
+    //Account4 DelegateResource of entropy to Account5
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account4DelegatedResourceAddress, freezeAmount, freezeDuration, 1,
             ByteString.copyFrom(account5DelegatedResourceAddress), account4DelegatedResourceKey,

@@ -58,7 +58,7 @@ public class TestNetFomo3D {
     blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
     logger.info(Long.toString(PublicMethed.queryAccount(testNetAccountKey, blockingStubFull)
         .getBalance()));
-    //Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(testNetAccountAddress,10000000L,
+    //Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(testNetAccountAddress,10000000L,
     //3,1,testNetAccountKey,blockingStubFull));
     /*    Assert.assertTrue(PublicMethed.buyStorage(50000000L,testNetAccountAddress,
     testNetAccountKey,

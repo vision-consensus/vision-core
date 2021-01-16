@@ -90,12 +90,12 @@ public class ProgramTrace {
     return this;
   }
 
-  public Op addOp(byte code, int pc, int deep, DataWord energy, OpActions actions) {
+  public Op addOp(byte code, int pc, int deep, DataWord entropy, OpActions actions) {
     Op op = new Op();
     op.setActions(actions);
     op.setCode(OpCode.code(code));
     op.setDeep(deep);
-    op.setEnergy(energy.value());
+    op.setEntropy(entropy.value());
     op.setPc(pc);
 
     ops.add(op);

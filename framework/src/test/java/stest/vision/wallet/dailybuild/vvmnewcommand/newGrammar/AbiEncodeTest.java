@@ -132,16 +132,16 @@ public class AbiEncodeTest {
         .getAccountResource(dev001Address,
             blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
   }

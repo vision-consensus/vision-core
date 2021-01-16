@@ -76,7 +76,7 @@ public class TransferFailed007 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     String filePath = "src/test/resources/soliditycode/TransferFailed007.sol";
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
     String code = retMap.get("byteCode").toString();
     String abi = retMap.get("abI").toString();
@@ -99,11 +99,11 @@ public class TransferFailed007 {
         blockingStubFull);
     info = PublicMethed.queryAccount(accountExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -131,14 +131,14 @@ public class TransferFailed007 {
 
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + energyUsageTotal);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     long afterBalance = 0L;
     afterBalance = PublicMethed.queryAccount(contractAddress, blockingStubFull)
@@ -162,14 +162,14 @@ public class TransferFailed007 {
 
     fee = infoById.get().getFee();
     netUsed = infoById.get().getReceipt().getNetUsage();
-    energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     netFee = infoById.get().getReceipt().getNetFee();
-    energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + energyUsageTotal);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     afterBalance = PublicMethed.queryAccount(contractAddress, blockingStubFull).getBalance();
     logger.info(

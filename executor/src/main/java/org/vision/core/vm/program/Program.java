@@ -78,7 +78,7 @@ public class Program {
   private static final String VALIDATE_FOR_SMART_CONTRACT_FAILURE =
       "validateForSmartContract failure:%s";
   private static final String INVALID_TOKEN_ID_MSG = "not valid token id";
-  private static final String REFUND_ENERGY_FROM_MESSAGE_CALL = "refund energy from message call";
+  private static final String REFUND_ENTROPY_FROM_MESSAGE_CALL = "refund entropy from message call";
   private static final String CALL_PRE_COMPILED = "call pre-compiled";
   private final VMConfig config;
   private long nonce;
@@ -295,7 +295,7 @@ public class Program {
    * @param transferAddress the address send VS to.
    * @param value the VS value transferred in the internal transaction
    */
-  private InternalTransaction addInternalTx(DataWord energyLimit, byte[] senderAddress,
+  private InternalTransaction addInternalTx(DataWord entropyLimit, byte[] senderAddress,
       byte[] transferAddress,
       long value, byte[] data, String note, long nonce, Map<String, Long> tokenInfo) {
 
@@ -759,9 +759,9 @@ public class Program {
       newBalance = deposit.addBalance(newAddress, endowment);
     }
 
-    // actual energy subtract
-    DataWord energyLimit = this.getCreateEnergy(getEntropyLimitLeft());
-    spendEnergy(energyLimit.longValue(), "internal call");
+    // actual entropy subtract
+    DataWord entropyLimit = this.getCreateEntropy(getEntropyLimitLeft());
+    spendEntropy(entropyLimit.longValue(), "internal call");
 
     increaseNonce();
     // [5] COOK THE INVOKE AND EXECUTE
@@ -772,7 +772,7 @@ public class Program {
         this, new DataWord(newAddress), getContractAddress(), value, new DataWord(0),
         new DataWord(0),
         newBalance, null, deposit, false, byTestingSuite(), vmStartInUs,
-        getVmShouldEndInUs(), energyLimit.longValueSafe());
+        getVmShouldEndInUs(), entropyLimit.longValueSafe());
     if (isConstantCall()) {
       programInvoke.setConstantCall();
     }
@@ -797,17 +797,17 @@ public class Program {
     // 4. CREATE THE CONTRACT OUT OF RETURN
     byte[] code = createResult.getHReturn();
 
-    long saveCodeEnergy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
+    long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
 
     long afterSpend =
-        programInvoke.getEntropyLimit() - createResult.getEntropyUsed() - saveCodeEnergy;
+        programInvoke.getEntropyLimit() - createResult.getEntropyUsed() - saveCodeEntropy;
     if (!createResult.isRevert()) {
       if (afterSpend < 0) {
         createResult.setException(
-            Exception.notEnoughSpendEntropy("No energy to save just created contract code",
-                saveCodeEnergy, programInvoke.getEntropyLimit() - createResult.getEntropyUsed()));
+            Exception.notEnoughSpendEntropy("No entropy to save just created contract code",
+                saveCodeEntropy, programInvoke.getEntropyLimit() - createResult.getEntropyUsed()));
       } else {
-        createResult.spendEntropy(saveCodeEnergy);
+        createResult.spendEntropy(saveCodeEntropy);
         deposit.saveCode(newAddress, code);
       }
     }
@@ -838,20 +838,20 @@ public class Program {
       stackPush(new DataWord(newAddress));
     }
 
-    // 5. REFUND THE REMAIN Energy
-    refundEnergyAfterVM(energyLimit, createResult);
+    // 5. REFUND THE REMAIN Entropy
+    refundEntropyAfterVM(entropyLimit, createResult);
   }
 
-  public void refundEnergyAfterVM(DataWord energyLimit, ProgramResult result) {
+  public void refundEntropyAfterVM(DataWord entropyLimit, ProgramResult result) {
 
-    long refundEnergy = energyLimit.longValueSafe() - result.getEntropyUsed();
-    if (refundEnergy > 0) {
-      refundEnergy(refundEnergy, "remain energy from the internal call");
+    long refundEntropy = entropyLimit.longValueSafe() - result.getEntropyUsed();
+    if (refundEntropy > 0) {
+      refundEntropy(refundEntropy, "remain entropy from the internal call");
       if (logger.isDebugEnabled()) {
-        logger.debug("The remaining energy is refunded, account: [{}], energy: [{}] ",
+        logger.debug("The remaining entropy is refunded, account: [{}], entropy: [{}] ",
             Hex.toHexString(
                 TransactionTrace.convertToVisionAddress(getContractAddress().getLast20Bytes())),
-            refundEnergy);
+            refundEntropy);
       }
     }
   }
@@ -869,7 +869,7 @@ public class Program {
 
     if (getCallDeep() == MAX_DEPTH) {
       stackPushZero();
-      refundEnergy(msg.getEnergy().longValue(), " call deep limit reach");
+      refundEntropy(msg.getEntropy().longValue(), " call deep limit reach");
       return;
     }
 
@@ -897,7 +897,7 @@ public class Program {
       endowment = msg.getEndowment().value().longValueExact();
     } catch (ArithmeticException e) {
       if (VMConfig.allowVvmConstantinople()) {
-        refundEnergy(msg.getEnergy().longValue(), "endowment out of long range");
+        refundEntropy(msg.getEntropy().longValue(), "endowment out of long range");
         throw new TransferException("endowment out of long range");
       } else {
         throw e;
@@ -914,7 +914,7 @@ public class Program {
       long senderBalance = deposit.getBalance(senderAddress);
       if (senderBalance < endowment) {
         stackPushZero();
-        refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+        refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
         return;
       }
     } else {
@@ -923,7 +923,7 @@ public class Program {
       long senderBalance = deposit.getTokenBalance(senderAddress, tokenId);
       if (senderBalance < endowment) {
         stackPushZero();
-        refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+        refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
         return;
       }
     }
@@ -939,7 +939,7 @@ public class Program {
     if (byTestingSuite()) {
       // This keeps track of the calls created for a test
       getResult().addCallCreate(data, contextAddress,
-          msg.getEnergy().getNoLeadZeroesData(),
+          msg.getEntropy().getNoLeadZeroesData(),
           msg.getEndowment().getNoLeadZeroesData());
     } else if (!ArrayUtils.isEmpty(senderAddress) && !ArrayUtils.isEmpty(contextAddress)
         && senderAddress != contextAddress && endowment > 0) {
@@ -950,7 +950,7 @@ public class Program {
               .validateForSmartContract(deposit, senderAddress, contextAddress, endowment);
         } catch (ContractValidateException e) {
           if (VMConfig.allowVvmConstantinople()) {
-            refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+            refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
             throw new TransferException("transfer vs failed: %s", e.getMessage());
           }
           throw new BytecodeExecutionException(VALIDATE_FOR_SMART_CONTRACT_FAILURE, e.getMessage());
@@ -963,7 +963,7 @@ public class Program {
               tokenId, endowment);
         } catch (ContractValidateException e) {
           if (VMConfig.allowVvmConstantinople()) {
-            refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+            refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
             throw new TransferException("transfer vrc10 failed: %s", e.getMessage());
           }
           throw new BytecodeExecutionException(VALIDATE_FOR_SMART_CONTRACT_FAILURE, e.getMessage());
@@ -993,7 +993,7 @@ public class Program {
           !isTokenTransfer ? new DataWord(0) : callValue,
           !isTokenTransfer ? new DataWord(0) : msg.getTokenId(),
           contextBalance, data, deposit, msg.getType().callIsStatic() || isStaticCall(),
-          byTestingSuite(), vmStartInUs, getVmShouldEndInUs(), msg.getEnergy().longValueSafe());
+          byTestingSuite(), vmStartInUs, getVmShouldEndInUs(), msg.getEntropy().longValueSafe());
       if (isConstantCall()) {
         programInvoke.setConstantCall();
       }
@@ -1049,18 +1049,18 @@ public class Program {
 
     // 5. REFUND THE REMAIN ENERGY
     if (callResult != null) {
-      BigInteger refundEnergy = msg.getEnergy().value()
+      BigInteger refundEntropy = msg.getEntropy().value()
           .subtract(BIUtil.toBI(callResult.getEntropyUsed()));
-      if (BIUtil.isPositive(refundEnergy)) {
-        refundEnergy(refundEnergy.longValueExact(), "remaining energy from the internal call");
+      if (BIUtil.isPositive(refundEntropy)) {
+        refundEntropy(refundEntropy.longValueExact(), "remaining entropy from the internal call");
         if (logger.isDebugEnabled()) {
-          logger.debug("The remaining energy refunded, account: [{}], energy: [{}] ",
+          logger.debug("The remaining entropy refunded, account: [{}], entropy: [{}] ",
               Hex.toHexString(senderAddress),
-              refundEnergy.toString());
+              refundEntropy.toString());
         }
       }
     } else {
-      refundEnergy(msg.getEnergy().longValue(), "remaining energy from the internal call");
+      refundEntropy(msg.getEntropy().longValue(), "remaining entropy from the internal call");
     }
   }
 
@@ -1072,14 +1072,14 @@ public class Program {
     nonce = 0;
   }
 
-  public void spendEnergy(long energyValue, String opName) {
-    if (getEntropyLimitLeftLong() < energyValue) {
+  public void spendEntropy(long entropyValue, String opName) {
+    if (getEntropyLimitLeftLong() < entropyValue) {
       throw new OutOfEntropyException(
-          "Not enough energy for '%s' operation executing: curInvokeEnergyLimit[%d],"
-              + " curOpEnergy[%d], usedEnergy[%d]",
-          opName, invoke.getEntropyLimit(), energyValue, getResult().getEntropyUsed());
+          "Not enough entropy for '%s' operation executing: curInvokeEntropyLimit[%d],"
+              + " curOpEntropy[%d], usedEntropy[%d]",
+          opName, invoke.getEntropyLimit(), entropyValue, getResult().getEntropyUsed());
     }
-    getResult().spendEntropy(energyValue);
+    getResult().spendEntropy(entropyValue);
   }
 
   public void checkCPUTimeLimit(String opName) {
@@ -1104,18 +1104,18 @@ public class Program {
   }
 
   public void spendAllEntropy() {
-    spendEnergy(getEntropyLimitLeft().longValue(), "Spending all remaining");
+    spendEntropy(getEntropyLimitLeft().longValue(), "Spending all remaining");
   }
 
-  public void refundEnergy(long energyValue, String cause) {
+  public void refundEntropy(long entropyValue, String cause) {
     logger
-        .debug("[{}] Refund for cause: [{}], energy: [{}]", invoke.hashCode(), cause, energyValue);
-    getResult().refundEnergy(energyValue);
+        .debug("[{}] Refund for cause: [{}], entropy: [{}]", invoke.hashCode(), cause, entropyValue);
+    getResult().refundEntropy(entropyValue);
   }
 
-  public void futureRefundEnergy(long energyValue) {
-    logger.debug("Future refund added: [{}]", energyValue);
-    getResult().addFutureRefund(energyValue);
+  public void futureRefundEntropy(long entropyValue) {
+    logger.debug("Future refund added: [{}]", entropyValue);
+    getResult().addFutureRefund(entropyValue);
   }
 
   public void resetFutureRefund() {
@@ -1402,7 +1402,7 @@ public class Program {
       logger.trace(" -- OPS --     {}", opsString);
       logger.trace(" -- STACK --   {}", stackData);
       logger.trace(" -- MEMORY --  {}", memoryData);
-      logger.trace("\n  Spent Drop: [{}]/[{}]\n  Left Energy:  [{}]\n",
+      logger.trace("\n  Spent Drop: [{}]/[{}]\n  Left Entropy:  [{}]\n",
           getResult().getEntropyUsed(),
           invoke.getEntropyLimit(),
           getEntropyLimitLeft().longValue());
@@ -1431,7 +1431,7 @@ public class Program {
       if (!Arrays.equals(txData, ops)) {
         globalOutput.append("\n  msg.data: ").append(Hex.toHexString(txData));
       }
-      globalOutput.append("\n\n  Spent Energy: ").append(getResult().getEntropyUsed());
+      globalOutput.append("\n\n  Spent Entropy: ").append(getResult().getEntropyUsed());
 
       if (listener != null) {
         listener.output(globalOutput.toString());
@@ -1486,7 +1486,7 @@ public class Program {
 
     if (getCallDeep() == MAX_DEPTH) {
       stackPushZero();
-      this.refundEnergy(msg.getEnergy().longValue(), " call deep limit reach");
+      this.refundEntropy(msg.getEntropy().longValue(), " call deep limit reach");
       return;
     }
 
@@ -1514,7 +1514,7 @@ public class Program {
     }
     if (senderBalance < endowment) {
       stackPushZero();
-      refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+      refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
       return;
     }
     byte[] data = this.memoryChunk(msg.getInDataOffs().intValue(),
@@ -1542,11 +1542,11 @@ public class Program {
       }
     }
 
-    long requiredEnergy = contract.getEntropyForData(data);
-    if (requiredEnergy > msg.getEnergy().longValue()) {
+    long requiredEntropy = contract.getEntropyForData(data);
+    if (requiredEntropy > msg.getEntropy().longValue()) {
       // Not need to throw an exception, method caller needn't know that
-      // regard as consumed the energy
-      this.refundEnergy(0, CALL_PRE_COMPILED); //matches cpp logic
+      // regard as consumed the entropy
+      this.refundEntropy(0, CALL_PRE_COMPILED); //matches cpp logic
       this.stackPushZero();
     } else {
       // Delegate or not. if is delegated, we will use msg sender, otherwise use contract address
@@ -1560,13 +1560,13 @@ public class Program {
       Pair<Boolean, byte[]> out = contract.execute(data);
 
       if (out.getLeft()) { // success
-        this.refundEnergy(msg.getEnergy().longValue() - requiredEnergy, CALL_PRE_COMPILED);
+        this.refundEntropy(msg.getEntropy().longValue() - requiredEntropy, CALL_PRE_COMPILED);
         this.stackPushOne();
         returnDataBuffer = out.getRight();
         deposit.commit();
       } else {
-        // spend all energy on failure, push zero and revert state changes
-        this.refundEnergy(0, CALL_PRE_COMPILED);
+        // spend all entropy on failure, push zero and revert state changes
+        this.refundEntropy(0, CALL_PRE_COMPILED);
         this.stackPushZero();
         if (Objects.nonNull(this.result.getException())) {
           throw result.getException();
@@ -1605,7 +1605,7 @@ public class Program {
         tokenId = msg.getTokenId().sValue().longValueExact();
       } catch (ArithmeticException e) {
         if (VMConfig.allowVvmConstantinople()) {
-          refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+          refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
           throw new TransferException(VALIDATE_FOR_SMART_CONTRACT_FAILURE, INVALID_TOKEN_ID_MSG);
         }
         throw e;
@@ -1616,7 +1616,7 @@ public class Program {
           || (tokenId == 0 && msg.isTokenTransferMsg())) {
         // tokenId == 0 is a default value for token id DataWord.
         if (VMConfig.allowVvmConstantinople()) {
-          refundEnergy(msg.getEnergy().longValue(), REFUND_ENERGY_FROM_MESSAGE_CALL);
+          refundEntropy(msg.getEntropy().longValue(), REFUND_ENTROPY_FROM_MESSAGE_CALL);
           throw new TransferException(VALIDATE_FOR_SMART_CONTRACT_FAILURE, INVALID_TOKEN_ID_MSG);
         }
         throw new BytecodeExecutionException(
@@ -1654,12 +1654,12 @@ public class Program {
     }
   }
 
-  public DataWord getCallEnergy(OpCode op, DataWord requestedEnergy, DataWord availableEnergy) {
-    return requestedEnergy.compareTo(availableEnergy) > 0 ? availableEnergy : requestedEnergy;
+  public DataWord getCallEntropy(OpCode op, DataWord requestedEntropy, DataWord availableEntropy) {
+    return requestedEntropy.compareTo(availableEntropy) > 0 ? availableEntropy : requestedEntropy;
   }
 
-  public DataWord getCreateEnergy(DataWord availableEnergy) {
-    return availableEnergy;
+  public DataWord getCreateEntropy(DataWord availableEntropy) {
+    return availableEntropy;
   }
 
   /**
@@ -1979,23 +1979,23 @@ public class Program {
     private Exception() {
     }
 
-    public static OutOfEntropyException notEnoughOpEnergy(OpCode op, long opEnergy,
-                                                          long programEnergy) {
+    public static OutOfEntropyException notEnoughOpEntropy(OpCode op, long opEntropy,
+                                                           long programEntropy) {
       return new OutOfEntropyException(
-          "Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d];", op,
-          opEnergy,
-          programEnergy);
+          "Not enough entropy for '%s' operation executing: opEntropy[%d], programEntropy[%d];", op,
+          opEntropy,
+          programEntropy);
     }
 
-    public static OutOfEntropyException notEnoughOpEnergy(OpCode op, DataWord opEnergy,
-                                                          DataWord programEnergy) {
-      return notEnoughOpEnergy(op, opEnergy.longValue(), programEnergy.longValue());
+    public static OutOfEntropyException notEnoughOpEntropy(OpCode op, DataWord opEntropy,
+                                                           DataWord programEntropy) {
+      return notEnoughOpEntropy(op, opEntropy.longValue(), programEntropy.longValue());
     }
 
     public static OutOfEntropyException notEnoughSpendEntropy(String hint, long needEntropy,
                                                               long leftEntropy) {
       return new OutOfEntropyException(
-          "Not enough energy for '%s' executing: needEntropy[%d], leftEntropy[%d];", hint, needEntropy,
+          "Not enough entropy for '%s' executing: needEntropy[%d], leftEntropy[%d];", hint, needEntropy,
           leftEntropy);
     }
 
@@ -2025,10 +2025,10 @@ public class Program {
       return new PrecompiledContractException(e.getMessage());
     }
 
-    public static OutOfEntropyException energyOverflow(BigInteger actualEnergy,
-                                                       BigInteger energyLimit) {
-      return new OutOfEntropyException("Energy value overflow: actualEnergy[%d], energyLimit[%d];",
-          actualEnergy.longValueExact(), energyLimit.longValueExact());
+    public static OutOfEntropyException entropyOverflow(BigInteger actualEntropy,
+                                                        BigInteger entropyLimit) {
+      return new OutOfEntropyException("Entropy value overflow: actualEntropy[%d], entropyLimit[%d];",
+          actualEntropy.longValueExact(), entropyLimit.longValueExact());
     }
 
     public static IllegalOperationException invalidOpCode(byte... opCode) {

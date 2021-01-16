@@ -101,7 +101,7 @@ public class BandWidthRuntimeOutOfTimeTest {
   @BeforeClass
   public static void init() {
     dbManager = context.getBean(Manager.class);
-    //init energy
+    //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647828000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
@@ -142,7 +142,7 @@ public class BandWidthRuntimeOutOfTimeTest {
       byte[] contractAddress = createContract();
       AccountCapsule triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      long energy = triggerOwner.getEntropyUsage();
+      long entropy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
           "fibonacciNotify(uint256)", "500000", false,
@@ -162,15 +162,15 @@ public class BandWidthRuntimeOutOfTimeTest {
 
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      energy = triggerOwner.getEntropyUsage() - energy;
+      entropy = triggerOwner.getEntropyUsage() - entropy;
       balance = balance - triggerOwner.getBalance();
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
       Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(50000, energy);
+      Assert.assertEquals(50000, entropy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENTROPY,
-          balance + energy * Constant.VDT_PER_ENTROPY);
+          balance + entropy * Constant.VDT_PER_ENTROPY);
     } catch (VisionException e) {
       Assert.assertNotNull(e);
     }
@@ -181,7 +181,7 @@ public class BandWidthRuntimeOutOfTimeTest {
           TooBigTransactionResultException, ContractExeException, VMIllegalException {
     AccountCapsule owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    long energy = owner.getEntropyUsage();
+    long entropy = owner.getEntropyUsage();
     long balance = owner.getBalance();
 
     String contractName = "Fibonacci3";
@@ -225,12 +225,12 @@ public class BandWidthRuntimeOutOfTimeTest {
     trace.finalization();
     owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    energy = owner.getEntropyUsage() - energy;
+    entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(50000, energy);
+    Assert.assertEquals(50000, entropy);
     Assert.assertEquals(3852900, balance);
-    Assert.assertEquals(88529 * 100, balance + energy * 100);
+    Assert.assertEquals(88529 * 100, balance + entropy * 100);
     if (trace.getRuntimeError() != null) {
       return trace.getRuntimeResult().getContractAddress();
     }

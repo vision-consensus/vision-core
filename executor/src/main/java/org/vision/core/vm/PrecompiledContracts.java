@@ -322,7 +322,7 @@ public class PrecompiledContracts {
     @Override
     public long getEntropyForData(byte[] data) {
 
-      // energy charge for the execution:
+      // entropy charge for the execution:
       // minimum 1 and additional 1 for each 32 bytes word (round  up)
       if (data == null) {
         return 15;
@@ -342,7 +342,7 @@ public class PrecompiledContracts {
     @Override
     public long getEntropyForData(byte[] data) {
 
-      // energy charge for the execution:
+      // entropy charge for the execution:
       // minimum 50 and additional 50 for each 32 bytes word (round  up)
       if (data == null) {
         return 60;
@@ -369,7 +369,7 @@ public class PrecompiledContracts {
     public long getEntropyForData(byte[] data) {
 
       // TODO #POC9 Replace magic numbers with constants
-      // energy charge for the execution:
+      // entropy charge for the execution:
       // minimum 50 and additional 50 for each 32 bytes word (round  up)
       if (data == null) {
         return 600;
@@ -475,11 +475,11 @@ public class PrecompiledContracts {
       long adjExpLen = getAdjustedExponentLength(expHighBytes, expLen);
 
       // use big numbers to stay safe in case of overflow
-      BigInteger energy = BigInteger.valueOf(multComplexity)
+      BigInteger entropy = BigInteger.valueOf(multComplexity)
           .multiply(BigInteger.valueOf(Math.max(adjExpLen, 1)))
           .divide(GQUAD_DIVISOR);
 
-      return isLessThan(energy, BigInteger.valueOf(Long.MAX_VALUE)) ? energy.longValueExact()
+      return isLessThan(entropy, BigInteger.valueOf(Long.MAX_VALUE)) ? entropy.longValueExact()
           : Long.MAX_VALUE;
     }
 
@@ -575,12 +575,12 @@ public class PrecompiledContracts {
     @Override
     public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
-        return getEnergyForDataIstanbul(data);
+        return getEntropyForDataIstanbul(data);
       }
       return 500;
     }
 
-    private long getEnergyForDataIstanbul(byte[] data) {
+    private long getEntropyForDataIstanbul(byte[] data) {
       return 150;
     }
 
@@ -629,12 +629,12 @@ public class PrecompiledContracts {
     @Override
     public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
-        return getEnergyForDataIstanbul(data);
+        return getEntropyForDataIstanbul(data);
       }
       return 40000;
     }
 
-    private long getEnergyForDataIstanbul(byte[] data) {
+    private long getEntropyForDataIstanbul(byte[] data) {
       return 6000;
     }
 
@@ -682,7 +682,7 @@ public class PrecompiledContracts {
     @Override
     public long getEntropyForData(byte[] data) {
       if (VMConfig.allowVvmIstanbul()) {
-        return getEnergyForDataIstanbul(data);
+        return getEntropyForDataIstanbul(data);
       }
       if (data == null) {
         return 100000;
@@ -690,7 +690,7 @@ public class PrecompiledContracts {
       return 80000L * (data.length / PAIR_SIZE) + 100000;
     }
 
-    private long getEnergyForDataIstanbul(byte[] data) {
+    private long getEntropyForDataIstanbul(byte[] data) {
       if (data == null) {
         return 45000;
       }

@@ -119,14 +119,14 @@ public class ContractTestSendCoin001 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed
         .getAccountResource(dev001Address, blockingStubFull);
-    long energyLimit = accountResource.getEntropyLimit();
-    long energyUsage = accountResource.getEntropyUsed();
+    long entropyLimit = accountResource.getEntropyLimit();
+    long entropyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountBefore = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-    logger.info("before energyLimit is " + Long.toString(energyLimit));
-    logger.info("before energyUsage is " + Long.toString(energyUsage));
+    logger.info("before entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("before entropyUsage is " + Long.toString(entropyUsage));
     logger.info("before balanceBefore is " + Long.toString(balanceBefore));
     logger.info("before AssetId: " + assetAccountId.toStringUtf8() + ", devAssetCountBefore: "
         + devAssetCountBefore);
@@ -150,21 +150,21 @@ public class ContractTestSendCoin001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountAfter = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-    logger.info("after energyLimit is " + Long.toString(energyLimit));
-    logger.info("after energyUsage is " + Long.toString(energyUsage));
+    logger.info("after entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("after entropyUsage is " + Long.toString(entropyUsage));
     logger.info("after balanceAfter is " + Long.toString(balanceAfter));
     logger.info("after AssetId: " + assetAccountId.toStringUtf8() + ", devAssetCountAfter: "
         + devAssetCountAfter);
 
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(deployContractTxid, blockingStubFull);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Deploy entropytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     if (deployContractTxid == null || infoById.get().getResultValue() != 0) {
       Assert.fail("deploy transaction failed with message: " + infoById.get().getResMessage()
@@ -245,14 +245,14 @@ public class ContractTestSendCoin001 {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed
         .getAccountResource(dev001Address, blockingStubFull);
-    long energyLimit = accountResource.getEntropyLimit();
-    long energyUsage = accountResource.getEntropyUsed();
+    long entropyLimit = accountResource.getEntropyLimit();
+    long entropyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountBefore = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-    logger.info("before energyLimit is " + Long.toString(energyLimit));
-    logger.info("before energyUsage is " + Long.toString(energyUsage));
+    logger.info("before entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("before entropyUsage is " + Long.toString(entropyUsage));
     logger.info("before balanceBefore is " + Long.toString(balanceBefore));
     logger.info("before AssetId: " + assetAccountId.toStringUtf8() + ", devAssetCountBefore: "
         + devAssetCountBefore);
@@ -281,14 +281,14 @@ public class ContractTestSendCoin001 {
     transferTokenContractAddress = infoById.get().getContractAddress().toByteArray();
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
     long balanceAfter = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
     Long devAssetCountAfter = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-    logger.info("after energyLimit is " + Long.toString(energyLimit));
-    logger.info("after energyUsage is " + Long.toString(energyUsage));
+    logger.info("after entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("after entropyUsage is " + Long.toString(entropyUsage));
     logger.info("after balanceAfter is " + Long.toString(balanceAfter));
     logger.info("after AssetId: " + assetAccountId.toStringUtf8() + ", devAssetCountAfter: "
         + devAssetCountAfter);
@@ -418,11 +418,11 @@ public class ContractTestSendCoin001 {
         .getAccountResource(contractExcAddress, blockingStubFull);
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -441,31 +441,31 @@ public class ContractTestSendCoin001 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getNetUsage();
-    Long energyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long netFee = infoById.get().getReceipt().getNetFee();
-    long energyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
-    logger.info("energyUsed:" + energyUsed);
+    logger.info("entropyUsed:" + entropyUsed);
     logger.info("netFee:" + netFee);
-    logger.info("energyUsageTotal:" + energyUsageTotal);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed
         .getAccountResource(contractExcAddress, blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterNetUsed = resourceInfoafter.getNetUsed();
     Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
     byte[] returnAddressBytes = infoById.get().getInternalTransactions(0).getTransferToAddress()
@@ -497,31 +497,31 @@ public class ContractTestSendCoin001 {
     infoById1 = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee1 = infoById1.get().getFee();
     Long netUsed1 = infoById1.get().getReceipt().getNetUsage();
-    Long energyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
+    Long entropyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
     Long netFee1 = infoById1.get().getReceipt().getNetFee();
-    long energyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
+    long entropyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee1:" + fee1);
     logger.info("netUsed1:" + netUsed1);
-    logger.info("energyUsed1:" + energyUsed1);
+    logger.info("entropyUsed1:" + entropyUsed1);
     logger.info("netFee1:" + netFee1);
-    logger.info("energyUsageTotal1:" + energyUsageTotal1);
+    logger.info("entropyUsageTotal1:" + entropyUsageTotal1);
 
     Account infoafter1 = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     AccountResourceMessage resourceInfoafter1 = PublicMethed
         .getAccountResource(contractExcAddress, blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
-    Long afterEnergyUsed1 = resourceInfoafter1.getEntropyUsed();
+    Long afterEntropyUsed1 = resourceInfoafter1.getEntropyUsed();
     Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
     Long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
     logger.info("afterBalance:" + afterBalance1);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed1);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed1);
     logger.info("afterNetUsed:" + afterNetUsed1);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed1);
 
     Assert.assertTrue(infoById1.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance1 + fee1 == afterBalance);
-    Assert.assertTrue(afterEnergyUsed + energyUsed1 >= afterEnergyUsed1);
+    Assert.assertTrue(afterEntropyUsed + entropyUsed1 >= afterEntropyUsed1);
     Long returnnumber = ByteArray.toLong(ByteArray
         .fromHexString(ByteArray.toHexString(infoById1.get().getContractResult(0).toByteArray())));
     Assert.assertTrue(1 == returnnumber);

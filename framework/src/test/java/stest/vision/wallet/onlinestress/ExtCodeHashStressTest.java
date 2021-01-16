@@ -97,11 +97,11 @@ public class ExtCodeHashStressTest {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEntropyLimit();
-    long energyUsage = accountResource.getEntropyUsed();
+    long entropyLimit = accountResource.getEntropyLimit();
+    long entropyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
-    logger.info("before energyLimit is " + Long.toString(energyLimit));
-    logger.info("before energyUsage is " + Long.toString(energyUsage));
+    logger.info("before entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("before entropyUsage is " + Long.toString(entropyUsage));
     logger.info("before balanceBefore is " + Long.toString(balanceBefore));
 
     String filePath = "./src/test/resources/soliditycode/extCodeHashStress.sol";
@@ -127,11 +127,11 @@ public class ExtCodeHashStressTest {
     //before deploy, check account resource
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
-    long energyLimit = accountResource.getEntropyLimit();
-    long energyUsage = accountResource.getEntropyUsed();
+    long entropyLimit = accountResource.getEntropyLimit();
+    long entropyUsage = accountResource.getEntropyUsed();
     long balanceBefore = PublicMethed.queryAccount(dev001Key, blockingStubFull).getBalance();
-    logger.info("before energyLimit is " + Long.toString(energyLimit));
-    logger.info("before energyUsage is " + Long.toString(energyUsage));
+    logger.info("before entropyLimit is " + Long.toString(entropyLimit));
+    logger.info("before entropyUsage is " + Long.toString(entropyUsage));
     logger.info("before balanceBefore is " + Long.toString(balanceBefore));
 
     String filePath = "./src/test/resources/soliditycode/extCodeHashStress.sol";
@@ -166,7 +166,7 @@ public class ExtCodeHashStressTest {
         .getTransactionInfoById(transferTokenTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     if (infoById.get().getResultValue() != 0) {
@@ -206,7 +206,7 @@ public class ExtCodeHashStressTest {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     logger
@@ -244,7 +244,7 @@ public class ExtCodeHashStressTest {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
     logger
         .info(
@@ -275,7 +275,7 @@ public class ExtCodeHashStressTest {
         .getTransactionInfoById(triggerTxid, blockingStubFull);
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
     logger
         .info(

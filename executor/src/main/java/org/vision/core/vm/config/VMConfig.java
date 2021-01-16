@@ -101,7 +101,7 @@ public class VMConfig {
     ALLOW_VVM_ASSET_ISSUE = allow == 1;
   }
 
-  public static boolean getEnergyLimitHardFork() {
+  public static boolean getEntropyLimitHardFork() {
     return ENTROPY_LIMIT_HARD_FORK;
   }
 

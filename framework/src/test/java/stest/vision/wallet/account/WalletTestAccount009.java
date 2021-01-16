@@ -71,7 +71,7 @@ public class WalletTestAccount009 {
   }
 
   @Test(enabled = true)
-  public void testGetEnergy() {
+  public void testGetEntropy() {
     Assert.assertTrue(PublicMethed.sendcoin(account009Address, 10000000,
         fromAddress, testKey002, blockingStubFull));
     Assert.assertTrue(PublicMethed.sendcoin(account009SecondAddress, 10000000,
@@ -101,7 +101,7 @@ public class WalletTestAccount009 {
   }
 
   @Test(enabled = true)
-  public void testGetEnergyInvalid() {
+  public void testGetEntropyInvalid() {
     //The resourceCode can only be 0 or 1
     Assert.assertTrue(PublicMethed.freezeBalanceGetEntropy(account009InvalidAddress,
         1000000L, 3, 0, account009InvalidKey, blockingStubFull));
