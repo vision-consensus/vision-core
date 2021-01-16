@@ -26,11 +26,11 @@ public class Constant {
   public static final long MAXIMUM_TIME_UNTIL_EXPIRATION = 24 * 60 * 60 * 1_000L; //one day
   public static final long TRANSACTION_DEFAULT_EXPIRATION_TIME = 60 * 1_000L; //60 seconds
   // config for smart contract
-  public static final long VDT_PER_ENERGY = 100; // 1 us = 100 VDT = 100 * 10^-6 VS
-  public static final long ENERGY_LIMIT_IN_CONSTANT_TX = 3_000_000L; // ref: 1 us = 1 energy
+  public static final long VDT_PER_ENTROPY = 100; // 1 us = 100 VDT = 100 * 10^-6 VS
+  public static final long ENTROPY_LIMIT_IN_CONSTANT_TX = 3_000_000L; // ref: 1 us = 1 entropy
   public static final long MAX_RESULT_SIZE_IN_TX = 64; // max 8 * 8 items in result
-  public static final long PB_DEFAULT_ENERGY_LIMIT = 0L;
-  public static final long CREATOR_DEFAULT_ENERGY_LIMIT = 1000 * 10_000L;
+  public static final long PB_DEFAULT_ENTROPY_LIMIT = 0L;
+  public static final long CREATOR_DEFAULT_ENTROPY_LIMIT = 1000 * 10_000L;
 
 
   // Numbers
@@ -121,7 +121,7 @@ public class Constant {
 
   public static final String COMMITTEE_ALLOW_MULTI_SIGN = "committee.allowMultiSign";
 
-  public static final String COMMITTEE_ALLOW_ADAPTIVE_ENERGY = "committee.allowAdaptiveEnergy";
+  public static final String COMMITTEE_ALLOW_ADAPTIVE_ENTROPY = "committee.allowAdaptiveEntropy";
 
   public static final String COMMITTEE_ALLOW_DELEGATE_RESOURCE = "committee.allowDelegateResource";
 
@@ -169,7 +169,7 @@ public class Constant {
 
   public static final String NODE_RPC_MIN_EFFECTIVE_CONNECTION = "node.rpc.minEffectiveConnection";
 
-  public static final String ENERGY_LIMIT_BLOCK_NUM = "enery.limit.block.num";
+  public static final String ENTROPY_LIMIT_BLOCK_NUM = "entropy.limit.block.num";
 
   public static final String VM_TRACE = "vm.vmTrace";
 

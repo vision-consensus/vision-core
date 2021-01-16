@@ -76,7 +76,7 @@ public class RuntimeImplTest {
   // // solidity src code
   // pragma solidity ^0.4.2;
   //
-  // contract TestEnergyLimit {
+  // contract TestEntropyLimit {
   //
   //   function testNotConstant(uint256 count) {
   //     uint256 curCount = 0;
@@ -98,7 +98,7 @@ public class RuntimeImplTest {
 
 
   @Test
-  public void getCreatorEnergyLimit2Test() throws ContractValidateException, ContractExeException {
+  public void getCreatorEntropyLimit2Test() throws ContractValidateException, ContractExeException {
 
     long value = 10L;
     long feeLimit = 1_000_000_000L;
@@ -131,26 +131,26 @@ public class RuntimeImplTest {
     repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
     AccountCapsule creatorAccount = repository.getAccount(creatorAddress);
 
-    long expectEnergyLimit1 = 10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit1);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit1);
 
     value = 2_500_000_000L;
-    long expectEnergyLimit2 = 5_000_000L;
+    long expectEntropyLimit2 = 5_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit2);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit2);
 
     value = 10L;
     feeLimit = 1_000_000L;
-    long expectEnergyLimit3 = 10_000L;
+    long expectEntropyLimit3 = 10_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit3);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit3);
 
     long frozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - frozenBalance;
@@ -160,39 +160,39 @@ public class RuntimeImplTest {
     repository.commit();
 
     feeLimit = 1_000_000_000L;
-    long expectEnergyLimit4 = 10_000_000L;
+    long expectEntropyLimit4 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit4);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit4);
 
     feeLimit = 3_000_000_000L;
     value = 10L;
-    long expectEnergyLimit5 = 20_009_999L;
+    long expectEntropyLimit5 = 20_009_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit5);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit5);
 
     feeLimit = 3_000L;
     value = 10L;
-    long expectEnergyLimit6 = 30L;
+    long expectEntropyLimit6 = 30L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
-        expectEnergyLimit6);
+            .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
+        expectEntropyLimit6);
 
   }
 
   @Test
-  public void getCallerAndCreatorEnergyLimit2With0PercentTest()
+  public void getCallerAndCreatorEntropyLimit2With0PercentTest()
       throws ContractExeException, ReceiptCheckErrException, VMIllegalException,
       ContractValidateException {
 
     long value = 0;
     long feeLimit = 1_000_000_000L; // vdt
     long consumeUserResourcePercent = 0L;
-    long creatorEnergyLimit = 5_000L;
+    long creatorEntropyLimit = 5_000L;
     String contractName = "test";
     String ABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],"
         + "\"name\":\"testConstant\",\"outputs\":[],\"payable\":false,\"stateMutability\":\""
@@ -209,10 +209,10 @@ public class RuntimeImplTest {
         + "4c8c17b0029";
     String libraryAddressPair = null;
     VVMTestResult result = VvmTestUtils
-        .deployContractWithCreatorEnergyLimitAndReturnVvmTestResult(contractName, creatorAddress,
+        .deployContractWithCreatorEntropyLimitAndReturnVvmTestResult(contractName, creatorAddress,
             ABI, code, value,
             feeLimit, consumeUserResourcePercent, libraryAddressPair, dbManager, null,
-            creatorEnergyLimit);
+            creatorEntropyLimit);
 
     byte[] contractAddress = result.getContractAddress();
     byte[] triggerData = VvmTestUtils.parseAbi("testNotConstant()", null);
@@ -231,12 +231,12 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit1 = 10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit1);
+        expectEntropyLimit1);
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
@@ -247,29 +247,29 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit2 = 10_005_000L;
+    long expectEntropyLimit2 = 10_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit2);
+        expectEntropyLimit2);
 
     value = 3_500_000_000L;
-    long expectEnergyLimit3 = 5_005_000L;
+    long expectEntropyLimit3 = 5_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit3);
+        expectEntropyLimit3);
 
     value = 10L;
     feeLimit = 5_000_000_000L;
-    long expectEnergyLimit4 = 40_004_999L;
+    long expectEntropyLimit4 = 40_004_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit4);
+        expectEntropyLimit4);
 
     long callerFrozenBalance = 1_000_000_000L;
     callerAccount.setFrozenForEntropy(callerFrozenBalance, 0L);
@@ -279,24 +279,24 @@ public class RuntimeImplTest {
 
     value = 10L;
     feeLimit = 5_000_000_000L;
-    long expectEnergyLimit5 = 30_014_999L;
+    long expectEntropyLimit5 = 30_014_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit5);
+        expectEntropyLimit5);
 
   }
 
   @Test
-  public void getCallerAndCreatorEnergyLimit2With40PercentTest()
+  public void getCallerAndCreatorEntropyLimit2With40PercentTest()
       throws ContractExeException, ReceiptCheckErrException, VMIllegalException,
       ContractValidateException {
 
     long value = 0;
     long feeLimit = 1_000_000_000L; // vdt
     long consumeUserResourcePercent = 40L;
-    long creatorEnergyLimit = 5_000L;
+    long creatorEntropyLimit = 5_000L;
     String contractName = "test";
     String ABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\""
         + "name\":\"testConstant\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"view\""
@@ -313,10 +313,10 @@ public class RuntimeImplTest {
         + "54c8c17b0029";
     String libraryAddressPair = null;
     VVMTestResult result = VvmTestUtils
-        .deployContractWithCreatorEnergyLimitAndReturnVvmTestResult(contractName, creatorAddress,
+        .deployContractWithCreatorEntropyLimitAndReturnVvmTestResult(contractName, creatorAddress,
             ABI, code, value,
             feeLimit, consumeUserResourcePercent, libraryAddressPair, dbManager, null,
-            creatorEnergyLimit);
+            creatorEntropyLimit);
 
     byte[] contractAddress = result.getContractAddress();
     byte[] triggerData = VvmTestUtils.parseAbi("testNotConstant()", null);
@@ -335,12 +335,12 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit1 = 10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit1);
+        expectEntropyLimit1);
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
@@ -351,32 +351,32 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit2 = 10_005_000L;
+    long expectEntropyLimit2 = 10_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit2);
+        expectEntropyLimit2);
 
     value = 3_999_950_000L;
-    long expectEnergyLimit3 = 1_250L;
+    long expectEntropyLimit3 = 1_250L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit3);
+        expectEntropyLimit3);
 
   }
 
   @Test
-  public void getCallerAndCreatorEnergyLimit2With100PercentTest()
+  public void getCallerAndCreatorEntropyLimit2With100PercentTest()
       throws ContractExeException, ReceiptCheckErrException, VMIllegalException,
       ContractValidateException {
 
     long value = 0;
     long feeLimit = 1_000_000_000L; // vdt
     long consumeUserResourcePercent = 100L;
-    long creatorEnergyLimit = 5_000L;
+    long creatorEntropyLimit = 5_000L;
     String contractName = "test";
     String ABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],"
         + "\"name\":\"testConstant\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"view\""
@@ -393,10 +393,10 @@ public class RuntimeImplTest {
         + "4c8c17b0029";
     String libraryAddressPair = null;
     VVMTestResult result = VvmTestUtils
-        .deployContractWithCreatorEnergyLimitAndReturnVvmTestResult(contractName, creatorAddress,
+        .deployContractWithCreatorEntropyLimitAndReturnVvmTestResult(contractName, creatorAddress,
             ABI, code, value,
             feeLimit, consumeUserResourcePercent, libraryAddressPair, dbManager, null,
-            creatorEnergyLimit);
+            creatorEntropyLimit);
 
     byte[] contractAddress = result.getContractAddress();
     byte[] triggerData = VvmTestUtils.parseAbi("testNotConstant()", null);
@@ -415,12 +415,12 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit1 = 10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit1);
+        expectEntropyLimit1);
 
     long creatorFrozenBalance = 1_000_000_000L;
     long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
@@ -431,20 +431,20 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEnergyLimit2 = 10_000_000L;
+    long expectEntropyLimit2 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit2);
+        expectEntropyLimit2);
 
     value = 3_999_950_000L;
-    long expectEnergyLimit3 = 500L;
+    long expectEntropyLimit3 = 500L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
-            .getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
+            .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
                 value),
-        expectEnergyLimit3);
+        expectEntropyLimit3);
 
   }
 

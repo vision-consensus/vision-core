@@ -110,9 +110,9 @@ public interface Repository {
 
   long getTokenBalance(byte[] address, byte[] tokenId);
 
-  long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule);
+  long getAccountLeftEntropyFromFreeze(AccountCapsule accountCapsule);
 
-  long calculateGlobalEnergyLimit(AccountCapsule accountCapsule);
+  long calculateGlobalEntropyLimit(AccountCapsule accountCapsule);
 
   byte[] getBlackHoleAddress();
 

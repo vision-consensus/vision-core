@@ -48,7 +48,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
                                            InternalTransaction.ExecutorType executorType, Transaction tx, long tokenValue, long tokenId,
                                            Block block,
                                            Repository deposit, long vmStartInUs,
-                                           long vmShouldEndInUs, long energyLimit) throws ContractValidateException {
+                                           long vmShouldEndInUs, long entropyLimit) throws ContractValidateException {
     byte[] contractAddress;
     byte[] ownerAddress;
     long balance;
@@ -83,7 +83,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 
       return new ProgramInvokeImpl(contractAddress, ownerAddress, ownerAddress, balance, callValue,
           tokenValue, tokenId, data, lastHash, coinbase, timestamp, number, deposit, vmStartInUs,
-          vmShouldEndInUs, energyLimit);
+          vmShouldEndInUs, entropyLimit);
 
     } else if (trxType == InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE) {
       TriggerSmartContract contract = ContractCapsule
@@ -135,7 +135,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
       return new ProgramInvokeImpl(address, origin, caller, balance, callValue, tokenValue, tokenId,
           data,
           lastHash, coinbase, timestamp, number, deposit, vmStartInUs, vmShouldEndInUs,
-          energyLimit);
+              entropyLimit);
     }
     throw new ContractValidateException("Unknown contract type");
   }
@@ -148,7 +148,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
       DataWord callerAddress,
       DataWord inValue, DataWord tokenValue, DataWord tokenId, long balanceInt, byte[] dataIn,
       Repository deposit, boolean isStaticCall, boolean byTestingSuite, long vmStartInUs,
-      long vmShouldEndInUs, long energyLimit) {
+      long vmShouldEndInUs, long entropyLimit) {
 
     DataWord address = toAddress;
     DataWord origin = program.getOriginAddress();
@@ -166,7 +166,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
     return new ProgramInvokeImpl(address, origin, caller, balance, callValue, tokenValue, tokenId,
         data, lastHash, coinbase, timestamp, number, difficulty,
         deposit, program.getCallDeep() + 1, isStaticCall, byTestingSuite, vmStartInUs,
-        vmShouldEndInUs, energyLimit);
+        vmShouldEndInUs, entropyLimit);
   }
 
 

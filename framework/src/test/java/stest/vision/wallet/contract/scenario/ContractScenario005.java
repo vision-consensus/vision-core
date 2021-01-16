@@ -68,11 +68,11 @@ public class ContractScenario005 {
         3, 1, contract005Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract005Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
 
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
 
     String filePath = "./src/test/resources/soliditycode/contractScenario005.sol";
     String contractName = "Crowdsale";
@@ -88,15 +88,15 @@ public class ContractScenario005 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     logger.info("Txid is " + txid);
-    logger.info("Deploy energytotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Deploy entropy total is " + infoById.get().getReceipt().getEntropyUsageTotal());
     Assert.assertEquals(1, infoById.get().getResultValue());
     accountResource = PublicMethed.getAccountResource(contract005Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
-    Assert.assertTrue(energyLimit > 0);
-    Assert.assertTrue(energyUsage > 0);
-    logger.info("after energy limit is " + Long.toString(energyLimit));
-    logger.info("after energy usage is " + Long.toString(energyUsage));
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
+    Assert.assertTrue(entropyLimit > 0);
+    Assert.assertTrue(entropyUsage > 0);
+    logger.info("after entropy limit is " + Long.toString(entropyLimit));
+    logger.info("after entropy usage is " + Long.toString(entropyUsage));
   }
 
   /**

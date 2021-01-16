@@ -80,12 +80,12 @@ public class ContractScenario001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract001Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
     Long balanceBefore = PublicMethed.queryAccount(contract001Key, blockingStubFull).getBalance();
 
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
     logger.info("before balance is " + Long.toString(balanceBefore));
 
     String filePath = "./src/test/resources/soliditycode/contractScenario001.sol";
@@ -102,16 +102,16 @@ public class ContractScenario001 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     accountResource = PublicMethed.getAccountResource(contract001Address, blockingStubFull1);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
     Long balanceAfter = PublicMethed.queryAccount(contract001Key, blockingStubFull1).getBalance();
 
-    logger.info("after energy limit is " + Long.toString(energyLimit));
-    logger.info("after energy usage is " + Long.toString(energyUsage));
+    logger.info("after entropy limit is " + Long.toString(entropyLimit));
+    logger.info("after entropy usage is " + Long.toString(entropyUsage));
     logger.info("after balance is " + Long.toString(balanceAfter));
 
-    Assert.assertTrue(energyLimit > 0);
-    Assert.assertTrue(energyUsage > 0);
+    Assert.assertTrue(entropyLimit > 0);
+    Assert.assertTrue(entropyUsage > 0);
     Assert.assertEquals(balanceBefore, balanceAfter);
   }
 

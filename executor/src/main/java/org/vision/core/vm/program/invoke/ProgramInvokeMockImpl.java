@@ -46,7 +46,7 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
   private byte[] ownerAddress = Hex.decode("cd2a3d9f938e13cd947ec05abc7fe734df8dd826");
   private boolean isConstantCall;
   private boolean isStaticCall;
-  private long energyLimit = 50;
+  private long entropyLimit = 50;
 
   public ProgramInvokeMockImpl(byte[] msgDataRaw) {
     this();
@@ -105,9 +105,9 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
   }
 
   /*           ENERGYPRICE op       */
-  public DataWord getMinEnergyPrice() {
-    byte[] minEnergyPrice = Hex.decode("09184e72a000");
-    return new DataWord(minEnergyPrice);
+  public DataWord getMinEntropyPrice() {
+    byte[] minEntropyPrice = Hex.decode("09184e72a000");
+    return new DataWord(minEntropyPrice);
   }
 
   /*          CALLVALUE op    */
@@ -236,12 +236,12 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
   }
 
   @Override
-  public long getEnergyLimit() {
-    return energyLimit;
+  public long getEntropyLimit() {
+    return entropyLimit;
   }
 
-  public void setEnergyLimit(long customizedEnergyLimit) {
-    energyLimit = customizedEnergyLimit;
+  public void setEntropyLimit(long customizedEntropyLimit) {
+    entropyLimit = customizedEntropyLimit;
   }
 
   @Override

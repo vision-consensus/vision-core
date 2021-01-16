@@ -2823,8 +2823,8 @@ public class HttpMethed {
   /**
    * constructor.
    */
-  public static HttpResponse updateEnergyLimit(String httpNode, byte[] ownerAddress,
-      String contractAddress, Integer originEnergyLimit, String fromKey) {
+  public static HttpResponse updateEntropyLimit(String httpNode, byte[] ownerAddress,
+                                                String contractAddress, Integer originEnergyLimit, String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/updateenergylimit";
       JsonObject userBaseObj2 = new JsonObject();

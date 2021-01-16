@@ -67,11 +67,11 @@ public class ContractScenario009 {
         3, 1, contract009Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract009Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
 
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
     String filePath = "./src/test/resources/soliditycode/contractScenario009.sol";
     String contractName = "Set";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -104,13 +104,13 @@ public class ContractScenario009 {
     Assert.assertFalse(smartContract.getBytecode().toString().isEmpty());
     logger.info(ByteArray.toHexString(smartContract.getContractAddress().toByteArray()));
     accountResource = PublicMethed.getAccountResource(contract009Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
-    Assert.assertTrue(energyLimit > 0);
-    Assert.assertTrue(energyUsage > 0);
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
+    Assert.assertTrue(entropyLimit > 0);
+    Assert.assertTrue(entropyUsage > 0);
 
-    logger.info("after energy limit is " + Long.toString(energyLimit));
-    logger.info("after energy usage is " + Long.toString(energyUsage));
+    logger.info("after entropy limit is " + Long.toString(entropyLimit));
+    logger.info("after entropy usage is " + Long.toString(entropyUsage));
   }
 
   /**

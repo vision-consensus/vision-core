@@ -67,7 +67,7 @@ public class ContractOriginEntropyLimit001 {
   }
 
 
-  //Origin_energy_limit001,028,029
+  //Origin_entropy_limit001,028,029
   @Test(enabled = true, description = "Boundary value and update test")
   public void testOrigin_entropy_limit001() {
     Assert.assertTrue(PublicMethed

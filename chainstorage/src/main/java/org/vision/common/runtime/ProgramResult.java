@@ -62,8 +62,8 @@ public class ProgramResult {
     return result;
   }
 
-  public void spendEnergy(long energy) {
-    entropyUsed += energy;
+  public void spendEntropy(long entropy) {
+    entropyUsed += entropy;
   }
 
   public void setRevert() {

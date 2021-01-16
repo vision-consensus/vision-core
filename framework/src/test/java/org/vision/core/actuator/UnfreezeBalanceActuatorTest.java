@@ -174,7 +174,7 @@ public class UnfreezeBalanceActuatorTest {
 
 
   @Test
-  public void testUnfreezeBalanceForEnergy() {
+  public void testUnfreezeBalanceForEntropy() {
     long now = System.currentTimeMillis();
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
@@ -190,7 +190,7 @@ public class UnfreezeBalanceActuatorTest {
         .setAny(getContractForCpu(OWNER_ADDRESS));
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
-    long totalEnergyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
+    long totalEntropyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
     try {
       actuator.validate();
       actuator.execute(ret);
@@ -201,9 +201,9 @@ public class UnfreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance + frozenBalance);
       Assert.assertEquals(owner.getEntropyFrozenBalance(), 0);
       Assert.assertEquals(owner.getVisionPower(), 0L);
-      long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
-      Assert.assertEquals(totalEnergyWeightBefore,
-          totalEnergyWeightAfter + frozenBalance / 1000_000L);
+      long totalEntropyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
+      Assert.assertEquals(totalEntropyWeightBefore,
+          totalEntropyWeightAfter + frozenBalance / 1000_000L);
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
     } catch (ContractExeException e) {
@@ -750,7 +750,7 @@ public class UnfreezeBalanceActuatorTest {
       Assert.fail();
     } catch (ContractValidateException e) {
       Assert.assertEquals(e.getMessage(),
-          "AcquiredDelegatedFrozenBalanceForEnergy[10] < delegatedEnergy[1000000000]");
+          "AcquiredDelegatedFrozenBalanceForEntropy[10] < delegatedEntropy[1000000000]");
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     }
@@ -957,25 +957,25 @@ public class UnfreezeBalanceActuatorTest {
   }
 
   @Test
-  public void InvalidTotalEnergyWeight(){
+  public void InvalidTotalEntropyWeight(){
     long now = System.currentTimeMillis();
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(smallTatalResource);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(smallTatalResource);
 
     AccountCapsule accountCapsule = dbManager.getAccountStore()
             .get(ByteArray.fromHexString(OWNER_ADDRESS));
-    accountCapsule.setFrozenForEnergy(frozenBalance, now);
+    accountCapsule.setFrozenForEntropy(frozenBalance, now);
     dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
     Assert.assertTrue(frozenBalance/1000_000L > smallTatalResource );
     UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-            getContract(OWNER_ADDRESS, Contract.ResourceCode.ENERGY), dbManager);
+            getContract(OWNER_ADDRESS, Contract.ResourceCode.ENTROPY), dbManager);
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
       actuator.validate();
       actuator.execute(ret);
 
-      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalEnergyWeight() >= 0);
+      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalEntropyWeight() >= 0);
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
     } catch (ContractExeException e) {

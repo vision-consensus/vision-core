@@ -162,11 +162,11 @@ public class WalletTestAccount014 {
     final long acquiredForBandwidthInFullnode = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
     final long delegatedBandwidthInFullnode = account014.getDelegatedFrozenBalanceForPhoton();
-    final long acquiredForEnergyInFullnode = account014
+    final long acquiredForEntropyInFullnode = account014
         .getAccountResource().getAcquiredDelegatedFrozenBalanceForEntropy();
-    final long delegatedForEnergyInFullnode = account014
+    final long delegatedForEntropyInFullnode = account014
         .getAccountResource().getDelegatedFrozenBalanceForEntropy();
-    logger.info("delegatedForEnergyInFullnode " + delegatedForEnergyInFullnode);
+    logger.info("delegatedForEntropyInFullnode " + delegatedForEntropyInFullnode);
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSoliInFull);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSoliInFull);
     final long lastCustomeTimeInSoliInFull = account014.getLatestConsumeTime();
@@ -175,11 +175,11 @@ public class WalletTestAccount014 {
     final long acquiredForBandwidthInSoliInFull = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
     final long delegatedBandwidthInSoliInFull = account014.getDelegatedFrozenBalanceForPhoton();
-    final long acquiredForEnergyInSoliInFull = account014
+    final long acquiredForEntropyInSoliInFull = account014
         .getAccountResource().getAcquiredDelegatedFrozenBalanceForEntropy();
-    final long delegatedForEnergyInSoliInFull = account014
+    final long delegatedForEntropyInSoliInFull = account014
         .getAccountResource().getDelegatedFrozenBalanceForEntropy();
-    logger.info("delegatedForEnergyInSoliInFull " + delegatedForEnergyInSoliInFull);
+    logger.info("delegatedForEntropyInSoliInFull " + delegatedForEntropyInSoliInFull);
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSolidity);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSolidity);
     final long netUsageInSolidity = account014.getNetUsage();
@@ -187,12 +187,12 @@ public class WalletTestAccount014 {
     final long acquiredForBandwidthInSolidity = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
     final long delegatedBandwidthInSolidity = account014.getDelegatedFrozenBalanceForPhoton();
-    final long acquiredForEnergyInSolidity = account014.getAccountResource()
+    final long acquiredForEntropyInSolidity = account014.getAccountResource()
         .getAcquiredDelegatedFrozenBalanceForEntropy();
-    final long delegatedForEnergyInSolidity = account014.getAccountResource()
+    final long delegatedForEntropyInSolidity = account014.getAccountResource()
         .getDelegatedFrozenBalanceForEntropy();
 
-    logger.info("delegatedForEnergyInSolidity " + delegatedForEnergyInSolidity);
+    logger.info("delegatedForEntropyInSolidity " + delegatedForEntropyInSolidity);
     Assert.assertTrue(netUsageInSoliInFull > 0 && netUsageInSolidity > 0
         && netUsageInFullnode > 0);
     Assert.assertTrue(netUsageInFullnode <= netUsageInSoliInFull + 5
@@ -203,13 +203,13 @@ public class WalletTestAccount014 {
         && acquiredForBandwidthInFullnode == acquiredForBandwidthInSolidity);
     Assert.assertTrue(delegatedBandwidthInFullnode == delegatedBandwidthInSoliInFull
         && delegatedBandwidthInFullnode == delegatedBandwidthInSolidity);
-    Assert.assertTrue(acquiredForEnergyInFullnode == acquiredForEnergyInSoliInFull
-        && acquiredForEnergyInFullnode == acquiredForEnergyInSolidity);
-    Assert.assertTrue(delegatedForEnergyInFullnode == delegatedForEnergyInSoliInFull
-        && delegatedForEnergyInFullnode == delegatedForEnergyInSolidity);
+    Assert.assertTrue(acquiredForEntropyInFullnode == acquiredForEntropyInSoliInFull
+        && acquiredForEntropyInFullnode == acquiredForEntropyInSolidity);
+    Assert.assertTrue(delegatedForEntropyInFullnode == delegatedForEntropyInSoliInFull
+        && delegatedForEntropyInFullnode == delegatedForEntropyInSolidity);
     Assert.assertTrue(acquiredForBandwidthInSoliInFull == 1000000
-        && delegatedBandwidthInSoliInFull == 1000000 && acquiredForEnergyInSoliInFull == 1000000
-        && delegatedForEnergyInSoliInFull == 1000000);
+        && delegatedBandwidthInSoliInFull == 1000000 && acquiredForEntropyInSoliInFull == 1000000
+        && delegatedForEntropyInSoliInFull == 1000000);
     logger.info("lastCustomeTimeInSoliInFull " + lastCustomeTimeInSoliInFull);
     Assert.assertTrue(lastCustomeTimeInFullnode == lastCustomeTimeInSolidity
         && lastCustomeTimeInFullnode == lastCustomeTimeInSoliInFull);

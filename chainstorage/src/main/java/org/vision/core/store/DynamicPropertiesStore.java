@@ -351,7 +351,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalEntropyLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalEnergyLimit(50_000_000_000L);
+      this.saveTotalEntropyLimit(50_000_000_000L);
     }
 
     try {
@@ -1011,22 +1011,22 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   @Deprecated
-  public void saveTotalEnergyLimit(long totalEnergyLimit) {
+  public void saveTotalEntropyLimit(long totalEntropyLimit) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyLimit)));
 
     long ratio = getAdaptiveResourceLimitTargetRatio();
-    saveTotalEntropyTargetLimit(totalEnergyLimit / ratio);
+    saveTotalEntropyTargetLimit(totalEntropyLimit / ratio);
   }
 
-  public void saveTotalEnergyLimit2(long totalEnergyLimit) {
+  public void saveTotalEntropyLimit2(long totalEntropyLimit) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyLimit)));
 
     long ratio = getAdaptiveResourceLimitTargetRatio();
-    saveTotalEntropyTargetLimit(totalEnergyLimit / ratio);
+    saveTotalEntropyTargetLimit(totalEntropyLimit / ratio);
     if (getAllowAdaptiveEntropy() == 0) {
-      saveTotalEntropyCurrentLimit(totalEnergyLimit);
+      saveTotalEntropyCurrentLimit(totalEntropyLimit);
     }
   }
 
@@ -1038,9 +1038,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENERGY_LIMIT"));
   }
 
-  public void saveTotalEntropyCurrentLimit(long totalEnergyCurrentLimit) {
+  public void saveTotalEntropyCurrentLimit(long totalEntropyCurrentLimit) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_CURRENT_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyCurrentLimit)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyCurrentLimit)));
   }
 
   public long getTotalEntropyCurrentLimit() {
@@ -1051,9 +1051,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_CURRENT_LIMIT"));
   }
 
-  public void saveTotalEntropyTargetLimit(long targetTotalEnergyLimit) {
+  public void saveTotalEntropyTargetLimit(long targetTotalEntropyLimit) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_TARGET_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(targetTotalEnergyLimit)));
+        new BytesCapsule(ByteArray.fromLong(targetTotalEntropyLimit)));
   }
 
   public long getTotalEntropyTargetLimit() {
@@ -1064,9 +1064,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENERGY_TARGET_LIMIT"));
   }
 
-  public void saveTotalEntropyAverageUsage(long totalEnergyAverageUsage) {
+  public void saveTotalEntropyAverageUsage(long totalEntropyAverageUsage) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_AVERAGE_USAGE,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyAverageUsage)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyAverageUsage)));
   }
 
   public long getTotalEntropyAverageUsage() {
@@ -1105,9 +1105,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"));
   }
 
-  public void saveTotalEntropyAverageTime(long totalEnergyAverageTime) {
+  public void saveTotalEntropyAverageTime(long totalEntropyAverageTime) {
     this.put(DynamicResourceProperties.TOTAL_ENTROPY_AVERAGE_TIME,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyAverageTime)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyAverageTime)));
   }
 
   public long getTotalEntropyAverageTime() {
@@ -1118,9 +1118,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_NET_AVERAGE_TIME"));
   }
 
-  public void saveBlockEntropyUsage(long blockEnergyUsage) {
+  public void saveBlockEntropyUsage(long blockEntropyUsage) {
     this.put(DynamicResourceProperties.BLOCK_ENTROPY_USAGE,
-        new BytesCapsule(ByteArray.fromLong(blockEnergyUsage)));
+        new BytesCapsule(ByteArray.fromLong(blockEntropyUsage)));
   }
 
   public long getBlockEntropyUsage() {
@@ -1131,9 +1131,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found BLOCK_ENERGY_USAGE"));
   }
 
-  public void saveEntropyFee(long totalEnergyFee) {
+  public void saveEntropyFee(long totalEntropyFee) {
     this.put(ENTROPY_FEE,
-        new BytesCapsule(ByteArray.fromLong(totalEnergyFee)));
+        new BytesCapsule(ByteArray.fromLong(totalEntropyFee)));
   }
 
   public long getEntropyFee() {
@@ -1926,9 +1926,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   //The unit is vs
   public void addTotalEntropyWeight(long amount) {
-    long totalEnergyWeight = getTotalEntropyWeight();
-    totalEnergyWeight += amount;
-    saveTotalEntropyWeight(totalEnergyWeight);
+    long totalEntropyWeight = getTotalEntropyWeight();
+    totalEntropyWeight += amount;
+    saveTotalEntropyWeight(totalEntropyWeight);
   }
 
   public void addTotalCreateAccountCost(long fee) {

@@ -235,16 +235,16 @@ public class VvmTestUtils {
         .setContractAddress(WalletUtil.generateContractAddress(trx));
   }
 
-  public static VVMTestResult deployContractWithCreatorEnergyLimitAndReturnVvmTestResult(
+  public static VVMTestResult deployContractWithCreatorEntropyLimitAndReturnVvmTestResult(
       String contractName,
       byte[] callerAddress,
       String abi, String code, long value, long feeLimit, long consumeUserResourcePercent,
-      String libraryAddressPair, Manager dbManager, BlockCapsule blockCap, long creatorEnergyLimit)
+      String libraryAddressPair, Manager dbManager, BlockCapsule blockCap, long creatorEntropyLimit)
       throws ContractExeException, ReceiptCheckErrException,
       ContractValidateException, VMIllegalException {
     Transaction trx = generateDeploySmartContractWithCreatorEntropyLimitAndGetTransaction(
         contractName, callerAddress, abi,
-        code, value, feeLimit, consumeUserResourcePercent, libraryAddressPair, creatorEnergyLimit);
+        code, value, feeLimit, consumeUserResourcePercent, libraryAddressPair, creatorEntropyLimit);
 
     byte[] contractAddress = WalletUtil.generateContractAddress(trx);
 
@@ -364,7 +364,7 @@ public class VvmTestUtils {
       String contractName,
       byte[] address,
       String abiString, String code, long value, long consumeUserResourcePercent,
-      String libraryAddressPair, long creatorEnergyLimit) {
+      String libraryAddressPair, long creatorEntropyLimit) {
     SmartContract.ABI abi = jsonStr2Abi(abiString);
     if (abi == null) {
       logger.error("abi is null");
@@ -376,7 +376,7 @@ public class VvmTestUtils {
     builder.setOriginAddress(ByteString.copyFrom(address));
     builder.setAbi(abi);
     builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-    builder.setOriginEntropyLimit(creatorEnergyLimit);
+    builder.setOriginEntropyLimit(creatorEntropyLimit);
 
     if (value != 0) {
       builder.setCallValue(value);

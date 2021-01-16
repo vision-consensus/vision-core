@@ -175,7 +175,7 @@ public class MutisignOperationerGodicTest {
     Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceWithPermissionId(
         mutisignAccountAddress, 1000000L, 0, 2,
         mutisignAccountKey, blockingStubFull, permissionKeyString));
-    Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceGetEnergyWithPermissionId(
+    Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceGetEntropyWithPermissionId(
         mutisignAccountAddress, 1000000L, 0, 1,
         mutisignAccountKey, blockingStubFull, 2, permissionKeyString));
     Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceForReceiverWithPermissionId(

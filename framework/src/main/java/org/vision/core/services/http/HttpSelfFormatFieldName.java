@@ -81,9 +81,9 @@ public class HttpSelfFormatFieldName {
     //UpdateSettingContract
     AddressFieldNameMap.put("protocol.UpdateSettingContract.owner_address", 1);
     AddressFieldNameMap.put("protocol.UpdateSettingContract.contract_address", 1);
-    //UpdateEnergyLimitContract
-    AddressFieldNameMap.put("protocol.UpdateEnergyLimitContract.owner_address", 1);
-    AddressFieldNameMap.put("protocol.UpdateEnergyLimitContract.contract_address", 1);
+    //UpdateEntropyLimitContract
+    AddressFieldNameMap.put("protocol.UpdateEntropyLimitContract.owner_address", 1);
+    AddressFieldNameMap.put("protocol.UpdateEntropyLimitContract.contract_address", 1);
     //ClearABIContract
     AddressFieldNameMap.put("protocol.ClearABIContract.owner_address", 1);
     AddressFieldNameMap.put("protocol.ClearABIContract.contract_address", 1);

@@ -49,9 +49,9 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
     return this.delegatedResource.getFrozenBalanceForEntropy();
   }
 
-  public void setFrozenBalanceForEntropy(long energy, long expireTime) {
+  public void setFrozenBalanceForEntropy(long entropy, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
-        .setFrozenBalanceForEntropy(energy)
+        .setFrozenBalanceForEntropy(entropy)
         .setExpireTimeForEntropy(expireTime)
         .build();
   }
@@ -92,7 +92,7 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
         .build();
   }
 
-  public long getExpireTimeForEnergy(DynamicPropertiesStore dynamicPropertiesStore) {
+  public long getExpireTimeForEntropy(DynamicPropertiesStore dynamicPropertiesStore) {
     if (dynamicPropertiesStore.getAllowMultiSign() == 0) {
       return this.delegatedResource.getExpireTimeForPhoton();
     } else {

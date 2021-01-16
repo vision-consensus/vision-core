@@ -47,9 +47,9 @@ public class UpdateEntropyLimitContractActuatorTest {
   private static final String SMART_CONTRACT_NAME = "smart_contarct";
   private static final String CONTRACT_ADDRESS = "111111";
   private static final String NO_EXIST_CONTRACT_ADDRESS = "2222222";
-  private static final long SOURCE_ENERGY_LIMIT = 10L;
-  private static final long TARGET_ENERGY_LIMIT = 30L;
-  private static final long INVALID_ENERGY_LIMIT = -200L;
+  private static final long SOURCE_ENTROPY_LIMIT = 10L;
+  private static final long TARGET_ENTROPY_LIMIT = 30L;
+  private static final long INVALID_ENTROPY_LIMIT = -200L;
   private static VisionApplicationContext context;
   private static Manager dbManager;
   private static String OWNER_ADDRESS;
@@ -114,7 +114,7 @@ public class UpdateEntropyLimitContractActuatorTest {
     builder.setName(SMART_CONTRACT_NAME);
     builder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
     builder.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(CONTRACT_ADDRESS)));
-    builder.setOriginEntropyLimit(SOURCE_ENERGY_LIMIT);
+    builder.setOriginEntropyLimit(SOURCE_ENTROPY_LIMIT);
     dbManager.getContractStore().put(
         ByteArray.fromHexString(CONTRACT_ADDRESS),
         new ContractCapsule(builder.build()));
@@ -131,32 +131,32 @@ public class UpdateEntropyLimitContractActuatorTest {
     dbManager.getAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS_NOTEXIST));
   }
 
-  private Any getContract(String accountAddress, String contractAddress, long originEnergyLimit) {
+  private Any getContract(String accountAddress, String contractAddress, long originEntropyLimit) {
     return Any.pack(
         UpdateEntropyLimitContract.newBuilder()
             .setOwnerAddress(StringUtil.hexString2ByteString(accountAddress))
             .setContractAddress(StringUtil.hexString2ByteString(contractAddress))
-            .setOriginEntropyLimit(originEnergyLimit).build());
+            .setOriginEntropyLimit(originEntropyLimit).build());
   }
 
   @Test
   public void successUpdateEntropyLimitContract() throws InvalidProtocolBufferException {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
       actuator.validate();
       actuator.execute(ret);
 
-      // assert result state and energy_limit
+      // assert result state and entropy_limit
       Assert.assertEquals(OWNER_ADDRESS,
           ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
       Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-              .getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
+              .getOriginEntropyLimit(), TARGET_ENTROPY_LIMIT);
     } catch (ContractValidateException | ContractExeException e) {
       Assert.fail(e.getMessage());
     }
@@ -166,7 +166,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void invalidAddress() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS_INVALID, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS_INVALID, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -184,7 +184,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void noExistAccount() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS_NOTEXIST, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS_NOTEXIST, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -199,20 +199,20 @@ public class UpdateEntropyLimitContractActuatorTest {
   }
 
   @Test
-  public void invalidResourceEnergyLimit() {
+  public void invalidResourceEntropyLimit() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, INVALID_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, INVALID_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
       actuator.validate();
       actuator.execute(ret);
 
-      fail("origin energy limit less than 0");
+      fail("origin entropy limit less than 0");
     } catch (VisionException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("origin energy limit must be > 0", e.getMessage());
+      Assert.assertEquals("origin entropy limit must be > 0", e.getMessage());
     }
   }
 
@@ -220,7 +220,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void noExistContract() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS, NO_EXIST_CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, NO_EXIST_CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -238,7 +238,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void callerNotContractOwner() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(SECOND_ACCOUNT_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(SECOND_ACCOUNT_ADDRESS, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -258,7 +258,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void twiceUpdateEntropyLimitContract() throws InvalidProtocolBufferException {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
 
     UpdateEntropyLimitContractActuator secondActuator = new UpdateEntropyLimitContractActuator();
     secondActuator.setChainBaseManager(dbManager.getChainBaseManager())
@@ -275,7 +275,7 @@ public class UpdateEntropyLimitContractActuatorTest {
       Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-              .getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
+              .getOriginEntropyLimit(), TARGET_ENTROPY_LIMIT);
 
       // second
       secondActuator.validate();
@@ -284,7 +284,7 @@ public class UpdateEntropyLimitContractActuatorTest {
       Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-              .getOriginEnergyLimit(), 90L);
+              .getOriginEntropyLimit(), 90L);
     } catch (ContractValidateException | ContractExeException e) {
       Assert.fail(e.getMessage());
     }
@@ -295,7 +295,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void nullDBManger() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(null)
-        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
     TransactionResultCapsule ret = new TransactionResultCapsule();
     processAndCheckInvalid(actuator, ret, "No account store or dynamic store!",
         "No account store or dynamic store!");
@@ -330,7 +330,7 @@ public class UpdateEntropyLimitContractActuatorTest {
   public void nullTransactionResult() {
     UpdateEntropyLimitContractActuator actuator = new UpdateEntropyLimitContractActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT));
+        .setAny(getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENTROPY_LIMIT));
     TransactionResultCapsule ret = null;
     processAndCheckInvalid(actuator, ret, "TransactionResultCapsule is null",
         "TransactionResultCapsule is null");

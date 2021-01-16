@@ -154,7 +154,7 @@ public class ContractScenario014 {
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     contract2AccountInfo = PublicMethed.queryAccount(contractAddress2, blockingStubFull);
     final Long contract2AfterBalance = contract2AccountInfo.getBalance();
-    //contract2AccountInfo.getAccountResource().getFrozenBalanceForEnergy();
+    //contract2AccountInfo.getAccountResource().getFrozenBalanceForEntropy();
     receiverAccountInfo = PublicMethed.queryAccount(receiverAddress, blockingStubFull);
     Long receiverAfterBalance = receiverAccountInfo.getBalance();
     contract1AccountInfo = PublicMethed.queryAccount(contractAddress1, blockingStubFull);

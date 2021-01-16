@@ -124,7 +124,7 @@ public class TransactionTraceTest {
   @BeforeClass
   public static void init() {
     dbManager = context.getBean(Manager.class);
-    //init energy
+    //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(100_000L);
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);

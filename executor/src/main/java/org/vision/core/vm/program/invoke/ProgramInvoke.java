@@ -69,7 +69,7 @@ public interface ProgramInvoke {
 
   long getVmStartInUs();
 
-  long getEnergyLimit();
+  long getEntropyLimit();
 
   void setConstantCall();
 

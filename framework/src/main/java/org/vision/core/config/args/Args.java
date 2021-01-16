@@ -532,8 +532,8 @@ public class Args extends CommonParameter {
             .getInt(Constant.COMMITTEE_ALLOW_MULTI_SIGN) : 0;
 
     PARAMETER.allowAdaptiveEntropy =
-        config.hasPath(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENERGY) ? config
-            .getInt(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENERGY) : 0;
+        config.hasPath(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENTROPY) ? config
+            .getInt(Constant.COMMITTEE_ALLOW_ADAPTIVE_ENTROPY) : 0;
 
     PARAMETER.allowDelegateResource =
         config.hasPath(Constant.COMMITTEE_ALLOW_DELEGATE_RESOURCE) ? config
@@ -617,8 +617,8 @@ public class Args extends CommonParameter {
     PARAMETER.minEffectiveConnection = config.hasPath(Constant.NODE_RPC_MIN_EFFECTIVE_CONNECTION)
         ? config.getInt(Constant.NODE_RPC_MIN_EFFECTIVE_CONNECTION) : 1;
 
-    PARAMETER.blockNumForEntropyLimit = config.hasPath(Constant.ENERGY_LIMIT_BLOCK_NUM)
-        ? config.getInt(Constant.ENERGY_LIMIT_BLOCK_NUM) : 4727890L;
+    PARAMETER.blockNumForEntropyLimit = config.hasPath(Constant.ENTROPY_LIMIT_BLOCK_NUM)
+        ? config.getInt(Constant.ENTROPY_LIMIT_BLOCK_NUM) : 4727890L;
 
     PARAMETER.vmTrace =
         config.hasPath(Constant.VM_TRACE) && config.getBoolean(Constant.VM_TRACE);

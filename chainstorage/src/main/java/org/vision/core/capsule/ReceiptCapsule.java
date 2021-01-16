@@ -78,7 +78,7 @@ public class ReceiptCapsule {
     this.receipt = this.receipt.toBuilder().setEntropyFee(energyFee).build();
   }
 
-  public long getOriginEnergyUsage() {
+  public long getOriginEntropyUsage() {
     return this.receipt.getOriginEntropyUsage();
   }
 
@@ -177,7 +177,7 @@ public class ReceiptCapsule {
         dynamicPropertiesStore.saveBlockEntropyUsage(blockEnergyUsage);
       }
 
-      long vdtPerEnergy = Constant.VDT_PER_ENERGY;
+      long vdtPerEnergy = Constant.VDT_PER_ENTROPY;
       long dynamicEnergyFee = dynamicPropertiesStore.getEntropyFee();
       if (dynamicEnergyFee > 0) {
         vdtPerEnergy = dynamicEnergyFee;

@@ -22,10 +22,10 @@ import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Result.contractResult;
 import stest.vision.wallet.common.client.utils.AbiUtil;
 
-public class TransferFailedEnergyTest extends VMTestBase {
+public class TransferFailedEntropyTest extends VMTestBase {
   /*
   pragma solidity ^0.5.4;
-  contract EnergyOfTransferFailedTest {
+  contract EntropyOfTransferFailedTest {
       constructor() payable public {
 
       }
@@ -101,7 +101,7 @@ public class TransferFailedEnergyTest extends VMTestBase {
 
   /*
   // 0.4.25
-  contract EnergyOfTransferFailedTest {
+  contract EntropyOfTransferFailedTest {
 
       constructor() payable public {
 
@@ -232,7 +232,7 @@ public class TransferFailedEnergyTest extends VMTestBase {
     manager.getDynamicPropertiesStore().saveAllowVvmConstantinople(1);
     manager.getDynamicPropertiesStore().saveAllowVvmSolidity059(0);
 
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     byte[] address = Hex.decode(OWNER_ADDRESS);
     String ABI = "[]";
     String code = "608060405261060c806100136000396000f3fe6080604052600436106100c4576000357c010000"
@@ -309,7 +309,7 @@ public class TransferFailedEnergyTest extends VMTestBase {
     manager.getDynamicPropertiesStore().saveAllowVvmConstantinople(0);
     manager.getDynamicPropertiesStore().saveAllowVvmSolidity059(0);
 
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     byte[] address = Hex.decode(OWNER_ADDRESS);
     String ABI = "[]";
     String code = "6080604052610537806100136000396000f3006080604052600436106100b95763ffffffff7c010"
@@ -377,7 +377,7 @@ public class TransferFailedEnergyTest extends VMTestBase {
       ContractValidateException {
     String hexInput = AbiUtil.parseMethod(testCase.getMethod(), testCase.getParams());
     long fee = 100000000;
-    long allEnergy = 1000000;
+    long allEntropy = 1000000;
     VVMTestResult result = VvmTestUtils
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS),
             factoryAddress, Hex.decode(hexInput), 0, fee, manager, null);
@@ -385,10 +385,10 @@ public class TransferFailedEnergyTest extends VMTestBase {
     ReceiptCapsule receiptCapsule = result.getReceipt();
     Assert.assertEquals(receiptCapsule.getResult(), testCase.getReceiptResult(),
         testCase.getMethod());
-    if (testCase.allEnergy) {
+    if (testCase.allEntropy) {
       Assert.assertEquals(programResult.getEntropyUsed(), 1000000, testCase.getMethod());
     } else {
-      Assert.assertTrue(programResult.getEntropyUsed() < allEnergy, testCase.getMethod());
+      Assert.assertTrue(programResult.getEntropyUsed() < allEntropy, testCase.getMethod());
     }
   }
 
@@ -399,7 +399,7 @@ public class TransferFailedEnergyTest extends VMTestBase {
 
     String method;
     List<Object> params;
-    boolean allEnergy;
+    boolean allEntropy;
     contractResult receiptResult;
   }
 }

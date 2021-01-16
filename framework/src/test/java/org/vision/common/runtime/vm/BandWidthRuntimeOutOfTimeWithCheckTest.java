@@ -170,8 +170,8 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
       Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
       Assert.assertEquals(50000, energy);
       Assert.assertEquals(990000000, balance);
-      Assert.assertEquals(9950000 * Constant.VDT_PER_ENERGY,
-          balance + energy * Constant.VDT_PER_ENERGY);
+      Assert.assertEquals(9950000 * Constant.VDT_PER_ENTROPY,
+          balance + energy * Constant.VDT_PER_ENTROPY);
     } catch (VisionException e) {
       Assert.assertNotNull(e);
     } catch (ReceiptCheckErrException e) {

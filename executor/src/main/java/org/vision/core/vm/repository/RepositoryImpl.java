@@ -32,7 +32,7 @@ import org.vision.protos.Protocol.AccountType;
 @Slf4j(topic = "Repository")
 public class RepositoryImpl implements Repository {
 
-  //for energycal
+  //for entropy cal
   private long precision = Parameter.ChainConstant.PRECISION;
   private long windowSize = Parameter.ChainConstant.WINDOW_SIZE_MS /
           BLOCK_PRODUCED_INTERVAL;
@@ -116,16 +116,16 @@ public class RepositoryImpl implements Repository {
   }
 
   @Override
-  public long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule) {
+  public long getAccountLeftEntropyFromFreeze(AccountCapsule accountCapsule) {
     long now = getHeadSlot();
 
-    long energyUsage = accountCapsule.getEntropyUsage();
+    long entropyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
-    long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
+    long entropyLimit = calculateGlobalEntropyLimit(accountCapsule);
 
-    long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
+    long newEntropyUsage = increase(entropyUsage, 0, latestConsumeTime, now);
 
-    return max(energyLimit - newEnergyUsage, 0); // us
+    return max(entropyLimit - newEntropyUsage, 0); // us
   }
 
   @Override
@@ -681,18 +681,18 @@ public class RepositoryImpl implements Repository {
     return usage * windowSize / precision;
   }
 
-  public long calculateGlobalEnergyLimit(AccountCapsule accountCapsule) {
+  public long calculateGlobalEntropyLimit(AccountCapsule accountCapsule) {
     long frozeBalance = accountCapsule.getAllFrozenBalanceForEntropy();
     if (frozeBalance < 1_000_000L) {
       return 0;
     }
-    long energyWeight = frozeBalance / 1_000_000L;
-    long totalEnergyLimit = getDynamicPropertiesStore().getTotalEntropyCurrentLimit();
-    long totalEnergyWeight = getDynamicPropertiesStore().getTotalEntropyWeight();
+    long entropyWeight = frozeBalance / 1_000_000L;
+    long totalEntropyLimit = getDynamicPropertiesStore().getTotalEntropyCurrentLimit();
+    long totalEntropyWeight = getDynamicPropertiesStore().getTotalEntropyWeight();
 
-    assert totalEnergyWeight > 0;
+    assert totalEntropyWeight > 0;
 
-    return (long) (energyWeight * ((double) totalEnergyLimit / totalEnergyWeight));
+    return (long) (entropyWeight * ((double) totalEntropyLimit / totalEntropyWeight));
   }
 
   public long getHeadSlot() {

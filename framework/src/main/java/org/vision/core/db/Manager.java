@@ -1291,7 +1291,7 @@ public class Manager {
     if (!consensus.validBlock(block)) {
       throw new ValidateScheduleException("validateWitnessSchedule error");
     }
-    //reset BlockEnergyUsage
+    //reset BlockEntropyUsage
     chainBaseManager.getDynamicPropertiesStore().saveBlockEntropyUsage(0);
     //parallel check sign
     if (!block.generatedByMyself) {
@@ -1329,8 +1329,8 @@ public class Manager {
     if (getDynamicPropertiesStore().getAllowAdaptiveEntropy() == 1) {
       EntropyProcessor entropyProcessor = new EntropyProcessor(
           chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
-      entropyProcessor.updateTotalEnergyAverageUsage();
-      entropyProcessor.updateAdaptiveTotalEnergyLimit();
+      entropyProcessor.updateTotalEntropyAverageUsage();
+      entropyProcessor.updateAdaptiveTotalEntropyLimit();
     }
 
     payReward(block);

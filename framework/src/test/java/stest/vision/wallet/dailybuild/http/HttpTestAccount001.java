@@ -92,7 +92,7 @@ public class HttpTestAccount001 {
     responseContent = HttpMethed.parseResponseContent(response);
     HttpMethed.printJsonContent(responseContent);
     Assert.assertTrue(
-        Long.parseLong(responseContent.get("TotalEnergyLimit").toString()) >= 50000000000L);
+        Long.parseLong(responseContent.get("TotalEntropyLimit").toString()) >= 50000000000L);
     Assert.assertTrue(responseContent.size() >= 3);
   }
 

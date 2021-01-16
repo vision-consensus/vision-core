@@ -148,34 +148,34 @@ public class EntropyProcessorTest {
 
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(
         1526647838000L + Parameter.AdaptiveResourceLimitConstants.PERIODS_MS / 2);
-    processor.updateTotalEnergyAverageUsage();
+    processor.updateTotalEntropyAverageUsage();
     Assert.assertEquals(2000L,
         dbManager.getDynamicPropertiesStore().getTotalEntropyAverageUsage());
 
     // test saveTotalEnergyLimit
     long ratio = Parameter.ChainConstant.WINDOW_SIZE_MS / Parameter.AdaptiveResourceLimitConstants.PERIODS_MS;
-    dbManager.getDynamicPropertiesStore().saveTotalEnergyLimit(10000L * ratio);
+    dbManager.getDynamicPropertiesStore().saveTotalEntropyLimit(10000L * ratio);
     Assert.assertEquals(1000L,
         dbManager.getDynamicPropertiesStore().getTotalEntropyTargetLimit());
 
     //Test exceeds resource limit
     dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(10000L * ratio);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(3000L);
-    processor.updateAdaptiveTotalEnergyLimit();
+    processor.updateAdaptiveTotalEntropyLimit();
     Assert.assertEquals(10000L * ratio,
         dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
 
     //Test exceeds resource limit 2
     dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(20000L * ratio);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(3000L);
-    processor.updateAdaptiveTotalEnergyLimit();
+    processor.updateAdaptiveTotalEntropyLimit();
     Assert.assertEquals(20000L * ratio * 99 / 100L,
         dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
 
     //Test less than resource limit
     dbManager.getDynamicPropertiesStore().saveTotalEntropyCurrentLimit(20000L * ratio);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyAverageUsage(500L);
-    processor.updateAdaptiveTotalEnergyLimit();
+    processor.updateAdaptiveTotalEntropyLimit();
     Assert.assertEquals(20000L * ratio * 1000 / 999L,
         dbManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit());
   }

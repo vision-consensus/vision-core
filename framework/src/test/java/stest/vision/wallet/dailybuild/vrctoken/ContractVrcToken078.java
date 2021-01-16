@@ -161,8 +161,8 @@ public class ContractVrcToken078 {
     Account info1 = PublicMethed.queryAccount(internalTxsAddress, blockingStubFull);
     AccountResourceMessage resourceInfo1 = PublicMethed.getAccountResource(internalTxsAddress,
         blockingStubFull);
-    logger.info("getEnergyUsed  " + resourceInfo1.getEntropyUsed());
-    logger.info("getEnergyLimit  " + resourceInfo1.getEntropyLimit());
+    logger.info("getEntropyUsed  " + resourceInfo1.getEntropyUsed());
+    logger.info("getEntropyLimit  " + resourceInfo1.getEntropyLimit());
     Assert.assertTrue(infoById2.get().getResultValue() == 0);
 
 

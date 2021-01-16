@@ -819,14 +819,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return this.account.getAccountResource();
   }
 
-  public void setFrozenForEntropy(long newFrozenBalanceForEnergy, long time) {
-    Frozen newFrozenForEnergy = Frozen.newBuilder()
-        .setFrozenBalance(newFrozenBalanceForEnergy)
+  public void setFrozenForEntropy(long newFrozenBalanceForEntropy, long time) {
+    Frozen newFrozenForEntropy = Frozen.newBuilder()
+        .setFrozenBalance(newFrozenBalanceForEntropy)
         .setExpireTime(time)
         .build();
 
     AccountResource newAccountResource = getAccountResource().toBuilder()
-        .setFrozenBalanceForEntropy(newFrozenForEnergy).build();
+        .setFrozenBalanceForEntropy(newFrozenForEntropy).build();
 
     this.account = this.account.toBuilder()
         .setAccountResource(newAccountResource)
@@ -841,10 +841,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return this.account.getAccountResource().getEntropyUsage();
   }
 
-  public void setEntropyUsage(long energyUsage) {
+  public void setEntropyUsage(long entropyUsage) {
     this.account = this.account.toBuilder()
         .setAccountResource(
-            this.account.getAccountResource().toBuilder().setEntropyUsage(energyUsage).build())
+            this.account.getAccountResource().toBuilder().setEntropyUsage(entropyUsage).build())
         .build();
   }
 

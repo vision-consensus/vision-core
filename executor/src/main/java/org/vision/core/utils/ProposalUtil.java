@@ -63,7 +63,7 @@ public class ProposalUtil {
         }
         break;
       }
-      case ENERGY_FEE:
+      case ENTROPY_FEE:
       case EXCHANGE_CREATE_FEE:
         break;
       case MAX_CPU_TIME_OF_ONE_TX:
@@ -93,7 +93,7 @@ public class ProposalUtil {
         }
         break;
       }
-      case TOTAL_ENERGY_LIMIT: { // deprecated
+      case TOTAL_ENTROPY_LIMIT: { // deprecated
         if (!forkController.pass(ForkBlockVersionConsts.ENTROPY_LIMIT)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
@@ -116,7 +116,7 @@ public class ProposalUtil {
         }
         break;
       }
-      case TOTAL_CURRENT_ENERGY_LIMIT: {
+      case TOTAL_CURRENT_ENTROPY_LIMIT: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_2_2)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
@@ -135,13 +135,13 @@ public class ProposalUtil {
         }
         break;
       }
-      case ALLOW_ADAPTIVE_ENERGY: {
+      case ALLOW_ADAPTIVE_ENTROPY: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_5)) {
-          throw new ContractValidateException("Bad chain parameter id: ALLOW_ADAPTIVE_ENERGY");
+          throw new ContractValidateException("Bad chain parameter id: ALLOW_ADAPTIVE_ENTROPY");
         }
         if (value != 1) {
           throw new ContractValidateException(
-              PRE_VALUE_NOT_ONE_ERROR + "ALLOW_ADAPTIVE_ENERGY" + VALUE_NOT_ONE_ERROR);
+              PRE_VALUE_NOT_ONE_ERROR + "ALLOW_ADAPTIVE_ENTROPY" + VALUE_NOT_ONE_ERROR);
         }
         break;
       }
@@ -418,17 +418,17 @@ public class ProposalUtil {
     CREATE_NEW_ACCOUNT_BANDWIDTH_RATE(8), // 1 Bandwith/Byte, [0, 100000000000000000] Bandwith/Byte
     ALLOW_CREATION_OF_CONTRACTS(9), // 1, {0, 1}
     REMOVE_THE_POWER_OF_THE_GR(10),  // 1, {0, 1}
-    ENERGY_FEE(11), // 10 Vdt, [0, 100000000000] VS
+    ENTROPY_FEE(11), // 10 Vdt, [0, 100000000000] VS
     EXCHANGE_CREATE_FEE(12), // 1024 VS, [0, 100000000000] VS
     MAX_CPU_TIME_OF_ONE_TX(13), // 50 ms, [0, 1000] ms
     ALLOW_UPDATE_ACCOUNT_NAME(14), // 0, {0, 1}
     ALLOW_SAME_TOKEN_NAME(15), // 1, {0, 1}
     ALLOW_DELEGATE_RESOURCE(16), // 1, {0, 1}
-    TOTAL_ENERGY_LIMIT(17), // 50,000,000,000, [0, 100000000000000000]
+    TOTAL_ENTROPY_LIMIT(17), // 50,000,000,000, [0, 100000000000000000]
     ALLOW_VVM_TRANSFER_VRC10(18), // 1, {0, 1}
-    TOTAL_CURRENT_ENERGY_LIMIT(19), // 50,000,000,000, [0, 100000000000000000]
+    TOTAL_CURRENT_ENTROPY_LIMIT(19), // 50,000,000,000, [0, 100000000000000000]
     ALLOW_MULTI_SIGN(20), // 1, {0, 1}
-    ALLOW_ADAPTIVE_ENERGY(21), // 1, {0, 1}
+    ALLOW_ADAPTIVE_ENTROPY(21), // 1, {0, 1}
     UPDATE_ACCOUNT_PERMISSION_FEE(22), // 100 VS, [0, 100000] VS
     MULTI_SIGN_FEE(23), // 1 VS, [0, 100000] VS
     ALLOW_PROTO_FILTER_NUM(24), // 0, {0, 1}

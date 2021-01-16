@@ -252,15 +252,15 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "FreezeBalance with energy for others by http")
-  public void test013FreezebalanceOfEnergyForOthers() {
+  @Test(enabled = true, description = "FreezeBalance with entropy for others by http")
+  public void test013FreezebalanceOfEntropyForOthers() {
     response = HttpMethed
         .sendCoin(httpnode, fromAddress, receiverResourceAddress, amount, testKey002);
     Assert.assertTrue(HttpMethed.verificationResult(response));
     HttpMethed.waitToProduceOneBlock(httpnode);
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //Freeze balance with energy for others
+    //Freeze balance with entropy for others
     response = HttpMethed
         .freezeBalance(httpnode, freezeBalanceAddress, frozenBalance, 0, 1, receiverResourceAddress,
             freezeBalanceKey);
@@ -273,11 +273,11 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "UnFreezeBalance with energy for others by http")
-  public void test014UnFreezebalanceOfEnergyForOthers() {
+  @Test(enabled = true, description = "UnFreezeBalance with entropy for others by http")
+  public void test014UnFreezebalanceOfEntropyForOthers() {
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //UnFreeze balance with energy for others
+    //UnFreeze balance with entropy for others
     response = HttpMethed
         .unFreezeBalance(httpnode, freezeBalanceAddress, 1, receiverResourceAddress,
             freezeBalanceKey);

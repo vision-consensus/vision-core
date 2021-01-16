@@ -88,10 +88,10 @@ public class pedersenHash001 {
         .getTransactionInfoById(txid, blockingStubFull);
     Assert.assertEquals(1, infoById.get().getResultValue());
     Assert.assertEquals("FAILED", infoById.get().getResult().toString());
-    Assert.assertEquals("OUT_OF_ENERGY", infoById.get().getReceipt().getResult().toString());
+    Assert.assertEquals("OUT_OF_ENTROPY", infoById.get().getReceipt().getResult().toString());
     Assert.assertEquals(1000000000, infoById.get().getFee());
     Assert.assertTrue(infoById.get().getResMessage().toStringUtf8()
-        .contains("Not enough energy for 'SWAP2' operation executing: curInvokeEnergyLimit"));
+        .contains("Not enough entropy for 'SWAP2' operation executing: curInvokeEntropyLimit"));
   }
 
   @Test(enabled = true, description = "data length limit")
@@ -108,10 +108,10 @@ public class pedersenHash001 {
         .getTransactionInfoById(txid, blockingStubFull);
     Assert.assertEquals(1, infoById.get().getResultValue());
     Assert.assertEquals("FAILED", infoById.get().getResult().toString());
-    Assert.assertEquals("OUT_OF_ENERGY", infoById.get().getReceipt().getResult().toString());
+    Assert.assertEquals("OUT_OF_ENTROPY", infoById.get().getReceipt().getResult().toString());
     Assert.assertEquals(1000000000, infoById.get().getFee());
     Assert.assertTrue(infoById.get().getResMessage().toStringUtf8()
-        .contains("Not enough energy for 'SWAP2' operation executing: curInvokeEnergyLimit"));
+        .contains("Not enough entropy for 'SWAP2' operation executing: curInvokeEntropyLimit"));
 
     // length:128
     String argsStr2 = "\"0000000000000000000000000000000000000000000000000000000000000001"

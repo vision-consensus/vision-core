@@ -48,7 +48,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
   private byte[] msgData;
   private long vmStartInUs;
   private long vmShouldEndInUs;
-  private long energyLimit;
+  private long entropyLimit;
   private Repository deposit;
   private boolean byTransaction = true;
   private boolean byTestingSuite = false;
@@ -61,7 +61,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
       DataWord lastHash, DataWord coinbase, DataWord timestamp, DataWord number,
       DataWord difficulty,
       Repository deposit, int callDeep, boolean isStaticCall, boolean byTestingSuite,
-      long vmStartInUs, long vmShouldEndInUs, long energyLimit) {
+      long vmStartInUs, long vmShouldEndInUs, long entropyLimit) {
     this.address = address;
     this.origin = origin;
     this.caller = caller;
@@ -86,24 +86,24 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     this.byTestingSuite = byTestingSuite;
     this.vmStartInUs = vmStartInUs;
     this.vmShouldEndInUs = vmShouldEndInUs;
-    this.energyLimit = energyLimit;
+    this.entropyLimit = entropyLimit;
 
   }
 
   public ProgramInvokeImpl(byte[] address, byte[] origin, byte[] caller, long balance,
       long callValue, long tokenValue, long tokenId, byte[] msgData,
       byte[] lastHash, byte[] coinbase, long timestamp, long number, Repository deposit,
-      long vmStartInUs, long vmShouldEndInUs, boolean byTestingSuite, long energyLimit) {
+      long vmStartInUs, long vmShouldEndInUs, boolean byTestingSuite, long entropyLimit) {
     this(address, origin, caller, balance, callValue, tokenValue, tokenId, msgData, lastHash,
         coinbase,
-        timestamp, number, deposit, vmStartInUs, vmShouldEndInUs, energyLimit);
+        timestamp, number, deposit, vmStartInUs, vmShouldEndInUs, entropyLimit);
     this.byTestingSuite = byTestingSuite;
   }
 
   public ProgramInvokeImpl(byte[] address, byte[] origin, byte[] caller, long balance,
       long callValue, long tokenValue, long tokenId, byte[] msgData, byte[] lastHash,
       byte[] coinbase, long timestamp,
-      long number, Repository deposit, long vmStartInUs, long vmShouldEndInUs, long energyLimit) {
+      long number, Repository deposit, long vmStartInUs, long vmShouldEndInUs, long entropyLimit) {
 
     // Transaction env
     this.address = new DataWord(address);
@@ -125,7 +125,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     // calc should end time
     this.vmStartInUs = vmStartInUs;
     this.vmShouldEndInUs = vmShouldEndInUs;
-    this.energyLimit = energyLimit;
+    this.entropyLimit = entropyLimit;
   }
 
   /*           ADDRESS op         */
@@ -366,8 +366,8 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         '}';
   }
 
-  public long getEnergyLimit() {
-    return energyLimit;
+  public long getEntropyLimit() {
+    return entropyLimit;
   }
 
   @Override

@@ -19,7 +19,7 @@ import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Utils;
 import org.vision.core.Wallet;
-import org.vision.core.vm.EnergyCost;
+import org.vision.core.vm.EntropyCost;
 import org.vision.protos.Protocol.Account;
 import org.vision.protos.Protocol.Transaction.Result.contractResult;
 import org.vision.protos.Protocol.TransactionInfo;
@@ -390,7 +390,7 @@ public class TransferFailed003 {
     Assert.assertEquals(contractAccountCountBefore - 2, contractAccountCountAfter.longValue());
 
     Assert.assertEquals(energyUsageTotal,
-        energyUsageTotal2 + EnergyCost.getInstance().getNEW_ACCT_CALL());
+        energyUsageTotal2 + EntropyCost.getInstance().getNEW_ACCT_CALL());
 
     nonexistentAddressAccount = PublicMethed
         .getAssetIssueValue(nonexistentAddress, assetAccountId, blockingStubFull1);
@@ -788,7 +788,7 @@ public class TransferFailed003 {
     Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
-    Assert.assertTrue(energyUsageTotal > EnergyCost.getInstance().getNEW_ACCT_CALL());
+    Assert.assertTrue(energyUsageTotal > EntropyCost.getInstance().getNEW_ACCT_CALL());
 
     Long nonexistentAddressAccount = PublicMethed
         .getAssetIssueValue(nonexistentAddress, assetAccountId, blockingStubFull1);

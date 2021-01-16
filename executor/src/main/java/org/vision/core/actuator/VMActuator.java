@@ -32,7 +32,7 @@ import org.vision.common.utils.StringUtil;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.utils.TransactionUtil;
-import org.vision.core.vm.EnergyCost;
+import org.vision.core.vm.EntropyCost;
 import org.vision.core.vm.LogInfoTriggerParser;
 import org.vision.core.vm.VM;
 import org.vision.core.vm.VMConstant;
@@ -143,7 +143,7 @@ public class VMActuator implements Actuator2 {
       AccountCapsule creator = this.repository
               .getAccount(newSmartContract.getOriginAddress().toByteArray());
 
-      long energyLimit;
+      long entropyLimit;
       // according to version
 
       if (StorageUtils.getEntropyLimitHardFork()) {
@@ -154,11 +154,11 @@ public class VMActuator implements Actuator2 {
           throw new ContractValidateException("tokenValue must be >= 0");
         }
         if (newSmartContract.getOriginEntropyLimit() <= 0) {
-          throw new ContractValidateException("The originEnergyLimit must be > 0");
+          throw new ContractValidateException("The originEntropyLimit must be > 0");
         }
-        energyLimit = getAccountEnergyLimitWithFixRatio(creator, feeLimit, callValue);
+        entropyLimit = getAccountEntropyLimitWithFixRatio(creator, feeLimit, callValue);
       } else {
-        energyLimit = getAccountEnergyLimitWithFloatRatio(creator, feeLimit, callValue);
+        entropyLimit = getAccountEntropyLimitWithFloatRatio(creator, feeLimit, callValue);
       }
 
       checkTokenValueAndId(tokenValue, tokenId);
@@ -174,7 +174,7 @@ public class VMActuator implements Actuator2 {
       ProgramInvoke programInvoke = programInvokeFactory
               .createProgramInvoke(InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
                       tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
-                      vmShouldEndInUs, energyLimit);
+                      vmShouldEndInUs, entropyLimit);
       this.vm = new VM();
       this.program = new Program(ops, programInvoke, rootInternalTransaction, vmConfig
       );
@@ -214,13 +214,13 @@ public class VMActuator implements Actuator2 {
     programInvokeFactory = new ProgramInvokeFactoryImpl();
   }
 
-  private static long getEnergyFee(long callerEnergyUsage, long callerEnergyFrozen,
-      long callerEnergyTotal) {
-    if (callerEnergyTotal <= 0) {
+  private static long getEntropyFee(long callerEntropyUsage, long callerEntropyFrozen,
+                                    long callerEntropyTotal) {
+    if (callerEntropyTotal <= 0) {
       return 0;
     }
-    return BigInteger.valueOf(callerEnergyFrozen).multiply(BigInteger.valueOf(callerEnergyUsage))
-        .divide(BigInteger.valueOf(callerEnergyTotal)).longValueExact();
+    return BigInteger.valueOf(callerEntropyFrozen).multiply(BigInteger.valueOf(callerEntropyUsage))
+        .divide(BigInteger.valueOf(callerEntropyTotal)).longValueExact();
   }
 
   @Override
@@ -283,7 +283,7 @@ public class VMActuator implements Actuator2 {
             && contractResult.OUT_OF_TIME == TransactionUtil.getContractRet(trx)) {
           logger.info("VMActuator execute will throw OutOfTimeException");
           result = program.getResult();
-          program.spendAllEnergy();
+          program.spendAllEntropy();
 
           OutOfTimeException e = Program.Exception.alreadyTimeOut();
           result.setRuntimeError(e.getMessage());
@@ -312,16 +312,16 @@ public class VMActuator implements Actuator2 {
         logger.info("VMActuator execute trxType:"+(InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE == trxType)+" revert:"+!result.isRevert());
         if (InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE == trxType && !result.isRevert()) {
           byte[] code = program.getResult().getHReturn();
-          long saveCodeEnergy = (long) getLength(code) * EnergyCost.getInstance().getCREATE_DATA();
-          long afterSpend = program.getEnergyLimitLeft().longValue() - saveCodeEnergy;
+          long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
+          long afterSpend = program.getEntropyLimitLeft().longValue() - saveCodeEntropy;
           if (afterSpend < 0) {
             if (null == result.getException()) {
               result.setException(Program.Exception
-                  .notEnoughSpendEnergy("save just created contract code",
-                      saveCodeEnergy, program.getEnergyLimitLeft().longValue()));
+                  .notEnoughSpendEntropy("save just created contract code",
+                      saveCodeEntropy, program.getEntropyLimitLeft().longValue()));
             }
           } else {
-            result.spendEnergy(saveCodeEnergy);
+            result.spendEntropy(saveCodeEntropy);
             if (VMConfig.allowVvmConstantinople()) {
               repository.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
             }
@@ -338,7 +338,7 @@ public class VMActuator implements Actuator2 {
 
           if (result.getException() != null) {
             if (!(result.getException() instanceof TransferException)) {
-              program.spendAllEnergy();
+              program.spendAllEntropy();
             }
             result.setRuntimeError(result.getException().getMessage());
             throw result.getException();
@@ -361,7 +361,7 @@ public class VMActuator implements Actuator2 {
     } catch (JVMStackOverFlowException e) {
       logger.info("VMActuator execute JVMStackOverFlowException");
       e.printStackTrace();
-      program.spendAllEnergy();
+      program.spendAllEntropy();
       result = program.getResult();
       result.setException(e);
       result.rejectInternalTransactions();
@@ -370,7 +370,7 @@ public class VMActuator implements Actuator2 {
     } catch (OutOfTimeException e) {
       logger.info("VMActuator execute OutOfTimeException");
       e.printStackTrace();
-      program.spendAllEnergy();
+      program.spendAllEntropy();
       result = program.getResult();
       result.setException(e);
       result.rejectInternalTransactions();
@@ -380,7 +380,7 @@ public class VMActuator implements Actuator2 {
       logger.info("VMActuator execute Throwable");
       e.printStackTrace();
       if (!(e instanceof TransferException)) {
-        program.spendAllEnergy();
+        program.spendAllEntropy();
       }
       result = program.getResult();
       result.rejectInternalTransactions();
@@ -467,13 +467,13 @@ public class VMActuator implements Actuator2 {
             "feeLimit must be >= 0 and <= " + VMConfig.MAX_FEE_LIMIT);
       }
       AccountCapsule caller = repository.getAccount(callerAddress);
-      long energyLimit;
+      long entropyLimit;
       if (isConstantCall) {
-        energyLimit = VMConstant.ENERGY_LIMIT_IN_CONSTANT_TX;
+        entropyLimit = VMConstant.ENTROPY_LIMIT_IN_CONSTANT_TX;
       } else {
         AccountCapsule creator = repository
             .getAccount(deployedContract.getInstance().getOriginAddress().toByteArray());
-        energyLimit = getTotalEnergyLimit(creator, caller, contract, feeLimit, callValue);
+        entropyLimit = getTotalEntropyLimit(creator, caller, contract, feeLimit, callValue);
       }
 
       long maxCpuTimeOfOneTx = repository.getDynamicPropertiesStore()
@@ -485,7 +485,7 @@ public class VMActuator implements Actuator2 {
       ProgramInvoke programInvoke = programInvokeFactory
           .createProgramInvoke(InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE, executorType, trx,
               tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
-              vmShouldEndInUs, energyLimit);
+              vmShouldEndInUs, entropyLimit);
       if (isConstantCall) {
         programInvoke.setConstantCall();
       }
@@ -514,76 +514,76 @@ public class VMActuator implements Actuator2 {
 
   }
 
-  private long getAccountEnergyLimitWithFloatRatio(AccountCapsule account, long feeLimit,
-                                                   long callValue) {
+  private long getAccountEntropyLimitWithFloatRatio(AccountCapsule account, long feeLimit,
+                                                    long callValue) {
 
-    long vdtPerEnergy = VMConstant.VDT_PER_ENERGY;
+    long vdtPerEntropy = VMConstant.VDT_PER_ENTROPY;
     if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
-      vdtPerEnergy = repository.getDynamicPropertiesStore().getEntropyFee();
+      vdtPerEntropy = repository.getDynamicPropertiesStore().getEntropyFee();
     }
     // can change the calc way
-    long leftEnergyFromFreeze = repository.getAccountLeftEnergyFromFreeze(account);
+    long leftEntropyFromFreeze = repository.getAccountLeftEntropyFromFreeze(account);
     callValue = max(callValue, 0);
-    long energyFromBalance = Math
-            .floorDiv(max(account.getBalance() - callValue, 0), vdtPerEnergy);
+    long entropyFromBalance = Math
+            .floorDiv(max(account.getBalance() - callValue, 0), vdtPerEntropy);
 
-    long energyFromFeeLimit;
-    long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEntropy();
-    if (0 == totalBalanceForEnergyFreeze) {
-      energyFromFeeLimit =
-              feeLimit / vdtPerEnergy;
+    long entropyFromFeeLimit;
+    long totalBalanceForEntropyFreeze = account.getAllFrozenBalanceForEntropy();
+    if (0 == totalBalanceForEntropyFreeze) {
+      entropyFromFeeLimit =
+              feeLimit / vdtPerEntropy;
     } else {
-      long totalEnergyFromFreeze = repository
-              .calculateGlobalEnergyLimit(account);
-      long leftBalanceForEnergyFreeze = getEnergyFee(totalBalanceForEnergyFreeze,
-              leftEnergyFromFreeze,
-              totalEnergyFromFreeze);
+      long totalEntropyFromFreeze = repository
+              .calculateGlobalEntropyLimit(account);
+      long leftBalanceForEntropyFreeze = getEntropyFee(totalBalanceForEntropyFreeze,
+              leftEntropyFromFreeze,
+              totalEntropyFromFreeze);
 
-      if (leftBalanceForEnergyFreeze >= feeLimit) {
-        energyFromFeeLimit = BigInteger.valueOf(totalEnergyFromFreeze)
+      if (leftBalanceForEntropyFreeze >= feeLimit) {
+        entropyFromFeeLimit = BigInteger.valueOf(totalEntropyFromFreeze)
                 .multiply(BigInteger.valueOf(feeLimit))
-                .divide(BigInteger.valueOf(totalBalanceForEnergyFreeze)).longValueExact();
+                .divide(BigInteger.valueOf(totalBalanceForEntropyFreeze)).longValueExact();
       } else {
-        energyFromFeeLimit = Math
-                .addExact(leftEnergyFromFreeze,
-                        (feeLimit - leftBalanceForEnergyFreeze) / vdtPerEnergy);
+        entropyFromFeeLimit = Math
+                .addExact(leftEntropyFromFreeze,
+                        (feeLimit - leftBalanceForEntropyFreeze) / vdtPerEntropy);
       }
     }
 
-    return min(Math.addExact(leftEnergyFromFreeze, energyFromBalance), energyFromFeeLimit);
+    return min(Math.addExact(leftEntropyFromFreeze, entropyFromBalance), entropyFromFeeLimit);
   }
 
-  public long getAccountEnergyLimitWithFixRatio(AccountCapsule account, long feeLimit,
-      long callValue) {
+  public long getAccountEntropyLimitWithFixRatio(AccountCapsule account, long feeLimit,
+                                                 long callValue) {
 
-    long vdtPerEnergy = VMConstant.VDT_PER_ENERGY;
+    long vdtPerEntropy = VMConstant.VDT_PER_ENTROPY;
     if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
-      vdtPerEnergy = repository.getDynamicPropertiesStore().getEntropyFee();
+      vdtPerEntropy = repository.getDynamicPropertiesStore().getEntropyFee();
     }
 
-    long leftFrozenEnergy = repository.getAccountLeftEnergyFromFreeze(account);
+    long leftFrozenEntropy = repository.getAccountLeftEntropyFromFreeze(account);
 
-    long energyFromBalance = max(account.getBalance() - callValue, 0) / vdtPerEnergy;
-    long availableEnergy = Math.addExact(leftFrozenEnergy, energyFromBalance);
+    long entropyFromBalance = max(account.getBalance() - callValue, 0) / vdtPerEntropy;
+    long availableEntropy = Math.addExact(leftFrozenEntropy, entropyFromBalance);
 
-    long energyFromFeeLimit = feeLimit / vdtPerEnergy;
-    return min(availableEnergy, energyFromFeeLimit);
+    long entropyFromFeeLimit = feeLimit / vdtPerEntropy;
+    return min(availableEntropy, entropyFromFeeLimit);
 
   }
 
 
 
-  public long getTotalEnergyLimit(AccountCapsule creator, AccountCapsule caller,
-      TriggerSmartContract contract, long feeLimit, long callValue)
+  public long getTotalEntropyLimit(AccountCapsule creator, AccountCapsule caller,
+                                   TriggerSmartContract contract, long feeLimit, long callValue)
       throws ContractValidateException {
     if (Objects.isNull(creator) && VMConfig.allowVvmConstantinople()) {
-      return getAccountEnergyLimitWithFixRatio(caller, feeLimit, callValue);
+      return getAccountEntropyLimitWithFixRatio(caller, feeLimit, callValue);
     }
     //  according to version
     if (StorageUtils.getEntropyLimitHardFork()) {
-      return getTotalEnergyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
+      return getTotalEntropyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
     } else {
-      return getTotalEnergyLimitWithFloatRatio(creator, caller, contract, feeLimit, callValue);
+      return getTotalEntropyLimitWithFloatRatio(creator, caller, contract, feeLimit, callValue);
     }
   }
 
@@ -630,67 +630,67 @@ public class VMActuator implements Actuator2 {
     return cpuLimitRatio;
   }
 
-  public long getTotalEnergyLimitWithFixRatio(AccountCapsule creator, AccountCapsule caller,
-      TriggerSmartContract contract, long feeLimit, long callValue)
+  public long getTotalEntropyLimitWithFixRatio(AccountCapsule creator, AccountCapsule caller,
+                                               TriggerSmartContract contract, long feeLimit, long callValue)
       throws ContractValidateException {
 
-    long callerEnergyLimit = getAccountEnergyLimitWithFixRatio(caller, feeLimit, callValue);
+    long callerEntropyLimit = getAccountEntropyLimitWithFixRatio(caller, feeLimit, callValue);
     if (Arrays.equals(creator.getAddress().toByteArray(), caller.getAddress().toByteArray())) {
       // when the creator calls his own contract, this logic will be used.
       // so, the creator must use a BIG feeLimit to call his own contract,
-      // which will cost the feeLimit VS when the creator's frozen energy is 0.
-      return callerEnergyLimit;
+      // which will cost the feeLimit VS when the creator's frozen entropy is 0.
+      return callerEntropyLimit;
     }
 
-    long creatorEnergyLimit = 0;
+    long creatorEntropyLimit = 0;
     ContractCapsule contractCapsule = repository
         .getContract(contract.getContractAddress().toByteArray());
     long consumeUserResourcePercent = contractCapsule.getConsumeUserResourcePercent();
 
-    long originEnergyLimit = contractCapsule.getOriginEnergyLimit();
-    if (originEnergyLimit < 0) {
-      throw new ContractValidateException("originEnergyLimit can't be < 0");
+    long originEntropyLimit = contractCapsule.getOriginEntropyLimit();
+    if (originEntropyLimit < 0) {
+      throw new ContractValidateException("originEntropyLimit can't be < 0");
     }
 
     if (consumeUserResourcePercent <= 0) {
-      creatorEnergyLimit = min(repository.getAccountLeftEnergyFromFreeze(creator),
-          originEnergyLimit);
+      creatorEntropyLimit = min(repository.getAccountLeftEntropyFromFreeze(creator),
+          originEntropyLimit);
     } else {
       if (consumeUserResourcePercent < VMConstant.ONE_HUNDRED) {
-        // creatorEnergyLimit =
-        // min(callerEnergyLimit * (100 - percent) / percent, creatorLeftFrozenEnergy, originEnergyLimit)
+        // creatorEntropyLimit =
+        // min(callerEntropyLimit * (100 - percent) / percent, creatorLeftFrozenEntropy, originEntropyLimit)
 
-        creatorEnergyLimit = min(
-            BigInteger.valueOf(callerEnergyLimit)
+        creatorEntropyLimit = min(
+            BigInteger.valueOf(callerEntropyLimit)
                 .multiply(BigInteger.valueOf(VMConstant.ONE_HUNDRED - consumeUserResourcePercent))
                 .divide(BigInteger.valueOf(consumeUserResourcePercent)).longValueExact(),
-            min(repository.getAccountLeftEnergyFromFreeze(creator), originEnergyLimit)
+            min(repository.getAccountLeftEntropyFromFreeze(creator), originEntropyLimit)
         );
       }
     }
-    return Math.addExact(callerEnergyLimit, creatorEnergyLimit);
+    return Math.addExact(callerEntropyLimit, creatorEntropyLimit);
   }
 
-  private long getTotalEnergyLimitWithFloatRatio(AccountCapsule creator, AccountCapsule caller,
-      TriggerSmartContract contract, long feeLimit, long callValue) {
+  private long getTotalEntropyLimitWithFloatRatio(AccountCapsule creator, AccountCapsule caller,
+                                                  TriggerSmartContract contract, long feeLimit, long callValue) {
 
-    long callerEnergyLimit = getAccountEnergyLimitWithFloatRatio(caller, feeLimit, callValue);
+    long callerEntropyLimit = getAccountEntropyLimitWithFloatRatio(caller, feeLimit, callValue);
     if (Arrays.equals(creator.getAddress().toByteArray(), caller.getAddress().toByteArray())) {
-      return callerEnergyLimit;
+      return callerEntropyLimit;
     }
 
-    // creatorEnergyFromFreeze
-    long creatorEnergyLimit = repository.getAccountLeftEnergyFromFreeze(creator);
+    // creatorEntropyFromFreeze
+    long creatorEntropyLimit = repository.getAccountLeftEntropyFromFreeze(creator);
 
     ContractCapsule contractCapsule = repository
         .getContract(contract.getContractAddress().toByteArray());
     long consumeUserResourcePercent = contractCapsule.getConsumeUserResourcePercent();
 
-    if (creatorEnergyLimit * consumeUserResourcePercent
-        > (VMConstant.ONE_HUNDRED - consumeUserResourcePercent) * callerEnergyLimit) {
-      return Math.floorDiv(callerEnergyLimit * VMConstant.ONE_HUNDRED, consumeUserResourcePercent);
+    if (creatorEntropyLimit * consumeUserResourcePercent
+        > (VMConstant.ONE_HUNDRED - consumeUserResourcePercent) * callerEntropyLimit) {
+      return Math.floorDiv(callerEntropyLimit * VMConstant.ONE_HUNDRED, consumeUserResourcePercent);
     } else {
-      return Math.addExact(callerEnergyLimit, creatorEnergyLimit);
+      return Math.addExact(callerEntropyLimit, creatorEntropyLimit);
     }
   }
 

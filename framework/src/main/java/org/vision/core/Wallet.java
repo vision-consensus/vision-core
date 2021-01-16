@@ -1098,11 +1098,11 @@ public class Wallet {
     long freeNetLimit = chainBaseManager.getDynamicPropertiesStore().getFreeNetLimit();
     long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalNetLimit();
     long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalNetWeight();
-    long energyLimit = entropyProcessor
-        .calculateGlobalEnergyLimit(accountCapsule);
-    long totalEnergyLimit =
+    long entropyLimit = entropyProcessor
+        .calculateGlobalEntropyLimit(accountCapsule);
+    long totalEntropyLimit =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyCurrentLimit();
-    long totalEnergyWeight =
+    long totalEntropyWeight =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
@@ -1117,10 +1117,10 @@ public class Wallet {
         .setNetLimit(netLimit)
         .setTotalNetLimit(totalNetLimit)
         .setTotalNetWeight(totalNetWeight)
-        .setEntropyLimit(energyLimit)
+        .setEntropyLimit(entropyLimit)
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
-        .setTotalEntropyLimit(totalEnergyLimit)
-        .setTotalEntropyWeight(totalEnergyWeight)
+        .setTotalEntropyLimit(totalEntropyLimit)
+        .setTotalEntropyWeight(totalEntropyWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetNetUsed(allFreeAssetNetUsage)

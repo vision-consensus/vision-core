@@ -157,7 +157,7 @@ contract D {
         "testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
     Runtime cRuntime = VvmTestUtils
         .processTransactionAndReturnRuntime(cTrx, DepositImpl.createRoot(manager), null);
-    Assert.assertTrue(cRuntime.getResult().getException() instanceof Program.OutOfEnergyException);
+    Assert.assertTrue(cRuntime.getResult().getException() instanceof Program.OutOfEntropyException);
 
     Transaction dTrx = VvmTestUtils.generateDeploySmartContractAndGetTransaction(
         "testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
@@ -193,7 +193,7 @@ contract D {
         "testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
     Runtime cRuntime = VvmTestUtils
         .processTransactionAndReturnRuntime(cTrx, DepositImpl.createRoot(manager), null);
-    Assert.assertTrue(cRuntime.getResult().getException() instanceof Program.OutOfEnergyException);
+    Assert.assertTrue(cRuntime.getResult().getException() instanceof Program.OutOfEntropyException);
 
     Transaction dTrx = VvmTestUtils.generateDeploySmartContractAndGetTransaction(
         "testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, engeryLimit);

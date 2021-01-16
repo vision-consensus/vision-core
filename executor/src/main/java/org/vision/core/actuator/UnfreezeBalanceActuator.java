@@ -344,8 +344,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForEntropy()
                 < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
-                  "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEnergy["
+                  "AcquiredDelegatedFrozenBalanceForEntropy[" + receiverCapsule
+                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEntropy["
                       + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }
@@ -356,20 +356,20 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 && receiverCapsule.getAcquiredDelegatedFrozenBalanceForEntropy()
                 < delegatedResourceCapsule.getFrozenBalanceForEntropy()) {
               throw new ContractValidateException(
-                  "AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEnergy["
+                  "AcquiredDelegatedFrozenBalanceForEntropy[" + receiverCapsule
+                      .getAcquiredDelegatedFrozenBalanceForEntropy() + "] < delegatedEntropy["
                       + delegatedResourceCapsule.getFrozenBalanceForEntropy() +
                       "]");
             }
           }
 
-          if (delegatedResourceCapsule.getExpireTimeForEnergy(dynamicStore) > now) {
+          if (delegatedResourceCapsule.getExpireTimeForEntropy(dynamicStore) > now) {
             throw new ContractValidateException("It's not time to unfreeze.");
           }
           break;
         default:
           throw new ContractValidateException(
-              "ResourceCode error.valid ResourceCode[PHOTON、Energy]");
+              "ResourceCode error.valid ResourceCode[PHOTON、Entropy]");
       }
 
     } else {
@@ -386,19 +386,19 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           }
           break;
         case ENTROPY:
-          Frozen frozenBalanceForEnergy = accountCapsule.getAccountResource()
+          Frozen frozenBalanceForEntropy = accountCapsule.getAccountResource()
               .getFrozenBalanceForEntropy();
-          if (frozenBalanceForEnergy.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(Energy)");
+          if (frozenBalanceForEntropy.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(Entropy)");
           }
-          if (frozenBalanceForEnergy.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(Energy).");
+          if (frozenBalanceForEntropy.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
 
           break;
         default:
           throw new ContractValidateException(
-              "ResourceCode error.valid ResourceCode[PHOTON、Energy]");
+              "ResourceCode error.valid ResourceCode[PHOTON、ENTROPY]");
       }
 
     }

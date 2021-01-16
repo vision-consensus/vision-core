@@ -370,14 +370,14 @@ public class ContractScenario011 {
   }
 
   @Test(enabled = true, description = "Create Gen0 cat")
-  public void triggerUseTriggerEnergyUsage() {
+  public void triggerUseTriggerEntropyUsage() {
     ECKey ecKey3 = new ECKey(Utils.getRandom());
-    byte[] triggerUseTriggerEnergyUsageAddress = ecKey3.getAddress();
-    final String triggerUseTriggerEnergyUsageKey = ByteArray.toHexString(ecKey3.getPrivKeyBytes());
+    byte[] triggerUseTriggerEntropyUsageAddress = ecKey3.getAddress();
+    final String triggerUseTriggerEntropyUsageKey = ByteArray.toHexString(ecKey3.getPrivKeyBytes());
     Assert.assertTrue(
-        PublicMethed.sendcoin(triggerUseTriggerEnergyUsageAddress, 100000000000L,
+        PublicMethed.sendcoin(triggerUseTriggerEntropyUsageAddress, 100000000000L,
             fromAddress, testKey002, blockingStubFull));
-    String newCxoAddress = "\"" + Base58.encode58Check(triggerUseTriggerEnergyUsageAddress)
+    String newCxoAddress = "\"" + Base58.encode58Check(triggerUseTriggerEntropyUsageAddress)
         + "\"";
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     final String txid1;
@@ -410,11 +410,11 @@ public class ContractScenario011 {
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Long beforeBalance = PublicMethed
-        .queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull).getBalance();
+        .queryAccount(triggerUseTriggerEntropyUsageKey, blockingStubFull).getBalance();
     logger.info("before balance is " + Long.toString(beforeBalance));
     txid = PublicMethed.triggerContract(kittyCoreContractAddress,
         "createGen0Auction(uint256)", "0", false,
-        0, 100000000L, triggerUseTriggerEnergyUsageAddress, triggerUseTriggerEnergyUsageKey,
+        0, 100000000L, triggerUseTriggerEntropyUsageAddress, triggerUseTriggerEntropyUsageKey,
         blockingStubFull);
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -423,68 +423,68 @@ public class ContractScenario011 {
         .toString(infoById.get().getReceipt().getEntropyFee()));
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() == 0);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyFee() > 10000);
-    //    Assert.assertTrue(infoById.get().getReceipt().getOriginEnergyUsage() > 10000);
+    //    Assert.assertTrue(infoById.get().getReceipt().getOriginEntropyUsage() > 10000);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal()
         == infoById.get().getReceipt().getEntropyFee() / 100 + infoById.get().getReceipt()
         .getOriginEntropyUsage());
 
     Long fee = infoById.get().getFee();
     Long afterBalance = PublicMethed
-        .queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull1).getBalance();
+        .queryAccount(triggerUseTriggerEntropyUsageKey, blockingStubFull1).getBalance();
     logger.info("after balance is " + Long.toString(afterBalance));
     logger.info("fee is " + Long.toString(fee));
     Assert.assertTrue(beforeBalance == afterBalance + fee);
 
-    logger.info("before EnergyUsage is " + infoById.get().getReceipt().getEntropyUsage());
-    logger.info("before EnergyFee is " + infoById.get().getReceipt().getEntropyFee());
-    logger.info("before OriginEnergyUsage is " + infoById.get().getReceipt()
+    logger.info("before EntropyUsage is " + infoById.get().getReceipt().getEntropyUsage());
+    logger.info("before EntropyFee is " + infoById.get().getReceipt().getEntropyFee());
+    logger.info("before OriginEntropyUsage is " + infoById.get().getReceipt()
         .getOriginEntropyUsage());
-    logger.info("before EnergyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("before EntropyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
     Assert.assertTrue(
-        PublicMethed.freezeBalanceGetEntropy(triggerUseTriggerEnergyUsageAddress, 100000000L,
-            0, 1, triggerUseTriggerEnergyUsageKey, blockingStubFull));
+        PublicMethed.freezeBalanceGetEntropy(triggerUseTriggerEntropyUsageAddress, 100000000L,
+            0, 1, triggerUseTriggerEntropyUsageKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    beforeBalance = PublicMethed.queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull)
+    beforeBalance = PublicMethed.queryAccount(triggerUseTriggerEntropyUsageKey, blockingStubFull)
         .getBalance();
     logger.info("before balance is " + Long.toString(beforeBalance));
 
     AccountResourceMessage accountResource = PublicMethed
-        .getAccountResource(triggerUseTriggerEnergyUsageAddress, blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    logger.info("before EnergyLimit is " + Long.toString(energyLimit));
+        .getAccountResource(triggerUseTriggerEntropyUsageAddress, blockingStubFull);
+    Long entropyLimit = accountResource.getEntropyLimit();
+    logger.info("before EntropyLimit is " + Long.toString(entropyLimit));
 
     txid = PublicMethed.triggerContract(kittyCoreContractAddress,
         "createGen0Auction(uint256)", "0", false,
-        0, 100000000L, triggerUseTriggerEnergyUsageAddress, triggerUseTriggerEnergyUsageKey,
+        0, 100000000L, triggerUseTriggerEntropyUsageAddress, triggerUseTriggerEntropyUsageKey,
         blockingStubFull);
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull1);
-    logger.info("after EnergyUsage is " + infoById.get().getReceipt().getEntropyUsage());
-    logger.info("after EnergyFee is " + infoById.get().getReceipt().getEntropyFee());
-    logger.info("after OriginEnergyUsage is " + infoById.get().getReceipt().getOriginEntropyUsage());
-    logger.info("after EnergyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("after EntropyUsage is " + infoById.get().getReceipt().getEntropyUsage());
+    logger.info("after EntropyFee is " + infoById.get().getReceipt().getEntropyFee());
+    logger.info("after OriginEntropyUsage is " + infoById.get().getReceipt().getOriginEntropyUsage());
+    logger.info("after EntropyTotal is " + infoById.get().getReceipt().getEntropyUsageTotal());
     fee = infoById.get().getFee();
-    afterBalance = PublicMethed.queryAccount(triggerUseTriggerEnergyUsageKey, blockingStubFull1)
+    afterBalance = PublicMethed.queryAccount(triggerUseTriggerEntropyUsageKey, blockingStubFull1)
         .getBalance();
     logger.info("after balance is " + Long.toString(afterBalance));
     logger.info("fee is " + Long.toString(fee));
 
     accountResource = PublicMethed
-        .getAccountResource(triggerUseTriggerEnergyUsageAddress, blockingStubFull1);
-    energyLimit = accountResource.getEntropyLimit();
+        .getAccountResource(triggerUseTriggerEntropyUsageAddress, blockingStubFull1);
+    entropyLimit = accountResource.getEntropyLimit();
 
-    logger.info("after EnergyLimit is " + Long.toString(energyLimit));
+    logger.info("after EntropyLimit is " + Long.toString(entropyLimit));
 
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() > 10000);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyFee() == 0);
 
-    //Assert.assertTrue(infoById.get().getReceipt().getOriginEnergyUsage() > 10000);
+    //Assert.assertTrue(infoById.get().getReceipt().getOriginEntropyUsage() > 10000);
     Assert.assertTrue(infoById.get().getReceipt().getEntropyUsageTotal() == infoById.get()
         .getReceipt().getEntropyUsage() + infoById.get().getReceipt().getOriginEntropyUsage());
     //    Assert.assertTrue(infoById.get().getReceipt().getEntropyUsage() == infoById.get()
-    //        .getReceipt().getOriginEnergyUsage());
+    //        .getReceipt().getOriginEntropyUsage());
 
     Assert.assertTrue(beforeBalance == afterBalance + fee);
     PublicMethed.unFreezeBalance(deployAddress, deployKey, 1,
@@ -493,9 +493,9 @@ public class ContractScenario011 {
         triggerAddress, blockingStubFull);
 
     PublicMethed
-        .unFreezeBalance(triggerUseTriggerEnergyUsageAddress, triggerUseTriggerEnergyUsageKey, 1,
-            triggerUseTriggerEnergyUsageAddress, blockingStubFull);
-    PublicMethed.freedResource(triggerUseTriggerEnergyUsageAddress, triggerUseTriggerEnergyUsageKey,
+        .unFreezeBalance(triggerUseTriggerEntropyUsageAddress, triggerUseTriggerEntropyUsageKey, 1,
+            triggerUseTriggerEntropyUsageAddress, blockingStubFull);
+    PublicMethed.freedResource(triggerUseTriggerEntropyUsageAddress, triggerUseTriggerEntropyUsageKey,
         fromAddress, blockingStubFull);
 
   }

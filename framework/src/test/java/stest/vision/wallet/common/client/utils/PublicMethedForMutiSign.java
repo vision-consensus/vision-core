@@ -1551,9 +1551,9 @@ public class PublicMethedForMutiSign {
    * constructor.
    */
 
-  public static Boolean freezeBalanceGetEnergy(byte[] addRess, long freezeBalance,
-      long freezeDuration, int resourceCode, String priKey,
-      WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
+  public static Boolean freezeBalanceGetEntropy(byte[] addRess, long freezeBalance,
+                                                long freezeDuration, int resourceCode, String priKey,
+                                                WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
@@ -4209,10 +4209,10 @@ public class PublicMethedForMutiSign {
    * constructor.
    */
 
-  public static Boolean freezeBalanceGetEnergyWithPermissionId(byte[] addRess, long freezeBalance,
-      long freezeDuration, int resourceCode, String priKey,
-      WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
-      String[] permissionKeyString) {
+  public static Boolean freezeBalanceGetEntropyWithPermissionId(byte[] addRess, long freezeBalance,
+                                                                long freezeDuration, int resourceCode, String priKey,
+                                                                WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
+                                                                String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;

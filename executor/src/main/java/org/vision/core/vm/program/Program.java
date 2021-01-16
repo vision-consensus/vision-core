@@ -760,7 +760,7 @@ public class Program {
     }
 
     // actual energy subtract
-    DataWord energyLimit = this.getCreateEnergy(getEnergyLimitLeft());
+    DataWord energyLimit = this.getCreateEnergy(getEntropyLimitLeft());
     spendEnergy(energyLimit.longValue(), "internal call");
 
     increaseNonce();
@@ -797,17 +797,17 @@ public class Program {
     // 4. CREATE THE CONTRACT OUT OF RETURN
     byte[] code = createResult.getHReturn();
 
-    long saveCodeEnergy = (long) getLength(code) * EnergyCost.getInstance().getCREATE_DATA();
+    long saveCodeEnergy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
 
     long afterSpend =
-        programInvoke.getEnergyLimit() - createResult.getEntropyUsed() - saveCodeEnergy;
+        programInvoke.getEntropyLimit() - createResult.getEntropyUsed() - saveCodeEnergy;
     if (!createResult.isRevert()) {
       if (afterSpend < 0) {
         createResult.setException(
-            Exception.notEnoughSpendEnergy("No energy to save just created contract code",
-                saveCodeEnergy, programInvoke.getEnergyLimit() - createResult.getEntropyUsed()));
+            Exception.notEnoughSpendEntropy("No energy to save just created contract code",
+                saveCodeEnergy, programInvoke.getEntropyLimit() - createResult.getEntropyUsed()));
       } else {
-        createResult.spendEnergy(saveCodeEnergy);
+        createResult.spendEntropy(saveCodeEnergy);
         deposit.saveCode(newAddress, code);
       }
     }
@@ -1073,13 +1073,13 @@ public class Program {
   }
 
   public void spendEnergy(long energyValue, String opName) {
-    if (getEnergylimitLeftLong() < energyValue) {
-      throw new OutOfEnergyException(
+    if (getEntropyLimitLeftLong() < energyValue) {
+      throw new OutOfEntropyException(
           "Not enough energy for '%s' operation executing: curInvokeEnergyLimit[%d],"
               + " curOpEnergy[%d], usedEnergy[%d]",
-          opName, invoke.getEnergyLimit(), energyValue, getResult().getEntropyUsed());
+          opName, invoke.getEntropyLimit(), energyValue, getResult().getEntropyUsed());
     }
-    getResult().spendEnergy(energyValue);
+    getResult().spendEntropy(energyValue);
   }
 
   public void checkCPUTimeLimit(String opName) {
@@ -1103,8 +1103,8 @@ public class Program {
 
   }
 
-  public void spendAllEnergy() {
-    spendEnergy(getEnergyLimitLeft().longValue(), "Spending all remaining");
+  public void spendAllEntropy() {
+    spendEnergy(getEntropyLimitLeft().longValue(), "Spending all remaining");
   }
 
   public void refundEnergy(long energyValue, String cause) {
@@ -1226,12 +1226,12 @@ public class Program {
     return new DataWord(1);
   }
 
-  public long getEnergylimitLeftLong() {
-    return invoke.getEnergyLimit() - getResult().getEntropyUsed();
+  public long getEntropyLimitLeftLong() {
+    return invoke.getEntropyLimit() - getResult().getEntropyUsed();
   }
 
-  public DataWord getEnergyLimitLeft() {
-    return new DataWord(invoke.getEnergyLimit() - getResult().getEntropyUsed());
+  public DataWord getEntropyLimitLeft() {
+    return new DataWord(invoke.getEntropyLimit() - getResult().getEntropyUsed());
   }
 
   public long getVmShouldEndInUs() {
@@ -1404,8 +1404,8 @@ public class Program {
       logger.trace(" -- MEMORY --  {}", memoryData);
       logger.trace("\n  Spent Drop: [{}]/[{}]\n  Left Energy:  [{}]\n",
           getResult().getEntropyUsed(),
-          invoke.getEnergyLimit(),
-          getEnergyLimitLeft().longValue());
+          invoke.getEntropyLimit(),
+          getEntropyLimitLeft().longValue());
 
       StringBuilder globalOutput = new StringBuilder("\n");
       if (stackData.length() > 0) {
@@ -1441,7 +1441,7 @@ public class Program {
 
   public void saveOpTrace() {
     if (this.pc < ops.length) {
-      trace.addOp(ops[pc], pc, getCallDeep(), getEnergyLimitLeft(), traceListener.resetActions());
+      trace.addOp(ops[pc], pc, getCallDeep(), getEntropyLimitLeft(), traceListener.resetActions());
     }
   }
 
@@ -1883,9 +1883,9 @@ public class Program {
   }
 
   @SuppressWarnings("serial")
-  public static class OutOfEnergyException extends BytecodeExecutionException {
+  public static class OutOfEntropyException extends BytecodeExecutionException {
 
-    public OutOfEnergyException(String message, Object... args) {
+    public OutOfEntropyException(String message, Object... args) {
       super(format(message, args));
     }
   }
@@ -1979,24 +1979,24 @@ public class Program {
     private Exception() {
     }
 
-    public static OutOfEnergyException notEnoughOpEnergy(OpCode op, long opEnergy,
-        long programEnergy) {
-      return new OutOfEnergyException(
+    public static OutOfEntropyException notEnoughOpEnergy(OpCode op, long opEnergy,
+                                                          long programEnergy) {
+      return new OutOfEntropyException(
           "Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d];", op,
           opEnergy,
           programEnergy);
     }
 
-    public static OutOfEnergyException notEnoughOpEnergy(OpCode op, DataWord opEnergy,
-        DataWord programEnergy) {
+    public static OutOfEntropyException notEnoughOpEnergy(OpCode op, DataWord opEnergy,
+                                                          DataWord programEnergy) {
       return notEnoughOpEnergy(op, opEnergy.longValue(), programEnergy.longValue());
     }
 
-    public static OutOfEnergyException notEnoughSpendEnergy(String hint, long needEnergy,
-        long leftEnergy) {
-      return new OutOfEnergyException(
-          "Not enough energy for '%s' executing: needEnergy[%d], leftEnergy[%d];", hint, needEnergy,
-          leftEnergy);
+    public static OutOfEntropyException notEnoughSpendEntropy(String hint, long needEntropy,
+                                                              long leftEntropy) {
+      return new OutOfEntropyException(
+          "Not enough energy for '%s' executing: needEntropy[%d], leftEntropy[%d];", hint, needEntropy,
+          leftEntropy);
     }
 
     public static OutOfTimeException notEnoughTime(String op) {
@@ -2025,9 +2025,9 @@ public class Program {
       return new PrecompiledContractException(e.getMessage());
     }
 
-    public static OutOfEnergyException energyOverflow(BigInteger actualEnergy,
-        BigInteger energyLimit) {
-      return new OutOfEnergyException("Energy value overflow: actualEnergy[%d], energyLimit[%d];",
+    public static OutOfEntropyException energyOverflow(BigInteger actualEnergy,
+                                                       BigInteger energyLimit) {
+      return new OutOfEntropyException("Energy value overflow: actualEnergy[%d], energyLimit[%d];",
           actualEnergy.longValueExact(), energyLimit.longValueExact());
     }
 

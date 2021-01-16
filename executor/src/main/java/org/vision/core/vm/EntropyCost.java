@@ -1,9 +1,9 @@
 package org.vision.core.vm;
 
 
-public class EnergyCost {
+public class EntropyCost {
 
-  private static EnergyCost instance = null;
+  private static EntropyCost instance = null;
   /* backwards compatibility, remove eventually */
   private final int STEP = 1;
   /* backwards compatibility, remove eventually */
@@ -15,8 +15,8 @@ public class EnergyCost {
   private final int MIDSTEP = 8;
   private final int SLOWSTEP = 10;
   private final int EXTSTEP = 20;
-  private final int GENESISENERGYLIMIT = 1000000;
-  private final int MINENERGYLIMIT = 125000;
+  private final int GENESISENTROPYLIMIT = 1000000;
+  private final int MINENTROPYLIMIT = 125000;
   private final int BALANCE = 20;
   private final int SHA3 = 30;
   private final int SHA3_WORD = 6;
@@ -64,9 +64,9 @@ public class EnergyCost {
   private final int TOKEN_ISSUE = 25000;
   private final int UPDATE_ASSET = 5000;
 
-  public static EnergyCost getInstance() {
+  public static EntropyCost getInstance() {
     if (instance == null) {
-      instance = new EnergyCost();
+      instance = new EntropyCost();
     }
 
     return instance;
@@ -108,12 +108,12 @@ public class EnergyCost {
     return EXTSTEP;
   }
 
-  public int getGENESISENERGYLIMIT() {
-    return GENESISENERGYLIMIT;
+  public int getGENESISENTROPYLIMIT() {
+    return GENESISENTROPYLIMIT;
   }
 
-  public int getMINENERGYLIMIT() {
-    return MINENERGYLIMIT;
+  public int getMINENTROPYLIMIT() {
+    return MINENTROPYLIMIT;
   }
 
   public int getBALANCE() {

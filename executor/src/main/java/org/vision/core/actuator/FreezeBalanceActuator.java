@@ -88,11 +88,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
               frozenBalance, expireTime);
           accountCapsule.addDelegatedFrozenBalanceForEntropy(frozenBalance);
         } else {
-          long newFrozenBalanceForEnergy =
+          long newFrozenBalanceForEntropy =
               frozenBalance + accountCapsule.getAccountResource()
                   .getFrozenBalanceForEntropy()
                   .getFrozenBalance();
-          accountCapsule.setFrozenForEntropy(newFrozenBalanceForEnergy, expireTime);
+          accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
         }
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
@@ -186,7 +186,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       default:
         throw new ContractValidateException(
-            "ResourceCode error,valid ResourceCode[BANDWIDTH、ENERGY]");
+            "ResourceCode error,valid ResourceCode[PHOTON、ENTROPY]");
     }
 
     //todo：need version control and config for delegating resource

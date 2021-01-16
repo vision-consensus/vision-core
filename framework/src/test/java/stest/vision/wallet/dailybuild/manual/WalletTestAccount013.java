@@ -107,8 +107,8 @@ public class WalletTestAccount013 {
     blockingStubPbft = WalletSolidityGrpc.newBlockingStub(channelPbft);
   }
 
-  @Test(enabled = true, description = "Delegate resource for bandwidth and energy")
-  public void test1DelegateResourceForBandwidthAndEnergy() {
+  @Test(enabled = true, description = "Delegate resource for photon and entropy")
+  public void test1DelegateResourceForBandwidthAndEntropy() {
     //Create account013
     ECKey ecKey1 = new ECKey(Utils.getRandom());
     account013Address = ecKey1.getAddress();
@@ -135,12 +135,12 @@ public class WalletTestAccount013 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage account013Resource = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    logger.info("013 energy limit is " + account013Resource.getEntropyLimit());
+    logger.info("013 entropy limit is " + account013Resource.getEntropyLimit());
     logger.info("013 net limit is " + account013Resource.getNetLimit());
     //getAccountResource receiver
     AccountResourceMessage receiverResource = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    logger.info("receiver energy limit is " + receiverResource.getEntropyLimit());
+    logger.info("receiver entropy limit is " + receiverResource.getEntropyLimit());
     logger.info("receiver net limit is " + receiverResource.getNetLimit());
     Protocol.Account account013infoBefore = PublicMethed
         .queryAccount(account013Address, blockingStubFull);
@@ -180,13 +180,13 @@ public class WalletTestAccount013 {
     long account013BeforeBalance1 = account013Before1.getBalance();
     AccountResourceMessage account013ResBefore1 = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    //Energy of account013 before DelegateResource
-    long account013BeforeEnergy = account013ResBefore1.getEntropyLimit();
+    //Entropy of account013 before DelegateResource
+    long account013BeforeEntropy = account013ResBefore1.getEntropyLimit();
     AccountResourceMessage receiverResourceBefore1 = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    //Energy of receiver before DelegateResource
-    long receiverBeforeEnergy = receiverResourceBefore1.getEntropyLimit();
-    //Account013 DelegateResource Energy to receiver
+    //Entropy of receiver before DelegateResource
+    long receiverBeforeEntropy = receiverResourceBefore1.getEntropyLimit();
+    //Account013 DelegateResource Entropy to receiver
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 1,
             ByteString.copyFrom(receiverDelegateAddress), testKeyForAccount013, blockingStubFull));
@@ -196,18 +196,18 @@ public class WalletTestAccount013 {
     long account013AfterBalance1 = account013infoAfter1.getBalance();
     AccountResourceMessage account013ResAfter1 = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    long account013AfterEnergy = account013ResAfter1.getEntropyLimit();
-    //Energy of account013 after DelegateResource
+    long account013AfterEntropy = account013ResAfter1.getEntropyLimit();
+    //Entropy of account013 after DelegateResource
     AccountResourceMessage receiverResourceAfter1 = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    //Energy of receiver after DelegateResource
-    long receiverAfterEnergy = receiverResourceAfter1.getEntropyLimit();
+    //Entropy of receiver after DelegateResource
+    long receiverAfterEntropy = receiverResourceAfter1.getEntropyLimit();
     //Balance of Account013 reduced amount same as DelegateResource
     Assert.assertTrue(account013BeforeBalance1 == account013AfterBalance1 + freezeAmount);
     //Bandwidth of account013 is equally before and after DelegateResource
-    Assert.assertTrue(account013AfterEnergy == account013BeforeEnergy);
+    Assert.assertTrue(account013AfterEntropy == account013BeforeEntropy);
     //Bandwidth of receiver after DelegateResource is greater than before
-    Assert.assertTrue(receiverAfterEnergy > receiverBeforeEnergy);
+    Assert.assertTrue(receiverAfterEntropy > receiverBeforeEntropy);
     //account013 DelegateResource to Empty failed
     Assert.assertFalse(PublicMethed
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
@@ -217,7 +217,7 @@ public class WalletTestAccount013 {
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
             ByteString.copyFrom(account013Address), testKeyForAccount013, blockingStubFull));
     account013Resource = PublicMethed.getAccountResource(account013Address, blockingStubFull);
-    logger.info("After 013 energy limit is " + account013Resource.getEntropyLimit());
+    logger.info("After 013 entropy limit is " + account013Resource.getEntropyLimit());
     logger.info("After 013 net limit is " + account013Resource.getNetLimit());
 
     receiverResource = PublicMethed.getAccountResource(receiverDelegateAddress, blockingStubFull);
@@ -272,12 +272,12 @@ public class WalletTestAccount013 {
     Optional<GrpcAPI.DelegatedResourceList> delegatedResourceResult2 = PublicMethed
         .getDelegatedResource(account4DelegatedResourceAddress, account5DelegatedResourceAddress,
             blockingStubFull);
-    long afterFreezeEnergy = delegatedResourceResult2.get().getDelegatedResource(0)
+    long afterFreezeEntropy = delegatedResourceResult2.get().getDelegatedResource(0)
         .getFrozenBalanceForEntropy();
     //FrozenBalanceForBandwidth > 0
     Assert.assertTrue(afterFreezeBandwidth > 0);
-    //FrozenBalanceForEnergy > 0
-    Assert.assertTrue(afterFreezeEnergy > 0);
+    //FrozenBalanceForEntropy > 0
+    Assert.assertTrue(afterFreezeEntropy > 0);
 
     //check DelegatedResourceAccountIndex for Account4
     Optional<Protocol.DelegatedResourceAccountIndex> delegatedResourceIndexResult1 = PublicMethed
@@ -303,7 +303,7 @@ public class WalletTestAccount013 {
     Assert.assertFalse(
         delegatedResourceIndexResult1AfterUnfreeze.get().getToAccountsList().isEmpty());
     //Balance of Account013 after unfreezeBalance
-    // (013 -> receiver(bandwidth), 013 -> receiver(Energy), 013 -> Account4(bandwidth))
+    // (013 -> receiver(bandwidth), 013 -> receiver(Entropy), 013 -> Account4(bandwidth))
     Assert.assertTrue(PublicMethed.queryAccount(account013Address, blockingStubFull).getBalance()
         == account013BeforeBalance - 2 * freezeAmount);
     //bandwidth from Account013 to  Account4 gone
@@ -311,18 +311,18 @@ public class WalletTestAccount013 {
         PublicMethed.getAccountResource(account4DelegatedResourceAddress, blockingStubFull)
             .getNetLimit() == 0);
 
-    //unfreezebalance of Energy from Account4 to Account5
+    //unfreezebalance of Entropy from Account4 to Account5
     Assert.assertTrue(PublicMethed
         .unFreezeBalance(account4DelegatedResourceAddress, account4DelegatedResourceKey, 1,
             account5DelegatedResourceAddress, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    Protocol.Account account4infoAfterUnfreezeEnergy = PublicMethed
+    Protocol.Account account4infoAfterUnfreezeEntropy = PublicMethed
         .queryAccount(account4DelegatedResourceAddress, blockingStubFull);
     //balance of Account4 after unfreezebalance
-    long account4BalanceAfterUnfreezeEnergy = account4infoAfterUnfreezeEnergy.getBalance();
+    long account4BalanceAfterUnfreezeEntropy = account4infoAfterUnfreezeEntropy.getBalance();
     //balance of Account4 is same as before
-    Assert.assertTrue(account4BeforeBalance == account4BalanceAfterUnfreezeEnergy);
-    //Energy from Account4 to  Account5 gone
+    Assert.assertTrue(account4BeforeBalance == account4BalanceAfterUnfreezeEntropy);
+    //Entropy from Account4 to  Account5 gone
     Assert.assertTrue(
         PublicMethed.getAccountResource(account5DelegatedResourceAddress, blockingStubFull)
             .getEntropyLimit() == 0);
@@ -448,7 +448,7 @@ public class WalletTestAccount013 {
         .deployContract(contractName, abi, code, "", maxFeeLimit, 0L, consumeUserResourcePercent,
             null, accountForDeployKey, accountForDeployAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    //Account4 DelegatedResource of Energy to Contract
+    //Account4 DelegatedResource of Entropy to Contract
     //After 3.6 can not delegate resource to contract
     Assert.assertFalse(PublicMethed
         .freezeBalanceForReceiver(account4DelegatedResourceAddress, freezeAmount, freezeDuration, 1,

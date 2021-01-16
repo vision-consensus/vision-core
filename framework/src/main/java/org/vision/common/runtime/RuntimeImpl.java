@@ -86,7 +86,7 @@ public class RuntimeImpl implements Runtime {
       result.setResultCode(contractResult.ILLEGAL_OPERATION);
       return;
     }
-    if (exception instanceof Program.OutOfEnergyException) {
+    if (exception instanceof Program.OutOfEntropyException) {
       result.setResultCode(contractResult.OUT_OF_ENTROPY);
       return;
     }

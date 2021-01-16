@@ -80,7 +80,7 @@ public class ContractVrcToken023 {
     blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
   }
 
-  @Test(enabled = true, description = "Fallback function energy limit to prevent fallback attacks")
+  @Test(enabled = true, description = "Fallback function entropy limit to prevent fallback attacks")
   public void deploy01TransferTokenContract() {
 
     Assert
@@ -116,7 +116,7 @@ public class ContractVrcToken023 {
     assetAccountId = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedID();
 
     // deploy transferTokenContract
-    int originEnergyLimit = 50000;
+    int originEntropyLimit = 50000;
     String filePath2 = "src/test/resources/soliditycode/contractVrcToken023.sol";
     String contractName2 = "tokenTest";
     HashMap retMap2 = PublicMethed.getBycodeAbi(filePath2, contractName2);
@@ -124,7 +124,7 @@ public class ContractVrcToken023 {
     String abi2 = retMap2.get("abI").toString();
     transferTokenContractAddress = PublicMethed
         .deployContract(contractName2, abi2, code2, "", maxFeeLimit,
-            1000000000L, 0, originEnergyLimit, "0",
+            1000000000L, 0, originEntropyLimit, "0",
             0, null, dev001Key, dev001Address,
             blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -134,7 +134,7 @@ public class ContractVrcToken023 {
     String abi = retMap.get("abI").toString();
     btestAddress = PublicMethed
         .deployContract(contractName, abi, code, "", maxFeeLimit,
-            1000000000L, 0, originEnergyLimit, "0",
+            1000000000L, 0, originEntropyLimit, "0",
             0, null, dev001Key, dev001Address,
             blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -155,14 +155,14 @@ public class ContractVrcToken023 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
   }
 
-  @Test(enabled = true, description = "Fallback function energy used >2300")
+  @Test(enabled = true, description = "Fallback function entropy used >2300")
   public void deploy02TransferTokenContract() {
     Account info;
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = resourceInfo.getEntropyUsed();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
     Long beforeNetUsed = resourceInfo.getNetUsed();
     Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
     Long beforeAssetIssueDevAddress = PublicMethed
@@ -185,7 +185,7 @@ public class ContractVrcToken023 {
     Long beforeUserBalance = PublicMethed.queryAccount(user001Address, blockingStubFull)
         .getBalance();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
     logger.info("beforeAssetIssueContractAddress:" + beforeAssetIssueContractAddress);
@@ -212,7 +212,7 @@ public class ContractVrcToken023 {
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(dev001Address,
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
-    Long afterEnergyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
     Long afterAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -235,7 +235,7 @@ public class ContractVrcToken023 {
         .getBalance();
 
     logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEnergyUsed:" + afterEnergyUsed);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     logger.info("afterAssetIssueCount:" + afterAssetIssueDevAddress);

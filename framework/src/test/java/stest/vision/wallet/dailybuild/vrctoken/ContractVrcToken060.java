@@ -168,12 +168,12 @@ public class ContractVrcToken060 {
     // get and verify the msg.value and msg.id
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitBefore = accountResource.getEntropyLimit();
-    long devEnergyUsageBefore = accountResource.getEntropyUsed();
+    long devEntropyLimitBefore = accountResource.getEntropyLimit();
+    long devEntropyUsageBefore = accountResource.getEntropyUsed();
     long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
-    logger.info("before trigger, devEnergyUsageBefore is " + Long.toString(devEnergyUsageBefore));
+    logger.info("before trigger, devEntropyLimitBefore is " + Long.toString(devEntropyLimitBefore));
+    logger.info("before trigger, devEntropyUsageBefore is " + Long.toString(devEntropyUsageBefore));
     logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
 
     Long transferAssetBefore = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
@@ -188,12 +188,12 @@ public class ContractVrcToken060 {
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEntropyLimit();
-    long devEnergyUsageAfter = accountResource.getEntropyUsed();
+    long devEntropyLimitAfter = accountResource.getEntropyLimit();
+    long devEntropyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
-    logger.info("after trigger, devEnergyUsageAfter is " + Long.toString(devEnergyUsageAfter));
+    logger.info("after trigger, devEntropyLimitAfter is " + Long.toString(devEntropyLimitAfter));
+    logger.info("after trigger, devEntropyUsageAfter is " + Long.toString(devEntropyUsageAfter));
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     infoById = PublicMethed

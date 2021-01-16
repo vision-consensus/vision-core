@@ -193,12 +193,12 @@ public class ContractVrcToken073 {
     }
 
     accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
-    long devEnergyLimitAfter = accountResource.getEntropyLimit();
-    long devEnergyUsageAfter = accountResource.getEntropyUsed();
+    long devEntropyLimitAfter = accountResource.getEntropyLimit();
+    long devEntropyUsageAfter = accountResource.getEntropyUsed();
     long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-    logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
-    logger.info("after trigger, devEnergyUsageAfter is " + Long.toString(devEnergyUsageAfter));
+    logger.info("after trigger, devEntropyLimitAfter is " + Long.toString(devEntropyLimitAfter));
+    logger.info("after trigger, devEntropyUsageAfter is " + Long.toString(devEntropyUsageAfter));
     logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
 
     logger.info("The msg value: " + infoById.get().getLogList().get(0).getTopicsList());

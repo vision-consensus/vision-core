@@ -28,8 +28,6 @@ import org.vision.core.vm.repository.Repository;
 import org.vision.core.vm.repository.Value;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteArray;
-import org.vision.core.capsule.*;
-import org.vision.core.store.*;
 import org.vision.protos.Protocol.AccountType;
 
 import java.util.Optional;
@@ -231,13 +229,13 @@ public class ContractState implements Repository, ProgramListenerAware {
   }
 
   @Override
-  public long getAccountLeftEnergyFromFreeze(AccountCapsule accountCapsule) {
-    return repository.getAccountLeftEnergyFromFreeze(accountCapsule);
+  public long getAccountLeftEntropyFromFreeze(AccountCapsule accountCapsule) {
+    return repository.getAccountLeftEntropyFromFreeze(accountCapsule);
   }
 
   @Override
-  public long calculateGlobalEnergyLimit(AccountCapsule accountCapsule) {
-    return repository.calculateGlobalEnergyLimit(accountCapsule);
+  public long calculateGlobalEntropyLimit(AccountCapsule accountCapsule) {
+    return repository.calculateGlobalEntropyLimit(accountCapsule);
   }
 
   @Override

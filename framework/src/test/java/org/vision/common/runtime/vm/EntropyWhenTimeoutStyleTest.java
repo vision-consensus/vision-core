@@ -27,7 +27,7 @@ import org.vision.common.storage.DepositImpl;
 import org.vision.protos.Protocol.AccountType;
 
 @Slf4j
-public class EnergyWhenTimeoutStyleTest {
+public class EntropyWhenTimeoutStyleTest {
 
   private Manager dbManager;
   private VisionApplicationContext context;
@@ -91,16 +91,16 @@ public class EnergyWhenTimeoutStyleTest {
         consumeUserResourcePercent);
 
     if (null != result.getRuntime().getResult().getException()) {
-      long expectEnergyUsageTotal = feeLimit / 100;
-      Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+      long expectEntropyUsageTotal = feeLimit / 100;
+      Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
       Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-          totalBalance - expectEnergyUsageTotal * 100);
+          totalBalance - expectEntropyUsageTotal * 100);
       return;
     }
-    long expectEnergyUsageTotal = 55107;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+    long expectEntropyUsageTotal = 55107;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEnergyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 100);
 
     byte[] contractAddress = result.getContractAddress();
 
@@ -112,13 +112,13 @@ public class EnergyWhenTimeoutStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, value, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal2 = feeLimit / 100;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
+    long expectEntropyUsageTotal2 = feeLimit / 100;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Exception exception = result.getRuntime().getResult().getException();
     Assert.assertTrue((exception instanceof Program.OutOfTimeException)
-        || (exception instanceof Program.OutOfEnergyException));
+        || (exception instanceof Program.OutOfEntropyException));
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   public VVMTestResult deployEndlessLoopContract(long value, long feeLimit,

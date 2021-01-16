@@ -301,7 +301,7 @@ contract A {
             factoryAddress, Hex.decode(hexInput), 0, fee, manager, null);
     Assert.assertNotNull(result.getRuntime().getRuntimeError());
     Assert.assertTrue(result.getRuntime().getResult().getException()
-        instanceof OutOfEnergyException);
+        instanceof OutOfEntropyException);
   }
   */
 }

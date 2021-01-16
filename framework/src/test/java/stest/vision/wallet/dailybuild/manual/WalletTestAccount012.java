@@ -125,16 +125,16 @@ public class WalletTestAccount012 {
         blockingStubFull);
     accountResource = PublicMethed.getAccountResource(asset011Address,
         blockingStubFull);
-    Long beforeEnergyLimit = accountResource.getEntropyLimit();
-    Long afterEnergyLimit;
-    Long beforeTotalEnergyLimit = accountResource.getTotalEntropyLimit();
+    Long beforeEntropyLimit = accountResource.getEntropyLimit();
+    Long afterEntropyLimit;
+    Long beforeTotalEntropyLimit = accountResource.getTotalEntropyLimit();
     Account account = PublicMethed.queryAccount(testKeyForAssetIssue011, blockingStubFull);
-    Long afterTotalEnergyLimit;
+    Long afterTotalEntropyLimit;
     while (i++ < 20000) {
       accountResource = PublicMethed.getAccountResource(asset011Address,
           blockingStubFull);
-      beforeEnergyLimit = accountResource.getEntropyLimit();
-      beforeTotalEnergyLimit = accountResource.getTotalEntropyLimit();
+      beforeEntropyLimit = accountResource.getEntropyLimit();
+      beforeTotalEntropyLimit = accountResource.getTotalEntropyLimit();
       String initParmes = "\"" + "21" + "\"";
       /*      txid = PublicMethed.triggerContract(contractAddress,
           "storage8Char()", "", false,
@@ -147,17 +147,17 @@ public class WalletTestAccount012 {
       accountResource = PublicMethed.getAccountResource(asset011Address,
           blockingStubFull);
       //logger.info("Current limit is " + accountResource.getTotalEntropyLimit());
-      //PublicMethed.freezeBalanceGetEnergy(asset011Address,1000000L,3,
+      //PublicMethed.freezeBalanceGetEntropy(asset011Address,1000000L,3,
       //    1,testKeyForAssetIssue011,blockingStubFull);
 
       accountResource = PublicMethed.getAccountResource(asset011Address,
           blockingStubFull);
-      afterEnergyLimit = accountResource.getEntropyLimit();
-      afterTotalEnergyLimit = accountResource.getTotalEntropyLimit();
+      afterEntropyLimit = accountResource.getEntropyLimit();
+      afterTotalEntropyLimit = accountResource.getTotalEntropyLimit();
 
-      logger.info("Total energy limit is " + (float) afterTotalEnergyLimit / 50000000000L);
+      logger.info("Total entropy limit is " + (float) afterTotalEntropyLimit / 50000000000L);
       Float rate =
-          (float) (afterTotalEnergyLimit - beforeTotalEnergyLimit) / beforeTotalEnergyLimit;
+          (float) (afterTotalEntropyLimit - beforeTotalEntropyLimit) / beforeTotalEntropyLimit;
       //logger.info("rate is " + rate);
       //Assert.assertTrue(rate >= 0.001001000 && rate <= 0.001001002);
       //txidList.add(txid);
@@ -167,9 +167,9 @@ public class WalletTestAccount012 {
         e.printStackTrace();
       }
       account = PublicMethed.queryAccount(testKeyForAssetIssue011, blockingStubFull);
-      Float energyrate = (float) (beforeEnergyLimit) / account.getAccountResource()
+      Float entropyrate = (float) (beforeEntropyLimit) / account.getAccountResource()
           .getFrozenBalanceForEntropy().getFrozenBalance();
-      //logger.info("energy rate is " + energyrate);
+      //logger.info("entropy rate is " + entropyrate);
       if (i % 20 == 0) {
         PublicMethed.freezeBalanceForReceiver(fromAddress, 1000000L, 3, 1,
             ByteString.copyFrom(asset011Address), testKey002, blockingStubFull);

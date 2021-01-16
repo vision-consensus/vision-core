@@ -140,17 +140,17 @@ public class WalletTestMutiSign003 {
     Optional<TransactionInfo> infoById = PublicMethed
         .getTransactionInfoById(txid, blockingStubFull);
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
-    long energyFee = infoById.get().getReceipt().getEntropyFee();
+    long entropyFee = infoById.get().getReceipt().getEntropyFee();
     long netFee = infoById.get().getReceipt().getNetFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
-    logger.info("energyFee: " + energyFee);
+    logger.info("entropyFee: " + entropyFee);
     logger.info("netFee: " + netFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee);
-    Assert.assertEquals(fee, energyFee + netFee + updateAccountPermissionFee);
+    Assert.assertEquals(fee, entropyFee + netFee + updateAccountPermissionFee);
 
     balanceBefore = balanceAfter;
 
@@ -161,7 +161,7 @@ public class WalletTestMutiSign003 {
         newAddress, 100L, ownerAddress, 2, ownerKey, blockingStubFull, permissionKeyString));
     Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceWithPermissionId(
         ownerAddress, 1000000L, 0, 0, ownerKey, blockingStubFull, ownerKeyString));
-    Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceGetEnergy(
+    Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceGetEntropy(
         ownerAddress, 1000000L, 0, 1, ownerKey, blockingStubFull, ownerKeyString));
     Assert.assertTrue(PublicMethedForMutiSign.freezeBalanceForReceiver(
         ownerAddress, 1000000L, 0, 0, ByteString.copyFrom(newAddress),

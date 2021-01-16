@@ -119,7 +119,7 @@ public class TestMutiSignStress {
           newAddress, 4000000L, ownerAddress, ownerKey, blockingStubFull, ownerKeyString1);
       PublicMethedForMutiSign.freezeBalance(
           ownerAddress, 1000000L, 0, ownerKey, blockingStubFull, ownerKeyString1);
-      PublicMethedForMutiSign.freezeBalanceGetEnergy(
+      PublicMethedForMutiSign.freezeBalanceGetEntropy(
           ownerAddress, 1000000L, 0, 1, ownerKey, blockingStubFull, ownerKeyString1);
       PublicMethedForMutiSign.freezeBalanceForReceiver(
           ownerAddress, 1000000L, 0, 0, ByteString.copyFrom(newAddress),

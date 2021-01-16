@@ -255,8 +255,8 @@ public class BandWidthRuntimeTest {
     Assert.assertEquals(50000, energy);
     Assert.assertEquals(229900, balance);
     Assert
-        .assertEquals(52299 * Constant.VDT_PER_ENERGY,
-            balance + energy * Constant.VDT_PER_ENERGY);
+        .assertEquals(52299 * Constant.VDT_PER_ENTROPY,
+            balance + energy * Constant.VDT_PER_ENTROPY);
     Assert.assertNull(trace.getRuntimeError());
     return trace.getRuntimeResult().getContractAddress();
   }

@@ -106,7 +106,7 @@ public class BandWidthRuntimeWithCheckTest {
     dbManager = context.getBean(Manager.class);
     chainBaseManager = context.getBean(ChainBaseManager.class);
 
-    //init energy
+    //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
@@ -154,7 +154,7 @@ public class BandWidthRuntimeWithCheckTest {
       byte[] contractAddress = createContract();
       AccountCapsule triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      long energy = triggerOwner.getEntropyUsage();
+      long entropy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
           "fibonacciNotify(uint256)", "7000", false,
@@ -174,13 +174,13 @@ public class BandWidthRuntimeWithCheckTest {
 
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
-      energy = triggerOwner.getEntropyUsage() - energy;
+      entropy = triggerOwner.getEntropyUsage() - entropy;
       balance = balance - triggerOwner.getBalance();
       Assert.assertEquals(624668, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(50000, energy);
+      Assert.assertEquals(50000, entropy);
       Assert.assertEquals(57466800, balance);
-      Assert.assertEquals(624668 * Constant.VDT_PER_ENERGY,
-          balance + energy * Constant.VDT_PER_ENERGY);
+      Assert.assertEquals(624668 * Constant.VDT_PER_ENTROPY,
+          balance + entropy * Constant.VDT_PER_ENTROPY);
     } catch (VisionException e) {
       Assert.assertNotNull(e);
     } catch (ReceiptCheckErrException e) {
@@ -235,7 +235,7 @@ public class BandWidthRuntimeWithCheckTest {
       VMIllegalException {
     AccountCapsule owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    long energy = owner.getEntropyUsage();
+    long entropy = owner.getEntropyUsage();
     long balance = owner.getBalance();
 
     String contractName = "Fibonacci";
@@ -281,15 +281,15 @@ public class BandWidthRuntimeWithCheckTest {
 
     owner = dbManager.getAccountStore()
         .get(Commons.decodeFromBase58Check(OwnerAddress));
-    energy = owner.getEntropyUsage() - energy;
+    entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
     Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(50000, energy);
+    Assert.assertEquals(50000, entropy);
     Assert.assertEquals(3852900, balance);
     Assert
-        .assertEquals(88529 * Constant.VDT_PER_ENERGY,
-            balance + energy * Constant.VDT_PER_ENERGY);
+        .assertEquals(88529 * Constant.VDT_PER_ENTROPY,
+            balance + entropy * Constant.VDT_PER_ENTROPY);
     if (trace.getRuntimeError() != null) {
       return trace.getRuntimeResult().getContractAddress();
     }

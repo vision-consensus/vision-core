@@ -224,7 +224,7 @@ public class TransactionTrace {
         percent = Math
             .max(Constant.ONE_HUNDRED - contractCapsule.getConsumeUserResourcePercent(), 0);
         percent = Math.min(percent, Constant.ONE_HUNDRED);
-        originEnergyLimit = contractCapsule.getOriginEnergyLimit();
+        originEnergyLimit = contractCapsule.getOriginEntropyLimit();
         break;
       default:
         return;

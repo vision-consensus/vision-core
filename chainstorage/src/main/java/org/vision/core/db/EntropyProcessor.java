@@ -44,42 +44,42 @@ public class EntropyProcessor extends ResourceProcessor {
     accountCapsule.setEntropyUsage(increase(oldEnergyUsage, 0, latestConsumeTime, now));
   }
 
-  public void updateTotalEnergyAverageUsage() {
+  public void updateTotalEntropyAverageUsage() {
     long now = getHeadSlot();
-    long blockEnergyUsage = dynamicPropertiesStore.getBlockEntropyUsage();
-    long totalEnergyAverageUsage = dynamicPropertiesStore
+    long blockEntropyUsage = dynamicPropertiesStore.getBlockEntropyUsage();
+    long totalEntropyAverageUsage = dynamicPropertiesStore
         .getTotalEntropyAverageUsage();
-    long totalEnergyAverageTime = dynamicPropertiesStore.getTotalEntropyAverageTime();
+    long totalEntropyAverageTime = dynamicPropertiesStore.getTotalEntropyAverageTime();
 
-    long newPublicEnergyAverageUsage = increase(totalEnergyAverageUsage, blockEnergyUsage,
-        totalEnergyAverageTime, now, averageWindowSize);
+    long newPublicEntropyAverageUsage = increase(totalEntropyAverageUsage, blockEntropyUsage,
+        totalEntropyAverageTime, now, averageWindowSize);
 
-    dynamicPropertiesStore.saveTotalEntropyAverageUsage(newPublicEnergyAverageUsage);
+    dynamicPropertiesStore.saveTotalEntropyAverageUsage(newPublicEntropyAverageUsage);
     dynamicPropertiesStore.saveTotalEntropyAverageTime(now);
   }
 
-  public void updateAdaptiveTotalEnergyLimit() {
-    long totalEnergyAverageUsage = dynamicPropertiesStore
+  public void updateAdaptiveTotalEntropyLimit() {
+    long totalEntropyAverageUsage = dynamicPropertiesStore
         .getTotalEntropyAverageUsage();
     long targetTotalEnergyLimit = dynamicPropertiesStore.getTotalEntropyTargetLimit();
     long totalEnergyCurrentLimit = dynamicPropertiesStore
         .getTotalEntropyCurrentLimit();
-    long totalEnergyLimit = dynamicPropertiesStore.getTotalEntropyLimit();
+    long totalEntropyLimit = dynamicPropertiesStore.getTotalEntropyLimit();
 
     long result;
-    if (totalEnergyAverageUsage > targetTotalEnergyLimit) {
+    if (totalEntropyAverageUsage > targetTotalEnergyLimit) {
       result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.CONTRACT_RATE_NUMERATOR
           / AdaptiveResourceLimitConstants.CONTRACT_RATE_DENOMINATOR;
-      // logger.info(totalEnergyAverageUsage + ">" + targetTotalEnergyLimit + "\n" + result);
+      // logger.info(totalEntropyAverageUsage + ">" + targetTotalEnergyLimit + "\n" + result);
     } else {
       result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.EXPAND_RATE_NUMERATOR
           / AdaptiveResourceLimitConstants.EXPAND_RATE_DENOMINATOR;
-      // logger.info(totalEnergyAverageUsage + "<" + targetTotalEnergyLimit + "\n" + result);
+      // logger.info(totalEntropyAverageUsage + "<" + targetTotalEnergyLimit + "\n" + result);
     }
 
     result = Math.min(
-        Math.max(result, totalEnergyLimit),
-        totalEnergyLimit * dynamicPropertiesStore.getAdaptiveResourceLimitMultiplier()
+        Math.max(result, totalEntropyLimit),
+        totalEntropyLimit * dynamicPropertiesStore.getAdaptiveResourceLimitMultiplier()
     );
 
     dynamicPropertiesStore.saveTotalEntropyCurrentLimit(result);
@@ -99,7 +99,7 @@ public class EntropyProcessor extends ResourceProcessor {
 
     long energyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
-    long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
+    long energyLimit = calculateGlobalEntropyLimit(accountCapsule);
 
     long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
 
@@ -124,7 +124,7 @@ public class EntropyProcessor extends ResourceProcessor {
     return true;
   }
 
-  public long calculateGlobalEnergyLimit(AccountCapsule accountCapsule) {
+  public long calculateGlobalEntropyLimit(AccountCapsule accountCapsule) {
     long frozeBalance = accountCapsule.getAllFrozenBalanceForEntropy();
     if (frozeBalance < VS_PRECISION) {
       return 0;
@@ -143,7 +143,7 @@ public class EntropyProcessor extends ResourceProcessor {
     long now = getHeadSlot();
     long energyUsage = accountCapsule.getEntropyUsage();
     long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEntropy();
-    long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
+    long energyLimit = calculateGlobalEntropyLimit(accountCapsule);
 
     long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
 

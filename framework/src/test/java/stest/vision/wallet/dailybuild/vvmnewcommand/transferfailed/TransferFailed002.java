@@ -18,7 +18,7 @@ import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Utils;
 import org.vision.core.Wallet;
-import org.vision.core.vm.EnergyCost;
+import org.vision.core.vm.EntropyCost;
 import org.vision.protos.Protocol.Account;
 import org.vision.protos.Protocol.Transaction.Result.contractResult;
 import org.vision.protos.Protocol.TransactionInfo;
@@ -80,7 +80,7 @@ public class TransferFailed002 {
         .sendcoin(contractExcAddress, 100000000L, testNetAccountAddress, testNetAccountKey,
             blockingStubFull));
     String filePath = "src/test/resources/soliditycode/TransferFailed001.sol";
-    String contractName = "EnergyOfTransferFailedTest";
+    String contractName = "EntropyOfTransferFailedTest";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
     String code = retMap.get("byteCode").toString();
     String abi = retMap.get("abI").toString();
@@ -302,7 +302,7 @@ public class TransferFailed002 {
     Assert.assertEquals(0, infoById.get().getResultValue());
 
     Assert.assertNotEquals(energyUsageTotal2,
-        energyUsageTotal + EnergyCost.getInstance().getNEW_ACCT_CALL());
+        energyUsageTotal + EntropyCost.getInstance().getNEW_ACCT_CALL());
 
     nonexistentAddressAccount = PublicMethed.queryAccount(nonexistentAddress, blockingStubFull1);
     Assert.assertEquals(2, nonexistentAddressAccount.getBalance());
@@ -558,7 +558,7 @@ public class TransferFailed002 {
     Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
     Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
-    Assert.assertTrue(energyUsageTotal > EnergyCost.getInstance().getNEW_ACCT_CALL());
+    Assert.assertTrue(energyUsageTotal > EntropyCost.getInstance().getNEW_ACCT_CALL());
 
   }
 

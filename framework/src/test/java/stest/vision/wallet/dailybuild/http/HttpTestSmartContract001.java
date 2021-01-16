@@ -122,7 +122,7 @@ public class HttpTestSmartContract001 {
     Assert.assertEquals(responseContent.getString("origin_address"),
         ByteArray.toHexString(assetOwnerAddress));
     Assert.assertEquals(responseContent.getString("call_value"), "5000");
-    Assert.assertEquals(responseContent.getString("origin_energy_limit"), "11111111111111");
+    Assert.assertEquals(responseContent.getString("origin_entropy_limit"), "11111111111111");
     Assert.assertEquals(responseContent.getString("name"), contractName);
   }
 
@@ -169,7 +169,7 @@ public class HttpTestSmartContract001 {
     String receiptString = responseContent.getString("receipt");
     Assert
         .assertEquals(HttpMethed.parseStringContent(receiptString).getString("result"), "SUCCESS");
-    Assert.assertTrue(HttpMethed.parseStringContent(receiptString).getLong("energy_usage") > 0);
+    Assert.assertTrue(HttpMethed.parseStringContent(receiptString).getLong("entropy_usage") > 0);
     Assert.assertTrue(responseContent.getLong("blockNumber") > 0);
 
     response = HttpMethed.getAccount(httpnode, assetReceiverAddress);
@@ -332,7 +332,7 @@ public class HttpTestSmartContract001 {
     Assert.assertEquals(responseContent.getString("origin_address"),
         ByteArray.toHexString(assetOwnerAddress));
     Assert.assertEquals(responseContent.getString("call_value"), "5000");
-    Assert.assertEquals(responseContent.getString("origin_energy_limit"), "11111111111111");
+    Assert.assertEquals(responseContent.getString("origin_entropy_limit"), "11111111111111");
     Assert.assertEquals(responseContent.getString("name"), contractName);
   }
 
@@ -340,12 +340,12 @@ public class HttpTestSmartContract001 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "UpdateEnergyLimit contract by http")
-  public void test8UpdateEnergyLimit() {
+  @Test(enabled = true, description = "UpdateEntropyLimit contract by http")
+  public void test8UpdateEntropyLimit() {
 
     //assetOwnerAddress, assetOwnerKey
     response = HttpMethed
-        .updateEnergyLimit(httpnode, assetOwnerAddress, contractAddress, 1234567, assetOwnerKey);
+        .updateEntropyLimit(httpnode, assetOwnerAddress, contractAddress, 1234567, assetOwnerKey);
     Assert.assertTrue(HttpMethed.verificationResult(response));
     HttpMethed.waitToProduceOneBlock(httpnode);
     responseContent = HttpMethed.parseResponseContent(response);
@@ -357,7 +357,7 @@ public class HttpTestSmartContract001 {
     Assert.assertEquals(responseContent.getString("origin_address"),
         ByteArray.toHexString(assetOwnerAddress));
     Assert.assertEquals(responseContent.getString("call_value"), "5000");
-    Assert.assertEquals(responseContent.getString("origin_energy_limit"), "1234567");
+    Assert.assertEquals(responseContent.getString("origin_entropy_limit"), "1234567");
     Assert.assertEquals(responseContent.getString("name"), contractName);
   }
 

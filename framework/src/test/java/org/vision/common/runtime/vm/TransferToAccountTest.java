@@ -32,7 +32,7 @@ import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ReceiptCheckErrException;
 import org.vision.core.exception.VMIllegalException;
 import org.vision.core.store.StoreFactory;
-import org.vision.core.vm.EnergyCost;
+import org.vision.core.vm.EntropyCost;
 import org.vision.common.application.Application;
 import org.vision.common.application.ApplicationFactory;
 import org.vision.common.application.VisionApplicationContext;
@@ -175,7 +175,7 @@ public class TransferToAccountTest {
     Assert.assertEquals(100 + tokenValue - 9,
         chainBaseManager.getAccountStore().get(contractAddress)
             .getAssetMapV2().get(String.valueOf(id)).longValue());
-    long energyCostWhenExist = runtime.getResult().getEntropyUsed();
+    long entropyCostWhenExist = runtime.getResult().getEntropyUsed();
 
     // 3.Test transferToken To Non-exist address
     ECKey ecKey = new ECKey(Utils.getRandom());
@@ -195,10 +195,10 @@ public class TransferToAccountTest {
     Assert.assertEquals(9,
         chainBaseManager.getAccountStore().get(ecKey.getAddress()).getAssetMapV2()
             .get(String.valueOf(id)).longValue());
-    long energyCostWhenNonExist = runtime.getResult().getEntropyUsed();
-    //4.Test Energy
-    Assert.assertEquals(energyCostWhenNonExist - energyCostWhenExist,
-        EnergyCost.getInstance().getNEW_ACCT_CALL());
+    long entropyCostWhenNonExist = runtime.getResult().getEntropyUsed();
+    //4.Test Entropy
+    Assert.assertEquals(entropyCostWhenNonExist - entropyCostWhenExist,
+        EntropyCost.getInstance().getNEW_ACCT_CALL());
     //5. Test transfer Trx with exsit account
 
     selectorStr = "transferTo(address,uint256)";
@@ -213,7 +213,7 @@ public class TransferToAccountTest {
     Assert.assertNull(runtime.getRuntimeError());
     Assert.assertEquals(19,
         chainBaseManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getBalance());
-    energyCostWhenExist = runtime.getResult().getEntropyUsed();
+    entropyCostWhenExist = runtime.getResult().getEntropyUsed();
 
     //6. Test  transfer Trx with non-exsit account
     selectorStr = "transferTo(address,uint256)";
@@ -229,11 +229,11 @@ public class TransferToAccountTest {
     Assert.assertNull(runtime.getRuntimeError());
     Assert.assertEquals(9,
         chainBaseManager.getAccountStore().get(ecKey.getAddress()).getBalance());
-    energyCostWhenNonExist = runtime.getResult().getEntropyUsed();
+    entropyCostWhenNonExist = runtime.getResult().getEntropyUsed();
 
-    //7.test energy
-    Assert.assertEquals(energyCostWhenNonExist - energyCostWhenExist,
-        EnergyCost.getInstance().getNEW_ACCT_CALL());
+    //7.test entropy
+    Assert.assertEquals(entropyCostWhenNonExist - entropyCostWhenExist,
+        EntropyCost.getInstance().getNEW_ACCT_CALL());
 
     //8.test transfer to itself
     selectorStr = "transferTo(address,uint256)";

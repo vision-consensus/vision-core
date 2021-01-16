@@ -122,10 +122,10 @@ public class TimeBenchmarkTest {
         .deployContractAndReturnVvmTestResult(contractName, address, ABI, code, value, feeLimit,
             consumeUserResourcePercent, libraryAddressPair, dbManager, null);
 
-    long expectEnergyUsageTotal = 88529;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+    long expectEntropyUsageTotal = 88529;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEnergyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 100);
     byte[] contractAddress = result.getContractAddress();
 
     /* ====================================================================== */
@@ -134,12 +134,12 @@ public class TimeBenchmarkTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal2 = 110;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
+    long expectEntropyUsageTotal2 = 110;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertTrue(result.getRuntime().getResult().getException() == null);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   /**

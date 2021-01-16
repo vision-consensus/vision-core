@@ -68,12 +68,12 @@ public class ContractScenario008 {
         3, 1, contract008Key, blockingStubFull));
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract008Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
     Account account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
     logger.info("before balance is " + Long.toString(account.getBalance()));
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
     Long shortFeeLimit = 900L;
 
     String filePath = "./src/test/resources/soliditycode/contractScenario008.sol";
@@ -90,14 +90,14 @@ public class ContractScenario008 {
 
     final SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
     account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
     logger.info("after balance is " + Long.toString(account.getBalance()));
-    logger.info("after energy limit is " + Long.toString(energyLimit));
-    logger.info("after energy usage is " + Long.toString(energyUsage));
-    Assert.assertTrue(energyLimit > 0);
-    Assert.assertTrue(energyUsage > 0);
+    logger.info("after entropy limit is " + Long.toString(entropyLimit));
+    logger.info("after entropy usage is " + Long.toString(entropyUsage));
+    Assert.assertTrue(entropyLimit > 0);
+    Assert.assertTrue(entropyUsage > 0);
     Assert.assertFalse(smartContract.getAbi().toString().isEmpty());
     Assert.assertTrue(smartContract.getName().equalsIgnoreCase(contractName));
     Assert.assertFalse(smartContract.getBytecode().toString().isEmpty());

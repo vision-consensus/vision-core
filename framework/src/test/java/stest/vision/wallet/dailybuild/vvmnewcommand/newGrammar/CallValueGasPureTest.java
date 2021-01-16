@@ -80,11 +80,11 @@ public class CallValueGasPureTest {
         .getAccountResource(testAddress001, blockingStubFull);
     Protocol.Account info = PublicMethed.queryAccount(testKey001, blockingStubFull);
     Long beforeBalance = info.getBalance();
-    Long beforeEnergyUsed = accountResource.getEntropyUsed();
+    Long beforeEntropyUsed = accountResource.getEntropyUsed();
     Long beforeNetUsed = accountResource.getNetUsed();
     Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
     logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
@@ -107,7 +107,7 @@ public class CallValueGasPureTest {
     }
 
     TransactionInfo transactionInfo = infoById.get();
-    logger.info("EnergyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
+    logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
     logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();

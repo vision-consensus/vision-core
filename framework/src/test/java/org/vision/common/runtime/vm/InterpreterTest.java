@@ -65,7 +65,7 @@ public class InterpreterTest {
       while (!program.isStopped()) {
         vm.step(program);
       }
-    } catch (Program.OutOfEnergyException e) {
+    } catch (Program.OutOfEntropyException e) {
       result = true;
     }
 

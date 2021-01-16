@@ -73,7 +73,7 @@ public class ProposalService extends ProposalUtil {
           }
           break;
         }
-        case ENERGY_FEE: {
+        case ENTROPY_FEE: {
           manager.getDynamicPropertiesStore().saveEntropyFee(entry.getValue());
           break;
         }
@@ -97,16 +97,16 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowDelegateResource(entry.getValue());
           break;
         }
-        case TOTAL_ENERGY_LIMIT: {
-          manager.getDynamicPropertiesStore().saveTotalEnergyLimit(entry.getValue());
+        case TOTAL_ENTROPY_LIMIT: {
+          manager.getDynamicPropertiesStore().saveTotalEntropyLimit(entry.getValue());
           break;
         }
         case ALLOW_VVM_TRANSFER_VRC10: {
           manager.getDynamicPropertiesStore().saveAllowVvmTransferVrc10(entry.getValue());
           break;
         }
-        case TOTAL_CURRENT_ENERGY_LIMIT: {
-          manager.getDynamicPropertiesStore().saveTotalEnergyLimit2(entry.getValue());
+        case TOTAL_CURRENT_ENTROPY_LIMIT: {
+          manager.getDynamicPropertiesStore().saveTotalEntropyLimit2(entry.getValue());
           break;
         }
         case ALLOW_MULTI_SIGN: {
@@ -115,7 +115,7 @@ public class ProposalService extends ProposalUtil {
           }
           break;
         }
-        case ALLOW_ADAPTIVE_ENERGY: {
+        case ALLOW_ADAPTIVE_ENTROPY: {
           if (manager.getDynamicPropertiesStore().getAllowAdaptiveEntropy() == 0) {
             manager.getDynamicPropertiesStore().saveAllowAdaptiveEntropy(entry.getValue());
             if (manager.getChainBaseManager()

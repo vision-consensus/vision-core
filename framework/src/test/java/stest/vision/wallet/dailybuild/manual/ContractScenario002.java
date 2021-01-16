@@ -111,12 +111,12 @@ public class ContractScenario002 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract002Address,
         blockingStubFull);
-    Long energyLimit = accountResource.getEntropyLimit();
-    Long energyUsage = accountResource.getEntropyUsed();
+    Long entropyLimit = accountResource.getEntropyLimit();
+    Long entropyUsage = accountResource.getEntropyUsed();
     Long balanceBefore = PublicMethed.queryAccount(contract002Key, blockingStubFull).getBalance();
 
-    logger.info("before energy limit is " + Long.toString(energyLimit));
-    logger.info("before energy usage is " + Long.toString(energyUsage));
+    logger.info("before entropy limit is " + Long.toString(entropyLimit));
+    logger.info("before entropy usage is " + Long.toString(entropyUsage));
     logger.info("before balance is " + Long.toString(balanceBefore));
 
     String contractName = "VisionNative";
@@ -140,17 +140,17 @@ public class ContractScenario002 {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     accountResource = PublicMethed.getAccountResource(contract002Address, blockingStubFull1);
-    energyLimit = accountResource.getEntropyLimit();
-    energyUsage = accountResource.getEntropyUsed();
+    entropyLimit = accountResource.getEntropyLimit();
+    entropyUsage = accountResource.getEntropyUsed();
     Long balanceAfter = PublicMethed.queryAccount(contract002Address, blockingStubFull1)
         .getBalance();
 
-    logger.info("after energy limit is " + Long.toString(energyLimit));
-    logger.info("after energy usage is " + Long.toString(energyUsage));
+    logger.info("after entropy limit is " + Long.toString(entropyLimit));
+    logger.info("after entropy usage is " + Long.toString(entropyUsage));
     logger.info("after balance is " + Long.toString(balanceAfter));
     logger.info("transaction fee is " + Long.toString(infoById.get().getFee()));
 
-    Assert.assertTrue(energyUsage > 0);
+    Assert.assertTrue(entropyUsage > 0);
     Assert.assertTrue(balanceBefore == balanceAfter + infoById.get().getFee());
     PublicMethed.unFreezeBalance(contract002Address, contract002Key, 1,
         contract002Address, blockingStubFull);
@@ -211,12 +211,12 @@ public class ContractScenario002 {
    */
   @Test(enabled = true, description = "Get transaction by id from PBFT")
   public void test06GetTransactionInfoByIdFromPbft() {
-    long energyUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
+    long entropyUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
         .getReceipt()
         .getEntropyUsage();
 
     Assert.assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubPbft)
-        .get().getReceipt().getEntropyUsage(), energyUsage);
+        .get().getReceipt().getEntropyUsage(), entropyUsage);
   }
 
 

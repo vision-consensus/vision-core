@@ -94,7 +94,7 @@ public class ContractVrcToken077 {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info("infoById:" + infoById);
-    logger.info("Trigger energy is " + infoById.get().getReceipt().getEntropyUsageTotal());
+    logger.info("Trigger entropy is " + infoById.get().getReceipt().getEntropyUsageTotal());
 
   }
 

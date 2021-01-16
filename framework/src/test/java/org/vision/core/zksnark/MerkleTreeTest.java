@@ -59,7 +59,7 @@ public class MerkleTreeTest {
   public static void init() {
     dbManager = context.getBean(Manager.class);
     wallet = context.getBean(Wallet.class);
-    //init energy
+    //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(100_000L);
 

@@ -77,20 +77,20 @@ public class VM {
 
       String hint = "";
       long energyCost = op.getTier().asInt();
-      EnergyCost energyCosts = EnergyCost.getInstance();
+      EntropyCost entropyCosts = EntropyCost.getInstance();
       DataWord adjustedCallEnergy = null;
 
       // Calculate fees and spend energy
       switch (op) {
         case STOP:
-          energyCost = energyCosts.getSTOP();
+          energyCost = entropyCosts.getSTOP();
           break;
         case SUICIDE:
-          energyCost = energyCosts.getSUICIDE();
+          energyCost = entropyCosts.getSUICIDE();
           DataWord suicideAddressWord = stack.get(stack.size() - 1);
           if (isDeadAccount(program, suicideAddressWord)
               && !program.getBalance(program.getContractAddress()).isZero()) {
-            energyCost += energyCosts.getNEW_ACCT_SUICIDE();
+            energyCost += entropyCosts.getNEW_ACCT_SUICIDE();
           }
           break;
         case SSTORE:
@@ -99,76 +99,76 @@ public class VM {
           DataWord oldValue = program.storageLoad(stack.peek());
           if (oldValue == null && !newValue.isZero()) {
             // set a new not-zero value
-            energyCost = energyCosts.getSET_SSTORE();
+            energyCost = entropyCosts.getSET_SSTORE();
           } else if (oldValue != null && newValue.isZero()) {
             // set zero to an old value
-            program.futureRefundEnergy(energyCosts.getREFUND_SSTORE());
-            energyCost = energyCosts.getCLEAR_SSTORE();
+            program.futureRefundEnergy(entropyCosts.getREFUND_SSTORE());
+            energyCost = entropyCosts.getCLEAR_SSTORE();
           } else {
             // include:
             // [1] oldValue == null && newValue == 0
             // [2] oldValue != null && newValue != 0
-            energyCost = energyCosts.getRESET_SSTORE();
+            energyCost = entropyCosts.getRESET_SSTORE();
           }
           break;
         case SLOAD:
-          energyCost = energyCosts.getSLOAD();
+          energyCost = entropyCosts.getSLOAD();
           break;
         case TOKENBALANCE:
         case BALANCE:
         case ISCONTRACT:
-          energyCost = energyCosts.getBALANCE();
+          energyCost = entropyCosts.getBALANCE();
           break;
 
         // These all operate on memory and therefore potentially expand it:
         case MSTORE:
-          energyCost = calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), new DataWord(32)),
               0, op);
           break;
         case MSTORE8:
-          energyCost = calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), new DataWord(1)),
               0, op);
           break;
         case MLOAD:
-          energyCost = calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), new DataWord(32)),
               0, op);
           break;
         case RETURN:
         case REVERT:
-          energyCost = energyCosts.getSTOP() + calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getSTOP() + calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
           break;
         case SHA3:
-          energyCost = energyCosts.getSHA3() + calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getSHA3() + calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
           DataWord size = stack.get(stack.size() - 2);
           long chunkUsed = (size.longValueSafe() + 31) / 32;
-          energyCost += chunkUsed * energyCosts.getSHA3_WORD();
+          energyCost += chunkUsed * entropyCosts.getSHA3_WORD();
           break;
         case CALLDATACOPY:
         case RETURNDATACOPY:
-          energyCost = calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 3)),
               stack.get(stack.size() - 3).longValueSafe(), op);
           break;
         case CODECOPY:
-          energyCost = calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 3)),
               stack.get(stack.size() - 3).longValueSafe(), op);
           break;
         case EXTCODESIZE:
-          energyCost = energyCosts.getEXT_CODE_SIZE();
+          energyCost = entropyCosts.getEXT_CODE_SIZE();
           break;
         case EXTCODECOPY:
-          energyCost = energyCosts.getEXT_CODE_COPY() + calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getEXT_CODE_COPY() + calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
               stack.get(stack.size() - 4).longValueSafe(), op);
           break;
         case EXTCODEHASH:
-          energyCost = energyCosts.getEXT_CODE_HASH();
+          energyCost = entropyCosts.getEXT_CODE_HASH();
           break;
         case CALL:
         case CALLCODE:
@@ -176,7 +176,7 @@ public class VM {
         case STATICCALL:
         case CALLTOKEN:
           // here, contract call an other contract, or a library, and so on
-          energyCost = energyCosts.getCALL();
+          energyCost = entropyCosts.getCALL();
           DataWord callEnergyWord = stack.get(stack.size() - 1);
           DataWord callAddressWord = stack.get(stack.size() - 2);
           DataWord value = op.callHasValue() ? stack.get(stack.size() - 3) : DataWord.ZERO;
@@ -185,12 +185,12 @@ public class VM {
           if ((op == OpCode.CALL || op == OpCode.CALLTOKEN)
               && isDeadAccount(program, callAddressWord)
               && !value.isZero()) {
-            energyCost += energyCosts.getNEW_ACCT_CALL();
+            energyCost += entropyCosts.getNEW_ACCT_CALL();
           }
 
           // TODO #POC9 Make sure this is converted to BigInteger (256num support)
           if (!value.isZero()) {
-            energyCost += energyCosts.getVT_CALL();
+            energyCost += entropyCosts.getVT_CALL();
           }
 
           int opOff = op.callHasValue() ? 4 : 3;
@@ -201,31 +201,31 @@ public class VM {
               stack.get(stack.size() - opOff - 1)); // in offset+size
           BigInteger out = memNeeded(stack.get(stack.size() - opOff - 2),
               stack.get(stack.size() - opOff - 3)); // out offset+size
-          energyCost += calcMemEnergy(energyCosts, oldMemSize, in.max(out), 0, op);
+          energyCost += calcMemEnergy(entropyCosts, oldMemSize, in.max(out), 0, op);
           checkMemorySize(op, in.max(out));
 
-          if (energyCost > program.getEnergyLimitLeft().longValueSafe()) {
-            throw new Program.OutOfEnergyException(
+          if (energyCost > program.getEntropyLimitLeft().longValueSafe()) {
+            throw new Program.OutOfEntropyException(
                 "Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
                 op.name(),
-                energyCost, program.getEnergyLimitLeft().longValueSafe());
+                energyCost, program.getEntropyLimitLeft().longValueSafe());
           }
-          DataWord getEnergyLimitLeft = program.getEnergyLimitLeft().clone();
+          DataWord getEnergyLimitLeft = program.getEntropyLimitLeft().clone();
           getEnergyLimitLeft.sub(new DataWord(energyCost));
 
           adjustedCallEnergy = program.getCallEnergy(op, callEnergyWord, getEnergyLimitLeft);
           energyCost += adjustedCallEnergy.longValueSafe();
           break;
         case CREATE:
-          energyCost = energyCosts.getCREATE() + calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getCREATE() + calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
           break;
         case CREATE2:
           DataWord codeSize = stack.get(stack.size() - 3);
-          energyCost = energyCosts.getCREATE();
-          energyCost += calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getCREATE();
+          energyCost += calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
-          energyCost += DataWord.sizeInWords(codeSize.intValueSafe()) * energyCosts.getSHA3_WORD();
+          energyCost += DataWord.sizeInWords(codeSize.intValueSafe()) * entropyCosts.getSHA3_WORD();
 
           break;
         case LOG0:
@@ -236,17 +236,17 @@ public class VM {
           int nTopics = op.val() - OpCode.LOG0.val();
           BigInteger dataSize = stack.get(stack.size() - 2).value();
           BigInteger dataCost = dataSize
-              .multiply(BigInteger.valueOf(energyCosts.getLOG_DATA_ENERGY()));
-          if (program.getEnergyLimitLeft().value().compareTo(dataCost) < 0) {
-            throw new Program.OutOfEnergyException(
+              .multiply(BigInteger.valueOf(entropyCosts.getLOG_DATA_ENERGY()));
+          if (program.getEntropyLimitLeft().value().compareTo(dataCost) < 0) {
+            throw new Program.OutOfEntropyException(
                 "Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
                 op.name(),
-                dataCost.longValueExact(), program.getEnergyLimitLeft().longValueSafe());
+                dataCost.longValueExact(), program.getEntropyLimitLeft().longValueSafe());
           }
-          energyCost = energyCosts.getLOG_ENERGY()
-              + energyCosts.getLOG_TOPIC_ENERGY() * nTopics
-              + energyCosts.getLOG_DATA_ENERGY() * stack.get(stack.size() - 2).longValue()
-              + calcMemEnergy(energyCosts, oldMemSize,
+          energyCost = entropyCosts.getLOG_ENERGY()
+              + entropyCosts.getLOG_TOPIC_ENERGY() * nTopics
+              + entropyCosts.getLOG_DATA_ENERGY() * stack.get(stack.size() - 2).longValue()
+              + calcMemEnergy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
 
           checkMemorySize(op, memNeeded(stack.peek(), stack.get(stack.size() - 2)));
@@ -256,7 +256,7 @@ public class VM {
           DataWord exp = stack.get(stack.size() - 2);
           int bytesOccupied = exp.bytesOccupied();
           energyCost =
-              (long) energyCosts.getEXP_ENERGY() + energyCosts.getEXP_BYTE_ENERGY() * bytesOccupied;
+              (long) entropyCosts.getEXP_ENERGY() + entropyCosts.getEXP_BYTE_ENERGY() * bytesOccupied;
           break;
         default:
           break;
@@ -1196,7 +1196,7 @@ public class VM {
         }
         break;
         case GAS: {
-          DataWord energy = program.getEnergyLimitLeft();
+          DataWord energy = program.getEntropyLimitLeft();
           if (logger.isDebugEnabled()) {
             hint = "" + energy;
           }
@@ -1307,7 +1307,7 @@ public class VM {
           }
 
           if (!value.isZero()) {
-            adjustedCallEnergy.add(new DataWord(energyCosts.getSTIPEND_CALL()));
+            adjustedCallEnergy.add(new DataWord(entropyCosts.getSTIPEND_CALL()));
           }
 
           DataWord tokenId = new DataWord(0);
@@ -1332,7 +1332,7 @@ public class VM {
                 + " inSize: " + inDataSize.shortHex();
             logger.debug(ENERGY_LOG_FORMATE, String.format("%5s", "[" + program.getPC() + "]"),
                 String.format("%-12s", op.name()),
-                program.getEnergyLimitLeft().value(),
+                program.getEntropyLimitLeft().value(),
                 program.getCallDeep(), hint);
           }
 
@@ -1404,7 +1404,7 @@ public class VM {
     } catch (RuntimeException e) {
       logger.info("VM halted: [{}]", e.getMessage());
       if (!(e instanceof Program.TransferException)) {
-        program.spendAllEnergy();
+        program.spendAllEntropy();
       }
       program.resetFutureRefund();
       program.stop();
@@ -1452,7 +1452,7 @@ public class VM {
         == null;
   }
 
-  private long calcMemEnergy(EnergyCost energyCosts, long oldMemSize, BigInteger newMemSize,
+  private long calcMemEnergy(EntropyCost entropyCosts, long oldMemSize, BigInteger newMemSize,
                              long copySize, OpCode op) {
     long energyCost = 0;
 
@@ -1464,13 +1464,13 @@ public class VM {
       long memWords = (memoryUsage / 32);
       long memWordsOld = (oldMemSize / 32);
       //TODO #POC9 c_quadCoeffDiv = 512, this should be a constant, not magic number
-      long memEnergy = (energyCosts.getMEMORY() * memWords + memWords * memWords / 512)
-              - (energyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
+      long memEnergy = (entropyCosts.getMEMORY() * memWords + memWords * memWords / 512)
+              - (entropyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
       energyCost += memEnergy;
     }
 
     if (copySize > 0) {
-      long copyEnergy = energyCosts.getCOPY_ENERGY() * ((copySize + 31) / 32);
+      long copyEnergy = entropyCosts.getCOPY_ENERGY() * ((copySize + 31) / 32);
       energyCost += copyEnergy;
     }
     return energyCost;

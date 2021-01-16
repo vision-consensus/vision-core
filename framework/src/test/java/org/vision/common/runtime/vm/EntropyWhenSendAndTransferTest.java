@@ -26,12 +26,12 @@ import org.vision.common.storage.DepositImpl;
 import org.vision.protos.Protocol.AccountType;
 
 @Slf4j
-public class EnergyWhenSendAndTransferTest {
+public class EntropyWhenSendAndTransferTest {
 
   private Manager dbManager;
   private VisionApplicationContext context;
   private DepositImpl deposit;
-  private String dbPath = "output_EnergyWhenSendAndTransferTest";
+  private String dbPath = "output_EntropyWhenSendAndTransferTest";
   private String OWNER_ADDRESS;
   private Application AppT;
   private long totalBalance = 30_000_000_000_000L;
@@ -97,12 +97,12 @@ public class EnergyWhenSendAndTransferTest {
     byte[] address = Hex.decode(OWNER_ADDRESS);
     VVMTestResult result = deployCallValueTestContract(value, feeLimit, consumeUserResourcePercent);
 
-    long expectEnergyUsageTotal = 174639;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+    long expectEntropyUsageTotal = 174639;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEnergyUsageTotal * 100);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL simpleCall() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("simpleCall()", null);
@@ -110,10 +110,10 @@ public class EnergyWhenSendAndTransferTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal2 = 7370;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
+    long expectEntropyUsageTotal2 = 7370;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
 
     /* =================================== CALL complexCall() =================================== */
     triggerData = VvmTestUtils.parseAbi("complexCall()", null);
@@ -121,11 +121,11 @@ public class EnergyWhenSendAndTransferTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal3 = 9459;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal3);
+    long expectEntropyUsageTotal3 = 9459;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal3);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(), totalBalance - value
-        - (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * 100);
+        - (expectEntropyUsageTotal + expectEntropyUsageTotal2 + expectEntropyUsageTotal3) * 100);
   }
 
   // solidity for sendTest and transferTest
@@ -173,12 +173,12 @@ public class EnergyWhenSendAndTransferTest {
     VVMTestResult result = deploySendAndTransferTestContract(value, feeLimit,
         consumeUserResourcePercent);
 
-    long expectEnergyUsageTotal = 140194;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+    long expectEntropyUsageTotal = 140194;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEnergyUsageTotal * 100);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL doSend() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("doSend()", null);
@@ -186,13 +186,13 @@ public class EnergyWhenSendAndTransferTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal2 = 7025;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
+    long expectEntropyUsageTotal2 = 7025;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().getException(), null);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   @Test
@@ -208,12 +208,12 @@ public class EnergyWhenSendAndTransferTest {
     VVMTestResult result = deploySendAndTransferTestContract(value, feeLimit,
         consumeUserResourcePercent);
 
-    long expectEnergyUsageTotal = 140194;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal);
+    long expectEntropyUsageTotal = 140194;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEnergyUsageTotal * 100);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL doSend() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("doTransfer()", null);
@@ -221,13 +221,13 @@ public class EnergyWhenSendAndTransferTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEnergyUsageTotal2 = 7030;
-    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEnergyUsageTotal2);
+    long expectEntropyUsageTotal2 = 7030;
+    Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().getException(), null);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   public VVMTestResult deployCallValueTestContract(long value, long feeLimit,
