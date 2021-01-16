@@ -92,7 +92,7 @@ import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
 import org.vision.core.config.args.Args;
-import org.vision.core.db.BandwidthProcessor;
+import org.vision.core.db.PhotonProcessor;
 import org.vision.core.db.Manager;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
@@ -315,7 +315,7 @@ public class Wallet {
     if (accountCapsule == null) {
       return null;
     }
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
     EntropyProcessor entropyProcessor = new EntropyProcessor(
@@ -345,7 +345,7 @@ public class Wallet {
     if (accountCapsule == null) {
       return null;
     }
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
     EntropyProcessor entropyProcessor = new EntropyProcessor(
@@ -752,12 +752,12 @@ public class Wallet {
             .setValue(chainBaseManager.getDynamicPropertiesStore()
                 .getCreateNewAccountFeeInSystemContract())
             .build());
-    //    CREATE_NEW_ACCOUNT_BANDWIDTH_RATE, // 1 ~ ,8
+    //    CREATE_NEW_ACCOUNT_PHOTON_RATE, // 1 ~ ,8
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getCreateNewAccountBandwidthRate")
+            .setKey("getCreateNewAccountPhotonRate")
             .setValue(chainBaseManager.getDynamicPropertiesStore()
-                .getCreateNewAccountBandwidthRate()).build());
+                .getCreateNewAccountPhotonRate()).build());
     //    ALLOW_CREATION_OF_CONTRACTS, // 0 / >0 ,9
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1051,7 +1051,7 @@ public class Wallet {
       return null;
     }
 
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
     long netLimit = processor
@@ -1085,7 +1085,7 @@ public class Wallet {
       return null;
     }
 
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
     EntropyProcessor entropyProcessor = new EntropyProcessor(

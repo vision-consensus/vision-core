@@ -108,7 +108,7 @@ public class WalletTestAccount013 {
   }
 
   @Test(enabled = true, description = "Delegate resource for photon and entropy")
-  public void test1DelegateResourceForBandwidthAndEntropy() {
+  public void test1DelegateResourceForPhotonAndEntropy() {
     //Create account013
     ECKey ecKey1 = new ECKey(Utils.getRandom());
     account013Address = ecKey1.getAddress();
@@ -381,7 +381,7 @@ public class WalletTestAccount013 {
         .getAccountResource(account013Address, blockingStubFull).getNetUsed();
     long accountForAssetIssueCurrentBandwidth = PublicMethed
         .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getNetUsed();
-    final long account5CurrentBandwidth = PublicMethed
+    final long account5CurrentPhoton = PublicMethed
         .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
     //Account5 transfer Assets receiver
     Assert.assertTrue(PublicMethed
@@ -418,7 +418,7 @@ public class WalletTestAccount013 {
     //check resource diff
     Assert.assertTrue(Long.parseLong(result) > 0);
     Assert.assertTrue(account013CurrentBandwidth == account013CurrentBandwidthAfterTrans);
-    Assert.assertTrue(account5CurrentBandwidth == account5CurrentBandwidthAfterTrans);
+    Assert.assertTrue(account5CurrentPhoton == account5CurrentBandwidthAfterTrans);
   }
 
   @Test(enabled = true, description = "Can't delegate resource for contract")

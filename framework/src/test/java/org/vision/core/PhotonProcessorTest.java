@@ -18,7 +18,7 @@ import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
-import org.vision.core.db.BandwidthProcessor;
+import org.vision.core.db.PhotonProcessor;
 import org.vision.core.db.Manager;
 import org.vision.core.db.TransactionTrace;
 import org.vision.core.exception.AccountResourceInsufficientException;
@@ -34,9 +34,9 @@ import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetCont
 import org.vision.protos.contract.BalanceContract.TransferContract;
 
 @Slf4j
-public class BandwidthProcessorTest {
+public class PhotonProcessorTest {
 
-  private static final String dbPath = "output_bandwidth_test";
+  private static final String dbPath = "output_photon_test";
   private static final String ASSET_NAME;
   private static final String ASSET_NAME_V2;
   private static final String OWNER_ADDRESS;
@@ -229,7 +229,7 @@ public class BandwidthProcessorTest {
 
   //@Test
   public void testCreateNewAccount() throws Exception {
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     TransferAssetContract transferAssetContract = getTransferAssetContract();
     TransactionCapsule trx = new TransactionCapsule(transferAssetContract);
 
@@ -254,7 +254,7 @@ public class BandwidthProcessorTest {
 
     Assert.assertEquals(true, processor.contractCreateNewAccount(contract));
     long bytes = trx.getSerializedSize();
-    processor.consumeBandwidthForCreateNewAccount(ownerCapsule, bytes, 1526647838000L);
+    processor.consumePhotonForCreateNewAccount(ownerCapsule, bytes, 1526647838000L);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -277,7 +277,7 @@ public class BandwidthProcessorTest {
     TransactionResultCapsule ret = new TransactionResultCapsule();
     TransactionTrace trace = new TransactionTrace(trx, StoreFactory
         .getInstance(), new RuntimeImpl());
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -298,7 +298,7 @@ public class BandwidthProcessorTest {
     chainBaseManager.getDynamicPropertiesStore()
         .saveLatestBlockHeaderTimestamp(1526691038000L); // + 12h
 
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
     ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -337,7 +337,7 @@ public class BandwidthProcessorTest {
     TransactionResultCapsule ret = new TransactionResultCapsule();
     TransactionTrace trace = new TransactionTrace(trx, StoreFactory
         .getInstance(), new RuntimeImpl());
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -366,7 +366,7 @@ public class BandwidthProcessorTest {
     chainBaseManager.getDynamicPropertiesStore()
         .saveLatestBlockHeaderTimestamp(1526691038000L); // + 12h
 
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -413,7 +413,7 @@ public class BandwidthProcessorTest {
     TransactionResultCapsule ret = new TransactionResultCapsule();
     TransactionTrace trace = new TransactionTrace(trx, StoreFactory
         .getInstance(), new RuntimeImpl());
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -440,7 +440,7 @@ public class BandwidthProcessorTest {
     chainBaseManager.getDynamicPropertiesStore()
         .saveLatestBlockHeaderTimestamp(1526691038000L); // + 12h
 
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -481,7 +481,7 @@ public class BandwidthProcessorTest {
     TransactionResultCapsule ret = new TransactionResultCapsule();
     TransactionTrace trace = new TransactionTrace(trx, StoreFactory
         .getInstance(), new RuntimeImpl());
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -500,7 +500,7 @@ public class BandwidthProcessorTest {
     chainBaseManager.getDynamicPropertiesStore()
         .saveLatestBlockHeaderTimestamp(1526691038000L); // + 12h
 
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -544,7 +544,7 @@ public class BandwidthProcessorTest {
     TransactionResultCapsule ret = new TransactionResultCapsule();
     TransactionTrace trace = new TransactionTrace(trx, StoreFactory
         .getInstance(), new RuntimeImpl());
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -562,7 +562,7 @@ public class BandwidthProcessorTest {
     Assert.assertEquals(transactionFee, trace.getReceipt().getNetFee());
 
     chainBaseManager.getAccountStore().delete(ByteArray.fromHexString(TO_ADDRESS));
-    dbManager.consumeBandwidth(trx, trace);
+    dbManager.consumePhoton(trx, trace);
   }
 
   /**
@@ -636,7 +636,7 @@ public class BandwidthProcessorTest {
     long byteSize = trx.getInstance().toBuilder().clearRet().build().getSerializedSize()
         + Constant.MAX_RESULT_SIZE_IN_TX;
 
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
 
     try {
       processor.consume(trx, trace);
@@ -749,7 +749,7 @@ public class BandwidthProcessorTest {
     long byteSize = trx.getInstance().toBuilder().clearRet().build().getSerializedSize()
         + Constant.MAX_RESULT_SIZE_IN_TX;
 
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
 
     try {
       processor.consume(trx, trace);
@@ -830,7 +830,7 @@ public class BandwidthProcessorTest {
     long byteSize = trx.getInstance().toBuilder().clearRet().build().getSerializedSize()
         + Constant.MAX_RESULT_SIZE_IN_TX;
 
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
 
     try {
       processor.consume(trx, trace);

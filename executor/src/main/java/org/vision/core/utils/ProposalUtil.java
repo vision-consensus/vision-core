@@ -38,7 +38,7 @@ public class ProposalUtil {
       case WITNESS_PAY_PER_BLOCK:
       case WITNESS_STANDBY_ALLOWANCE:
       case CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT:
-      case CREATE_NEW_ACCOUNT_BANDWIDTH_RATE: {
+      case CREATE_NEW_ACCOUNT_PHOTON_RATE: {
         if (value < 0 || value > LONG_VALUE) {
           throw new ContractValidateException(LONG_VALUE_ERROR);
         }
@@ -415,7 +415,7 @@ public class ProposalUtil {
     WITNESS_PAY_PER_BLOCK(5), // 16 VS, [0, 100000000000] VS
     WITNESS_STANDBY_ALLOWANCE(6), // 115200 VS, [0, 100000000000] VS
     CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT(7), // 0 VS, [0, 100000000000] VS
-    CREATE_NEW_ACCOUNT_BANDWIDTH_RATE(8), // 1 Bandwith/Byte, [0, 100000000000000000] Bandwith/Byte
+    CREATE_NEW_ACCOUNT_PHOTON_RATE(8), // 1 Bandwith/Byte, [0, 100000000000000000] Bandwith/Byte
     ALLOW_CREATION_OF_CONTRACTS(9), // 1, {0, 1}
     REMOVE_THE_POWER_OF_THE_GR(10),  // 1, {0, 1}
     ENTROPY_FEE(11), // 10 Vdt, [0, 100000000000] VS

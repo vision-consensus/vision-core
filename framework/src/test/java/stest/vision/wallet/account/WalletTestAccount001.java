@@ -69,7 +69,7 @@ public class WalletTestAccount001 {
 
   @Test
   public void testqueryaccountfromfullnode() {
-    //Query success, get the right balance,bandwidth and the account name.
+    //Query success, get the right balance,photon and the account name.
     Account queryResult = queryAccount(testKey002, blockingStubFull);
     /*    Account queryResult = PublicMethed.queryAccountByAddress(fromAddress,blockingStubFull);
     logger.info(ByteArray.toStr(queryResult.getAccountName().toByteArray()));
@@ -94,7 +94,7 @@ public class WalletTestAccount001 {
 
   @Test
   public void testqueryaccountfromsoliditynode() {
-    //Query success, get the right balance,bandwidth and the account name.
+    //Query success, get the right balance,photon and the account name.
     Account queryResult = solidityqueryAccount(testKey002, blockingStubSolidity);
     Assert.assertTrue(queryResult.getBalance() > 0);
     //Assert.assertTrue(queryResult.getBandwidth() >= 0);

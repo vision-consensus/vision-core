@@ -63,18 +63,18 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
         .build();
   }
 
-  public long getFrozenBalanceForBandwidth() {
+  public long getFrozenBalanceForPhoton() {
     return this.delegatedResource.getFrozenBalanceForPhoton();
   }
 
-  public void setFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
+  public void setFrozenBalanceForPhoton(long Bandwidth, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
         .setFrozenBalanceForPhoton(Bandwidth)
         .setExpireTimeForPhoton(expireTime)
         .build();
   }
 
-  public void addFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
+  public void addFrozenBalanceForPhoton(long Bandwidth, long expireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
         .setFrozenBalanceForPhoton(this.delegatedResource.getFrozenBalanceForPhoton()
             + Bandwidth)
@@ -82,11 +82,11 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
         .build();
   }
 
-  public long getExpireTimeForBandwidth() {
+  public long getExpireTimeForPhoton() {
     return this.delegatedResource.getExpireTimeForPhoton();
   }
 
-  public void setExpireTimeForBandwidth(long ExpireTime) {
+  public void setExpireTimeForPhoton(long ExpireTime) {
     this.delegatedResource = this.delegatedResource.toBuilder()
         .setExpireTimeForPhoton(ExpireTime)
         .build();

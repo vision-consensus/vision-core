@@ -70,8 +70,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] CREATE_ACCOUNT_FEE = "CREATE_ACCOUNT_FEE".getBytes();
   private static final byte[] CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT
       = "CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT".getBytes();
-  private static final byte[] CREATE_NEW_ACCOUNT_BANDWIDTH_RATE =
-      "CREATE_NEW_ACCOUNT_BANDWIDTH_RATE"
+  private static final byte[] CREATE_NEW_ACCOUNT_PHOTON_RATE =
+      "CREATE_NEW_ACCOUNT_PHOTON_RATE"
           .getBytes();
   private static final byte[] TRANSACTION_FEE = "TRANSACTION_FEE".getBytes(); // 1 byte
   private static final byte[] ASSET_ISSUE_FEE = "ASSET_ISSUE_FEE".getBytes();
@@ -397,9 +397,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getCreateNewAccountBandwidthRate();
+      this.getCreateNewAccountPhotonRate();
     } catch (IllegalArgumentException e) {
-      this.saveCreateNewAccountBandwidthRate(1L); //changed by committee later
+      this.saveCreateNewAccountPhotonRate(1L); //changed by committee later
     }
 
     try {
@@ -1224,13 +1224,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                 "not found CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT"));
   }
 
-  public void saveCreateNewAccountBandwidthRate(long rate) {
-    this.put(CREATE_NEW_ACCOUNT_BANDWIDTH_RATE,
+  public void saveCreateNewAccountPhotonRate(long rate) {
+    this.put(CREATE_NEW_ACCOUNT_PHOTON_RATE,
         new BytesCapsule(ByteArray.fromLong(rate)));
   }
 
-  public long getCreateNewAccountBandwidthRate() {
-    return Optional.ofNullable(getUnchecked(CREATE_NEW_ACCOUNT_BANDWIDTH_RATE))
+  public long getCreateNewAccountPhotonRate() {
+    return Optional.ofNullable(getUnchecked(CREATE_NEW_ACCOUNT_PHOTON_RATE))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(

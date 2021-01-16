@@ -253,12 +253,12 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
-      Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(frozenBalance, owner.getVisionPower());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-      Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 
@@ -267,7 +267,7 @@ public class FreezeBalanceActuatorTest {
               .createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
                   ByteArray.fromHexString(RECEIVER_ADDRESS)));
 
-      Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
+      Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForPhoton());
       long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
       Assert.assertEquals(totalNetWeightBefore + frozenBalance / 1000_000L, totalNetWeightAfter);
 
@@ -321,13 +321,13 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
-      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(frozenBalance, owner.getVisionPower());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 
@@ -336,7 +336,7 @@ public class FreezeBalanceActuatorTest {
               .createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
                   ByteArray.fromHexString(RECEIVER_ADDRESS)));
 
-      Assert.assertEquals(0L, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
+      Assert.assertEquals(0L, delegatedResourceCapsule.getFrozenBalanceForPhoton());
       Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForEntropy());
 
       long totalEntropyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEntropyWeight();
@@ -391,13 +391,13 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
-      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForEntropy());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
+      Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForPhoton());
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEntropy());
       Assert.assertEquals(0L, receiver.getVisionPower());
 

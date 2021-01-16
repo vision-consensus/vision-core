@@ -78,7 +78,7 @@ public class WalletTestAssetIssue015 {
   }
 
   @Test(enabled = true, description = "Use transfer net when token owner has not enough bandwidth")
-  public void atestWhenCreatorHasNoEnoughBandwidthUseTransferNet() {
+  public void atestWhenCreatorHasNoEnoughPhotonUseTransferNet() {
     ecKey1 = new ECKey(Utils.getRandom());
     asset015Address = ecKey1.getAddress();
     testKeyForAssetIssue015 = ByteArray.toHexString(ecKey1.getPrivKeyBytes());

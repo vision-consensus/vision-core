@@ -340,21 +340,21 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = this.account.toBuilder().setLatestConsumeFreeTime(latest_time).build();
   }
 
-  public void addDelegatedFrozenBalanceForBandwidth(long balance) {
+  public void addDelegatedFrozenBalanceForPhoton(long balance) {
     this.account = this.account.toBuilder().setDelegatedFrozenBalanceForPhoton(
         this.account.getDelegatedFrozenBalanceForPhoton() + balance).build();
   }
 
-  public long getAcquiredDelegatedFrozenBalanceForBandwidth() {
+  public long getAcquiredDelegatedFrozenBalanceForPhoton() {
     return this.account.getAcquiredDelegatedFrozenBalanceForPhoton();
   }
 
-  public void setAcquiredDelegatedFrozenBalanceForBandwidth(long balance) {
+  public void setAcquiredDelegatedFrozenBalanceForPhoton(long balance) {
     this.account = this.account.toBuilder().setAcquiredDelegatedFrozenBalanceForPhoton(balance)
         .build();
   }
 
-  public void addAcquiredDelegatedFrozenBalanceForBandwidth(long balance) {
+  public void addAcquiredDelegatedFrozenBalanceForPhoton(long balance) {
     this.account = this.account.toBuilder().setAcquiredDelegatedFrozenBalanceForPhoton(
         this.account.getAcquiredDelegatedFrozenBalanceForPhoton() + balance)
         .build();
@@ -377,11 +377,11 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return getAccountResource().getDelegatedFrozenBalanceForEntropy();
   }
 
-  public long getDelegatedFrozenBalanceForBandwidth() {
+  public long getDelegatedFrozenBalanceForPhoton() {
     return this.account.getDelegatedFrozenBalanceForPhoton();
   }
 
-  public void setDelegatedFrozenBalanceForBandwidth(long balance) {
+  public void setDelegatedFrozenBalanceForPhoton(long balance) {
     this.account = this.account.toBuilder()
         .setDelegatedFrozenBalanceForPhoton(balance)
         .build();
@@ -701,8 +701,8 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return frozenBalance[0];
   }
 
-  public long getAllFrozenBalanceForBandwidth() {
-    return getFrozenBalance() + getAcquiredDelegatedFrozenBalanceForBandwidth();
+  public long getAllFrozenBalanceForPhoton() {
+    return getFrozenBalance() + getAcquiredDelegatedFrozenBalanceForPhoton();
   }
 
   public int getFrozenSupplyCount() {

@@ -69,12 +69,12 @@ import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
  * function fibonacciNotify(uint number) returns(uint result) { result = fibonacci(number);
  * Notify(number, result); } }
  */
-public class BandWidthRuntimeOutOfTimeWithCheckTest {
+public class PhotonRuntimeOutOfTimeWithCheckTest {
 
   public static final long totalBalance = 1000_0000_000_000L;
-  private static String dbPath = "output_BandWidthRuntimeOutOfTimeTest_test";
-  private static String dbDirectory = "db_BandWidthRuntimeOutOfTimeTest_test";
-  private static String indexDirectory = "index_BandWidthRuntimeOutOfTimeTest_test";
+  private static String dbPath = "output_PhotonRuntimeOutOfTimeTest_test";
+  private static String dbDirectory = "db_PhotonRuntimeOutOfTimeTest_test";
+  private static String indexDirectory = "index_PhotonRuntimeOutOfTimeTest_test";
   private static AnnotationConfigApplicationContext context;
   private static Manager dbManager;
 
@@ -155,7 +155,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
       trxCap.setResultCode(contractResult.OUT_OF_ENTROPY);
       TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
           new RuntimeImpl());
-      dbManager.consumeBandwidth(trxCap, trace);
+      dbManager.consumePhoton(trxCap, trace);
       BlockCapsule blockCapsule = null;
       trace.init(blockCapsule);
       trace.exec();
@@ -220,7 +220,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
     TransactionCapsule trxCap = new TransactionCapsule(transaction);
     TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
         new RuntimeImpl());
-    dbManager.consumeBandwidth(trxCap, trace);
+    dbManager.consumePhoton(trxCap, trace);
     BlockCapsule blockCapsule = null;
     DepositImpl deposit = DepositImpl.createRoot(dbManager);
     trace.init(blockCapsule);

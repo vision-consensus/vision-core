@@ -23,11 +23,11 @@ import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetCont
 import org.vision.protos.contract.BalanceContract.TransferContract;
 
 @Slf4j(topic = "DB")
-public class BandwidthProcessor extends ResourceProcessor {
+public class PhotonProcessor extends ResourceProcessor {
 
   private ChainBaseManager chainBaseManager;
 
-  public BandwidthProcessor(ChainBaseManager chainBaseManager) {
+  public PhotonProcessor(ChainBaseManager chainBaseManager) {
     super(chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
     this.chainBaseManager = chainBaseManager;
   }
@@ -142,7 +142,7 @@ public class BandwidthProcessor extends ResourceProcessor {
   private void consumeForCreateNewAccount(AccountCapsule accountCapsule, long bytes,
       long now, TransactionTrace trace)
       throws AccountResourceInsufficientException {
-    boolean ret = consumeBandwidthForCreateNewAccount(accountCapsule, bytes, now);
+    boolean ret = consumePhotonForCreateNewAccount(accountCapsule, bytes, now);
 
     if (!ret) {
       ret = consumeFeeForCreateNewAccount(accountCapsule, trace);
@@ -152,11 +152,11 @@ public class BandwidthProcessor extends ResourceProcessor {
     }
   }
 
-  public boolean consumeBandwidthForCreateNewAccount(AccountCapsule accountCapsule, long bytes,
-      long now) {
+  public boolean consumePhotonForCreateNewAccount(AccountCapsule accountCapsule, long bytes,
+                                                  long now) {
 
     long createNewAccountBandwidthRatio = chainBaseManager.getDynamicPropertiesStore()
-        .getCreateNewAccountBandwidthRate();
+        .getCreateNewAccountPhotonRate();
 
     long netUsage = accountCapsule.getNetUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
@@ -347,7 +347,7 @@ public class BandwidthProcessor extends ResourceProcessor {
   }
 
   public long calculateGlobalNetLimit(AccountCapsule accountCapsule) {
-    long frozeBalance = accountCapsule.getAllFrozenBalanceForBandwidth();
+    long frozeBalance = accountCapsule.getAllFrozenBalanceForPhoton();
     if (frozeBalance < VS_PRECISION) {
       return 0;
     }

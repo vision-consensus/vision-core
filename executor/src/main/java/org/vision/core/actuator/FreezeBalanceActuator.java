@@ -72,7 +72,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
             && dynamicStore.supportDR()) {
           delegateResource(ownerAddress, receiverAddress, true,
               frozenBalance, expireTime);
-          accountCapsule.addDelegatedFrozenBalanceForBandwidth(frozenBalance);
+          accountCapsule.addDelegatedFrozenBalanceForPhoton(frozenBalance);
         } else {
           long newFrozenBalanceForBandwidth =
               frozenBalance + accountCapsule.getFrozenBalance();
@@ -244,7 +244,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         .get(key);
     if (delegatedResourceCapsule != null) {
       if (isBandwidth) {
-        delegatedResourceCapsule.addFrozenBalanceForBandwidth(balance, expireTime);
+        delegatedResourceCapsule.addFrozenBalanceForPhoton(balance, expireTime);
       } else {
         delegatedResourceCapsule.addFrozenBalanceForEntropy(balance, expireTime);
       }
@@ -253,7 +253,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
           ByteString.copyFrom(ownerAddress),
           ByteString.copyFrom(receiverAddress));
       if (isBandwidth) {
-        delegatedResourceCapsule.setFrozenBalanceForBandwidth(balance, expireTime);
+        delegatedResourceCapsule.setFrozenBalanceForPhoton(balance, expireTime);
       } else {
         delegatedResourceCapsule.setFrozenBalanceForEntropy(balance, expireTime);
       }
@@ -296,7 +296,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     //modify AccountStore
     AccountCapsule receiverCapsule = accountStore.get(receiverAddress);
     if (isBandwidth) {
-      receiverCapsule.addAcquiredDelegatedFrozenBalanceForBandwidth(balance);
+      receiverCapsule.addAcquiredDelegatedFrozenBalanceForPhoton(balance);
     } else {
       receiverCapsule.addAcquiredDelegatedFrozenBalanceForEntropy(balance);
     }

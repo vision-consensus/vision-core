@@ -71,12 +71,12 @@ import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
  * function fibonacciNotify(uint number) returns(uint result) { result = fibonacci(number);
  * Notify(number, result); } }
  */
-public class BandWidthRuntimeWithCheckTest {
+public class PhotonRuntimeWithCheckTest {
 
   public static final long totalBalance = 1000_0000_000_000L;
-  private static String dbPath = "output_BandWidthRuntimeTest_test";
-  private static String dbDirectory = "db_BandWidthRuntimeTest_test";
-  private static String indexDirectory = "index_BandWidthRuntimeTest_test";
+  private static String dbPath = "output_PhotonRuntimeTest_test";
+  private static String dbDirectory = "db_PhotonRuntimeTest_test";
+  private static String indexDirectory = "index_PhotonRuntimeTest_test";
   private static AnnotationConfigApplicationContext context;
   private static Manager dbManager;
   private static ChainBaseManager chainBaseManager;
@@ -165,7 +165,7 @@ public class BandWidthRuntimeWithCheckTest {
       TransactionCapsule trxCap = new TransactionCapsule(transaction);
       TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
           new RuntimeImpl());
-      dbManager.consumeBandwidth(trxCap, trace);
+      dbManager.consumePhoton(trxCap, trace);
       BlockCapsule blockCapsule = null;
       DepositImpl deposit = DepositImpl.createRoot(dbManager);
       trace.init(blockCapsule);
@@ -190,7 +190,7 @@ public class BandWidthRuntimeWithCheckTest {
   }
 
   @Test
-  public void testSuccessNoBandWidth() {
+  public void testSuccessNoPhoton() {
     try {
       byte[] contractAddress = createContract();
       TriggerSmartContract triggerContract = VvmTestUtils.createTriggerContract(contractAddress,
@@ -203,8 +203,8 @@ public class BandWidthRuntimeWithCheckTest {
       trxCap.setResultCode(contractResult.SUCCESS);
       TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
           new RuntimeImpl());
-      dbManager.consumeBandwidth(trxCap, trace);
-      long bandWidth = trxCap.getSerializedSize() + Constant.MAX_RESULT_SIZE_IN_TX;
+      dbManager.consumePhoton(trxCap, trace);
+      long photon = trxCap.getSerializedSize() + Constant.MAX_RESULT_SIZE_IN_TX;
       BlockCapsule blockCapsule = null;
       DepositImpl deposit = DepositImpl.createRoot(dbManager);
       trace.init(blockCapsule);
@@ -216,7 +216,7 @@ public class BandWidthRuntimeWithCheckTest {
       long balance = triggerOwnerTwo.getBalance();
       ReceiptCapsule receipt = trace.getReceipt();
       Assert.assertNull(trace.getRuntimeError());
-      Assert.assertEquals(bandWidth, receipt.getNetUsage());
+      Assert.assertEquals(photon, receipt.getNetUsage());
       Assert.assertEquals(6118, receipt.getEntropyUsageTotal());
       Assert.assertEquals(6118, receipt.getEntropyUsage());
       Assert.assertEquals(0, receipt.getEntropyFee());
@@ -271,7 +271,7 @@ public class BandWidthRuntimeWithCheckTest {
     trxCap.setResultCode(contractResult.SUCCESS);
     TransactionTrace trace = new TransactionTrace(trxCap, StoreFactory.getInstance(),
         new RuntimeImpl());
-    dbManager.consumeBandwidth(trxCap, trace);
+    dbManager.consumePhoton(trxCap, trace);
     BlockCapsule blockCapsule = null;
     DepositImpl deposit = DepositImpl.createRoot(dbManager);
     trace.init(blockCapsule);

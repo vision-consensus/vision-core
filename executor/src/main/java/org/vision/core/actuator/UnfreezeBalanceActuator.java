@@ -86,9 +86,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
-          unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForBandwidth();
-          delegatedResourceCapsule.setFrozenBalanceForBandwidth(0, 0);
-          accountCapsule.addDelegatedFrozenBalanceForBandwidth(-unfreezeBalance);
+          unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForPhoton();
+          delegatedResourceCapsule.setFrozenBalanceForPhoton(0, 0);
+          accountCapsule.addDelegatedFrozenBalanceForPhoton(-unfreezeBalance);
           break;
         case ENTROPY:
           unfreezeBalance = delegatedResourceCapsule.getFrozenBalanceForEntropy();
@@ -106,11 +106,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         switch (unfreezeBalanceContract.getResource()) {
           case PHOTON:
             if (dynamicStore.getAllowVvmSolidity059() == 1
-                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForBandwidth()
+                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForPhoton()
                 < unfreezeBalance) {
-              receiverCapsule.setAcquiredDelegatedFrozenBalanceForBandwidth(0);
+              receiverCapsule.setAcquiredDelegatedFrozenBalanceForPhoton(0);
             } else {
-              receiverCapsule.addAcquiredDelegatedFrozenBalanceForBandwidth(-unfreezeBalance);
+              receiverCapsule.addAcquiredDelegatedFrozenBalanceForPhoton(-unfreezeBalance);
             }
             break;
           case ENTROPY:
@@ -130,7 +130,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
       accountCapsule.setBalance(oldBalance + unfreezeBalance);
 
-      if (delegatedResourceCapsule.getFrozenBalanceForBandwidth() == 0
+      if (delegatedResourceCapsule.getFrozenBalanceForPhoton() == 0
           && delegatedResourceCapsule.getFrozenBalanceForEntropy() == 0) {
         delegatedResourceStore.delete(key);
 
@@ -305,34 +305,34 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
-          if (delegatedResourceCapsule.getFrozenBalanceForBandwidth() <= 0) {
+          if (delegatedResourceCapsule.getFrozenBalanceForPhoton() <= 0) {
             throw new ContractValidateException("no delegatedFrozenBalance(PHOTON)");
           }
 
           if (dynamicStore.getAllowVvmConstantinople() == 0) {
-            if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForBandwidth()
-                < delegatedResourceCapsule.getFrozenBalanceForBandwidth()) {
+            if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForPhoton()
+                < delegatedResourceCapsule.getFrozenBalanceForPhoton()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForBandwidth[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForBandwidth() + "] < delegatedBandwidth["
-                      + delegatedResourceCapsule.getFrozenBalanceForBandwidth()
+                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedBandwidth["
+                      + delegatedResourceCapsule.getFrozenBalanceForPhoton()
                       + "]");
             }
           } else {
             if (dynamicStore.getAllowVvmSolidity059() != 1
                 && receiverCapsule != null
                 && receiverCapsule.getType() != AccountType.Contract
-                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForBandwidth()
-                < delegatedResourceCapsule.getFrozenBalanceForBandwidth()) {
+                && receiverCapsule.getAcquiredDelegatedFrozenBalanceForPhoton()
+                < delegatedResourceCapsule.getFrozenBalanceForPhoton()) {
               throw new ContractValidateException(
                   "AcquiredDelegatedFrozenBalanceForBandwidth[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForBandwidth() + "] < delegatedBandwidth["
-                      + delegatedResourceCapsule.getFrozenBalanceForBandwidth()
+                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedBandwidth["
+                      + delegatedResourceCapsule.getFrozenBalanceForPhoton()
                       + "]");
             }
           }
 
-          if (delegatedResourceCapsule.getExpireTimeForBandwidth() > now) {
+          if (delegatedResourceCapsule.getExpireTimeForPhoton() > now) {
             throw new ContractValidateException("It's not time to unfreeze.");
           }
           break;

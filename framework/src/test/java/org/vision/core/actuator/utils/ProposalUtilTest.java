@@ -183,7 +183,7 @@ public class ProposalUtilTest {
 
     try {
       actuatorUtil.validator(dynamicPropertiesStore, forkUtils,
-          ProposalUtil.ProposalType.CREATE_NEW_ACCOUNT_BANDWIDTH_RATE.getCode(), invalidValue);
+          ProposalUtil.ProposalType.CREATE_NEW_ACCOUNT_PHOTON_RATE.getCode(), invalidValue);
       Assert.assertTrue(false);
     } catch (ContractValidateException e) {
       Assert.assertEquals(LONG_VALUE_ERROR, e.getMessage());
@@ -191,7 +191,7 @@ public class ProposalUtilTest {
 
     try {
       actuatorUtil.validator(dynamicPropertiesStore, forkUtils,
-          ProposalUtil.ProposalType.CREATE_NEW_ACCOUNT_BANDWIDTH_RATE.getCode(), LONG_VALUE + 1);
+          ProposalUtil.ProposalType.CREATE_NEW_ACCOUNT_PHOTON_RATE.getCode(), LONG_VALUE + 1);
       Assert.assertTrue(false);
     } catch (ContractValidateException e) {
       Assert.assertEquals(LONG_VALUE_ERROR, e.getMessage());

@@ -59,8 +59,8 @@ public class ProposalService extends ProposalUtil {
               .saveCreateNewAccountFeeInSystemContract(entry.getValue());
           break;
         }
-        case CREATE_NEW_ACCOUNT_BANDWIDTH_RATE: {
-          manager.getDynamicPropertiesStore().saveCreateNewAccountBandwidthRate(entry.getValue());
+        case CREATE_NEW_ACCOUNT_PHOTON_RATE: {
+          manager.getDynamicPropertiesStore().saveCreateNewAccountPhotonRate(entry.getValue());
           break;
         }
         case ALLOW_CREATION_OF_CONTRACTS: {

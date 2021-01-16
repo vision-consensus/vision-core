@@ -185,7 +185,7 @@ public class WalletTestCommittee004 {
     defaultCommitteeMap.put("WITNESS_PAY_PER_BLOCK", 32000000L);
     defaultCommitteeMap.put("WITNESS_STANDBY_ALLOWANCE", 115200000000L);
     defaultCommitteeMap.put("CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT", 0L);
-    defaultCommitteeMap.put("CREATE_NEW_ACCOUNT_BANDWIDTH_RATE", 1L);
+    defaultCommitteeMap.put("CREATE_NEW_ACCOUNT_PHOTON_RATE", 1L);
 
     ChainParameters chainParameters = blockingStubFull
         .getChainParameters(EmptyMessage.newBuilder().build());

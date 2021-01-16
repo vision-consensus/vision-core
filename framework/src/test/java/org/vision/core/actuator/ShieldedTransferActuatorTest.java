@@ -421,10 +421,10 @@ public class ShieldedTransferActuatorTest {
   }
 
   /**
-   * shieldTransfer not consume bandwidth point
+   * shieldTransfer not consume photon point
    */
   @Test
-  public void publicAddressToShieldedAddressNotConsumeBandwidth() {
+  public void publicAddressToShieldedAddressNotConsumePhoton() {
     dbManager.getDynamicPropertiesStore().saveAllowShieldedTransaction(1);
     try {
       TransactionCapsule transactionCap = getPublicToShieldedTransaction();

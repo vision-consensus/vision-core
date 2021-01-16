@@ -686,10 +686,10 @@ public class Manager {
     }
   }
 
-  public void consumeBandwidth(TransactionCapsule trx, TransactionTrace trace)
+  public void consumePhoton(TransactionCapsule trx, TransactionTrace trace)
       throws ContractValidateException, AccountResourceInsufficientException,
       TooBigTransactionResultException {
-    BandwidthProcessor processor = new BandwidthProcessor(chainBaseManager);
+    PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.consume(trx, trace);
   }
 
@@ -1079,7 +1079,7 @@ public class Manager {
         new RuntimeImpl());
     trxCap.setTrxTrace(trace);
 
-    consumeBandwidth(trxCap, trace);
+    consumePhoton(trxCap, trace);
     consumeMultiSignFee(trxCap, trace);
 
     trace.init(blockCap, eventPluginLoaded);
