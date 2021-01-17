@@ -101,7 +101,7 @@ public class FreezeBalanceActuatorTest {
     dbManager.getAccountStore().put(receiverCapsule.getAddress().toByteArray(), receiverCapsule);
   }
 
-  private Any getContractForBandwidth(String ownerAddress, long frozenBalance, long duration) {
+  private Any getContractForPhoton(String ownerAddress, long frozenBalance, long duration) {
     return Any.pack(
         FreezeBalanceContract.newBuilder()
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
@@ -120,9 +120,9 @@ public class FreezeBalanceActuatorTest {
             .build());
   }
 
-  private Any getDelegatedContractForBandwidth(String ownerAddress, String receiverAddress,
-      long frozenBalance,
-      long duration) {
+  private Any getDelegatedContractForPhoton(String ownerAddress, String receiverAddress,
+                                            long frozenBalance,
+                                            long duration) {
     return Any.pack(
         FreezeBalanceContract.newBuilder()
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
@@ -146,12 +146,12 @@ public class FreezeBalanceActuatorTest {
   }
 
   @Test
-  public void testFreezeBalanceForBandwidth() {
+  public void testFreezeBalanceForPhoton() {
     long frozenBalance = 1_000_000_000L;
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
       actuator.validate();
@@ -201,7 +201,7 @@ public class FreezeBalanceActuatorTest {
 
 
   @Test
-  public void testFreezeDelegatedBalanceForBandwidthWithContractAddress() {
+  public void testFreezeDelegatedBalanceForPhotonWithContractAddress() {
     AccountCapsule receiverCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8("receiver"),
@@ -217,7 +217,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(
-        getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+        getDelegatedContractForPhoton(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
@@ -232,13 +232,13 @@ public class FreezeBalanceActuatorTest {
   }
 
   @Test
-  public void testFreezeDelegatedBalanceForBandwidth() {
+  public void testFreezeDelegatedBalanceForPhoton() {
     dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(1);
     long frozenBalance = 1_000_000_000L;
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(
-        getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+        getDelegatedContractForPhoton(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
@@ -418,7 +418,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
       actuator.validate();
@@ -439,7 +439,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -460,7 +460,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS_INVALID, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS_INVALID, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -485,7 +485,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ACCOUNT_INVALID, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ACCOUNT_INVALID, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -507,7 +507,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 2;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -532,7 +532,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 4;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -556,7 +556,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -583,7 +583,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3L;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -604,7 +604,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -645,7 +645,7 @@ public class FreezeBalanceActuatorTest {
 
     long frozenBalance = 1_000_000_000L;
     long duration = 3;
-    actuatorTest.setContract(getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration));
+    actuatorTest.setContract(getContractForPhoton(OWNER_ADDRESS, frozenBalance, duration));
     actuatorTest.nullTransationResult();
 
     actuatorTest.setNullDBManagerMsg("No account store or dynamic store!");

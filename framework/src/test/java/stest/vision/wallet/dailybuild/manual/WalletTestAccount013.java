@@ -148,11 +148,11 @@ public class WalletTestAccount013 {
     account013BeforeBalance = account013infoBefore.getBalance();
     AccountResourceMessage account013ResBefore = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    final long account013BeforeBandWidth = account013ResBefore.getNetLimit();
+    final long account013BeforePhoton = account013ResBefore.getNetLimit();
     AccountResourceMessage receiverResourceBefore = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    long receiverBeforeBandWidth = receiverResourceBefore.getNetLimit();
-    //Account013 DelegateResource for BandWidth to receiver
+    long receiverBeforePhoton = receiverResourceBefore.getNetLimit();
+    //Account013 DelegateResource for Photon to receiver
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
             ByteString.copyFrom(receiverDelegateAddress), testKeyForAccount013, blockingStubFull));
@@ -162,18 +162,18 @@ public class WalletTestAccount013 {
     long account013AfterBalance = account013infoAfter.getBalance();
     AccountResourceMessage account013ResAfter = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    //get BandWidth of account013 after DelegateResource
-    long account013AfterBandWidth = account013ResAfter.getNetLimit();
+    //get Photon of account013 after DelegateResource
+    long account013AfterPhoton = account013ResAfter.getNetLimit();
     AccountResourceMessage receiverResourceAfter = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    //Bandwidth of receiver after DelegateResource
-    long receiverAfterBandWidth = receiverResourceAfter.getNetLimit();
+    //Photon of receiver after DelegateResource
+    long receiverAfterPhoton = receiverResourceAfter.getNetLimit();
     //Balance of Account013 reduced amount same as DelegateResource
     Assert.assertTrue(account013BeforeBalance == account013AfterBalance + freezeAmount);
-    //Bandwidth of account013 is equally before and after DelegateResource
-    Assert.assertTrue(account013AfterBandWidth == account013BeforeBandWidth);
-    //Bandwidth of receiver after DelegateResource is greater than before
-    Assert.assertTrue(receiverAfterBandWidth > receiverBeforeBandWidth);
+    //Photon of account013 is equally before and after DelegateResource
+    Assert.assertTrue(account013AfterPhoton == account013BeforePhoton);
+    //Photon of receiver after DelegateResource is greater than before
+    Assert.assertTrue(receiverAfterPhoton > receiverBeforePhoton);
     Protocol.Account account013Before1 = PublicMethed
         .queryAccount(account013Address, blockingStubFull);
     //balance of account013 before DelegateResource
@@ -204,9 +204,9 @@ public class WalletTestAccount013 {
     long receiverAfterEntropy = receiverResourceAfter1.getEntropyLimit();
     //Balance of Account013 reduced amount same as DelegateResource
     Assert.assertTrue(account013BeforeBalance1 == account013AfterBalance1 + freezeAmount);
-    //Bandwidth of account013 is equally before and after DelegateResource
+    //Photon of account013 is equally before and after DelegateResource
     Assert.assertTrue(account013AfterEntropy == account013BeforeEntropy);
-    //Bandwidth of receiver after DelegateResource is greater than before
+    //Photon of receiver after DelegateResource is greater than before
     Assert.assertTrue(receiverAfterEntropy > receiverBeforeEntropy);
     //account013 DelegateResource to Empty failed
     Assert.assertFalse(PublicMethed
@@ -251,7 +251,7 @@ public class WalletTestAccount013 {
         .queryAccount(account4DelegatedResourceAddress, blockingStubFull);
     //Balance of Account4 before DelegateResource
     final long account4BeforeBalance = account4infoBefore.getBalance();
-    //account013 DelegateResource of bandwidth to Account4
+    //account013 DelegateResource of Photon to Account4
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
             ByteString.copyFrom(account4DelegatedResourceAddress), testKeyForAccount013,
@@ -266,7 +266,7 @@ public class WalletTestAccount013 {
     Optional<GrpcAPI.DelegatedResourceList> delegatedResourceResult1 = PublicMethed
         .getDelegatedResource(account013Address, account4DelegatedResourceAddress,
             blockingStubFull);
-    long afterFreezeBandwidth = delegatedResourceResult1.get().getDelegatedResource(0)
+    long afterFreezePhoton = delegatedResourceResult1.get().getDelegatedResource(0)
         .getFrozenBalanceForPhoton();
     //check DelegatedResourceList，from:Account4 to:Account5
     Optional<GrpcAPI.DelegatedResourceList> delegatedResourceResult2 = PublicMethed
@@ -274,8 +274,8 @@ public class WalletTestAccount013 {
             blockingStubFull);
     long afterFreezeEntropy = delegatedResourceResult2.get().getDelegatedResource(0)
         .getFrozenBalanceForEntropy();
-    //FrozenBalanceForBandwidth > 0
-    Assert.assertTrue(afterFreezeBandwidth > 0);
+    //FrozenBalanceForPhoton > 0
+    Assert.assertTrue(afterFreezePhoton > 0);
     //FrozenBalanceForEntropy > 0
     Assert.assertTrue(afterFreezeEntropy > 0);
 
@@ -289,7 +289,7 @@ public class WalletTestAccount013 {
     Assert.assertTrue(new String(account5DelegatedResourceAddress)
         .equals(new String(delegatedResourceIndexResult1.get().getToAccounts(0).toByteArray())));
 
-    //unfreezebalance of bandwidth from Account013 to Account4
+    //unfreezebalance of Photon from Account013 to Account4
     Assert.assertTrue(PublicMethed.unFreezeBalance(account013Address, testKeyForAccount013, 0,
         account4DelegatedResourceAddress, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -303,10 +303,10 @@ public class WalletTestAccount013 {
     Assert.assertFalse(
         delegatedResourceIndexResult1AfterUnfreeze.get().getToAccountsList().isEmpty());
     //Balance of Account013 after unfreezeBalance
-    // (013 -> receiver(bandwidth), 013 -> receiver(Entropy), 013 -> Account4(bandwidth))
+    // (013 -> receiver(Photon), 013 -> receiver(Entropy), 013 -> Account4(Photon))
     Assert.assertTrue(PublicMethed.queryAccount(account013Address, blockingStubFull).getBalance()
         == account013BeforeBalance - 2 * freezeAmount);
-    //bandwidth from Account013 to  Account4 gone
+    //Photon from Account013 to  Account4 gone
     Assert.assertTrue(
         PublicMethed.getAccountResource(account4DelegatedResourceAddress, blockingStubFull)
             .getNetLimit() == 0);
@@ -327,7 +327,7 @@ public class WalletTestAccount013 {
         PublicMethed.getAccountResource(account5DelegatedResourceAddress, blockingStubFull)
             .getEntropyLimit() == 0);
 
-    //Unfreezebalance of Bandwidth from Account4 to Account5 fail
+    //Unfreezebalance of Photon from Account4 to Account5 fail
     Assert.assertFalse(PublicMethed
         .unFreezeBalance(account4DelegatedResourceAddress, account4DelegatedResourceKey, 0,
             account5DelegatedResourceAddress, blockingStubFull));
@@ -343,7 +343,7 @@ public class WalletTestAccount013 {
     Assert.assertTrue(PublicMethed
         .sendcoin(accountForAssetIssueAddress, 10000000000L, toAddress, testKey003,
             blockingStubFull));
-    //account013 DelegateResource of bandwidth to accountForAssetIssue
+    //account013 DelegateResource of Photon to accountForAssetIssue
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account013Address, 1000000000L, freezeDuration, 0,
             ByteString.copyFrom(accountForAssetIssueAddress), testKeyForAccount013,
@@ -377,9 +377,9 @@ public class WalletTestAccount013 {
             account5DelegatedResourceAddress, account5DelegatedResourceKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     //get account013，accountForAssetIssue，Account5 account resources before transferAssets
-    final long account013CurrentBandwidth = PublicMethed
+    final long account013CurrentPhoton = PublicMethed
         .getAccountResource(account013Address, blockingStubFull).getNetUsed();
-    long accountForAssetIssueCurrentBandwidth = PublicMethed
+    long accountForAssetIssueCurrentPhoton = PublicMethed
         .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getNetUsed();
     final long account5CurrentPhoton = PublicMethed
         .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
@@ -392,11 +392,11 @@ public class WalletTestAccount013 {
     PublicMethed.printAddress(account5DelegatedResourceKey);
 
     //get account013，accountForAssetIssue，Account5 resource after transferAsset
-    final long account013CurrentBandwidthAfterTrans = PublicMethed
+    final long account013CurrentPhotonAfterTrans = PublicMethed
         .getAccountResource(account013Address, blockingStubFull).getNetUsed();
-    final long accountForAssetIssueCurrentBandwidthAfterTrans = PublicMethed
+    final long accountForAssetIssueCurrentPhotonAfterTrans = PublicMethed
         .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getFreeNetUsed();
-    final long account5CurrentBandwidthAfterTrans = PublicMethed
+    final long account5CurrentPhotonAfterTrans = PublicMethed
         .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
     AccountResourceMessage account5ResourceAfterTrans = PublicMethed
         .getAccountResource(account5DelegatedResourceAddress, blockingStubFull);
@@ -413,12 +413,12 @@ public class WalletTestAccount013 {
     logger.info(result);
     PublicMethed.printAddress(receiverDelegateKey);
     PublicMethed.printAddress(account5DelegatedResourceKey);
-    long account5FreeAssetNetUsed = accountForAssetIssueCurrentBandwidthAfterTrans;
+    long account5FreeAssetNetUsed = accountForAssetIssueCurrentPhotonAfterTrans;
 
     //check resource diff
     Assert.assertTrue(Long.parseLong(result) > 0);
-    Assert.assertTrue(account013CurrentBandwidth == account013CurrentBandwidthAfterTrans);
-    Assert.assertTrue(account5CurrentPhoton == account5CurrentBandwidthAfterTrans);
+    Assert.assertTrue(account013CurrentPhoton == account013CurrentPhotonAfterTrans);
+    Assert.assertTrue(account5CurrentPhoton == account5CurrentPhotonAfterTrans);
   }
 
   @Test(enabled = true, description = "Can't delegate resource for contract")

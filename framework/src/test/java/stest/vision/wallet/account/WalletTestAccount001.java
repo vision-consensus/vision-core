@@ -76,7 +76,6 @@ public class WalletTestAccount001 {
     logger.info(Long.toString(queryResult.getBalance()));
     logger.info(ByteArray.toStr(queryResult.getAddress().toByteArray()));*/
     Assert.assertTrue(queryResult.getBalance() > 0);
-    //Assert.assertTrue(queryResult.getBandwidth() >= 0);
     Assert.assertTrue(queryResult.getAccountName().toByteArray().length > 0);
     Assert.assertFalse(queryResult.getAddress().isEmpty());
 
@@ -97,7 +96,6 @@ public class WalletTestAccount001 {
     //Query success, get the right balance,photon and the account name.
     Account queryResult = solidityqueryAccount(testKey002, blockingStubSolidity);
     Assert.assertTrue(queryResult.getBalance() > 0);
-    //Assert.assertTrue(queryResult.getBandwidth() >= 0);
     Assert.assertTrue(queryResult.getAccountName().toByteArray().length > 0);
     Assert.assertFalse(queryResult.getAddress().isEmpty());
 

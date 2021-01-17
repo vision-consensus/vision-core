@@ -72,13 +72,13 @@ public class UnstakeProcessor {
     long now = unstakeParam.getNow();
 
     if (accountCapsule.getFrozenCount() != 1) {
-      throw new ContractValidateException("no frozenBalance(BANDWIDTH)");
+      throw new ContractValidateException("no frozenBalance(PHOTON)");
     }
 
     boolean needCheckFrozenTime = CommonParameter.getInstance()
             .getCheckFrozenTime() == 1;//for test
     if (needCheckFrozenTime && accountCapsule.getFrozenList().get(0).getExpireTime() > now) {
-      throw new ContractValidateException("It's not time to unfreeze(BANDWIDTH).");
+      throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
     }
   }
 

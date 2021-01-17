@@ -603,25 +603,25 @@ public class Program {
     } else {
       AccountCapsule obtainCapsule = repository.getAccount(obtainer);
       long now = getTimestamp().longValue() * 1000;
-      long ownerBandwidthBalance = ownerCapsule.getFrozenList().get(0).getFrozenBalance();
-      long ownerBandwidthExpire = ownerCapsule.getFrozenList().get(0).getExpireTime();
-      long newBandwidthExpire = ownerBandwidthExpire;
-      long newFrozenBalanceForBandwidth = ownerBandwidthBalance;
+      long ownerPhotonBalance = ownerCapsule.getFrozenList().get(0).getFrozenBalance();
+      long ownerPhotonExpire = ownerCapsule.getFrozenList().get(0).getExpireTime();
+      long newPhotonExpire = ownerPhotonExpire;
+      long newFrozenBalanceForPhoton = ownerPhotonBalance;
       if (obtainCapsule.getFrozenCount() > 0) {
-        long obtainBandwidthBalance = obtainCapsule.getFrozenList().get(0).getFrozenBalance();
-        long obtainBandwidthExpire = obtainCapsule.getFrozenList().get(0).getExpireTime();
+        long obtainPhotonBalance = obtainCapsule.getFrozenList().get(0).getFrozenBalance();
+        long obtainPhotonExpire = obtainCapsule.getFrozenList().get(0).getExpireTime();
         long maxExpire = repository.getDynamicPropertiesStore().getMinFrozenTime() * Parameter.ChainConstant.FROZEN_PERIOD;
-        newBandwidthExpire = now
-                + BigInteger.valueOf(Long.max(0, Long.min(ownerBandwidthExpire - now, maxExpire)))
-                .multiply(BigInteger.valueOf(ownerBandwidthBalance))
-                .add(BigInteger.valueOf(Long.max(0, Long.min(obtainBandwidthExpire - now, maxExpire)))
-                        .multiply(BigInteger.valueOf(obtainBandwidthBalance)))
+        newPhotonExpire = now
+                + BigInteger.valueOf(Long.max(0, Long.min(ownerPhotonExpire - now, maxExpire)))
+                .multiply(BigInteger.valueOf(ownerPhotonBalance))
+                .add(BigInteger.valueOf(Long.max(0, Long.min(obtainPhotonExpire - now, maxExpire)))
+                        .multiply(BigInteger.valueOf(obtainPhotonBalance)))
                 .divide(BigInteger.valueOf(
-                        Math.addExact(ownerBandwidthBalance, obtainBandwidthBalance)))
+                        Math.addExact(ownerPhotonBalance, obtainPhotonBalance)))
                 .longValue();
-        newFrozenBalanceForBandwidth = Math.addExact(ownerBandwidthBalance, obtainBandwidthBalance);
+        newFrozenBalanceForPhoton = Math.addExact(ownerPhotonBalance, obtainPhotonBalance);
       }
-      obtainCapsule.setFrozenForBandwidth(newFrozenBalanceForBandwidth, newBandwidthExpire);
+      obtainCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, newPhotonExpire);
       repository.updateAccount(obtainer, obtainCapsule);
       ownerCapsule.setInstance(ownerCapsule.getInstance().toBuilder()
               .removeFrozen(0).build());

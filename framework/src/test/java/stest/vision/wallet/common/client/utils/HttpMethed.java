@@ -623,7 +623,7 @@ public class HttpMethed {
    * constructor.
    */
   public static HttpResponse deployContract(String httpNode, String name, String abi,
-      String bytecode, Long bandwidthLimit, Long feeLimit, Integer consumeUserResourcePercent,
+      String bytecode, Long photonLimit, Long feeLimit, Integer consumeUserResourcePercent,
       Long originEntropyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
       String fromKey) {
     try {
@@ -633,7 +633,7 @@ public class HttpMethed {
       userBaseObj2.addProperty("name", name);
       userBaseObj2.addProperty("abi", abi);
       userBaseObj2.addProperty("bytecode", bytecode);
-      userBaseObj2.addProperty("bandwidth_limit", bandwidthLimit);
+      userBaseObj2.addProperty("photon_limit", photonLimit);
       userBaseObj2.addProperty("fee_limit", feeLimit);
       userBaseObj2.addProperty("consume_user_resource_percent", consumeUserResourcePercent);
       userBaseObj2.addProperty("origin_entropy_limit", originEntropyLimit);
@@ -659,7 +659,7 @@ public class HttpMethed {
    * constructor.
    */
   public static String deployContractGetTxid(String httpNode, String name, String abi,
-      String bytecode, Long bandwidthLimit, Long feeLimit, Integer consumeUserResourcePercent,
+      String bytecode, Long photonLimit, Long feeLimit, Integer consumeUserResourcePercent,
       Long originEntropyLimit, Long callValue, Integer tokenId, Long tokenValue, byte[] ownerAddress,
       String fromKey) {
     try {
@@ -669,7 +669,7 @@ public class HttpMethed {
       userBaseObj2.addProperty("name", name);
       userBaseObj2.addProperty("abi", abi);
       userBaseObj2.addProperty("bytecode", bytecode);
-      userBaseObj2.addProperty("bandwidth_limit", bandwidthLimit);
+      userBaseObj2.addProperty("photon_limit", photonLimit);
       userBaseObj2.addProperty("fee_limit", feeLimit);
       userBaseObj2.addProperty("consume_user_resource_percent", consumeUserResourcePercent);
       userBaseObj2.addProperty("origin_entropy_limit", originEntropyLimit);
@@ -698,7 +698,7 @@ public class HttpMethed {
    * constructor.
    */
   public static HttpResponse deployContractGetTxidWithTooBigLong(String httpNode, String name,
-      String abi, String bytecode, Long bandwidthLimit, Long feeLimit,
+      String abi, String bytecode, Long photonLimit, Long feeLimit,
       Integer consumeUserResourcePercent, Long originEntropyLimit, Long callValue, Integer tokenId,
       Long tokenValue, byte[] ownerAddress, String fromKey) {
     try {
@@ -710,7 +710,7 @@ public class HttpMethed {
       jsonObject.put("name", name);
       jsonObject.put("abi", abi);
       jsonObject.put("bytecode", bytecode);
-      jsonObject.put("bandwidth_limit", bandwidthLimit);
+      jsonObject.put("photon_limit", photonLimit);
       jsonObject.put("fee_limit", feeLimit);
       jsonObject.put("consume_user_resource_percent", consumeUserResourcePercent);
       jsonObject.put("origin_entropy_limit", originEntropyLimit);
@@ -939,10 +939,10 @@ public class HttpMethed {
       userBaseObj2.addProperty("frozen_balance", frozenBalance);
       userBaseObj2.addProperty("frozen_duration", frozenDuration);
       if (resourceCode == 0) {
-        userBaseObj2.addProperty("resource", "BANDWIDTH");
+        userBaseObj2.addProperty("resource", "PHOTON");
       }
       if (resourceCode == 1) {
-        userBaseObj2.addProperty("resource", "ENERGY");
+        userBaseObj2.addProperty("resource", "ENTROPY");
       }
       if (receiverAddress != null) {
         userBaseObj2.addProperty("receiver_address", ByteArray.toHexString(receiverAddress));
@@ -977,7 +977,7 @@ public class HttpMethed {
       JsonObject userBaseObj2 = new JsonObject();
       userBaseObj2.addProperty("owner_address", ByteArray.toHexString(ownerAddress));
       if (resourceCode == 0) {
-        userBaseObj2.addProperty("resource", "BANDWIDTH");
+        userBaseObj2.addProperty("resource", "PHOTON");
       }
       if (resourceCode == 1) {
         userBaseObj2.addProperty("resource", "ENERGY");

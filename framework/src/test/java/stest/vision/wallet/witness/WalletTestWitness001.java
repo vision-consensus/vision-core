@@ -236,11 +236,8 @@ public class WalletTestWitness001 {
     Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 
     Long beforeFrozenBalance = 0L;
-    //Long beforeBandwidth     = beforeFronzen.getBandwidth();
     if (beforeFronzen.getFrozenCount() != 0) {
       beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-      //beforeBandwidth     = beforeFronzen.getBandwidth();
-      //logger.info(Long.toString(beforeFronzen.getBandwidth()));
       logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
     }
 
@@ -288,22 +285,10 @@ public class WalletTestWitness001 {
 
     Account afterFronzen = queryAccount(ecKey, searchBlockingStubFull);
     Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
-    //Long afterBandwidth     = afterFronzen.getBandwidth();
-    //logger.info(Long.toString(afterFronzen.getBandwidth()));
-    //logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
-    //logger.info(Integer.toString(search.getFrozenCount()));
     logger.info(
         "afterfrozenbalance =" + Long.toString(afterFrozenBalance) + "beforefrozenbalance =  "
             + beforeFrozenBalance + "freezebalance = " + Long.toString(freezeBalance));
-    //logger.info("afterbandwidth = " + Long.toString(afterBandwidth) + " beforebandwidth =
-    // " + Long.toString(beforeBandwidth));
-    //if ((afterFrozenBalance - beforeFrozenBalance != freezeBalance) ||
-    //       (freezeBalance * frozen_duration -(afterBandwidth - beforeBandwidth) !=0)){
-    //  logger.info("After 20 second, two node still not synchronous");
-    // }
     Assert.assertTrue(afterFrozenBalance - beforeFrozenBalance == freezeBalance);
-    //Assert.assertTrue(freezeBalance * frozen_duration - (afterBandwidth -
-    // beforeBandwidth) <= 1000000);
     return true;
 
 

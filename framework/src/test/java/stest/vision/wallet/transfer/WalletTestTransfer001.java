@@ -169,11 +169,8 @@ public class WalletTestTransfer001 {
     final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
     Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
     Long beforeFrozenBalance = 0L;
-    //Long beforeBandwidth     = beforeFronzen.getBandwidth();
     if (beforeFronzen.getFrozenCount() != 0) {
       beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-      //beforeBandwidth     = beforeFronzen.getBandwidth();
-      //logger.info(Long.toString(beforeFronzen.getBandwidth()));
       logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
     }
 
@@ -218,15 +215,11 @@ public class WalletTestTransfer001 {
 
     Account afterFronzen = queryAccount(ecKey, searchBlockingStubFull);
     Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
-    //Long afterBandwidth     = afterFronzen.getBandwidth();
-    //logger.info(Long.toString(afterFronzen.getBandwidth()));
     logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
-    //logger.info(Integer.toString(search.getFrozenCount()));
     logger.info(
         "beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen" + afterFrozenBalance
             .toString());
     Assert.assertTrue(afterFrozenBalance - beforeFrozenBalance == freezeBalance);
-    //Assert.assertTrue(afterBandwidth - beforeBandwidth == freezeBalance * frozen_duration);
     return true;
 
 

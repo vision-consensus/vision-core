@@ -89,7 +89,7 @@ public class PhotonProcessor extends ResourceProcessor {
         bytesSize += Constant.MAX_RESULT_SIZE_IN_TX;
       }
 
-      logger.debug("trxId {}, bandwidth cost: {}", trx.getTransactionId(), bytesSize);
+      logger.debug("trxId {}, photon cost: {}", trx.getTransactionId(), bytesSize);
       trace.setNetBill(bytesSize, 0);
       byte[] address = TransactionCapsule.getOwner(contract);
       AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(address);
@@ -122,7 +122,7 @@ public class PhotonProcessor extends ResourceProcessor {
 
       long fee = chainBaseManager.getDynamicPropertiesStore().getTransactionFee() * bytesSize;
       throw new AccountResourceInsufficientException(
-          "Account has insufficient bandwidth[" + bytesSize + "] and balance["
+          "Account has insufficient photon[" + bytesSize + "] and balance["
               + fee + "] to create new account");
     }
   }
@@ -155,7 +155,7 @@ public class PhotonProcessor extends ResourceProcessor {
   public boolean consumePhotonForCreateNewAccount(AccountCapsule accountCapsule, long bytes,
                                                   long now) {
 
-    long createNewAccountBandwidthRatio = chainBaseManager.getDynamicPropertiesStore()
+    long createNewAccountPhotonRatio = chainBaseManager.getDynamicPropertiesStore()
         .getCreateNewAccountPhotonRate();
 
     long netUsage = accountCapsule.getNetUsage();
@@ -164,10 +164,10 @@ public class PhotonProcessor extends ResourceProcessor {
 
     long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
 
-    if (bytes * createNewAccountBandwidthRatio <= (netLimit - newNetUsage)) {
+    if (bytes * createNewAccountPhotonRatio <= (netLimit - newNetUsage)) {
       latestConsumeTime = now;
       long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
-      newNetUsage = increase(newNetUsage, bytes * createNewAccountBandwidthRatio,
+      newNetUsage = increase(newNetUsage, bytes * createNewAccountPhotonRatio,
           latestConsumeTime, now);
       accountCapsule.setLatestConsumeTime(latestConsumeTime);
       accountCapsule.setLatestOperationTime(latestOperationTime);
@@ -256,7 +256,7 @@ public class PhotonProcessor extends ResourceProcessor {
         publicLatestFreeNetTime, now);
 
     if (bytes > (publicFreeAssetNetLimit - newPublicFreeAssetNetUsage)) {
-      logger.debug("The " + tokenID + " public free bandwidth is not enough");
+      logger.debug("The " + tokenID + " public free photon is not enough");
       return false;
     }
 
@@ -278,7 +278,7 @@ public class PhotonProcessor extends ResourceProcessor {
         latestAssetOperationTime, now);
 
     if (bytes > (freeAssetNetLimit - newFreeAssetNetUsage)) {
-      logger.debug("The " + tokenID + " free bandwidth is not enough");
+      logger.debug("The " + tokenID + " free photon is not enough");
       return false;
     }
 
@@ -292,7 +292,7 @@ public class PhotonProcessor extends ResourceProcessor {
     long newIssuerNetUsage = increase(issuerNetUsage, 0, latestConsumeTime, now);
 
     if (bytes > (issuerNetLimit - newIssuerNetUsage)) {
-      logger.debug("The " + tokenID + " issuer's bandwidth is not enough");
+      logger.debug("The " + tokenID + " issuer's photon is not enough");
       return false;
     }
 

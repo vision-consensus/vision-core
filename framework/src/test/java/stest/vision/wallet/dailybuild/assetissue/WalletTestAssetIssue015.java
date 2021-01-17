@@ -77,7 +77,7 @@ public class WalletTestAssetIssue015 {
     blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
   }
 
-  @Test(enabled = true, description = "Use transfer net when token owner has not enough bandwidth")
+  @Test(enabled = true, description = "Use transfer net when token owner has not enough photon")
   public void atestWhenCreatorHasNoEnoughPhotonUseTransferNet() {
     ecKey1 = new ECKey(Utils.getRandom());
     asset015Address = ecKey1.getAddress();
@@ -141,7 +141,7 @@ public class WalletTestAssetIssue015 {
   }
 
   @Test(enabled = true, description = "Use balance when transfer has not enough net")
-  public void btestWhenTransferHasNoEnoughBandwidthUseBalance() {
+  public void btestWhenTransferHasNoEnoughPhotonUseBalance() {
     Integer i = 0;
     AccountNetMessage assetTransferNet = PublicMethed
         .getAccountNet(transferAssetAddress, blockingStubFull);
@@ -173,7 +173,7 @@ public class WalletTestAssetIssue015 {
     Assert.assertTrue(beforeBalance - afterBalance > 2000);
   }
 
-  @Test(enabled = true, description = "Transfer asset use bandwidth when freeze balance")
+  @Test(enabled = true, description = "Transfer asset use Photon when freeze balance")
   public void ctestWhenFreezeBalanceUseNet() {
     Assert.assertTrue(PublicMethed.freezeBalance(transferAssetAddress, 5000000,
         3, transferAssetCreateKey, blockingStubFull));

@@ -579,7 +579,7 @@ public class UnfreezeBalanceActuatorTest {
       fail("cannot run here.");
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("no frozenBalance(BANDWIDTH)", e.getMessage());
+      Assert.assertEquals("no frozenBalance(PHOTON)", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertTrue(e instanceof ContractExeException);
     }
@@ -845,7 +845,7 @@ public class UnfreezeBalanceActuatorTest {
 
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("no frozenBalance(BANDWIDTH)", e.getMessage());
+      Assert.assertEquals("no frozenBalance(PHOTON)", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     }
@@ -871,7 +871,7 @@ public class UnfreezeBalanceActuatorTest {
 
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("It's not time to unfreeze(BANDWIDTH).", e.getMessage());
+      Assert.assertEquals("It's not time to unfreeze(PHOTON).", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     }

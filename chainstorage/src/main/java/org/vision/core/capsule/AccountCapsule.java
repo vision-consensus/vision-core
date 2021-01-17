@@ -774,7 +774,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = this.account.toBuilder().setIsCommittee(isCommittee).build();
   }
 
-  public void setFrozenForBandwidth(long frozenBalance, long expireTime) {
+  public void setFrozenForPhoton(long frozenBalance, long expireTime) {
     Frozen newFrozen = Frozen.newBuilder()
         .setFrozenBalance(frozenBalance)
         .setExpireTime(expireTime)
@@ -793,7 +793,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     }
   }
 
-  //set FrozenBalanceForBandwidth
+  //set FrozenBalanceForPhoton
   //for test only
   public void setFrozen(long frozenBalance, long expireTime) {
     Frozen newFrozen = Frozen.newBuilder()

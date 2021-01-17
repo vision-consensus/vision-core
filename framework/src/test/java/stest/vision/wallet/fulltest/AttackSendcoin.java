@@ -111,8 +111,6 @@ public class AttackSendcoin {
         .EmptyMessage.newBuilder().build());
     final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
     Long beforeFrozenBalance = 0L;
-    //Long beforeBandwidth     = beforeFronzen.getBandwidth();
-
     BalanceContract.FreezeBalanceContract.Builder builder = BalanceContract.FreezeBalanceContract
         .newBuilder();
     ByteString byteAddreess = ByteString.copyFrom(address);

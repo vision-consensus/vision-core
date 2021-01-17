@@ -1235,7 +1235,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException(
-                "not found CREATE_NsEW_ACCOUNT_BANDWIDTH_RATE2"));
+                "not found CREATE_NsEW_ACCOUNT_PHOTON_RATE2"));
   }
 
   public void saveTransactionFee(long fee) {
@@ -2048,7 +2048,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_NET_LIMIT = "ONE_DAY_NET_LIMIT".getBytes();
-    //public free bandwidth
+    //public free photon
     private static final byte[] PUBLIC_NET_USAGE = "PUBLIC_NET_USAGE".getBytes();
     //fixed
     private static final byte[] PUBLIC_NET_LIMIT = "PUBLIC_NET_LIMIT".getBytes();

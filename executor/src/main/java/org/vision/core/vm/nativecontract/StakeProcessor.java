@@ -139,9 +139,9 @@ public class StakeProcessor {
     long newBalance = accountCapsule.getBalance() - frozenBalance;
 
     long expireTime = now + duration;
-    long newFrozenBalanceForBandwidth =
+    long newFrozenBalanceForPhoton =
         frozenBalance + accountCapsule.getFrozenBalance();
-    accountCapsule.setFrozenForBandwidth(newFrozenBalanceForBandwidth, expireTime);
+    accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
 
     accountCapsule.setBalance(newBalance);
     repository.updateAccount(accountCapsule.createDbKey(), accountCapsule);

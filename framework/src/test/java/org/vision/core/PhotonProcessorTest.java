@@ -403,7 +403,7 @@ public class PhotonProcessorTest {
     TransferAssetContract contract = getTransferAssetV2Contract();
     TransactionCapsule trx = new TransactionCapsule(contract);
 
-    // issuer freeze balance for bandwidth
+    // issuer freeze balance for photon
     AccountCapsule issuerCapsuleV2 = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(ASSET_ADDRESS_V2));
     issuerCapsuleV2.setFrozen(10_000_000L, 0L);
@@ -607,7 +607,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     ownerCapsule.setBalance(10_000_000L);
     long expireTime = DateTime.now().getMillis() + 6 * 86_400_000;
-    ownerCapsule.setFrozenForBandwidth(2_000_000L, expireTime);
+    ownerCapsule.setFrozenForPhoton(2_000_000L, expireTime);
     chainBaseManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
     AccountCapsule toAddressCapsule =
@@ -618,7 +618,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     toAddressCapsule.setBalance(10_000_000L);
     long expireTime2 = DateTime.now().getMillis() + 6 * 86_400_000;
-    toAddressCapsule.setFrozenForBandwidth(2_000_000L, expireTime2);
+    toAddressCapsule.setFrozenForPhoton(2_000_000L, expireTime2);
     chainBaseManager.getAccountStore().put(toAddressCapsule.getAddress().toByteArray(),
         toAddressCapsule);
 
@@ -720,7 +720,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     ownerCapsule.setBalance(10_000_000L);
     long expireTime = DateTime.now().getMillis() + 6 * 86_400_000;
-    ownerCapsule.setFrozenForBandwidth(2_000_000L, expireTime);
+    ownerCapsule.setFrozenForPhoton(2_000_000L, expireTime);
     chainBaseManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
     AccountCapsule toAddressCapsule =
@@ -731,7 +731,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     toAddressCapsule.setBalance(10_000_000L);
     long expireTime2 = DateTime.now().getMillis() + 6 * 86_400_000;
-    toAddressCapsule.setFrozenForBandwidth(2_000_000L, expireTime2);
+    toAddressCapsule.setFrozenForPhoton(2_000_000L, expireTime2);
     chainBaseManager.getAccountStore().put(toAddressCapsule.getAddress().toByteArray(),
         toAddressCapsule);
 
@@ -803,7 +803,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     ownerCapsule.setBalance(10_000_000L);
     long expireTime = DateTime.now().getMillis() + 6 * 86_400_000;
-    ownerCapsule.setFrozenForBandwidth(2_000_000L, expireTime);
+    ownerCapsule.setFrozenForPhoton(2_000_000L, expireTime);
     chainBaseManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
     AccountCapsule toAddressCapsule =
@@ -814,7 +814,7 @@ public class PhotonProcessorTest {
             chainBaseManager.getDynamicPropertiesStore().getAssetIssueFee());
     toAddressCapsule.setBalance(10_000_000L);
     long expireTime2 = DateTime.now().getMillis() + 6 * 86_400_000;
-    toAddressCapsule.setFrozenForBandwidth(2_000_000L, expireTime2);
+    toAddressCapsule.setFrozenForPhoton(2_000_000L, expireTime2);
     chainBaseManager.getAccountStore().delete(toAddressCapsule.getAddress().toByteArray());
 
     TransferContract contract = TransferContract.newBuilder()

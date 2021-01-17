@@ -42,8 +42,8 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "FreezeBalance for bandwidth by http")
-  public void test001FreezebalanceForBandwidth() {
+  @Test(enabled = true, description = "FreezeBalance for Photon by http")
+  public void test001FreezebalanceForPhoton() {
     PublicMethed.printAddress(freezeBalanceKey);
     //Send vs to test account
     response = HttpMethed.sendCoin(httpnode, fromAddress, freezeBalanceAddress, amount, testKey002);
@@ -63,11 +63,11 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "UnFreezeBalance for bandwidth by http")
-  public void test002UnFreezebalanceForBandwidth() {
+  @Test(enabled = true, description = "UnFreezeBalance for Photon by http")
+  public void test002UnFreezebalanceForPhoton() {
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //UnFreeze balance for bandwidth
+    //UnFreeze balance for Photon
     response = HttpMethed.unFreezeBalance(httpnode, freezeBalanceAddress, 0, freezeBalanceKey);
     Assert.assertTrue(HttpMethed.verificationResult(response));
     HttpMethed.waitToProduceOneBlock(httpnode);
@@ -110,15 +110,15 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "FreezeBalance with bandwidth for others by http")
-  public void test005FreezebalanceOfBandwidthForOthers() {
+  @Test(enabled = true, description = "FreezeBalance with Photon for others by http")
+  public void test005FreezebalanceOfPhotonForOthers() {
     response = HttpMethed
         .sendCoin(httpnode, fromAddress, receiverResourceAddress, amount, testKey002);
     Assert.assertTrue(HttpMethed.verificationResult(response));
     HttpMethed.waitToProduceOneBlock(httpnode);
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //Freeze balance with bandwidth for others
+    //Freeze balance with Photon for others
     response = HttpMethed
         .freezeBalance(httpnode, freezeBalanceAddress, frozenBalance, 0, 0, receiverResourceAddress,
             freezeBalanceKey);
@@ -143,7 +143,7 @@ public class HttpTestAccount002 {
         ByteArray.toHexString(freezeBalanceAddress));
     Assert.assertEquals(jsonArray.getJSONObject(0).getString("to"),
         ByteArray.toHexString(receiverResourceAddress));
-    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_bandwidth"),
+    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_photon"),
         frozenBalance);
   }
 
@@ -164,7 +164,7 @@ public class HttpTestAccount002 {
         ByteArray.toHexString(freezeBalanceAddress));
     Assert.assertEquals(jsonArray.getJSONObject(0).getString("to"),
         ByteArray.toHexString(receiverResourceAddress));
-    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_bandwidth"),
+    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_photon"),
         frozenBalance);
   }
 
@@ -184,7 +184,7 @@ public class HttpTestAccount002 {
         ByteArray.toHexString(freezeBalanceAddress));
     Assert.assertEquals(jsonArray.getJSONObject(0).getString("to"),
         ByteArray.toHexString(receiverResourceAddress));
-    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_bandwidth"),
+    Assert.assertEquals(jsonArray.getJSONObject(0).getLong("frozen_balance_for_photon"),
         frozenBalance);
   }
 
@@ -234,12 +234,12 @@ public class HttpTestAccount002 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "UnFreezeBalance with bandwidth for others by http")
-  public void test012UnFreezebalanceOfBandwidthForOthers() {
+  @Test(enabled = true, description = "UnFreezeBalance with photon for others by http")
+  public void test012UnFreezebalanceOfPhotonForOthers() {
     HttpMethed.waitToProduceOneBlock(httpnode);
     berforeBalance = HttpMethed.getBalance(httpnode, freezeBalanceAddress);
 
-    //UnFreeze balance with bandwidth for others
+    //UnFreeze balance with photon for others
     response = HttpMethed
         .unFreezeBalance(httpnode, freezeBalanceAddress, 0, receiverResourceAddress,
             freezeBalanceKey);

@@ -313,8 +313,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForPhoton()
                 < delegatedResourceCapsule.getFrozenBalanceForPhoton()) {
               throw new ContractValidateException(
-                  "AcquiredDelegatedFrozenBalanceForBandwidth[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedBandwidth["
+                  "AcquiredDelegatedFrozenBalanceForPhoton[" + receiverCapsule
+                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedPhoton["
                       + delegatedResourceCapsule.getFrozenBalanceForPhoton()
                       + "]");
             }
@@ -325,8 +325,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 && receiverCapsule.getAcquiredDelegatedFrozenBalanceForPhoton()
                 < delegatedResourceCapsule.getFrozenBalanceForPhoton()) {
               throw new ContractValidateException(
-                  "AcquiredDelegatedFrozenBalanceForBandwidth[" + receiverCapsule
-                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedBandwidth["
+                  "AcquiredDelegatedFrozenBalanceForPhoton[" + receiverCapsule
+                      .getAcquiredDelegatedFrozenBalanceForPhoton() + "] < delegatedPhoton["
                       + delegatedResourceCapsule.getFrozenBalanceForPhoton()
                       + "]");
             }

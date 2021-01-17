@@ -85,9 +85,9 @@ public class CreateAccount2Test {
     Long afterFreeNet = accountNetInfo.getFreeNetUsed();
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));
-    //When creator has no bandwidth, he can't use the free net.
+    //When creator has no photon, he can't use the free net.
     Assert.assertTrue(afterFreeNet == beforeFreeNet);
-    //When the creator has no bandwidth, create a new account should spend 0.1VS.
+    //When the creator has no photon, create a new account should spend 0.1VS.
     Assert.assertTrue(beforeBalance - afterBalance == 100000);
   }
 
