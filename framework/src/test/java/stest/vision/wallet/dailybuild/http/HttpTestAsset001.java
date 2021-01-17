@@ -198,8 +198,8 @@ public class HttpTestAsset001 {
     getAssetIssueByIdContent = HttpMethed.parseResponseContent(response);
     HttpMethed.printJsonContent(getAssetIssueByIdContent);
 
-    Assert.assertTrue(getAssetIssueByIdContent.getLong("public_free_asset_net_limit") == 390L);
-    Assert.assertTrue(getAssetIssueByIdContent.getLong("free_asset_net_limit") == 290L);
+    Assert.assertTrue(getAssetIssueByIdContent.getLong("public_free_asset_photon_limit") == 390L);
+    Assert.assertTrue(getAssetIssueByIdContent.getLong("free_asset_photon_limit") == 290L);
     Assert.assertTrue(getAssetIssueByIdContent.getString("description")
         .equalsIgnoreCase(HttpMethed.str2hex(updateDescription)));
     Assert.assertTrue(

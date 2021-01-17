@@ -47,8 +47,8 @@ public class ParticipateAssetIssue {
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
   long totalSupply = now;
-  Long freeAssetNetLimit = 300000000L;
-  Long publicFreeAssetNetLimit = 300000000L;
+  Long freeAssetPhotonLimit = 300000000L;
+  Long publicFreeAssetPhotonLimit = 300000000L;
   String description = "f";
   String url = "h";
   //get account
@@ -192,7 +192,7 @@ public class ParticipateAssetIssue {
     Long start = System.currentTimeMillis() + 2000;
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed.createAssetIssue(createAddress, name, totalSupply, 1, 1,
-        start, end, 1, description, url, freeAssetNetLimit, publicFreeAssetNetLimit,
+        start, end, 1, description, url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit,
         10L, 10L, testKeyForCreate, blockingStubFull));
     try {
       Thread.sleep(5000);

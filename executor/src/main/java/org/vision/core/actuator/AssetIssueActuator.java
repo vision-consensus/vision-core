@@ -222,7 +222,7 @@ public class AssetIssueActuator extends AbstractActuator {
     }
 
     if (assetIssueContract.getPublicFreeAssetPhotonUsage() != 0) {
-      throw new ContractValidateException("PublicFreeAssetNetUsage must be 0!");
+      throw new ContractValidateException("PublicFreeAssetPhotonUsage must be 0!");
     }
 
     if (assetIssueContract.getFrozenSupplyCount()
@@ -232,14 +232,14 @@ public class AssetIssueActuator extends AbstractActuator {
 
     if (assetIssueContract.getFreeAssetPhotonLimit() < 0
         || assetIssueContract.getFreeAssetPhotonLimit() >=
-        dynamicStore.getOneDayNetLimit()) {
-      throw new ContractValidateException("Invalid FreeAssetNetLimit");
+        dynamicStore.getOneDayPhotonLimit()) {
+      throw new ContractValidateException("Invalid FreeAssetPhotonLimit");
     }
 
     if (assetIssueContract.getPublicFreeAssetPhotonLimit() < 0
         || assetIssueContract.getPublicFreeAssetPhotonLimit() >=
-        dynamicStore.getOneDayNetLimit()) {
-      throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
+        dynamicStore.getOneDayPhotonLimit()) {
+      throw new ContractValidateException("Invalid PublicFreeAssetPhotonLimit");
     }
 
     long remainSupply = assetIssueContract.getTotalSupply();

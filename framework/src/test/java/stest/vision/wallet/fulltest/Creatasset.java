@@ -43,8 +43,8 @@ public class Creatasset {
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
   long totalSupply = now;
-  Long freeAssetNetLimit = 30000L;
-  Long publicFreeAssetNetLimit = 30000L;
+  Long freeAssetPhotonLimit = 30000L;
+  Long publicFreeAssetPhotonLimit = 30000L;
   String description = "f";
   String url = "h";
   //get account
@@ -121,7 +121,7 @@ public class Creatasset {
 
       ret = PublicMethed
           .createAssetIssue(asset016Address, name, totalSupply, 1, 1, start, end, 1, description,
-              url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L, testKeyForAssetIssue016,
+              url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L, testKeyForAssetIssue016,
               blockingStubFull);
 
       if (ret) {

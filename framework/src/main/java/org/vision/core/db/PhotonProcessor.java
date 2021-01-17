@@ -49,18 +49,18 @@ public class PhotonProcessor extends ResourceProcessor {
     if (chainBaseManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
       Map<String, Long> assetMap = accountCapsule.getAssetMap();
       assetMap.forEach((assetName, balance) -> {
-        long oldFreeAssetNetUsage = accountCapsule.getFreeAssetPhotonUsage(assetName);
+        long oldFreeAssetPhotonUsage = accountCapsule.getFreeAssetPhotonUsage(assetName);
         long latestAssetOperationTime = accountCapsule.getLatestAssetOperationTime(assetName);
         accountCapsule.putFreeAssetPhotonUsage(assetName,
-            increase(oldFreeAssetNetUsage, 0, latestAssetOperationTime, now));
+            increase(oldFreeAssetPhotonUsage, 0, latestAssetOperationTime, now));
       });
     }
     Map<String, Long> assetMapV2 = accountCapsule.getAssetMapV2();
     assetMapV2.forEach((assetName, balance) -> {
-      long oldFreeAssetNetUsage = accountCapsule.getFreeAssetPhotonUsageV2(assetName);
+      long oldFreeAssetPhotonUsage = accountCapsule.getFreeAssetPhotonUsageV2(assetName);
       long latestAssetOperationTime = accountCapsule.getLatestAssetOperationTimeV2(assetName);
       accountCapsule.putFreeAssetPhotonUsageV2(assetName,
-          increase(oldFreeAssetNetUsage, 0, latestAssetOperationTime, now));
+          increase(oldFreeAssetPhotonUsage, 0, latestAssetOperationTime, now));
     });
   }
 
@@ -160,7 +160,7 @@ public class PhotonProcessor extends ResourceProcessor {
 
     long netUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalNetLimit(accountCapsule);
+    long netLimit = calculateGlobalPhotonLimit(accountCapsule);
 
     long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
 
@@ -248,36 +248,36 @@ public class PhotonProcessor extends ResourceProcessor {
       return useAccountNet(accountCapsule, bytes, now);
     }
 
-    long publicFreeAssetNetLimit = assetIssueCapsule.getPublicFreeAssetPhotonLimit();
-    long publicFreeAssetNetUsage = assetIssueCapsule.getPublicFreeAssetPhotonUsage();
-    long publicLatestFreeNetTime = assetIssueCapsule.getPublicLatestFreePhotonTime();
+    long publicFreeAssetPhotonLimit = assetIssueCapsule.getPublicFreeAssetPhotonLimit();
+    long publicFreeAssetPhotonUsage = assetIssueCapsule.getPublicFreeAssetPhotonUsage();
+    long publicLatestFreePhotonTime = assetIssueCapsule.getPublicLatestFreePhotonTime();
 
-    long newPublicFreeAssetNetUsage = increase(publicFreeAssetNetUsage, 0,
-        publicLatestFreeNetTime, now);
+    long newPublicFreeAssetPhotonUsage = increase(publicFreeAssetPhotonUsage, 0,
+        publicLatestFreePhotonTime, now);
 
-    if (bytes > (publicFreeAssetNetLimit - newPublicFreeAssetNetUsage)) {
+    if (bytes > (publicFreeAssetPhotonLimit - newPublicFreeAssetPhotonUsage)) {
       logger.debug("The " + tokenID + " public free photon is not enough");
       return false;
     }
 
-    long freeAssetNetLimit = assetIssueCapsule.getFreeAssetPhotonLimit();
+    long freeAssetPhotonLimit = assetIssueCapsule.getFreeAssetPhotonLimit();
 
-    long freeAssetNetUsage;
+    long freeAssetPhotonUsage;
     long latestAssetOperationTime;
     if (chainBaseManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-      freeAssetNetUsage = accountCapsule
+      freeAssetPhotonUsage = accountCapsule
           .getFreeAssetPhotonUsage(tokenName);
       latestAssetOperationTime = accountCapsule
           .getLatestAssetOperationTime(tokenName);
     } else {
-      freeAssetNetUsage = accountCapsule.getFreeAssetPhotonUsageV2(tokenID);
+      freeAssetPhotonUsage = accountCapsule.getFreeAssetPhotonUsageV2(tokenID);
       latestAssetOperationTime = accountCapsule.getLatestAssetOperationTimeV2(tokenID);
     }
 
-    long newFreeAssetNetUsage = increase(freeAssetNetUsage, 0,
+    long newFreeAssetPhotonUsage = increase(freeAssetPhotonUsage, 0,
         latestAssetOperationTime, now);
 
-    if (bytes > (freeAssetNetLimit - newFreeAssetNetUsage)) {
+    if (bytes > (freeAssetPhotonLimit - newFreeAssetPhotonUsage)) {
       logger.debug("The " + tokenID + " free photon is not enough");
       return false;
     }
@@ -287,7 +287,7 @@ public class PhotonProcessor extends ResourceProcessor {
 
     long issuerNetUsage = issuerAccountCapsule.getPhotonUsage();
     long latestConsumeTime = issuerAccountCapsule.getLatestConsumeTime();
-    long issuerNetLimit = calculateGlobalNetLimit(issuerAccountCapsule);
+    long issuerNetLimit = calculateGlobalPhotonLimit(issuerAccountCapsule);
 
     long newIssuerNetUsage = increase(issuerNetUsage, 0, latestConsumeTime, now);
 
@@ -298,42 +298,42 @@ public class PhotonProcessor extends ResourceProcessor {
 
     latestConsumeTime = now;
     latestAssetOperationTime = now;
-    publicLatestFreeNetTime = now;
+    publicLatestFreePhotonTime = now;
     long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
 
     newIssuerNetUsage = increase(newIssuerNetUsage, bytes, latestConsumeTime, now);
-    newFreeAssetNetUsage = increase(newFreeAssetNetUsage,
+    newFreeAssetPhotonUsage = increase(newFreeAssetPhotonUsage,
         bytes, latestAssetOperationTime, now);
-    newPublicFreeAssetNetUsage = increase(newPublicFreeAssetNetUsage, bytes,
-        publicLatestFreeNetTime, now);
+    newPublicFreeAssetPhotonUsage = increase(newPublicFreeAssetPhotonUsage, bytes,
+        publicLatestFreePhotonTime, now);
 
     issuerAccountCapsule.setPhotonUsage(newIssuerNetUsage);
     issuerAccountCapsule.setLatestConsumeTime(latestConsumeTime);
 
-    assetIssueCapsule.setPublicFreeAssetPhotonUsage(newPublicFreeAssetNetUsage);
-    assetIssueCapsule.setPublicLatestFreePhotonTime(publicLatestFreeNetTime);
+    assetIssueCapsule.setPublicFreeAssetPhotonUsage(newPublicFreeAssetPhotonUsage);
+    assetIssueCapsule.setPublicLatestFreePhotonTime(publicLatestFreePhotonTime);
 
     accountCapsule.setLatestOperationTime(latestOperationTime);
     if (chainBaseManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
       accountCapsule.putLatestAssetOperationTimeMap(tokenName,
           latestAssetOperationTime);
-      accountCapsule.putFreeAssetPhotonUsage(tokenName, newFreeAssetNetUsage);
+      accountCapsule.putFreeAssetPhotonUsage(tokenName, newFreeAssetPhotonUsage);
       accountCapsule.putLatestAssetOperationTimeMapV2(tokenID,
           latestAssetOperationTime);
-      accountCapsule.putFreeAssetPhotonUsageV2(tokenID, newFreeAssetNetUsage);
+      accountCapsule.putFreeAssetPhotonUsageV2(tokenID, newFreeAssetPhotonUsage);
 
       chainBaseManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 
       assetIssueCapsuleV2 =
           chainBaseManager.getAssetIssueV2Store().get(assetIssueCapsule.createDbV2Key());
-      assetIssueCapsuleV2.setPublicFreeAssetPhotonUsage(newPublicFreeAssetNetUsage);
-      assetIssueCapsuleV2.setPublicLatestFreePhotonTime(publicLatestFreeNetTime);
+      assetIssueCapsuleV2.setPublicFreeAssetPhotonUsage(newPublicFreeAssetPhotonUsage);
+      assetIssueCapsuleV2.setPublicLatestFreePhotonTime(publicLatestFreePhotonTime);
       chainBaseManager.getAssetIssueV2Store()
           .put(assetIssueCapsuleV2.createDbV2Key(), assetIssueCapsuleV2);
     } else {
       accountCapsule.putLatestAssetOperationTimeMapV2(tokenID,
           latestAssetOperationTime);
-      accountCapsule.putFreeAssetPhotonUsageV2(tokenID, newFreeAssetNetUsage);
+      accountCapsule.putFreeAssetPhotonUsageV2(tokenID, newFreeAssetPhotonUsage);
       chainBaseManager.getAssetIssueV2Store()
           .put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
     }
@@ -346,14 +346,14 @@ public class PhotonProcessor extends ResourceProcessor {
 
   }
 
-  public long calculateGlobalNetLimit(AccountCapsule accountCapsule) {
+  public long calculateGlobalPhotonLimit(AccountCapsule accountCapsule) {
     long frozeBalance = accountCapsule.getAllFrozenBalanceForPhoton();
     if (frozeBalance < VS_PRECISION) {
       return 0;
     }
     long netWeight = frozeBalance / VS_PRECISION;
-    long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalNetLimit();
-    long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalNetWeight();
+    long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
+    long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
     if (totalNetWeight == 0) {
       return 0;
     }
@@ -364,7 +364,7 @@ public class PhotonProcessor extends ResourceProcessor {
 
     long netUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalNetLimit(accountCapsule);
+    long netLimit = calculateGlobalPhotonLimit(accountCapsule);
 
     long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
 

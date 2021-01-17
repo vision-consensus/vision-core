@@ -38,8 +38,8 @@ public class WalletTestAssetIssue016 {
       .getString("foundationAccount.key2");
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 30000L;
-  Long publicFreeAssetNetLimit = 30000L;
+  Long freeAssetPhotonLimit = 30000L;
+  Long publicFreeAssetPhotonLimit = 30000L;
   String description = "for case assetissue016";
   String url = "https://stest.assetissue016.url";
   ByteString assetAccountId;
@@ -122,7 +122,7 @@ public class WalletTestAssetIssue016 {
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed
         .createAssetIssue(asset016Address, name, totalSupply, 1, 1, start, end, 1, description,
-            url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L, testKeyForAssetIssue016,
+            url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L, testKeyForAssetIssue016,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -140,8 +140,8 @@ public class WalletTestAssetIssue016 {
     GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
         .setValue(assetAccountId).build();
     AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetNetLimit);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetPhotonLimit);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetPhotonLimit);
     Assert.assertTrue(assetIssueByName.getPublicLatestFreePhotonTime() == 0);
     assetIssueInfo.hashCode();
     assetIssueInfo.getSerializedSize();

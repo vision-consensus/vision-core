@@ -44,8 +44,8 @@ public class Fuzzytest {
       "6815B367FDDE637E53E9ADC8E69424E07724333C9A2B973CFA469975E20753FC";
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 30000L;
-  Long publicFreeAssetNetLimit = 30000L;
+  Long freeAssetPhotonLimit = 30000L;
+  Long publicFreeAssetPhotonLimit = 30000L;
   String description = "for case assetissue016";
   String url = "https://stest.assetissue016.url";
   //get account
@@ -69,7 +69,7 @@ public class Fuzzytest {
 
   public static Boolean createAssetIssue(byte[] address, String name, Long totalSupply,
       Integer vsNum, Integer icoNum, Long startTime, Long endTime, Integer voteScore,
-      String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
+      String description, String url, Long freeAssetPhotonLimit, Long publicFreeAssetPhotonLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -96,8 +96,8 @@ public class Fuzzytest {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContractOuterClass.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
           AssetIssueContractOuterClass.AssetIssueContract.FrozenSupply.newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -176,7 +176,7 @@ public class Fuzzytest {
       name = "AssetIssue017_" + Long.toString(now);
       totalSupply = now;
       Assert.assertTrue(createAssetIssue(asset017Address, name, totalSupply, 1, 1,
-          start, end, 1, description, url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L,
+          start, end, 1, description, url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L,
           1L, testKeyForAssetIssue017, blockingStubFull));
 
       assetIssueList = blockingStubFull

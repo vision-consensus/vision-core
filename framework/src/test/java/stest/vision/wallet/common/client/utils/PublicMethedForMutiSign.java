@@ -107,7 +107,7 @@ public class PublicMethedForMutiSign {
 
   public static Boolean createAssetIssue(byte[] address, String name, Long totalSupply,
       Integer vsNum, Integer icoNum, Long startTime, Long endTime, Integer voteScore,
-      String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
+      String description, String url, Long freeAssetPhotonLimit, Long publicFreeAssetPhotonLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -131,8 +131,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -169,8 +169,8 @@ public class PublicMethedForMutiSign {
 
   public static Boolean createAssetIssueWithpermissionId(byte[] address, String name,
       Long totalSupply, Integer vsNum, Integer icoNum, Long startTime, Long endTime,
-      Integer voteScore, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, Long fronzenAmount, Long frozenDay, String priKey,
+      Integer voteScore, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -194,8 +194,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -240,8 +240,8 @@ public class PublicMethedForMutiSign {
 
   public static String createAssetIssueForTransactionId(byte[] address, String name,
       Long totalSupply, Integer vsNum, Integer icoNum, Long startTime, Long endTime,
-      Integer voteScore, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, Long fronzenAmount, Long frozenDay, String priKey,
+      Integer voteScore, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -264,8 +264,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -4439,8 +4439,8 @@ public class PublicMethedForMutiSign {
 
   public static String createAssetIssueForTransactionId1(byte[] address, String name,
       Long totalSupply, Integer vsNum, Integer icoNum, Long startTime, Long endTime,
-      Integer voteScore, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, Long fronzenAmount, Long frozenDay, String priKey,
+      Integer voteScore, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -4464,8 +4464,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);

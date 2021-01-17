@@ -34,8 +34,8 @@ public class WalletTestAssetIssue011 {
       .getString("foundationAccount.key2");
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 10000L;
-  Long publicFreeAssetNetLimit = 10000L;
+  Long freeAssetPhotonLimit = 10000L;
+  Long publicFreeAssetPhotonLimit = 10000L;
   String description = "just-test";
   String url = "https://github.com/vworldgenesis/wallet-cli/";
   //get account
@@ -93,7 +93,7 @@ public class WalletTestAssetIssue011 {
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed
         .createAssetIssue(asset011Address, name, totalSupply, 1, 1, start, end, 1, description,
-            url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L, testKeyForAssetIssue011,
+            url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L, testKeyForAssetIssue011,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

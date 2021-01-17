@@ -35,8 +35,8 @@ public class WalletTestAssetIssue013 {
       .getString("foundationAccount.key2");
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 300L;
-  Long publicFreeAssetNetLimit = 3000L;
+  Long freeAssetPhotonLimit = 300L;
+  Long publicFreeAssetPhotonLimit = 3000L;
   String description = "for case assetissue013";
   String url = "https://stest.assetissue013.url";
   //get account
@@ -70,7 +70,7 @@ public class WalletTestAssetIssue013 {
   }
 
   @Test(enabled = true, description = "Use transfer net when token owner has no enough net")
-  public void testWhenNoEnoughFreeAssetNetLimitUseTransferNet() {
+  public void testWhenNoEnoughFreeAssetPhotonLimitUseTransferNet() {
 
     //get account
     ECKey ecKey1 = new ECKey(Utils.getRandom());
@@ -95,7 +95,7 @@ public class WalletTestAssetIssue013 {
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed
         .createAssetIssue(asset013Address, name, totalSupply, 1, 1, start, end, 1, description,
-            url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L, testKeyForAssetIssue013,
+            url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L, testKeyForAssetIssue013,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

@@ -564,8 +564,8 @@ public class HttpMethed {
    */
   public static HttpResponse assetIssue(String httpNode, byte[] ownerAddress, String name,
       String abbr, Long totalSupply, Integer vsNum, Integer num, Long startTime, Long endTime,
-      Integer voteScore, Integer precision, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, String fromKey) {
+      Integer voteScore, Integer precision, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/createassetissue";
       JsonObject userBaseObj2 = new JsonObject();
@@ -581,8 +581,8 @@ public class HttpMethed {
       userBaseObj2.addProperty("vote_score", voteScore);
       userBaseObj2.addProperty("description", str2hex(description));
       userBaseObj2.addProperty("url", str2hex(url));
-      userBaseObj2.addProperty("free_asset_net_limit", freeAssetNetLimit);
-      userBaseObj2.addProperty("public_free_asset_net_limit", publicFreeAssetNetLimit);
+      userBaseObj2.addProperty("free_asset_photon_limit", freeAssetPhotonLimit);
+      userBaseObj2.addProperty("public_free_asset_photon_limit", publicFreeAssetPhotonLimit);
       response = createConnect(requestUrl, userBaseObj2);
       transactionString = EntityUtils.toString(response.getEntity());
       transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);

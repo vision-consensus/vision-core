@@ -413,7 +413,7 @@ public class WalletTestAccount013 {
     logger.info(result);
     PublicMethed.printAddress(receiverDelegateKey);
     PublicMethed.printAddress(account5DelegatedResourceKey);
-    long account5FreeAssetNetUsed = accountForAssetIssueCurrentPhotonAfterTrans;
+    long account5FreeAssetPhotonUsed = accountForAssetIssueCurrentPhotonAfterTrans;
 
     //check resource diff
     Assert.assertTrue(Long.parseLong(result) > 0);

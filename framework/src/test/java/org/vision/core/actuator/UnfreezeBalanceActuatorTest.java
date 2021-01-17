@@ -148,7 +148,7 @@ public class UnfreezeBalanceActuatorTest {
         .setAny(getContractForPhoton(OWNER_ADDRESS));
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
-    long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+    long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
     try {
       actuator.validate();
@@ -161,7 +161,7 @@ public class UnfreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getFrozenBalance(), 0);
       Assert.assertEquals(owner.getVisionPower(), 0L);
 
-      long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+      long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
       Assert.assertEquals(totalNetWeightBefore,
           totalNetWeightAfter + frozenBalance / 1000_000L);
 

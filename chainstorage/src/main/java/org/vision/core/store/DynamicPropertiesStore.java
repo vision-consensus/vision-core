@@ -294,9 +294,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getOneDayNetLimit();
+      this.getOneDayPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveOneDayNetLimit(57_600_000_000L);
+      this.saveOneDayPhotonLimit(57_600_000_000L);
     }
 
     try {
@@ -318,13 +318,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getTotalNetWeight();
+      this.getTotalPhotonWeight();
     } catch (IllegalArgumentException e) {
       this.saveTotalPhotonWeight(0L);
     }
 
     try {
-      this.getTotalNetLimit();
+      this.getTotalPhotonLimit();
     } catch (IllegalArgumentException e) {
       this.saveTotalNetLimit(43_200_000_000L);
     }
@@ -906,17 +906,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
   }
 
-  public void saveOneDayNetLimit(long oneDayNetLimit) {
+  public void saveOneDayPhotonLimit(long oneDayNetLimit) {
     this.put(DynamicResourceProperties.ONE_DAY_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
   }
 
-  public long getOneDayNetLimit() {
+  public long getOneDayPhotonLimit() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found ONE_DAY_NET_LIMIT"));
+            () -> new IllegalArgumentException("not found ONE_DAY_PHOTON_LIMIT"));
   }
 
   public void savePublicNetUsage(long publicNetUsage) {
@@ -929,7 +929,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found PUBLIC_NET_USAGE"));
+            () -> new IllegalArgumentException("not found PUBLIC_PHOTON_USAGE"));
   }
 
   public void savePublicPhotonLimit(long publicNetLimit) {
@@ -942,7 +942,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found PUBLIC_NET_LIMIT"));
+            () -> new IllegalArgumentException("not found PUBLIC_PHOTON_LIMIT"));
   }
 
   public void savePublicPhotonTime(long publicNetTime) {
@@ -955,7 +955,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found PUBLIC_NET_TIME"));
+            () -> new IllegalArgumentException("not found PUBLIC_PHOTON_TIME"));
   }
 
   public void saveFreePhotonLimit(long freeNetLimit) {
@@ -968,7 +968,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found FREE_NET_LIMIT"));
+            () -> new IllegalArgumentException("not found FREE_PHOTON_LIMIT"));
   }
 
   public void saveTotalPhotonWeight(long totalNetWeight) {
@@ -976,12 +976,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
   }
 
-  public long getTotalNetWeight() {
+  public long getTotalPhotonWeight() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_PHOTON_WEIGHT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_NET_WEIGHT"));
+            () -> new IllegalArgumentException("not found TOTAL_PHOTON_WEIGHT"));
   }
 
   public void saveTotalEntropyWeight(long totalEntropyWeight) {
@@ -1002,12 +1002,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
   }
 
-  public long getTotalNetLimit() {
+  public long getTotalPhotonLimit() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_NET_LIMIT"));
+            () -> new IllegalArgumentException("not found TOTAL_PHOTON_LIMIT"));
   }
 
   @Deprecated
@@ -1115,7 +1115,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_NET_AVERAGE_TIME"));
+            () -> new IllegalArgumentException("not found TOTAL_PHOTON_AVERAGE_TIME"));
   }
 
   public void saveBlockEntropyUsage(long blockEntropyUsage) {
@@ -1919,7 +1919,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   //The unit is vs
   public void addTotalNetWeight(long amount) {
-    long totalNetWeight = getTotalNetWeight();
+    long totalNetWeight = getTotalPhotonWeight();
     totalNetWeight += amount;
     saveTotalPhotonWeight(totalNetWeight);
   }

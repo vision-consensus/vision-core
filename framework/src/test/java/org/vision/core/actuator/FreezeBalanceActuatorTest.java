@@ -241,7 +241,7 @@ public class FreezeBalanceActuatorTest {
         getDelegatedContractForPhoton(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
-    long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+    long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
     try {
       actuator.validate();
@@ -268,7 +268,7 @@ public class FreezeBalanceActuatorTest {
                   ByteArray.fromHexString(RECEIVER_ADDRESS)));
 
       Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForPhoton());
-      long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+      long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
       Assert.assertEquals(totalNetWeightBefore + frozenBalance / 1000_000L, totalNetWeightAfter);
 
       //check DelegatedResourceAccountIndex

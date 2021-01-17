@@ -59,10 +59,10 @@ public class WalletTestAssetIssue010 {
   String url = "https://github.com/vworldgenesis/wallet-cli/";
   String updateDescription = "This is test for update asset issue, case AssetIssue_010";
   String updateUrl = "www.updateassetissue.010.cn";
-  Long freeAssetNetLimit = 1000L;
-  Long publicFreeAssetNetLimit = 1000L;
-  Long updateFreeAssetNetLimit = 10001L;
-  Long updatePublicFreeAssetNetLimit = 10001L;
+  Long freeAssetPhotonLimit = 1000L;
+  Long publicFreeAssetPhotonLimit = 1000L;
+  Long updateFreeAssetPhotonLimit = 10001L;
+  Long updatePublicFreeAssetPhotonLimit = 10001L;
   //get account
   ECKey ecKey = new ECKey(Utils.getRandom());
   byte[] asset010Address = ecKey.getAddress();
@@ -112,7 +112,7 @@ public class WalletTestAssetIssue010 {
     Long start = System.currentTimeMillis() + 2000;
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed.createAssetIssue(asset010Address, name, totalSupply, 1, 1,
-        start, end, 1, description, url, freeAssetNetLimit, publicFreeAssetNetLimit,
+        start, end, 1, description, url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit,
         1L, 1L, testKeyForAssetIssue010, blockingStubFull));
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -121,7 +121,7 @@ public class WalletTestAssetIssue010 {
         .queryAccount(testKeyForAssetIssue010, blockingStubFull);
     ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
 
-    //Query the description and url,freeAssetNetLimit and publicFreeAssetNetLimit
+    //Query the description and url,freeAssetPhotonLimit and publicFreeAssetPhotonLimit
     GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
         .setValue(assetAccountId).build();
     AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
@@ -129,69 +129,69 @@ public class WalletTestAssetIssue010 {
     Assert.assertTrue(
         ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(description));
     Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(url));
-    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetNetLimit);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetPhotonLimit);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetPhotonLimit);
 
     //Test update asset issue
     Assert.assertTrue(PublicMethed
         .updateAsset(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
-            updatePublicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+                updateFreeAssetPhotonLimit,
+                updatePublicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     //After update asset issue ,query the description and url,
-    // freeAssetNetLimit and publicFreeAssetNetLimit
+    // freeAssetPhotonLimit and publicFreeAssetPhotonLimit
     assetIssueByName = blockingStubFull.getAssetIssueByName(request);
 
     Assert.assertTrue(
         ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
     Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
-    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == updateFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == updateFreeAssetPhotonLimit);
     Assert
-        .assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == updatePublicFreeAssetNetLimit);
+        .assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == updatePublicFreeAssetPhotonLimit);
   }
 
   @Test(enabled = true, description = "Update asset issue with exception condition")
   public void testUpdateAssetIssueException() {
     //Test update asset issue for wrong parameter
-    //publicFreeAssetNetLimit is -1
+    //publicFreeAssetPhotonLimit is -1
     Assert.assertFalse(PublicMethed
         .updateAsset(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
+                updateFreeAssetPhotonLimit,
             -1L, testKeyForAssetIssue010, blockingStubFull));
-    //publicFreeAssetNetLimit is 0
+    //publicFreeAssetPhotonLimit is 0
     Assert.assertTrue(PublicMethed
         .updateAsset(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
+                updateFreeAssetPhotonLimit,
             0, testKeyForAssetIssue010, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    //FreeAssetNetLimit is -1
+    //FreeAssetPhotonLimit is -1
     Assert.assertFalse(PublicMethed
         .updateAsset(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), -1,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
-    //FreeAssetNetLimit is 0
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
+    //FreeAssetPhotonLimit is 0
     Assert.assertTrue(PublicMethed
         .updateAsset(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), 0,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     //Description is null
     Assert.assertTrue(PublicMethed
-        .updateAsset(asset010Address, "".getBytes(), updateUrl.getBytes(), freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+        .updateAsset(asset010Address, "".getBytes(), updateUrl.getBytes(), freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     //Url is null
     Assert.assertFalse(PublicMethed
-        .updateAsset(asset010Address, description.getBytes(), "".getBytes(), freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+        .updateAsset(asset010Address, description.getBytes(), "".getBytes(), freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     //Too long discription
     Assert.assertFalse(PublicMethed
         .updateAsset(asset010Address, tooLongDescription.getBytes(), url.getBytes(),
-            freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+                freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     //Too long URL
     Assert.assertFalse(PublicMethed
         .updateAsset(asset010Address, description.getBytes(), tooLongUrl.getBytes(),
-            freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+                freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
   }
 
   @AfterMethod

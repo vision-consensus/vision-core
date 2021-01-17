@@ -53,10 +53,10 @@ public class UpdateAsset2Test {
   String url = "https://github.com/vworldgenesis/wallet-cli/";
   String updateDescription = "This is test for update asset issue, case AssetIssue_010";
   String updateUrl = "www.updateassetissue.010.cn";
-  Long freeAssetNetLimit = 1000L;
-  Long publicFreeAssetNetLimit = 1000L;
-  Long updateFreeAssetNetLimit = 10001L;
-  Long updatePublicFreeAssetNetLimit = 10001L;
+  Long freeAssetPhotonLimit = 1000L;
+  Long publicFreeAssetPhotonLimit = 1000L;
+  Long updateFreeAssetPhotonLimit = 10001L;
+  Long updatePublicFreeAssetPhotonLimit = 10001L;
   //get account
   ECKey ecKey = new ECKey(Utils.getRandom());
   byte[] asset010Address = ecKey.getAddress();
@@ -110,18 +110,18 @@ public class UpdateAsset2Test {
       Long start = System.currentTimeMillis() + 2000;
       Long end = System.currentTimeMillis() + 1000000000;
       Assert.assertTrue(PublicMethed.createAssetIssue(asset010Address, name, totalSupply, 1, 1,
-          start, end, 1, description, url, freeAssetNetLimit, publicFreeAssetNetLimit,
+          start, end, 1, description, url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit,
           1L, 1L, testKeyForAssetIssue010, blockingStubFull));
     } else {
       logger.info("This account already create an assetisue");
       Optional<GrpcAPI.AssetIssueList> queryAssetByAccount1 = Optional.ofNullable(assetIssueList1);
       name = ByteArray.toStr(queryAssetByAccount1.get().getAssetIssue(0).getName().toByteArray());
       Assert.assertTrue(PublicMethed
-          .updateAsset(asset010Address, description.getBytes(), url.getBytes(), freeAssetNetLimit,
-              publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull));
+          .updateAsset(asset010Address, description.getBytes(), url.getBytes(), freeAssetPhotonLimit,
+                  publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull));
     }
 
-    //Query the description and url,freeAssetNetLimit and publicFreeAssetNetLimit
+    //Query the description and url,freeAssetPhotonLimit and publicFreeAssetPhotonLimit
     ByteString assetNameBs = ByteString.copyFrom(name.getBytes());
     GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder().setValue(assetNameBs).build();
     AssetIssueContractOuterClass.AssetIssueContract assetIssueByName = blockingStubFull
@@ -130,19 +130,19 @@ public class UpdateAsset2Test {
     Assert.assertTrue(
         ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(description));
     Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(url));
-    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetNetLimit);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetPhotonLimit);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetPhotonLimit);
 
     //Test update asset issue
     Return ret1 = PublicMethed
         .updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
-            updatePublicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+                updateFreeAssetPhotonLimit,
+                updatePublicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
     //After update asset issue ,query the description and url,
-    // freeAssetNetLimit and publicFreeAssetNetLimit
+    // freeAssetPhotonLimit and publicFreeAssetPhotonLimit
     assetNameBs = ByteString.copyFrom(name.getBytes());
     request = GrpcAPI.BytesMessage.newBuilder().setValue(assetNameBs).build();
     assetIssueByName = blockingStubFull.getAssetIssueByName(request);
@@ -150,67 +150,67 @@ public class UpdateAsset2Test {
     Assert.assertTrue(
         ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
     Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
-    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == updateFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == updateFreeAssetPhotonLimit);
     Assert
-        .assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == updatePublicFreeAssetNetLimit);
+        .assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == updatePublicFreeAssetPhotonLimit);
   }
 
   @Test(enabled = true)
   public void testUpdateAssetIssueExcption2() {
     //Test update asset issue for wrong parameter
-    //publicFreeAssetNetLimit is -1
+    //publicFreeAssetPhotonLimit is -1
     Return ret1 = PublicMethed
         .updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
+                updateFreeAssetPhotonLimit,
             -1L, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-        "contract validate error : Invalid PublicFreeAssetNetLimit");
-    //publicFreeAssetNetLimit is 0
+        "contract validate error : Invalid PublicFreeAssetPhotonLimit");
+    //publicFreeAssetPhotonLimit is 0
     ret1 = PublicMethed
         .updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
-            updateFreeAssetNetLimit,
+                updateFreeAssetPhotonLimit,
             0, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
-    //FreeAssetNetLimit is -1
+    //FreeAssetPhotonLimit is -1
     ret1 = PublicMethed
         .updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), -1,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-        "contract validate error : Invalid FreeAssetNetLimit");
-    //FreeAssetNetLimit is 0
+        "contract validate error : Invalid FreeAssetPhotonLimit");
+    //FreeAssetPhotonLimit is 0
     ret1 = PublicMethed
         .updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), 0,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
     //Description is null
     ret1 = PublicMethed
-        .updateAsset2(asset010Address, "".getBytes(), updateUrl.getBytes(), freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+        .updateAsset2(asset010Address, "".getBytes(), updateUrl.getBytes(), freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
     //Url is null
     ret1 = PublicMethed
-        .updateAsset2(asset010Address, description.getBytes(), "".getBytes(), freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+        .updateAsset2(asset010Address, description.getBytes(), "".getBytes(), freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : Invalid url");
     //Too long discription
     ret1 = PublicMethed
         .updateAsset2(asset010Address, tooLongDescription.getBytes(), url.getBytes(),
-            freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+                freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(),
         "contract validate error : Invalid description");
     //Too long URL
     ret1 = PublicMethed
         .updateAsset2(asset010Address, description.getBytes(), tooLongUrl.getBytes(),
-            freeAssetNetLimit,
-            publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
+                freeAssetPhotonLimit,
+                publicFreeAssetPhotonLimit, testKeyForAssetIssue010, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : Invalid url");
   }

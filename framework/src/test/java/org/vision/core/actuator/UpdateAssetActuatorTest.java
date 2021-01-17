@@ -464,10 +464,10 @@ public class UpdateAssetActuatorTest {
       actuator.validate();
       actuator.execute(ret);
 
-      fail("Invalid FreeAssetNetLimit");
+      fail("Invalid FreeAssetPhotonLimit");
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("Invalid FreeAssetNetLimit", e.getMessage());
+      Assert.assertEquals("Invalid FreeAssetPhotonLimit", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     } finally {
@@ -490,10 +490,10 @@ public class UpdateAssetActuatorTest {
       actuator.validate();
       actuator.execute(ret);
 
-      fail("Invalid PublicFreeAssetNetLimit");
+      fail("Invalid PublicFreeAssetPhotonLimit");
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("Invalid PublicFreeAssetNetLimit", e.getMessage());
+      Assert.assertEquals("Invalid PublicFreeAssetPhotonLimit", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     } finally {

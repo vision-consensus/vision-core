@@ -38,8 +38,8 @@ public class WalletTestAssetIssue007 {
       .getString("foundationAccount.key2");
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 10000L;
-  Long publicFreeAssetNetLimit = 10000L;
+  Long freeAssetPhotonLimit = 10000L;
+  Long publicFreeAssetPhotonLimit = 10000L;
   String description = Configuration.getByPath("testng.conf")
       .getString("defaultParameter.assetDescription");
   String url = Configuration.getByPath("testng.conf").getString("defaultParameter.assetUrl");
@@ -83,7 +83,7 @@ public class WalletTestAssetIssue007 {
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed
         .createAssetIssue(asset007Address, name, totalSupply, vsNum, icoNum, start, end, 1,
-            description, url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L,
+            description, url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L,
             testKeyForAssetIssue007, blockingStubFull));
 
     PublicMethed.waitProduceNextBlock(blockingStubFull);

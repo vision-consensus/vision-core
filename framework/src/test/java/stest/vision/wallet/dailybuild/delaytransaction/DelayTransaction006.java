@@ -80,12 +80,12 @@ public class DelayTransaction006 {
     Assert.assertTrue(PublicMethed.sendcoin(assetOwnerAddress, 2048000000, fromAddress,
         testKey002, blockingStubFull));
 
-    final Long oldFreeAssetNetLimit = 2000L;
+    final Long oldFreeAssetPhotonLimit = 2000L;
     Long start = System.currentTimeMillis() + 2000;
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed.createAssetIssue(assetOwnerAddress,
         name, totalSupply, 1, 1, start, end, 1, description, url,
-        oldFreeAssetNetLimit, 2000L, 1L, 1L,
+        oldFreeAssetPhotonLimit, 2000L, 1L, 1L,
         assetOwnerKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Account assetOwnerAccount = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull);
@@ -93,17 +93,17 @@ public class DelayTransaction006 {
     String newAssetUrl = "new.url";
     String newAssetDescription = "new.description";
 
-    final Long newFreeAssetNetLimit = 3333L;
+    final Long newFreeAssetPhotonLimit = 3333L;
     final String txid = PublicMethed.updateAssetDelay(assetOwnerAddress,
-        newAssetDescription.getBytes(), newAssetUrl.getBytes(), newFreeAssetNetLimit,
+        newAssetDescription.getBytes(), newAssetUrl.getBytes(), newFreeAssetPhotonLimit,
         23L, delaySecond, assetOwnerKey, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.getAssetIssueById(ByteArray.toStr(assetId
-        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetNetLimit);
+        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetPhotonLimit);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.getAssetIssueById(ByteArray.toStr(assetId
-        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == newFreeAssetNetLimit);
+        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == newFreeAssetPhotonLimit);
     Long afterNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
     Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
@@ -122,16 +122,16 @@ public class DelayTransaction006 {
   @Test(enabled = false, description = "Cancel delay asset setting contract")
   public void test2CancelDelayUpdateAsset() {
     //get account
-    final Long oldFreeAssetNetLimit = PublicMethed.getAssetIssueById(assetId.toStringUtf8(),
+    final Long oldFreeAssetPhotonLimit = PublicMethed.getAssetIssueById(assetId.toStringUtf8(),
         blockingStubFull).getFreeAssetPhotonLimit();
-    final Long newFreeAssetNetLimit = 461L;
+    final Long newFreeAssetPhotonLimit = 461L;
 
     String newAssetUrl = "new.url";
     String newAssetDescription = "new.description";
     logger.info("Before delay net usage: " + PublicMethed.queryAccount(assetOwnerKey,
         blockingStubFull).getFreePhotonUsage());
     String txid = PublicMethed.updateAssetDelay(assetOwnerAddress, newAssetDescription.getBytes(),
-        newAssetUrl.getBytes(), newFreeAssetNetLimit, 23L, delaySecond, assetOwnerKey,
+        newAssetUrl.getBytes(), newFreeAssetPhotonLimit, 23L, delaySecond, assetOwnerKey,
         blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     logger.info("In delay net usage: " + PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
@@ -149,7 +149,7 @@ public class DelayTransaction006 {
         blockingStubFull).getFreePhotonUsage());
 
     Assert.assertTrue(PublicMethed.getAssetIssueById(assetId.toStringUtf8(),
-        blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetNetLimit);
+        blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetPhotonLimit);
 
     final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getReceipt().getPhotonFee();

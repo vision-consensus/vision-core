@@ -35,8 +35,8 @@ public class WalletTestAssetIssue012 {
       .getString("foundationAccount.key2");
   private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
   private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
-  Long freeAssetNetLimit = 10000L;
-  Long publicFreeAssetNetLimit = 10000L;
+  Long freeAssetPhotonLimit = 10000L;
+  Long publicFreeAssetPhotonLimit = 10000L;
   String description = "for case assetissue012";
   String url = "https://stest.assetissue012.url";
   //get account
@@ -97,7 +97,7 @@ public class WalletTestAssetIssue012 {
     Long end = System.currentTimeMillis() + 1000000000;
     Assert.assertTrue(PublicMethed
         .createAssetIssue(asset012Address, name, totalSupply, 1, 1, start, end, 1, description,
-            url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L, testKeyForAssetIssue012,
+            url, freeAssetPhotonLimit, publicFreeAssetPhotonLimit, 1L, 1L, testKeyForAssetIssue012,
             blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 

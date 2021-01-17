@@ -60,8 +60,8 @@ public class MainNetVoteOrFreezeOrCreate {
   private final byte[] defaultAddress = PublicMethed.getFinalAddress(defaultKey);
   private final Long sendAmount = 1026000000L;
   long totalSupply = now;
-  Long freeAssetNetLimit = 30000L;
-  Long publicFreeAssetNetLimit = 30000L;
+  Long freeAssetPhotonLimit = 30000L;
+  Long publicFreeAssetPhotonLimit = 30000L;
   String description = "f";
   String url = "h";
   Long startTime;

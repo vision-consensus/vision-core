@@ -893,14 +893,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return this.account.getFreeAssetPhotonUsageV2Map();
   }
 
-  public void putFreeAssetPhotonUsage(String s, long freeAssetNetUsage) {
+  public void putFreeAssetPhotonUsage(String s, long freeAssetPhotonUsage) {
     this.account = this.account.toBuilder()
-        .putFreeAssetPhotonUsage(s, freeAssetNetUsage).build();
+        .putFreeAssetPhotonUsage(s, freeAssetPhotonUsage).build();
   }
 
-  public void putFreeAssetPhotonUsageV2(String s, long freeAssetNetUsage) {
+  public void putFreeAssetPhotonUsageV2(String s, long freeAssetPhotonUsage) {
     this.account = this.account.toBuilder()
-        .putFreeAssetPhotonUsageV2(s, freeAssetNetUsage).build();
+        .putFreeAssetPhotonUsageV2(s, freeAssetPhotonUsage).build();
   }
 
   public long getStorageLimit() {

@@ -157,13 +157,13 @@ public class UpdateAssetActuator extends AbstractActuator {
       throw new ContractValidateException("Invalid description");
     }
 
-    if (newLimit < 0 || newLimit >= dynamicStore.getOneDayNetLimit()) {
-      throw new ContractValidateException("Invalid FreeAssetNetLimit");
+    if (newLimit < 0 || newLimit >= dynamicStore.getOneDayPhotonLimit()) {
+      throw new ContractValidateException("Invalid FreeAssetPhotonLimit");
     }
 
     if (newPublicLimit < 0 || newPublicLimit >=
-        dynamicStore.getOneDayNetLimit()) {
-      throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
+        dynamicStore.getOneDayPhotonLimit()) {
+      throw new ContractValidateException("Invalid PublicFreeAssetPhotonLimit");
     }
 
     return true;

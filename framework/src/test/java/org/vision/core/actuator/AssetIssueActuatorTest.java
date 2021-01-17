@@ -1789,8 +1789,8 @@ public class AssetIssueActuatorTest {
   }
 
   /**
-   * SameTokenName close, check invalid param "PublicFreeAssetNetUsage must be 0!" "Invalid
-   * FreeAssetNetLimit" "Invalid PublicFreeAssetNetLimit" "Account not exists" "No enough balance
+   * SameTokenName close, check invalid param "PublicFreeAssetPhotonUsage must be 0!" "Invalid
+   * FreeAssetPhotonLimit" "Invalid PublicFreeAssetPhotonLimit" "Account not exists" "No enough balance
    * for fee!"
    */
   @Test
@@ -1803,7 +1803,7 @@ public class AssetIssueActuatorTest {
         .statsByVersion(Parameter.ForkBlockVersionConsts.ENTROPY_LIMIT, stats);
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
-    // PublicFreeAssetNetUsage must be 0!
+    // PublicFreeAssetPhotonUsage must be 0!
     Any any = Any.pack(
         AssetIssueContract.newBuilder()
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
@@ -1816,10 +1816,10 @@ public class AssetIssueActuatorTest {
     AssetIssueActuator actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 
-    processAndCheckInvalid(actuator, ret, "PublicFreeAssetNetUsage must be 0!",
-        "PublicFreeAssetNetUsage must be 0!");
+    processAndCheckInvalid(actuator, ret, "PublicFreeAssetPhotonUsage must be 0!",
+        "PublicFreeAssetPhotonUsage must be 0!");
 
-    // Invalid FreeAssetNetLimit
+    // Invalid FreeAssetPhotonLimit
     any = Any.pack(
         AssetIssueContract.newBuilder()
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
@@ -1832,9 +1832,9 @@ public class AssetIssueActuatorTest {
     actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 
-    processAndCheckInvalid(actuator, ret, "Invalid FreeAssetNetLimit", "Invalid FreeAssetNetLimit");
+    processAndCheckInvalid(actuator, ret, "Invalid FreeAssetPhotonLimit", "Invalid FreeAssetPhotonLimit");
 
-    // Invalid PublicFreeAssetNetLimit
+    // Invalid PublicFreeAssetPhotonLimit
     any = Any.pack(
         AssetIssueContract.newBuilder()
             .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
@@ -1847,8 +1847,8 @@ public class AssetIssueActuatorTest {
     actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 
-    processAndCheckInvalid(actuator, ret, "Invalid PublicFreeAssetNetLimit",
-        "Invalid PublicFreeAssetNetLimit");
+    processAndCheckInvalid(actuator, ret, "Invalid PublicFreeAssetPhotonLimit",
+        "Invalid PublicFreeAssetPhotonLimit");
 
   }
 

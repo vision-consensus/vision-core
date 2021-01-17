@@ -36,7 +36,7 @@ public class RepositoryImpl implements Repository {
   private long precision = Parameter.ChainConstant.PRECISION;
   private long windowSize = Parameter.ChainConstant.WINDOW_SIZE_MS /
           BLOCK_PRODUCED_INTERVAL;
-  private static final byte[] TOTAL_NET_WEIGHT = "TOTAL_NET_WEIGHT".getBytes();
+  private static final byte[] TOTAL_PHOTON_WEIGHT = "TOTAL_PHOTON_WEIGHT".getBytes();
 
   private StoreFactory storeFactory;
   @Getter
@@ -848,12 +848,12 @@ public class RepositoryImpl implements Repository {
 
   @Override
   public void saveTotalNetWeight(long totalNetWeight) {
-    updateDynamic(TOTAL_NET_WEIGHT, new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
+    updateDynamic(TOTAL_PHOTON_WEIGHT, new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
   }
 
   @Override
   public long getTotalNetWeight() {
-    return Optional.ofNullable(getDynamic(TOTAL_NET_WEIGHT))
+    return Optional.ofNullable(getDynamic(TOTAL_PHOTON_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
