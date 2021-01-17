@@ -72,8 +72,8 @@ public class VerifyMintProof001 {
     Protocol.Account info = PublicMethed.queryAccount(testPriKey001, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getNetUsed();
-    Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
+    Long beforeNetUsed = accountResource.getPhotonUsed();
+    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);

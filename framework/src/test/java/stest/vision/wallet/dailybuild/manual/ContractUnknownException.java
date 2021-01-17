@@ -91,8 +91,8 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long beforeentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
@@ -122,8 +122,8 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getNetUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long afterNetUsed = resourceInfo.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long aftereentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
@@ -152,8 +152,8 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress2, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long beforeentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
@@ -185,8 +185,8 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getNetUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long afterNetUsed = resourceInfo.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long aftereentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
@@ -219,8 +219,8 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress3, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long beforeentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
@@ -250,8 +250,8 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getNetUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long afterNetUsed = resourceInfo.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long aftereentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
@@ -284,8 +284,8 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress4, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long beforeentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
@@ -316,8 +316,8 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getNetUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long afterNetUsed = resourceInfo.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
     long aftereentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);

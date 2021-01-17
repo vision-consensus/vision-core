@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.vision.api.GrpcAPI;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
@@ -71,18 +71,18 @@ public class CreateAccount2Test {
   public void testCreateAccount2() {
     Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     final Long beforeBalance = accountInfo.getBalance();
-    AccountNetMessage accountNetInfo = PublicMethed.getAccountNet(account007Address,
+    AccountPhotonMessage accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    final Long beforeFreeNet = accountNetInfo.getFreeNetUsed();
+    final Long beforeFreeNet = accountNetInfo.getFreePhotonUsed();
     GrpcAPI.Return ret1 = PublicMethed.createAccount2(account007Address, newAccountAddress,
         account007Key, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
     accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     Long afterBalance = accountInfo.getBalance();
-    accountNetInfo = PublicMethed.getAccountNet(account007Address,
+    accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    Long afterFreeNet = accountNetInfo.getFreeNetUsed();
+    Long afterFreeNet = accountNetInfo.getFreePhotonUsed();
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));
     //When creator has no photon, he can't use the free net.

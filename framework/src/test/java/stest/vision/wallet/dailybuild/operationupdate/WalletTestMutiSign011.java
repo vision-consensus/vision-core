@@ -136,7 +136,7 @@ public class WalletTestMutiSign011 {
 
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
     long entropyFee = infoById.get().getReceipt().getEntropyFee();
-    long netFee = infoById.get().getReceipt().getNetFee();
+    long netFee = infoById.get().getReceipt().getPhotonFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
@@ -170,7 +170,7 @@ public class WalletTestMutiSign011 {
         .getTransactionInfoById(txid, blockingStubFull);
     balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
     entropyFee = infoById.get().getReceipt().getEntropyFee();
-    netFee = infoById.get().getReceipt().getNetFee();
+    netFee = infoById.get().getReceipt().getPhotonFee();
     fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);

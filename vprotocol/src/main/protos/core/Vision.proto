@@ -151,7 +151,7 @@ message Account {
   // the frozen balance for photon
   repeated Frozen frozen = 7;
   // photon, get from frozen
-  int64 net_usage = 8;
+  int64 photon_usage = 8;
   //Frozen balance provided by other accounts to this account
   int64 acquired_delegated_frozen_balance_for_photon = 41;
   //Freeze and provide balances to other accounts
@@ -176,9 +176,9 @@ message Account {
   bytes asset_issued_ID = 57;
   map<string, int64> latest_asset_operation_time = 18;
   map<string, int64> latest_asset_operation_timeV2 = 58;
-  int64 free_net_usage = 19;
-  map<string, int64> free_asset_net_usage = 20;
-  map<string, int64> free_asset_net_usageV2 = 59;
+  int64 free_photon_usage = 19;
+  map<string, int64> free_asset_photon_usage = 20;
+  map<string, int64> free_asset_photon_usageV2 = 59;
   int64 latest_consume_time = 21;
   int64 latest_consume_free_time = 22;
 
@@ -291,8 +291,8 @@ message ResourceReceipt {
   int64 entropy_fee = 2;
   int64 origin_entropy_usage = 3;
   int64 entropy_usage_total = 4;
-  int64 net_usage = 5;
-  int64 net_fee = 6;
+  int64 photon_usage = 5;
+  int64 photon_fee = 6;
   Transaction.Result.contractResult result = 7;
 }
 

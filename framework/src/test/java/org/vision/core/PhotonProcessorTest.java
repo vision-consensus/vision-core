@@ -178,8 +178,8 @@ public class PhotonProcessorTest {
     return AssetIssueContract.newBuilder()
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ASSET_ADDRESS)))
         .setName(ByteString.copyFromUtf8(ASSET_NAME))
-        .setFreeAssetNetLimit(1000L)
-        .setPublicFreeAssetNetLimit(1000L)
+        .setFreeAssetPhotonLimit(1000L)
+        .setPublicFreeAssetPhotonLimit(1000L)
         .build();
   }
 
@@ -188,8 +188,8 @@ public class PhotonProcessorTest {
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ASSET_ADDRESS_V2)))
         .setName(ByteString.copyFromUtf8(ASSET_NAME_V2))
         .setId(ASSET_NAME_V2)
-        .setFreeAssetNetLimit(1000L)
-        .setPublicFreeAssetNetLimit(1000L)
+        .setFreeAssetPhotonLimit(1000L)
+        .setPublicFreeAssetPhotonLimit(1000L)
         .build();
   }
 
@@ -246,7 +246,7 @@ public class PhotonProcessorTest {
 
     chainBaseManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     chainBaseManager.getDynamicPropertiesStore()
-        .saveTotalNetWeight(10_000_000L);//only owner has frozen balance
+        .saveTotalPhotonWeight(10_000_000L);//only owner has frozen balance
 
     AccountCapsule ownerCapsule = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -258,7 +258,7 @@ public class PhotonProcessorTest {
 
     AccountCapsule ownerCapsuleNew = chainBaseManager.getAccountStore()
         .get(ByteArray.fromHexString(OWNER_ADDRESS));
-    Assert.assertEquals(122L, ownerCapsuleNew.getNetUsage());
+    Assert.assertEquals(122L, ownerCapsuleNew.getPhotonUsage());
 
   }
 
@@ -284,15 +284,15 @@ public class PhotonProcessorTest {
 
     Assert.assertEquals(122L + (dbManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        ownerCapsuleNew.getFreeNetUsage());
+        ownerCapsuleNew.getFreePhotonUsage());
     Assert.assertEquals(508882612L, ownerCapsuleNew.getLatestConsumeFreeTime());//slot
     Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(
         122L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        chainBaseManager.getDynamicPropertiesStore().getPublicNetUsage());
+        chainBaseManager.getDynamicPropertiesStore().getPublicPhotonUsage());
     Assert.assertEquals(508882612L,
-        chainBaseManager.getDynamicPropertiesStore().getPublicNetTime());
+        chainBaseManager.getDynamicPropertiesStore().getPublicPhotonTime());
     Assert.assertEquals(0L, ret.getFee());
 
     chainBaseManager.getDynamicPropertiesStore()
@@ -305,16 +305,16 @@ public class PhotonProcessorTest {
     Assert.assertEquals(61L + 122
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        ownerCapsuleNew.getFreeNetUsage());
+        ownerCapsuleNew.getFreePhotonUsage());
     Assert.assertEquals(508897012L,
         ownerCapsuleNew.getLatestConsumeFreeTime()); // 508882612L + 28800L/2
     Assert.assertEquals(1526691038000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(61L + 122L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        chainBaseManager.getDynamicPropertiesStore().getPublicNetUsage());
+        chainBaseManager.getDynamicPropertiesStore().getPublicPhotonUsage());
     Assert.assertEquals(508897012L,
-        chainBaseManager.getDynamicPropertiesStore().getPublicNetTime());
+        chainBaseManager.getDynamicPropertiesStore().getPublicPhotonTime());
     Assert.assertEquals(0L, ret.getFee());
   }
 
@@ -324,7 +324,7 @@ public class PhotonProcessorTest {
     chainBaseManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
     chainBaseManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     chainBaseManager.getDynamicPropertiesStore()
-        .saveTotalNetWeight(10_000_000L);//only assetAccount has frozen balance
+        .saveTotalPhotonWeight(10_000_000L);//only assetAccount has frozen balance
 
     TransferAssetContract contract = getTransferAssetContract();
     TransactionCapsule trx = new TransactionCapsule(contract);
@@ -351,15 +351,15 @@ public class PhotonProcessorTest {
     Assert.assertEquals(
         122L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        ownerCapsuleNew.getFreeAssetNetUsage(ASSET_NAME));
+        ownerCapsuleNew.getFreeAssetPhotonUsage(ASSET_NAME));
     Assert.assertEquals(
         122L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        ownerCapsuleNew.getFreeAssetNetUsageV2("1"));
+        ownerCapsuleNew.getFreeAssetPhotonUsageV2("1"));
     Assert.assertEquals(
         122L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        assetCapsuleNew.getNetUsage());
+        assetCapsuleNew.getPhotonUsage());
 
     Assert.assertEquals(0L, ret.getFee());
 
@@ -380,15 +380,15 @@ public class PhotonProcessorTest {
     Assert.assertEquals(61L + 122L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        ownerCapsuleNew.getFreeAssetNetUsage(ASSET_NAME));
+        ownerCapsuleNew.getFreeAssetPhotonUsage(ASSET_NAME));
     Assert.assertEquals(61L + 122L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        ownerCapsuleNew.getFreeAssetNetUsageV2("1"));
+        ownerCapsuleNew.getFreeAssetPhotonUsageV2("1"));
     Assert.assertEquals(61L + 122L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        assetCapsuleNew.getNetUsage());
+        assetCapsuleNew.getPhotonUsage());
     Assert.assertEquals(0L, ret.getFee());
 
   }
@@ -398,7 +398,7 @@ public class PhotonProcessorTest {
     chainBaseManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
     chainBaseManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     chainBaseManager.getDynamicPropertiesStore()
-        .saveTotalNetWeight(10_000_000L);//only assetAccount has frozen balance
+        .saveTotalPhotonWeight(10_000_000L);//only assetAccount has frozen balance
 
     TransferAssetContract contract = getTransferAssetV2Contract();
     TransactionCapsule trx = new TransactionCapsule(contract);
@@ -427,11 +427,11 @@ public class PhotonProcessorTest {
     Assert.assertEquals(
         113L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        issuerCapsuleNew.getNetUsage());
+        issuerCapsuleNew.getPhotonUsage());
     Assert.assertEquals(
         113L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        ownerCapsuleNew.getFreeAssetNetUsageV2(ASSET_NAME_V2));
+        ownerCapsuleNew.getFreeAssetPhotonUsageV2(ASSET_NAME_V2));
 
     Assert.assertEquals(508882612L,
         ownerCapsuleNew.getLatestAssetOperationTimeV2(ASSET_NAME_V2));
@@ -454,11 +454,11 @@ public class PhotonProcessorTest {
     Assert.assertEquals(56L + 113L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        ownerCapsuleNew.getFreeAssetNetUsageV2(ASSET_NAME_V2));
+        ownerCapsuleNew.getFreeAssetPhotonUsageV2(ASSET_NAME_V2));
     Assert.assertEquals(56L + 113L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        issuerCapsuleNew.getNetUsage());
+        issuerCapsuleNew.getPhotonUsage());
     Assert.assertEquals(0L, ret.getFee());
 
   }
@@ -467,7 +467,7 @@ public class PhotonProcessorTest {
   public void testConsumeOwner() throws Exception {
     chainBaseManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     chainBaseManager.getDynamicPropertiesStore()
-        .saveTotalNetWeight(10_000_000L);//only owner has frozen balance
+        .saveTotalPhotonWeight(10_000_000L);//only owner has frozen balance
 
     TransferAssetContract contract = getTransferAssetContract();
     TransactionCapsule trx = new TransactionCapsule(contract);
@@ -492,7 +492,7 @@ public class PhotonProcessorTest {
     Assert.assertEquals(
         122L + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-        ownerCapsuleNew.getNetUsage());
+        ownerCapsuleNew.getPhotonUsage());
     Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(508882612L, ownerCapsuleNew.getLatestConsumeTime());
     Assert.assertEquals(0L, ret.getFee());
@@ -508,7 +508,7 @@ public class PhotonProcessorTest {
     Assert.assertEquals(61L + 122L
             + (chainBaseManager.getDynamicPropertiesStore().supportVM()
             ? Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-        ownerCapsuleNew.getNetUsage());
+        ownerCapsuleNew.getPhotonUsage());
     Assert.assertEquals(1526691038000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(508897012L, ownerCapsuleNew.getLatestConsumeTime());
     Assert.assertEquals(0L, ret.getFee());
@@ -530,7 +530,7 @@ public class PhotonProcessorTest {
     });
 
     chainBaseManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-    chainBaseManager.getDynamicPropertiesStore().saveFreeNetLimit(0L);
+    chainBaseManager.getDynamicPropertiesStore().saveFreePhotonLimit(0L);
 
     TransferAssetContract contract = getTransferAssetContract();
     TransactionCapsule trx = new TransactionCapsule(contract);
@@ -559,7 +559,7 @@ public class PhotonProcessorTest {
     Assert.assertEquals(
         10_000_000L - transactionFee,
         ownerCapsuleNew.getBalance());
-    Assert.assertEquals(transactionFee, trace.getReceipt().getNetFee());
+    Assert.assertEquals(transactionFee, trace.getReceipt().getPhotonFee());
 
     chainBaseManager.getAccountStore().delete(ByteArray.fromHexString(TO_ADDRESS));
     dbManager.consumePhoton(trx, trace);
@@ -572,7 +572,7 @@ public class PhotonProcessorTest {
   @Test
   public void sameTokenNameCloseConsumeSuccess() {
     chainBaseManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-    chainBaseManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+    chainBaseManager.getDynamicPropertiesStore().saveTotalPhotonWeight(10_000_000L);
 
     long id = chainBaseManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
     chainBaseManager.getDynamicPropertiesStore().saveTokenIdNum(id);
@@ -589,8 +589,8 @@ public class PhotonProcessorTest {
             .setVoteScore(VOTE_SCORE)
             .setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
             .setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-            .setPublicFreeAssetNetLimit(2000)
-            .setFreeAssetNetLimit(2000)
+            .setPublicFreeAssetPhotonLimit(2000)
+            .setFreeAssetPhotonLimit(2000)
             .build();
     AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
     // V1
@@ -640,32 +640,32 @@ public class PhotonProcessorTest {
 
     try {
       processor.consume(trx, trace);
-      Assert.assertEquals(trace.getReceipt().getNetFee(), 0);
-      Assert.assertEquals(trace.getReceipt().getNetUsage(), byteSize);
+      Assert.assertEquals(trace.getReceipt().getPhotonFee(), 0);
+      Assert.assertEquals(trace.getReceipt().getPhotonUsage(), byteSize);
       //V1
       AssetIssueCapsule assetIssueCapsuleV1 =
           chainBaseManager.getAssetIssueStore().get(assetIssueCapsule.createDbKey());
       Assert.assertNotNull(assetIssueCapsuleV1);
-      Assert.assertEquals(assetIssueCapsuleV1.getPublicFreeAssetNetUsage(), byteSize);
+      Assert.assertEquals(assetIssueCapsuleV1.getPublicFreeAssetPhotonUsage(), byteSize);
 
       AccountCapsule fromAccount =
           chainBaseManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(fromAccount);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsage(ASSET_NAME), byteSize);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(String.valueOf(id)), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsage(ASSET_NAME), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsageV2(String.valueOf(id)), byteSize);
 
       AccountCapsule ownerAccount =
           chainBaseManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
       Assert.assertNotNull(ownerAccount);
-      Assert.assertEquals(ownerAccount.getNetUsage(), byteSize);
+      Assert.assertEquals(ownerAccount.getPhotonUsage(), byteSize);
 
       //V2
       AssetIssueCapsule assetIssueCapsuleV2 =
           chainBaseManager.getAssetIssueV2Store().get(assetIssueCapsule.createDbV2Key());
       Assert.assertNotNull(assetIssueCapsuleV2);
-      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetUsage(), byteSize);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsage(ASSET_NAME), byteSize);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(String.valueOf(id)), byteSize);
+      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetPhotonUsage(), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsage(ASSET_NAME), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsageV2(String.valueOf(id)), byteSize);
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
     } catch (TooBigTransactionResultException e) {
@@ -687,7 +687,7 @@ public class PhotonProcessorTest {
   @Test
   public void sameTokenNameOpenConsumeSuccess() {
     chainBaseManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-    chainBaseManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+    chainBaseManager.getDynamicPropertiesStore().saveTotalPhotonWeight(10_000_000L);
 
     long id = chainBaseManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
     chainBaseManager.getDynamicPropertiesStore().saveTokenIdNum(id);
@@ -704,8 +704,8 @@ public class PhotonProcessorTest {
             .setVoteScore(VOTE_SCORE)
             .setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
             .setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-            .setPublicFreeAssetNetLimit(2000)
-            .setFreeAssetNetLimit(2000)
+            .setPublicFreeAssetPhotonLimit(2000)
+            .setFreeAssetPhotonLimit(2000)
             .build();
     AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
     // V2
@@ -753,24 +753,24 @@ public class PhotonProcessorTest {
 
     try {
       processor.consume(trx, trace);
-      Assert.assertEquals(trace.getReceipt().getNetFee(), 0);
-      Assert.assertEquals(trace.getReceipt().getNetUsage(), byteSize);
+      Assert.assertEquals(trace.getReceipt().getPhotonFee(), 0);
+      Assert.assertEquals(trace.getReceipt().getPhotonUsage(), byteSize);
       AccountCapsule ownerAccount =
           chainBaseManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
       Assert.assertNotNull(ownerAccount);
-      Assert.assertEquals(ownerAccount.getNetUsage(), byteSize);
+      Assert.assertEquals(ownerAccount.getPhotonUsage(), byteSize);
 
       //V2
       AssetIssueCapsule assetIssueCapsuleV2 =
           chainBaseManager.getAssetIssueV2Store().get(assetIssueCapsule.createDbV2Key());
       Assert.assertNotNull(assetIssueCapsuleV2);
-      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetUsage(), byteSize);
+      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetPhotonUsage(), byteSize);
 
       AccountCapsule fromAccount =
           chainBaseManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(fromAccount);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(String.valueOf(id)), byteSize);
-      Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(String.valueOf(id)), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsageV2(String.valueOf(id)), byteSize);
+      Assert.assertEquals(fromAccount.getFreeAssetPhotonUsageV2(String.valueOf(id)), byteSize);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
@@ -793,7 +793,7 @@ public class PhotonProcessorTest {
   @Test
   public void sameTokenNameCloseTransferToAccountNotExist() {
     chainBaseManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-    chainBaseManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+    chainBaseManager.getDynamicPropertiesStore().saveTotalPhotonWeight(10_000_000L);
 
     AccountCapsule ownerCapsule =
         new AccountCapsule(
@@ -835,12 +835,12 @@ public class PhotonProcessorTest {
     try {
       processor.consume(trx, trace);
 
-      Assert.assertEquals(trace.getReceipt().getNetFee(), 0);
-      Assert.assertEquals(trace.getReceipt().getNetUsage(), byteSize);
+      Assert.assertEquals(trace.getReceipt().getPhotonFee(), 0);
+      Assert.assertEquals(trace.getReceipt().getPhotonUsage(), byteSize);
       AccountCapsule fromAccount =
           chainBaseManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(fromAccount);
-      Assert.assertEquals(fromAccount.getNetUsage(), byteSize);
+      Assert.assertEquals(fromAccount.getPhotonUsage(), byteSize);
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
     } catch (TooBigTransactionResultException e) {

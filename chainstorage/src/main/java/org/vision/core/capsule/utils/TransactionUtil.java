@@ -74,7 +74,7 @@ public class TransactionUtil {
     ProgramResult programResult = trace.getRuntimeResult();
     long fee =
         programResult.getRet().getFee() + traceReceipt.getEntropyFee()
-            + traceReceipt.getNetFee() + traceReceipt.getMultiSignFee();
+            + traceReceipt.getPhotonFee() + traceReceipt.getMultiSignFee();
     ByteString contractResult = ByteString.copyFrom(programResult.getHReturn());
     ByteString ContractAddress = ByteString.copyFrom(programResult.getContractAddress());
 

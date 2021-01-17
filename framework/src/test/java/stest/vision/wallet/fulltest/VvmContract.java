@@ -87,9 +87,9 @@ public class VvmContract {
     Long m = 0L;
     Long freeNet;
     accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-    Long net = accountResource.getFreeNetUsed();
+    Long net = accountResource.getFreePhotonUsed();
     Account account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
-    Long netUsed = account.getNetUsage();
+    Long netUsed = account.getPhotonUsage();
     logger.info("before net used is " + Long.toString(netUsed));
     logger.info("before balance is " + account.getBalance());
 
@@ -97,7 +97,7 @@ public class VvmContract {
       byte[] contractAddress = PublicMethed.deployContract("1", abi, code, "",
           30000000L, 0L, 1, null, contract008Key, contract008Address, blockingStubFull);
       accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-      freeNet = accountResource.getFreeNetUsed();
+      freeNet = accountResource.getFreePhotonUsed();
       entropyUsage = accountResource.getEntropyUsed();
       logger.info(
           "Time " + Integer.toString(i) + ": entropy usage is " + Long.toString(entropyUsage - m));
@@ -105,7 +105,7 @@ public class VvmContract {
           .toString(freeNet - net));
       account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
       logger.info("after balance is " + account.getBalance());
-      netUsed = account.getNetUsage();
+      netUsed = account.getPhotonUsage();
       logger.info("after net used is " + Long.toString(netUsed));
       net = freeNet;
       m = entropyUsage;

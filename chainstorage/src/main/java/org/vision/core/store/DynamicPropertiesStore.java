@@ -288,7 +288,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getPublicNetUsage();
+      this.getPublicPhotonUsage();
     } catch (IllegalArgumentException e) {
       this.savePublicNetUsage(0L);
     }
@@ -300,27 +300,27 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getPublicNetLimit();
+      this.getPublicPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.savePublicNetLimit(14_400_000_000L);
+      this.savePublicPhotonLimit(14_400_000_000L);
     }
 
     try {
-      this.getPublicNetTime();
+      this.getPublicPhotonTime();
     } catch (IllegalArgumentException e) {
-      this.savePublicNetTime(0L);
+      this.savePublicPhotonTime(0L);
     }
 
     try {
-      this.getFreeNetLimit();
+      this.getFreePhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveFreeNetLimit(5000L);
+      this.saveFreePhotonLimit(5000L);
     }
 
     try {
       this.getTotalNetWeight();
     } catch (IllegalArgumentException e) {
-      this.saveTotalNetWeight(0L);
+      this.saveTotalPhotonWeight(0L);
     }
 
     try {
@@ -907,12 +907,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void saveOneDayNetLimit(long oneDayNetLimit) {
-    this.put(DynamicResourceProperties.ONE_DAY_NET_LIMIT,
+    this.put(DynamicResourceProperties.ONE_DAY_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
   }
 
   public long getOneDayNetLimit() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_NET_LIMIT))
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
@@ -920,64 +920,64 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void savePublicNetUsage(long publicNetUsage) {
-    this.put(DynamicResourceProperties.PUBLIC_NET_USAGE,
+    this.put(DynamicResourceProperties.PUBLIC_PHOTON_USAGE,
         new BytesCapsule(ByteArray.fromLong(publicNetUsage)));
   }
 
-  public long getPublicNetUsage() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_USAGE))
+  public long getPublicPhotonUsage() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_PHOTON_USAGE))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found PUBLIC_NET_USAGE"));
   }
 
-  public void savePublicNetLimit(long publicNetLimit) {
-    this.put(DynamicResourceProperties.PUBLIC_NET_LIMIT,
+  public void savePublicPhotonLimit(long publicNetLimit) {
+    this.put(DynamicResourceProperties.PUBLIC_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(publicNetLimit)));
   }
 
-  public long getPublicNetLimit() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_LIMIT))
+  public long getPublicPhotonLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found PUBLIC_NET_LIMIT"));
   }
 
-  public void savePublicNetTime(long publicNetTime) {
-    this.put(DynamicResourceProperties.PUBLIC_NET_TIME,
+  public void savePublicPhotonTime(long publicNetTime) {
+    this.put(DynamicResourceProperties.PUBLIC_PHOTON_TIME,
         new BytesCapsule(ByteArray.fromLong(publicNetTime)));
   }
 
-  public long getPublicNetTime() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_TIME))
+  public long getPublicPhotonTime() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_PHOTON_TIME))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found PUBLIC_NET_TIME"));
   }
 
-  public void saveFreeNetLimit(long freeNetLimit) {
-    this.put(DynamicResourceProperties.FREE_NET_LIMIT,
+  public void saveFreePhotonLimit(long freeNetLimit) {
+    this.put(DynamicResourceProperties.FREE_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(freeNetLimit)));
   }
 
-  public long getFreeNetLimit() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREE_NET_LIMIT))
+  public long getFreePhotonLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREE_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found FREE_NET_LIMIT"));
   }
 
-  public void saveTotalNetWeight(long totalNetWeight) {
-    this.put(DynamicResourceProperties.TOTAL_NET_WEIGHT,
+  public void saveTotalPhotonWeight(long totalNetWeight) {
+    this.put(DynamicResourceProperties.TOTAL_PHOTON_WEIGHT,
         new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
   }
 
   public long getTotalNetWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_WEIGHT))
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_PHOTON_WEIGHT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
@@ -998,12 +998,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void saveTotalNetLimit(long totalNetLimit) {
-    this.put(DynamicResourceProperties.TOTAL_NET_LIMIT,
+    this.put(DynamicResourceProperties.TOTAL_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
   }
 
   public long getTotalNetLimit() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_LIMIT))
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_PHOTON_LIMIT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
@@ -1921,7 +1921,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   public void addTotalNetWeight(long amount) {
     long totalNetWeight = getTotalNetWeight();
     totalNetWeight += amount;
-    saveTotalNetWeight(totalNetWeight);
+    saveTotalPhotonWeight(totalNetWeight);
   }
 
   //The unit is vs
@@ -2047,16 +2047,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static class DynamicResourceProperties {
 
-    private static final byte[] ONE_DAY_NET_LIMIT = "ONE_DAY_NET_LIMIT".getBytes();
+    private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
     //public free photon
-    private static final byte[] PUBLIC_NET_USAGE = "PUBLIC_NET_USAGE".getBytes();
+    private static final byte[] PUBLIC_PHOTON_USAGE = "PUBLIC_PHOTON_USAGE".getBytes();
     //fixed
-    private static final byte[] PUBLIC_NET_LIMIT = "PUBLIC_NET_LIMIT".getBytes();
-    private static final byte[] PUBLIC_NET_TIME = "PUBLIC_NET_TIME".getBytes();
-    private static final byte[] FREE_NET_LIMIT = "FREE_NET_LIMIT".getBytes();
-    private static final byte[] TOTAL_NET_WEIGHT = "TOTAL_NET_WEIGHT".getBytes();
-    //ONE_DAY_NET_LIMIT - PUBLIC_NET_LIMIT，current TOTAL_NET_LIMIT
-    private static final byte[] TOTAL_NET_LIMIT = "TOTAL_NET_LIMIT".getBytes();
+    private static final byte[] PUBLIC_PHOTON_LIMIT = "PUBLIC_PHOTON_LIMIT".getBytes();
+    private static final byte[] PUBLIC_PHOTON_TIME = "PUBLIC_PHOTON_TIME".getBytes();
+    private static final byte[] FREE_PHOTON_LIMIT = "FREE_PHOTON_LIMIT".getBytes();
+    private static final byte[] TOTAL_PHOTON_WEIGHT = "TOTAL_PHOTON_WEIGHT".getBytes();
+    //ONE_DAY_PHOTON_LIMIT - PUBLIC_PHOTON_LIMIT，current TOTAL_PHOTON_LIMIT
+    private static final byte[] TOTAL_PHOTON_LIMIT = "TOTAL_PHOTON_LIMIT".getBytes();
     private static final byte[] TOTAL_ENTROPY_TARGET_LIMIT = "TOTAL_ENTROPY_TARGET_LIMIT".getBytes();
     private static final byte[] TOTAL_ENTROPY_CURRENT_LIMIT = "TOTAL_ENTROPY_CURRENT_LIMIT"
         .getBytes();

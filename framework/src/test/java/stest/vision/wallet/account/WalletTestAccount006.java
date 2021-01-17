@@ -12,7 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.vision.api.GrpcAPI;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
@@ -68,7 +68,7 @@ public class WalletTestAccount006 {
   }
 
   @Test(enabled = true)
-  public void test1GetAccountNet() {
+  public void test1GetAccountPhoton() {
     ecKey = new ECKey(Utils.getRandom());
     account006Address = ecKey.getAddress();
     account006Key = ByteArray.toHexString(ecKey.getPrivKeyBytes());
@@ -86,35 +86,35 @@ public class WalletTestAccount006 {
     //Get new account net information.
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
-    logger.info(Long.toString(accountNetMessage.getNetLimit()));
-    logger.info(Long.toString(accountNetMessage.getNetUsed()));
-    logger.info(Long.toString(accountNetMessage.getFreeNetLimit()));
-    logger.info(Long.toString(accountNetMessage.getFreeNetUsed()));
-    logger.info(Long.toString(accountNetMessage.getTotalNetLimit()));
-    logger.info(Long.toString(accountNetMessage.getTotalNetWeight()));
-    Assert.assertTrue(accountNetMessage.getNetLimit() == 0);
-    Assert.assertTrue(accountNetMessage.getNetUsed() == 0);
-    Assert.assertTrue(accountNetMessage.getFreeNetLimit() == FREENETLIMIT);
-    Assert.assertTrue(accountNetMessage.getFreeNetUsed() == 0);
-    Assert.assertTrue(accountNetMessage.getTotalNetLimit() > 0);
-    Assert.assertTrue(accountNetMessage.getTotalNetWeight() > 0);
+    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    logger.info(Long.toString(accountNetMessage.getPhotonLimit()));
+    logger.info(Long.toString(accountNetMessage.getPhotonUsed()));
+    logger.info(Long.toString(accountNetMessage.getFreePhotonLimit()));
+    logger.info(Long.toString(accountNetMessage.getFreePhotonUsed()));
+    logger.info(Long.toString(accountNetMessage.getTotalPhotonLimit()));
+    logger.info(Long.toString(accountNetMessage.getTotalPhotonWeight()));
+    Assert.assertTrue(accountNetMessage.getPhotonLimit() == 0);
+    Assert.assertTrue(accountNetMessage.getPhotonUsed() == 0);
+    Assert.assertTrue(accountNetMessage.getFreePhotonLimit() == FREENETLIMIT);
+    Assert.assertTrue(accountNetMessage.getFreePhotonUsed() == 0);
+    Assert.assertTrue(accountNetMessage.getTotalPhotonLimit() > 0);
+    Assert.assertTrue(accountNetMessage.getTotalPhotonWeight() > 0);
     logger.info("testGetAccountNet");
 
   }
 
   @Test(enabled = true)
-  public void test2UseFreeNet() {
+  public void test2UseFreePhoton() {
 
-    //Transfer some VS to other to test free net cost.
+    //Transfer some VS to other to test free Photon cost.
     Assert.assertTrue(PublicMethed.sendcoin(fromAddress, 1L, account006Address,
         account006Key, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
-    //Every transaction may cost 200 net.
-    Assert.assertTrue(accountNetMessage.getFreeNetUsed() > 0 && accountNetMessage
-        .getFreeNetUsed() < 300);
+    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    //Every transaction may cost 200 Photon.
+    Assert.assertTrue(accountNetMessage.getFreePhotonUsed() > 0 && accountNetMessage
+        .getFreePhotonUsed() < 300);
     logger.info("testUseFreeNet");
   }
 
@@ -124,13 +124,13 @@ public class WalletTestAccount006 {
         testKey002, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
+    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
     //Use out the free net
     Integer times = 0;
-    while (accountNetMessage.getFreeNetUsed() < BASELINE && times++ < 30) {
+    while (accountNetMessage.getFreePhotonUsed() < BASELINE && times++ < 30) {
       PublicMethed.sendcoin(fromAddress, 1L, account006Address, account006Key,
           blockingStubFull);
-      accountNetMessage = blockingStubFull.getAccountNet(request);
+      accountNetMessage = blockingStubFull.getAccountPhoton(request);
     }
 
     Account queryAccount = PublicMethed.queryAccount(account006Key, blockingStubFull);
@@ -145,7 +145,7 @@ public class WalletTestAccount006 {
   }
 
   @Test(enabled = true)
-  public void test4UseNet() {
+  public void test4UsePhoton() {
     //Freeze balance to own net.
     Assert.assertTrue(PublicMethed.freezeBalance(account006Address, 10000000L,
         3, account006Key, blockingStubFull));
@@ -153,9 +153,9 @@ public class WalletTestAccount006 {
         account006Key, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
-    Assert.assertTrue(accountNetMessage.getNetLimit() > 0);
-    Assert.assertTrue(accountNetMessage.getNetUsed() > 150);
+    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    Assert.assertTrue(accountNetMessage.getPhotonLimit() > 0);
+    Assert.assertTrue(accountNetMessage.getPhotonUsed() > 150);
 
     Account queryAccount = PublicMethed.queryAccount(account006Key, blockingStubFull);
     Long beforeSendBalance = queryAccount.getBalance();
@@ -169,10 +169,10 @@ public class WalletTestAccount006 {
     Assert.assertTrue(beforeSendBalance - afterSendBalance == 1);
     addressBs = ByteString.copyFrom(account006Address);
     request = Account.newBuilder().setAddress(addressBs).build();
-    accountNetMessage = blockingStubFull.getAccountNet(request);
+    accountNetMessage = blockingStubFull.getAccountPhoton(request);
     //when you freeze balance and has net,you cost net.
-    logger.info(Long.toString(accountNetMessage.getNetUsed()));
-    Assert.assertTrue(accountNetMessage.getNetUsed() > 350);
+    logger.info(Long.toString(accountNetMessage.getPhotonUsed()));
+    Assert.assertTrue(accountNetMessage.getPhotonUsed() > 350);
   }
 
   /**

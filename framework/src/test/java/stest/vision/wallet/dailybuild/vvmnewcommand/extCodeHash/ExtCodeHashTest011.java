@@ -206,7 +206,7 @@ public class ExtCodeHashTest011 {
     Assert.assertEquals(retList.get(1),
         retList.get(0));
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     extCodeHashContractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(extCodeHashContractAddress,

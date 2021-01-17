@@ -121,8 +121,8 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
       transactionLogTrigger.setEntropyFee(trxTrace.getReceipt().getEntropyFee());
       transactionLogTrigger.setOriginEntropyUsage(trxTrace.getReceipt().getOriginEntropyUsage());
       transactionLogTrigger.setEntropyUsageTotal(trxTrace.getReceipt().getEntropyUsageTotal());
-      transactionLogTrigger.setNetUsage(trxTrace.getReceipt().getNetUsage());
-      transactionLogTrigger.setNetFee(trxTrace.getReceipt().getNetFee());
+      transactionLogTrigger.setPhotonUsage(trxTrace.getReceipt().getPhotonUsage());
+      transactionLogTrigger.setPhotonFee(trxTrace.getReceipt().getPhotonFee());
       transactionLogTrigger.setEntropyUsage(trxTrace.getReceipt().getEntropyUsage());
     }
 

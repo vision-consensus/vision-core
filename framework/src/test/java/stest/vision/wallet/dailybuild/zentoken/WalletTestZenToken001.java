@@ -120,7 +120,7 @@ public class WalletTestZenToken001 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     memo = "aaaaaaa";
 
@@ -139,7 +139,7 @@ public class WalletTestZenToken001 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     Long afterNetUsed = PublicMethed.getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == sendTokenAmount);
     Assert.assertTrue(beforeNetUsed == afterNetUsed);
     notes = PublicMethed.listShieldNote(shieldAddressInfo, blockingStubFull);

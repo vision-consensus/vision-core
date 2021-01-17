@@ -96,8 +96,8 @@ public class EntropyProcessorTest {
     return AssetIssueContract.newBuilder()
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(USER_ADDRESS)))
         .setName(ByteString.copyFromUtf8(ASSET_NAME))
-        .setFreeAssetNetLimit(1000L)
-        .setPublicFreeAssetNetLimit(1000L)
+        .setFreeAssetPhotonLimit(1000L)
+        .setPublicFreeAssetPhotonLimit(1000L)
         .build();
   }
 

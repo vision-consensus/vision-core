@@ -163,40 +163,40 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
     return frozenBalance[0];
   }
 
-  public long getFreeAssetNetLimit() {
-    return this.assetIssueContract.getFreeAssetNetLimit();
+  public long getFreeAssetPhotonLimit() {
+    return this.assetIssueContract.getFreeAssetPhotonLimit();
   }
 
-  public void setFreeAssetNetLimit(long newLimit) {
+  public void setFreeAssetPhotonLimit(long photonLimit) {
     this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setFreeAssetNetLimit(newLimit).build();
+        .setFreeAssetPhotonLimit(photonLimit).build();
   }
 
-  public long getPublicFreeAssetNetLimit() {
-    return this.assetIssueContract.getPublicFreeAssetNetLimit();
+  public long getPublicFreeAssetPhotonLimit() {
+    return this.assetIssueContract.getPublicFreeAssetPhotonLimit();
   }
 
-  public void setPublicFreeAssetNetLimit(long newPublicLimit) {
+  public void setPublicFreeAssetPhotonLimit(long photonPublicLimit) {
     this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicFreeAssetNetLimit(newPublicLimit).build();
+        .setPublicFreeAssetPhotonLimit(photonPublicLimit).build();
   }
 
-  public long getPublicFreeAssetNetUsage() {
-    return this.assetIssueContract.getPublicFreeAssetNetUsage();
+  public long getPublicFreeAssetPhotonUsage() {
+    return this.assetIssueContract.getPublicFreeAssetPhotonUsage();
   }
 
-  public void setPublicFreeAssetNetUsage(long value) {
+  public void setPublicFreeAssetPhotonUsage(long value) {
     this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicFreeAssetNetUsage(value).build();
+        .setPublicFreeAssetPhotonUsage(value).build();
   }
 
-  public long getPublicLatestFreeNetTime() {
-    return this.assetIssueContract.getPublicLatestFreeNetTime();
+  public long getPublicLatestFreePhotonTime() {
+    return this.assetIssueContract.getPublicLatestFreePhotonTime();
   }
 
-  public void setPublicLatestFreeNetTime(long time) {
+  public void setPublicLatestFreePhotonTime(long time) {
     this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicLatestFreeNetTime(time).build();
+        .setPublicLatestFreePhotonTime(time).build();
   }
 
   public void setUrl(ByteString newUrl) {

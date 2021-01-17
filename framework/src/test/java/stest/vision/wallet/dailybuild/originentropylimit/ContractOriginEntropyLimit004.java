@@ -316,8 +316,8 @@ public class ContractOriginEntropyLimit004 {
     long entropyUsage = infoById.get().getReceipt().getEntropyUsage();
     long originEntropyUsage = infoById.get().getReceipt().getOriginEntropyUsage();
     long entropyTotalUsage = infoById.get().getReceipt().getEntropyUsageTotal();
-    long netUsage = infoById.get().getReceipt().getNetUsage();
-    long netFee = infoById.get().getReceipt().getNetFee();
+    long netUsage = infoById.get().getReceipt().getPhotonUsage();
+    long netFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee: " + fee);
     logger.info("entropyFee: " + entropyFee);

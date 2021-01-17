@@ -58,8 +58,8 @@ public class ReceiptCapsule {
     return this.receiptAddress;
   }
 
-  public void addNetFee(long netFee) {
-    this.receipt = this.receipt.toBuilder().setNetFee(getNetFee() + netFee).build();
+  public void addPhotonFee(long photonFee) {
+    this.receipt = this.receipt.toBuilder().setPhotonFee(getPhotonFee() + photonFee).build();
   }
 
   public long getEntropyUsage() {
@@ -94,20 +94,20 @@ public class ReceiptCapsule {
     this.receipt = this.receipt.toBuilder().setEntropyUsageTotal(entropyUsage).build();
   }
 
-  public long getNetUsage() {
-    return this.receipt.getNetUsage();
+  public long getPhotonUsage() {
+    return this.receipt.getPhotonUsage();
   }
 
-  public void setNetUsage(long netUsage) {
-    this.receipt = this.receipt.toBuilder().setNetUsage(netUsage).build();
+  public void setNetUsage(long photonUsage) {
+    this.receipt = this.receipt.toBuilder().setPhotonUsage(photonUsage).build();
   }
 
-  public long getNetFee() {
-    return this.receipt.getNetFee();
+  public long getPhotonFee() {
+    return this.receipt.getPhotonFee();
   }
 
-  public void setNetFee(long netFee) {
-    this.receipt = this.receipt.toBuilder().setNetFee(netFee).build();
+  public void setPhotonFee(long photonFee) {
+    this.receipt = this.receipt.toBuilder().setPhotonFee(photonFee).build();
   }
 
   /**

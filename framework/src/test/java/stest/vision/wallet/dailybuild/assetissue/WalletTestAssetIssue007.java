@@ -11,7 +11,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
@@ -96,8 +96,8 @@ public class WalletTestAssetIssue007 {
 
     ByteString addressBs = ByteString.copyFrom(asset007Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage asset007NetMessage = blockingStubFull.getAccountNet(request);
-    final Long asset007BeforeFreeNetUsed = asset007NetMessage.getFreeNetUsed();
+    AccountPhotonMessage asset007NetMessage = blockingStubFull.getAccountPhoton(request);
+    final Long asset007BeforeFreeNetUsed = asset007NetMessage.getFreePhotonUsed();
 
     //SendCoin to participate account.
     Assert.assertTrue(PublicMethed
@@ -105,8 +105,8 @@ public class WalletTestAssetIssue007 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
-    AccountNetMessage participateAccountNetMessage = blockingStubFull.getAccountNet(request);
-    final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreeNetUsed();
+    AccountPhotonMessage participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
+    final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreePhotonUsed();
     Assert.assertTrue(participateAccountBeforeNetUsed == 0);
 
     Account getAssetIdFromThisAccount;
@@ -121,13 +121,13 @@ public class WalletTestAssetIssue007 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     addressBs = ByteString.copyFrom(asset007Address);
     request = Account.newBuilder().setAddress(addressBs).build();
-    asset007NetMessage = blockingStubFull.getAccountNet(request);
-    final Long asset007AfterFreeNetUsed = asset007NetMessage.getFreeNetUsed();
+    asset007NetMessage = blockingStubFull.getAccountPhoton(request);
+    final Long asset007AfterFreeNetUsed = asset007NetMessage.getFreePhotonUsed();
 
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
-    participateAccountNetMessage = blockingStubFull.getAccountNet(request);
-    final Long participateAccountAfterNetUsed = participateAccountNetMessage.getFreeNetUsed();
+    participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
+    final Long participateAccountAfterNetUsed = participateAccountNetMessage.getFreePhotonUsed();
 
     logger.info(Long.toString(asset007BeforeFreeNetUsed));
     logger.info(Long.toString(asset007AfterFreeNetUsed));

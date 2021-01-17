@@ -78,7 +78,7 @@ public class DelayTransaction011 {
     Assert.assertTrue(PublicMethed.sendcoin(noPhotonAddress, 10000000000L, fromAddress,
         testKey002, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    while (PublicMethed.queryAccount(noPhotonAddress, blockingStubFull).getFreeNetUsage()
+    while (PublicMethed.queryAccount(noPhotonAddress, blockingStubFull).getFreePhotonUsage()
         < 4700L) {
       PublicMethed.sendcoin(delayAccount2Address, 1L, noPhotonAddress, noPhotonKey,
           blockingStubFull);
@@ -93,7 +93,7 @@ public class DelayTransaction011 {
     logger.info("balance is: " + PublicMethed.queryAccount(noPhotonAddress,
         blockingStubFull).getBalance());
     logger.info("Free net usage is " + PublicMethed.queryAccount(noPhotonAddress,
-        blockingStubFull).getFreeNetUsage());
+        blockingStubFull).getFreePhotonUsage());
 
     String updateAccountName = "account_" + Long.toString(System.currentTimeMillis());
     byte[] accountNameBytes = ByteArray.fromString(updateAccountName);

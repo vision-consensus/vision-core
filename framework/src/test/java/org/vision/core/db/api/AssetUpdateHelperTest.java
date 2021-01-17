@@ -77,7 +77,7 @@ public class AssetUpdateHelperTest {
             Account.newBuilder()
                 .setAssetIssuedName(assetName)
                 .putAsset("assetIssueName", 100)
-                .putFreeAssetNetUsage("assetIssueName", 20000)
+                .putFreeAssetPhotonUsage("assetIssueName", 20000)
                 .putLatestAssetOperationTime("assetIssueName", 30000000)
                 .setAddress(ByteString.copyFrom(ByteArray.fromHexString("121212abc")))
                 .build());
@@ -144,10 +144,10 @@ public class AssetUpdateHelperTest {
 
       Assert.assertEquals(100L, accountCapsule.getAssetMapV2().get("1000001").longValue());
 
-      Assert.assertEquals(1, accountCapsule.getAllFreeAssetNetUsageV2().size());
+      Assert.assertEquals(1, accountCapsule.getAllFreeAssetPhotonUsageV2().size());
 
       Assert.assertEquals(
-          20000L, accountCapsule.getAllFreeAssetNetUsageV2().get("1000001").longValue());
+          20000L, accountCapsule.getAllFreeAssetPhotonUsageV2().get("1000001").longValue());
 
       Assert.assertEquals(1, accountCapsule.getLatestAssetOperationTimeMapV2().size());
 

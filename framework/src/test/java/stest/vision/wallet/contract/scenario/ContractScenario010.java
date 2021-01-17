@@ -70,7 +70,7 @@ public class ContractScenario010 {
         blockingStubFull);
     Long entropyLimit = accountResource.getEntropyLimit();
     Long entropyUsage = accountResource.getEntropyUsed();
-    Long netUsage = accountResource.getNetUsed();
+    Long netUsage = accountResource.getPhotonUsed();
 
     logger.info("before entropy limit is " + Long.toString(entropyLimit));
     logger.info("before entropy usage is " + Long.toString(entropyUsage));
@@ -94,7 +94,7 @@ public class ContractScenario010 {
     accountResource = PublicMethed.getAccountResource(contract009Address, blockingStubFull);
     entropyLimit = accountResource.getEntropyLimit();
     entropyUsage = accountResource.getEntropyUsed();
-    netUsage = accountResource.getNetUsed();
+    netUsage = accountResource.getPhotonUsed();
     Assert.assertTrue(entropyLimit > 0);
     Assert.assertTrue(entropyUsage > 0);
 

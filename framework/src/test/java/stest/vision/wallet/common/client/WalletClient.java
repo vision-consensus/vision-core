@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.GrpcAPI.AssetIssueList;
 import org.vision.api.GrpcAPI.BlockList;
 import org.vision.api.GrpcAPI.NodeList;
@@ -447,8 +447,8 @@ public class WalletClient {
     return builder.build();
   }
 
-  public static AccountNetMessage getAccountNet(byte[] address) {
-    return rpcCli.getAccountNet(address);
+  public static AccountPhotonMessage getAccountPhoton(byte[] address) {
+    return rpcCli.getAccountPhoton(address);
   }
 
   private static String loadPassword() {

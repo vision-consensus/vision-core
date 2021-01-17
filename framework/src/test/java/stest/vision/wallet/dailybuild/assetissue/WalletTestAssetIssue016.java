@@ -11,7 +11,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.vision.api.GrpcAPI;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.api.WalletSolidityGrpc;
 import org.vision.common.crypto.ECKey;
@@ -100,8 +100,8 @@ public class WalletTestAssetIssue016 {
     blockingStubPbft = WalletSolidityGrpc.newBlockingStub(channelPbft);
   }
 
-  @Test(enabled = true, description = "Get asset issue net resource")
-  public void test01GetAssetIssueNet() {
+  @Test(enabled = true, description = "Get asset issue Photon resource")
+  public void test01GetAssetIssuePhoton() {
     //get account
     ecKey1 = new ECKey(Utils.getRandom());
     asset016Address = ecKey1.getAddress();
@@ -130,19 +130,19 @@ public class WalletTestAssetIssue016 {
     getAssetIdFromThisAccount = PublicMethed.queryAccount(asset016Address, blockingStubFull);
     assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
 
-    AccountNetMessage assetIssueInfo = PublicMethed
-        .getAccountNet(asset016Address, blockingStubFull);
-    Assert.assertTrue(assetIssueInfo.getAssetNetLimitCount() == 1);
-    Assert.assertTrue(assetIssueInfo.getAssetNetUsedCount() == 1);
-    Assert.assertFalse(assetIssueInfo.getAssetNetLimitMap().isEmpty());
-    Assert.assertFalse(assetIssueInfo.getAssetNetUsedMap().isEmpty());
+    AccountPhotonMessage assetIssueInfo = PublicMethed
+        .getAccountPhoton(asset016Address, blockingStubFull);
+    Assert.assertTrue(assetIssueInfo.getAssetPhotonLimitCount() == 1);
+    Assert.assertTrue(assetIssueInfo.getAssetPhotonUsedCount() == 1);
+    Assert.assertFalse(assetIssueInfo.getAssetPhotonLimitMap().isEmpty());
+    Assert.assertFalse(assetIssueInfo.getAssetPhotonUsedMap().isEmpty());
 
     GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
         .setValue(assetAccountId).build();
     AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-    Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == freeAssetNetLimit);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == publicFreeAssetNetLimit);
-    Assert.assertTrue(assetIssueByName.getPublicLatestFreeNetTime() == 0);
+    Assert.assertTrue(assetIssueByName.getFreeAssetPhotonLimit() == freeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonLimit() == publicFreeAssetNetLimit);
+    Assert.assertTrue(assetIssueByName.getPublicLatestFreePhotonTime() == 0);
     assetIssueInfo.hashCode();
     assetIssueInfo.getSerializedSize();
     assetIssueInfo.equals(assetIssueInfo);
@@ -156,8 +156,8 @@ public class WalletTestAssetIssue016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-    Assert.assertTrue(assetIssueByName.getPublicLatestFreeNetTime() == 0);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetUsage() == 0);
+    Assert.assertTrue(assetIssueByName.getPublicLatestFreePhotonTime() == 0);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonUsage() == 0);
 
     Assert.assertTrue(PublicMethed.freezeBalance(asset016Address, 30000000L,
         3, testKeyForAssetIssue016, blockingStubFull));
@@ -167,8 +167,8 @@ public class WalletTestAssetIssue016 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-    Assert.assertTrue(assetIssueByName.getPublicLatestFreeNetTime() > 0);
-    Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetUsage() > 150);
+    Assert.assertTrue(assetIssueByName.getPublicLatestFreePhotonTime() > 0);
+    Assert.assertTrue(assetIssueByName.getPublicFreeAssetPhotonUsage() > 150);
 
     PublicMethed
         .freedResource(asset016Address, testKeyForAssetIssue016, fromAddress, blockingStubFull);

@@ -9,7 +9,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
@@ -76,9 +76,9 @@ public class WalletTestAccount007 {
     Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     final Long beforeBalance = accountInfo.getBalance();
 
-    AccountNetMessage accountNetInfo = PublicMethed.getAccountNet(account007Address,
+    AccountPhotonMessage accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    final Long beforeFreeNet = accountNetInfo.getFreeNetUsed();
+    final Long beforeFreeNet = accountNetInfo.getFreePhotonUsed();
 
     Assert.assertTrue(PublicMethed.createAccount(account007Address, newAccountAddress,
         account007Key, blockingStubFull));
@@ -86,9 +86,9 @@ public class WalletTestAccount007 {
     accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     Long afterBalance = accountInfo.getBalance();
 
-    accountNetInfo = PublicMethed.getAccountNet(account007Address,
+    accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    Long afterFreeNet = accountNetInfo.getFreeNetUsed();
+    Long afterFreeNet = accountNetInfo.getFreePhotonUsed();
 
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));

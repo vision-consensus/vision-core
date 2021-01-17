@@ -135,8 +135,8 @@ public class ContractVrcToken052 {
     info = PublicMethed.queryAccount(user001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     Long beforeAssetIssueCount = PublicMethed
         .getAssetIssueValue(user001Address, assetAccountId,
             blockingStubFull);
@@ -179,8 +179,8 @@ public class ContractVrcToken052 {
     Long afterAssetIssueCount = PublicMethed
         .getAssetIssueValue(user001Address, assetAccountId,
             blockingStubFull);
-    Long afterNetUsed = resourceInfoafter.getNetUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
     Long afterAssetIssueContractAddress = PublicMethed
         .getAssetIssueValue(transferTokenContractAddress,
             assetAccountId,

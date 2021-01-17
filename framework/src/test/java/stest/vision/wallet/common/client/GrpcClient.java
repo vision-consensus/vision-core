@@ -6,7 +6,7 @@ import io.grpc.ManagedChannelBuilder;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.vision.api.GrpcAPI;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.GrpcAPI.AccountPaginated;
 import org.vision.api.GrpcAPI.AssetIssueList;
 import org.vision.api.GrpcAPI.BlockLimit;
@@ -153,10 +153,10 @@ public class GrpcClient {
    * constructor.
    */
 
-  public AccountNetMessage getAccountNet(byte[] address) {
+  public AccountPhotonMessage getAccountPhoton(byte[] address) {
     ByteString addressBs = ByteString.copyFrom(address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    return blockingStubFull.getAccountNet(request);
+    return blockingStubFull.getAccountPhoton(request);
   }
 
   /**

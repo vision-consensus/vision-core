@@ -196,14 +196,14 @@ public class ContractScenario002 {
   @Test(enabled = true, description = "Get transaction by id from Solidity")
   public void test05GetTransactionInfoByIdFromSolidity() throws Exception {
     long netUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
-        .getNetUsage();
+        .getPhotonUsage();
 
     Assert.assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubSolidity)
-        .get().getReceipt().getNetUsage(), netUsage);
+        .get().getReceipt().getPhotonUsage(), netUsage);
 
     Assert
         .assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubSoliInFull)
-            .get().getReceipt().getNetUsage(), netUsage);
+            .get().getReceipt().getPhotonUsage(), netUsage);
   }
 
   /**

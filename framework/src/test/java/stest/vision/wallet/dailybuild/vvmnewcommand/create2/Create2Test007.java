@@ -131,7 +131,7 @@ public class Create2Test007 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     factoryContractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(factoryContractAddress,
@@ -207,7 +207,7 @@ public class Create2Test007 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     logger.info(
         "the value: " + PublicMethed
@@ -311,7 +311,7 @@ public class Create2Test007 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     logger.info(
         "the value: " + PublicMethed

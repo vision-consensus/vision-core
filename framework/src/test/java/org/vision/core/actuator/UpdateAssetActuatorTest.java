@@ -197,8 +197,8 @@ public class UpdateAssetActuatorTest {
       Assert.assertEquals(
           DESCRIPTION, assetIssueCapsule.getInstance().getDescription().toStringUtf8());
       Assert.assertEquals(URL, assetIssueCapsule.getInstance().getUrl().toStringUtf8());
-      Assert.assertEquals(assetIssueCapsule.getFreeAssetNetLimit(), 500L);
-      Assert.assertEquals(assetIssueCapsule.getPublicFreeAssetNetLimit(), 8000L);
+      Assert.assertEquals(assetIssueCapsule.getFreeAssetPhotonLimit(), 500L);
+      Assert.assertEquals(assetIssueCapsule.getPublicFreeAssetPhotonLimit(), 8000L);
       //V2
       AssetIssueCapsule assetIssueCapsuleV2 =
           dbManager.getAssetIssueV2Store().get(ByteArray.fromString(String.valueOf(tokenId)));
@@ -206,8 +206,8 @@ public class UpdateAssetActuatorTest {
       Assert.assertEquals(
           DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
       Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
+      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetPhotonLimit(), 500L);
+      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetPhotonLimit(), 8000L);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
@@ -244,8 +244,8 @@ public class UpdateAssetActuatorTest {
       Assert.assertNotEquals(
           DESCRIPTION, assetIssueCapsule.getInstance().getDescription().toStringUtf8());
       Assert.assertNotEquals(URL, assetIssueCapsule.getInstance().getUrl().toStringUtf8());
-      Assert.assertNotEquals(assetIssueCapsule.getFreeAssetNetLimit(), 500L);
-      Assert.assertNotEquals(assetIssueCapsule.getPublicFreeAssetNetLimit(), 8000L);
+      Assert.assertNotEquals(assetIssueCapsule.getFreeAssetPhotonLimit(), 500L);
+      Assert.assertNotEquals(assetIssueCapsule.getPublicFreeAssetPhotonLimit(), 8000L);
       //V2
       AssetIssueCapsule assetIssueCapsuleV2 =
           dbManager.getAssetIssueV2Store().get(ByteArray.fromString(String.valueOf(tokenId)));
@@ -253,8 +253,8 @@ public class UpdateAssetActuatorTest {
       Assert.assertEquals(
           DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
       Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
+      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetPhotonLimit(), 500L);
+      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetPhotonLimit(), 8000L);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
@@ -291,8 +291,8 @@ public class UpdateAssetActuatorTest {
       Assert.assertEquals(
           DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
       Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
+      Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetPhotonLimit(), 500L);
+      Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetPhotonLimit(), 8000L);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);

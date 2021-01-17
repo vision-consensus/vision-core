@@ -143,7 +143,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     extCodeHashContractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(extCodeHashContractAddress,
@@ -212,7 +212,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail("transaction failed with message: "
@@ -287,7 +287,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -376,7 +376,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -462,7 +462,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -557,7 +557,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -642,7 +642,7 @@ public class ExtCodeHashTest001 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     extCodeHashContractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(extCodeHashContractAddress,

@@ -87,8 +87,8 @@ public class MappingFixTest {
     Protocol.Account info = PublicMethed.queryAccount(dev001Key, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getNetUsed();
-    Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
+    Long beforeNetUsed = accountResource.getPhotonUsed();
+    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -116,7 +116,7 @@ public class MappingFixTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(contractAddress,
@@ -132,8 +132,8 @@ public class MappingFixTest {
     Protocol.Account info = PublicMethed.queryAccount(dev001Key, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getNetUsed();
-    Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
+    Long beforeNetUsed = accountResource.getPhotonUsed();
+    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -161,7 +161,7 @@ public class MappingFixTest {
     Assert.assertEquals(WalletClient.encode58Check(dev001Address), tmpAddress);
 
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     methodStr = "balances(address)";
     argStr = "\"" + WalletClient.encode58Check(dev001Address) + "\"";

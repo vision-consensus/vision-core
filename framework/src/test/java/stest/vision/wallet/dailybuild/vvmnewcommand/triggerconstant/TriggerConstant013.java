@@ -114,8 +114,8 @@ public class TriggerConstant013 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -136,9 +136,9 @@ public class TriggerConstant013 {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getNetUsage();
+    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getNetFee();
+    Long netFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
@@ -152,8 +152,8 @@ public class TriggerConstant013 {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getNetUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);
@@ -176,9 +176,9 @@ public class TriggerConstant013 {
     Optional<TransactionInfo> infoById1 = null;
     infoById1 = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee1 = infoById1.get().getFee();
-    Long netUsed1 = infoById1.get().getReceipt().getNetUsage();
+    Long netUsed1 = infoById1.get().getReceipt().getPhotonUsage();
     Long entropyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
-    Long netFee1 = infoById1.get().getReceipt().getNetFee();
+    Long netFee1 = infoById1.get().getReceipt().getPhotonFee();
     long entropyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee1:" + fee1);
@@ -192,8 +192,8 @@ public class TriggerConstant013 {
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
     Long afterEntropyUsed1 = resourceInfoafter1.getEntropyUsed();
-    Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
-    Long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
+    Long afterNetUsed1 = resourceInfoafter1.getPhotonUsed();
+    Long afterFreeNetUsed1 = resourceInfoafter1.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance1);
     logger.info("afterEntropyUsed:" + afterEntropyUsed1);
     logger.info("afterNetUsed:" + afterNetUsed1);

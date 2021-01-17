@@ -134,7 +134,7 @@ public class MultiValiSignPerformanceTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     ecrecoverContractAddress = infoById.get().getContractAddress().toByteArray();
     logger.info("ecrecoverContractAddress:" + infoById.get().getContractAddress());
@@ -194,7 +194,7 @@ public class MultiValiSignPerformanceTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     multiValiSignContractAddress = infoById.get().getContractAddress().toByteArray();
     logger.info("multiValiSignContractAddress:" + infoById.get().getContractAddress());

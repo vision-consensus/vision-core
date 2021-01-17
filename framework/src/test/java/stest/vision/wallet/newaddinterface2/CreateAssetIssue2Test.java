@@ -195,8 +195,8 @@ public class CreateAssetIssue2Test {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(20000);
-      builder.setPublicFreeAssetNetLimit(20000);
+      builder.setFreeAssetPhotonLimit(20000);
+      builder.setPublicFreeAssetPhotonLimit(20000);
       Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
       if (transaction == null || transaction.getRawData().getContractCount() == 0) {
         logger.info("transaction == null");

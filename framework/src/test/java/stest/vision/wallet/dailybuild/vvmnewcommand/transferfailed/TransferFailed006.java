@@ -117,8 +117,8 @@ public class TransferFailed006 {
     info = PublicMethed.queryAccount(accountExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -151,9 +151,9 @@ public class TransferFailed006 {
     logger.info(infoById.get().getReceipt().getResult() + "");
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getNetUsage();
+    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getNetFee();
+    Long netFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
@@ -182,9 +182,9 @@ public class TransferFailed006 {
 
     infoById = PublicMethed.getTransactionInfoById(triggerTxid, blockingStubFull);
     fee = infoById.get().getFee();
-    netUsed = infoById.get().getReceipt().getNetUsage();
+    netUsed = infoById.get().getReceipt().getPhotonUsage();
     entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    netFee = infoById.get().getReceipt().getNetFee();
+    netFee = infoById.get().getReceipt().getPhotonFee();
     entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);

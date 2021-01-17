@@ -131,8 +131,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -194,8 +194,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -264,8 +264,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -4464,8 +4464,8 @@ public class PublicMethedForMutiSign {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetNetLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetNetLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);

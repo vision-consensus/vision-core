@@ -29,10 +29,10 @@ public class TransactionLogTrigger extends Trigger {
   private long entropyUsageTotal;
   @Getter
   @Setter
-  private long netUsage;
+  private long photonUsage;
   @Getter
   @Setter
-  private long netFee;
+  private long photonFee;
   //contract
   @Getter
   @Setter

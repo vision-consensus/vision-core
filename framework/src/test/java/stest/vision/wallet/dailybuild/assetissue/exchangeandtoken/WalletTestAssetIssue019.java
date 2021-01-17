@@ -148,9 +148,9 @@ public class WalletTestAssetIssue019 {
         10L, asset019Address, asset019Key, blockingStubFull);
 
     getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019Address, blockingStubFull);
-    for (String id : getAssetIdFromThisAccount.getFreeAssetNetUsageV2Map().keySet()) {
+    for (String id : getAssetIdFromThisAccount.getFreeAssetPhotonUsageV2Map().keySet()) {
       if (asset019SecondAccountId.toStringUtf8().equalsIgnoreCase(id)) {
-        Assert.assertTrue(getAssetIdFromThisAccount.getFreeAssetNetUsageV2Map().get(id) > 0);
+        Assert.assertTrue(getAssetIdFromThisAccount.getFreeAssetPhotonUsageV2Map().get(id) > 0);
       }
     }
 

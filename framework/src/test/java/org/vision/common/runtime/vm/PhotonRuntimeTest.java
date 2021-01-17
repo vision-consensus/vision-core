@@ -115,7 +115,7 @@ public class PhotonRuntimeTest {
         ByteString.copyFrom(Commons.decodeFromBase58Check(TriggerOwnerTwoAddress)),
         AccountType.Normal,
         totalBalance);
-    accountCapsule3.setNetUsage(5000L);
+    accountCapsule3.setPhotonUsage(5000L);
     accountCapsule3.setLatestConsumeFreeTime(chainBaseManager.getHeadSlot());
     accountCapsule3.setFrozenForEntropy(10_000_000L, 0L);
     dbManager.getAccountStore()
@@ -197,7 +197,7 @@ public class PhotonRuntimeTest {
       long balance = triggerOwnerTwo.getBalance();
       ReceiptCapsule receipt = trace.getReceipt();
 
-      Assert.assertEquals(photon, receipt.getNetUsage());
+      Assert.assertEquals(photon, receipt.getPhotonUsage());
       Assert.assertEquals(522850, receipt.getEntropyUsageTotal());
       Assert.assertEquals(50000, receipt.getEntropyUsage());
       Assert.assertEquals(47285000, receipt.getEntropyFee());

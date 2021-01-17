@@ -110,15 +110,15 @@ public class DelayTransaction004 {
     Assert.assertTrue(smartContract.getConsumeUserResourcePercent() == newContractPercent);
 
     Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
-        .getNetFee();
+        .getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
     Assert.assertTrue(fee - netFee == delayTransactionFee);
     Long afterFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
-        blockingStubFull).getFreeNetUsage();
+        blockingStubFull).getFreePhotonUsage();
     Long beforeFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
-        blockingStubFull).getFreeNetUsage();
+        blockingStubFull).getFreePhotonUsage();
     Long inDelayFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
-        blockingStubFull).getFreeNetUsage();
+        blockingStubFull).getFreePhotonUsage();
     logger.info("beforeFreeNetUsaged: " + beforeFreeNetUsaged);
     logger.info("inDelayFreeNetUsaged: " + inDelayFreeNetUsaged);
     logger.info("afterFreeNetUsaged: " + afterFreeNetUsaged);
@@ -153,11 +153,11 @@ public class DelayTransaction004 {
     Assert.assertTrue(smartContract.getConsumeUserResourcePercent() == oldContractPercent);
 
     final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
-        .getReceipt().getNetFee();
+        .getReceipt().getPhotonFee();
     final Long fee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getFee();
     logger.info("net fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
-        .get().getReceipt().getNetFee());
+        .get().getReceipt().getPhotonFee());
     logger.info("Fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getFee());
 

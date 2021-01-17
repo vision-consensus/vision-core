@@ -104,7 +104,7 @@ public class WalletTestZenToken003 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     Long sendToShiledAddress1Amount = 3 * zenTokenFee;
     Long sendToShiledAddress2Amount = costTokenAmount - sendToShiledAddress1Amount - zenTokenFee;
@@ -130,7 +130,7 @@ public class WalletTestZenToken003 {
         blockingStubFull);
     final Long afterNetUsed = PublicMethed
         .getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     logger.info("beforeAssetBalance:" + beforeAssetBalance);
     logger.info("afterAssetBalance:" + afterAssetBalance);
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == costTokenAmount);
@@ -166,7 +166,7 @@ public class WalletTestZenToken003 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     final Long beforeBalance = PublicMethed
         .queryAccount(receiverPublicAddress, blockingStubFull).getBalance();
@@ -200,7 +200,7 @@ public class WalletTestZenToken003 {
         blockingStubFull);
     final Long afterNetUsed = PublicMethed
         .getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     final Long afterBalance = PublicMethed
         .queryAccount(receiverPublicAddress, blockingStubFull).getBalance();
     logger.info("beforeAssetBalance:" + beforeAssetBalance);
@@ -241,7 +241,7 @@ public class WalletTestZenToken003 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     Long sendToShiledAddress1Amount = 1 * zenTokenFee;
     Long sendToShiledAddress2Amount = 2 * zenTokenFee;
@@ -276,7 +276,7 @@ public class WalletTestZenToken003 {
         blockingStubFull);
     final Long afterNetUsed = PublicMethed
         .getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     logger.info("beforeAssetBalance:" + beforeAssetBalance);
     logger.info("afterAssetBalance:" + afterAssetBalance);
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == costTokenAmount);
@@ -316,7 +316,7 @@ public class WalletTestZenToken003 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     final Long beforeBalance = PublicMethed
         .queryAccount(receiverPublicAddress, blockingStubFull).getBalance();
@@ -372,7 +372,7 @@ public class WalletTestZenToken003 {
         blockingStubFull);
     final Long afterNetUsed = PublicMethed
         .getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     final Long afterBalance = PublicMethed
         .queryAccount(receiverPublicAddress, blockingStubFull).getBalance();
     logger.info("beforeAssetBalance:" + beforeAssetBalance);
@@ -412,7 +412,7 @@ public class WalletTestZenToken003 {
         PublicMethed.queryAccount(foundationZenTokenKey, blockingStubFull).getAssetIssuedID(),
         blockingStubFull);
     final Long beforeNetUsed = PublicMethed
-        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(zenTokenOwnerAddress, blockingStubFull).getFreePhotonUsed();
 
     Long sendToShiledAddress1Amount = 3 * zenTokenFee;
     Long sendToShiledAddress2Amount = costTokenAmount - sendToShiledAddress1Amount - zenTokenFee;
@@ -439,7 +439,7 @@ public class WalletTestZenToken003 {
         blockingStubFull);
     final Long afterNetUsed = PublicMethed
         .getAccountResource(zenTokenOwnerAddress, blockingStubFull)
-        .getFreeNetUsed();
+        .getFreePhotonUsed();
     logger.info("beforeAssetBalance:" + beforeAssetBalance);
     logger.info("afterAssetBalance:" + afterAssetBalance);
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == costTokenAmount);

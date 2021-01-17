@@ -82,8 +82,8 @@ public class batchValidateSignContract007 {
     Protocol.Account info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getNetUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+    Long beforeNetUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -116,9 +116,9 @@ public class batchValidateSignContract007 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Assert.assertEquals(0, infoById.get().getResultValue());
     Long fee1 = infoById.get().getFee();
-    Long netUsed1 = infoById.get().getReceipt().getNetUsage();
+    Long netUsed1 = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed1 = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee1 = infoById.get().getReceipt().getNetFee();
+    Long netFee1 = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal1 = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee1:" + fee1);
     logger.info("netUsed1:" + netUsed1);
@@ -152,9 +152,9 @@ public class batchValidateSignContract007 {
       PublicMethed.waitProduceNextBlock(blockingStubFull);
     }
     Long fee2 = infoById2.get().getFee();
-    Long netUsed2 = infoById2.get().getReceipt().getNetUsage();
+    Long netUsed2 = infoById2.get().getReceipt().getPhotonUsage();
     Long entropyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
-    Long netFee2 = infoById2.get().getReceipt().getNetFee();
+    Long netFee2 = infoById2.get().getReceipt().getPhotonFee();
     long entropyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee2:" + fee2);
     logger.info("netUsed2:" + netUsed2);
@@ -167,8 +167,8 @@ public class batchValidateSignContract007 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getNetUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
     logger.info("afterNetUsed:" + afterNetUsed);

@@ -1812,7 +1812,7 @@ public class AssetIssueActuatorTest {
             .setStartTime(nowTime).setEndTime(nowTime + 24 * 3600 * 1000)
             .setDescription(ByteString.copyFromUtf8(DESCRIPTION))
             .setUrl(ByteString.copyFromUtf8(URL)).setPrecision(3)
-            .setPublicFreeAssetNetUsage(100).build());
+            .setPublicFreeAssetPhotonUsage(100).build());
     AssetIssueActuator actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 
@@ -1828,7 +1828,7 @@ public class AssetIssueActuatorTest {
             .setStartTime(nowTime).setEndTime(nowTime + 24 * 3600 * 1000)
             .setDescription(ByteString.copyFromUtf8(DESCRIPTION))
             .setUrl(ByteString.copyFromUtf8(URL)).setPrecision(3)
-            .setFreeAssetNetLimit(-10).build());
+            .setFreeAssetPhotonLimit(-10).build());
     actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 
@@ -1843,7 +1843,7 @@ public class AssetIssueActuatorTest {
             .setStartTime(nowTime).setEndTime(nowTime + 24 * 3600 * 1000)
             .setDescription(ByteString.copyFromUtf8(DESCRIPTION))
             .setUrl(ByteString.copyFromUtf8(URL)).setPrecision(3)
-            .setPublicFreeAssetNetLimit(-10).build());
+            .setPublicFreeAssetPhotonLimit(-10).build());
     actuator = new AssetIssueActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager()).setAny(any);
 

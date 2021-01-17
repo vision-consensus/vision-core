@@ -136,22 +136,22 @@ public class WalletTestAccount013 {
     AccountResourceMessage account013Resource = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
     logger.info("013 entropy limit is " + account013Resource.getEntropyLimit());
-    logger.info("013 net limit is " + account013Resource.getNetLimit());
+    logger.info("013 net limit is " + account013Resource.getPhotonLimit());
     //getAccountResource receiver
     AccountResourceMessage receiverResource = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
     logger.info("receiver entropy limit is " + receiverResource.getEntropyLimit());
-    logger.info("receiver net limit is " + receiverResource.getNetLimit());
+    logger.info("receiver net limit is " + receiverResource.getPhotonLimit());
     Protocol.Account account013infoBefore = PublicMethed
         .queryAccount(account013Address, blockingStubFull);
     //get resources of account013 before DelegateResource
     account013BeforeBalance = account013infoBefore.getBalance();
     AccountResourceMessage account013ResBefore = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
-    final long account013BeforePhoton = account013ResBefore.getNetLimit();
+    final long account013BeforePhoton = account013ResBefore.getPhotonLimit();
     AccountResourceMessage receiverResourceBefore = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
-    long receiverBeforePhoton = receiverResourceBefore.getNetLimit();
+    long receiverBeforePhoton = receiverResourceBefore.getPhotonLimit();
     //Account013 DelegateResource for Photon to receiver
     Assert.assertTrue(PublicMethed
         .freezeBalanceForReceiver(account013Address, freezeAmount, freezeDuration, 0,
@@ -163,11 +163,11 @@ public class WalletTestAccount013 {
     AccountResourceMessage account013ResAfter = PublicMethed
         .getAccountResource(account013Address, blockingStubFull);
     //get Photon of account013 after DelegateResource
-    long account013AfterPhoton = account013ResAfter.getNetLimit();
+    long account013AfterPhoton = account013ResAfter.getPhotonLimit();
     AccountResourceMessage receiverResourceAfter = PublicMethed
         .getAccountResource(receiverDelegateAddress, blockingStubFull);
     //Photon of receiver after DelegateResource
-    long receiverAfterPhoton = receiverResourceAfter.getNetLimit();
+    long receiverAfterPhoton = receiverResourceAfter.getPhotonLimit();
     //Balance of Account013 reduced amount same as DelegateResource
     Assert.assertTrue(account013BeforeBalance == account013AfterBalance + freezeAmount);
     //Photon of account013 is equally before and after DelegateResource
@@ -218,11 +218,11 @@ public class WalletTestAccount013 {
             ByteString.copyFrom(account013Address), testKeyForAccount013, blockingStubFull));
     account013Resource = PublicMethed.getAccountResource(account013Address, blockingStubFull);
     logger.info("After 013 entropy limit is " + account013Resource.getEntropyLimit());
-    logger.info("After 013 net limit is " + account013Resource.getNetLimit());
+    logger.info("After 013 net limit is " + account013Resource.getPhotonLimit());
 
     receiverResource = PublicMethed.getAccountResource(receiverDelegateAddress, blockingStubFull);
     logger.info("After receiver entropy limit is " + receiverResource.getEntropyLimit());
-    logger.info("After receiver net limit is " + receiverResource.getNetLimit());
+    logger.info("After receiver net limit is " + receiverResource.getPhotonLimit());
   }
 
   @Test(enabled = true, description = "Get delegate resource  index")
@@ -309,7 +309,7 @@ public class WalletTestAccount013 {
     //Photon from Account013 to  Account4 gone
     Assert.assertTrue(
         PublicMethed.getAccountResource(account4DelegatedResourceAddress, blockingStubFull)
-            .getNetLimit() == 0);
+            .getPhotonLimit() == 0);
 
     //unfreezebalance of Entropy from Account4 to Account5
     Assert.assertTrue(PublicMethed
@@ -378,11 +378,11 @@ public class WalletTestAccount013 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     //get account013，accountForAssetIssue，Account5 account resources before transferAssets
     final long account013CurrentPhoton = PublicMethed
-        .getAccountResource(account013Address, blockingStubFull).getNetUsed();
+        .getAccountResource(account013Address, blockingStubFull).getPhotonUsed();
     long accountForAssetIssueCurrentPhoton = PublicMethed
-        .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getNetUsed();
+        .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getPhotonUsed();
     final long account5CurrentPhoton = PublicMethed
-        .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
+        .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getPhotonUsed();
     //Account5 transfer Assets receiver
     Assert.assertTrue(PublicMethed
         .transferAsset(receiverDelegateAddress, assetAccountId.toByteArray(), 100000,
@@ -393,20 +393,20 @@ public class WalletTestAccount013 {
 
     //get account013，accountForAssetIssue，Account5 resource after transferAsset
     final long account013CurrentPhotonAfterTrans = PublicMethed
-        .getAccountResource(account013Address, blockingStubFull).getNetUsed();
+        .getAccountResource(account013Address, blockingStubFull).getPhotonUsed();
     final long accountForAssetIssueCurrentPhotonAfterTrans = PublicMethed
-        .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getFreeNetUsed();
+        .getAccountResource(accountForAssetIssueAddress, blockingStubFull).getFreePhotonUsed();
     final long account5CurrentPhotonAfterTrans = PublicMethed
-        .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
+        .getAccountResource(account5DelegatedResourceAddress, blockingStubFull).getPhotonUsed();
     AccountResourceMessage account5ResourceAfterTrans = PublicMethed
         .getAccountResource(account5DelegatedResourceAddress, blockingStubFull);
 
     String result = "";
-    if (account5ResourceAfterTrans.getAssetNetLimitCount() > 0) {
-      logger.info("getAssetNetLimitCount > 0 ");
-      for (String name1 : account5ResourceAfterTrans.getAssetNetLimitMap().keySet()) {
+    if (account5ResourceAfterTrans.getAssetPhotonLimitCount() > 0) {
+      logger.info("getAssetPhotonLimitCount > 0 ");
+      for (String name1 : account5ResourceAfterTrans.getAssetPhotonLimitMap().keySet()) {
         logger.info(name1);
-        result += account5ResourceAfterTrans.getAssetNetUsedMap().get(name1);
+        result += account5ResourceAfterTrans.getAssetPhotonUsedMap().get(name1);
 
       }
     }

@@ -376,8 +376,8 @@ public class UnfreezeAsset2Test {
       builder.setEndTime(endTime);
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
-      builder.setFreeAssetNetLimit(10000);
-      builder.setPublicFreeAssetNetLimit(10000);
+      builder.setFreeAssetPhotonLimit(10000);
+      builder.setPublicFreeAssetPhotonLimit(10000);
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
       AssetIssueContract.FrozenSupply.Builder frozenBuilder =
           AssetIssueContract.FrozenSupply

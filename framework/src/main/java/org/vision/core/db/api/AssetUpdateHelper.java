@@ -163,13 +163,13 @@ public class AssetUpdateHelper {
         accountCapsule.addAssetMapV2(map);
       }
 
-      accountCapsule.clearFreeAssetNetUsageV2();
-      if (accountCapsule.getAllFreeAssetNetUsage().size() != 0) {
+      accountCapsule.clearFreeAssetPhotonUsageV2();
+      if (accountCapsule.getAllFreeAssetPhotonUsage().size() != 0) {
         HashMap<String, Long> map = new HashMap<>();
-        for (Map.Entry<String, Long> entry : accountCapsule.getAllFreeAssetNetUsage().entrySet()) {
+        for (Map.Entry<String, Long> entry : accountCapsule.getAllFreeAssetPhotonUsage().entrySet()) {
           map.put(ByteArray.toStr(assetNameToIdMap.get(entry.getKey())), entry.getValue());
         }
-        accountCapsule.addAllFreeAssetNetUsageV2(map);
+        accountCapsule.addAllFreeAssetPhotonUsageV2(map);
       }
 
       accountCapsule.clearLatestAssetOperationTimeV2();

@@ -433,9 +433,9 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public void clearFreeAssetNetUsageV2() {
+  public void clearFreeAssetPhotonUsageV2() {
     this.account = this.account.toBuilder()
-        .clearFreeAssetNetUsageV2()
+        .clearFreeAssetPhotonUsageV2()
         .build();
   }
 
@@ -806,13 +806,13 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
-  public long getNetUsage() {
-    return this.account.getNetUsage();
+  public long getPhotonUsage() {
+    return this.account.getPhotonUsage();
   }
 
-  public void setNetUsage(long netUsage) {
+  public void setPhotonUsage(long netUsage) {
     this.account = this.account.toBuilder()
-        .setNetUsage(netUsage).build();
+        .setPhotonUsage(netUsage).build();
   }
 
   public AccountResource getAccountResource() {
@@ -863,44 +863,44 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
                 .build()).build();
   }
 
-  public long getFreeNetUsage() {
-    return this.account.getFreeNetUsage();
+  public long getFreePhotonUsage() {
+    return this.account.getFreePhotonUsage();
   }
 
-  public void setFreeNetUsage(long freeNetUsage) {
+  public void setFreePhotonUsage(long freePhotonUsage) {
     this.account = this.account.toBuilder()
-        .setFreeNetUsage(freeNetUsage).build();
+        .setFreePhotonUsage(freePhotonUsage).build();
   }
 
-  public boolean addAllFreeAssetNetUsageV2(Map<String, Long> map) {
-    this.account = this.account.toBuilder().putAllFreeAssetNetUsageV2(map).build();
+  public boolean addAllFreeAssetPhotonUsageV2(Map<String, Long> map) {
+    this.account = this.account.toBuilder().putAllFreeAssetPhotonUsageV2(map).build();
     return true;
   }
 
-  public long getFreeAssetNetUsage(String assetName) {
-    return this.account.getFreeAssetNetUsageOrDefault(assetName, 0);
+  public long getFreeAssetPhotonUsage(String assetName) {
+    return this.account.getFreeAssetPhotonUsageOrDefault(assetName, 0);
   }
 
-  public long getFreeAssetNetUsageV2(String assetName) {
-    return this.account.getFreeAssetNetUsageV2OrDefault(assetName, 0);
+  public long getFreeAssetPhotonUsageV2(String assetName) {
+    return this.account.getFreeAssetPhotonUsageV2OrDefault(assetName, 0);
   }
 
-  public Map<String, Long> getAllFreeAssetNetUsage() {
-    return this.account.getFreeAssetNetUsageMap();
+  public Map<String, Long> getAllFreeAssetPhotonUsage() {
+    return this.account.getFreeAssetPhotonUsageMap();
   }
 
-  public Map<String, Long> getAllFreeAssetNetUsageV2() {
-    return this.account.getFreeAssetNetUsageV2Map();
+  public Map<String, Long> getAllFreeAssetPhotonUsageV2() {
+    return this.account.getFreeAssetPhotonUsageV2Map();
   }
 
-  public void putFreeAssetNetUsage(String s, long freeAssetNetUsage) {
+  public void putFreeAssetPhotonUsage(String s, long freeAssetNetUsage) {
     this.account = this.account.toBuilder()
-        .putFreeAssetNetUsage(s, freeAssetNetUsage).build();
+        .putFreeAssetPhotonUsage(s, freeAssetNetUsage).build();
   }
 
-  public void putFreeAssetNetUsageV2(String s, long freeAssetNetUsage) {
+  public void putFreeAssetPhotonUsageV2(String s, long freeAssetNetUsage) {
     this.account = this.account.toBuilder()
-        .putFreeAssetNetUsageV2(s, freeAssetNetUsage).build();
+        .putFreeAssetPhotonUsageV2(s, freeAssetNetUsage).build();
   }
 
   public long getStorageLimit() {

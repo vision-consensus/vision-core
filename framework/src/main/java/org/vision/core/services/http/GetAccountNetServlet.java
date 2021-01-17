@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.common.utils.ByteArray;
 import org.vision.core.Wallet;
 import org.vision.protos.Protocol.Account;
@@ -45,7 +45,7 @@ public class GetAccountNetServlet extends RateLimiterServlet {
 
   private void fillResponse(boolean visible, ByteString address, HttpServletResponse response)
       throws Exception {
-    AccountNetMessage reply = wallet.getAccountNet(address);
+    AccountPhotonMessage reply = wallet.getAccountNet(address);
     if (reply != null) {
       response.getWriter().println(JsonFormat.printToString(reply, visible));
     } else {

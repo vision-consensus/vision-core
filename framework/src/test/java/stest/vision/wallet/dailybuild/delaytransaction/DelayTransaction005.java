@@ -111,7 +111,7 @@ public class DelayTransaction005 {
     Assert.assertTrue(smartContract.getOriginEntropyLimit() == newOriginEntropyLimit);
 
     Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
-        .getNetFee();
+        .getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
     Assert.assertTrue(fee - netFee == delayTransactionFee);
 
@@ -143,11 +143,11 @@ public class DelayTransaction005 {
     Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEntropyLimit);
 
     final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
-        .getReceipt().getNetFee();
+        .getReceipt().getPhotonFee();
     final Long fee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getFee();
     logger.info("net fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
-        .get().getReceipt().getNetFee());
+        .get().getReceipt().getPhotonFee());
     logger.info("Fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getFee());
 

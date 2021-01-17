@@ -99,20 +99,20 @@ public class DelayTransaction006 {
         23L, delaySecond, assetOwnerKey, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.getAssetIssueById(ByteArray.toStr(assetId
-        .toByteArray()), blockingStubFull).getFreeAssetNetLimit() == oldFreeAssetNetLimit);
+        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetNetLimit);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.getAssetIssueById(ByteArray.toStr(assetId
-        .toByteArray()), blockingStubFull).getFreeAssetNetLimit() == newFreeAssetNetLimit);
+        .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == newFreeAssetNetLimit);
     Long afterNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage();
+        .getFreePhotonUsage();
     Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
-        .getReceipt().getNetFee();
+        .getReceipt().getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
     Long beforeNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage();
+        .getFreePhotonUsage();
     Long inDelayNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage();
+        .getFreePhotonUsage();
     Assert.assertTrue(fee - netFee == delayTransactionFee);
     Assert.assertTrue(beforeNetUsaged + 50 < inDelayNetUsaged);
     Assert.assertTrue(inDelayNetUsaged + 50 < afterNetUsaged);
@@ -123,19 +123,19 @@ public class DelayTransaction006 {
   public void test2CancelDelayUpdateAsset() {
     //get account
     final Long oldFreeAssetNetLimit = PublicMethed.getAssetIssueById(assetId.toStringUtf8(),
-        blockingStubFull).getFreeAssetNetLimit();
+        blockingStubFull).getFreeAssetPhotonLimit();
     final Long newFreeAssetNetLimit = 461L;
 
     String newAssetUrl = "new.url";
     String newAssetDescription = "new.description";
     logger.info("Before delay net usage: " + PublicMethed.queryAccount(assetOwnerKey,
-        blockingStubFull).getFreeNetUsage());
+        blockingStubFull).getFreePhotonUsage());
     String txid = PublicMethed.updateAssetDelay(assetOwnerAddress, newAssetDescription.getBytes(),
         newAssetUrl.getBytes(), newFreeAssetNetLimit, 23L, delaySecond, assetOwnerKey,
         blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     logger.info("In delay net usage: " + PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage());
+        .getFreePhotonUsage());
     Assert.assertFalse(PublicMethed.cancelDeferredTransactionById(txid, fromAddress, testKey002,
         blockingStubFull));
     final String cancelTxid = PublicMethed.cancelDeferredTransactionByIdGetTxid(txid,
@@ -146,26 +146,26 @@ public class DelayTransaction006 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     logger.info("After cancle net usage: " + PublicMethed.queryAccount(assetOwnerKey,
-        blockingStubFull).getFreeNetUsage());
+        blockingStubFull).getFreePhotonUsage());
 
     Assert.assertTrue(PublicMethed.getAssetIssueById(assetId.toStringUtf8(),
-        blockingStubFull).getFreeAssetNetLimit() == oldFreeAssetNetLimit);
+        blockingStubFull).getFreeAssetPhotonLimit() == oldFreeAssetNetLimit);
 
     final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
-        .getReceipt().getNetFee();
+        .getReceipt().getPhotonFee();
     final Long fee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getFee();
     logger.info("net fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
-        .get().getReceipt().getNetFee());
+        .get().getReceipt().getPhotonFee());
     logger.info("Fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getFee());
 
     Assert.assertTrue(fee - netFee == cancleDelayTransactionFee);
 
     Long afterNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage();
+        .getFreePhotonUsage();
     Long beforeNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
-        .getFreeNetUsage();
+        .getFreePhotonUsage();
 
     logger.info("beforeNetUsaged: " + beforeNetUsaged);
     logger.info("afterNetUsaged:  " + afterNetUsaged);

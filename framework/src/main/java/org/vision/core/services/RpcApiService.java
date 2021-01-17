@@ -1593,8 +1593,8 @@ public class RpcApiService implements Service {
     }
 
     @Override
-    public void getAccountNet(Account request,
-        StreamObserver<AccountNetMessage> responseObserver) {
+    public void getAccountPhoton(Account request,
+        StreamObserver<AccountPhotonMessage> responseObserver) {
       ByteString fromBs = request.getAddress();
 
       if (fromBs != null) {

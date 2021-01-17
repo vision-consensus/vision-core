@@ -229,8 +229,8 @@ public class ParticipateAssetIssue2Test {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(20000);
-      builder.setPublicFreeAssetNetLimit(20000);
+      builder.setFreeAssetPhotonLimit(20000);
+      builder.setPublicFreeAssetPhotonLimit(20000);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder =
           AssetIssueContract.FrozenSupply.newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);

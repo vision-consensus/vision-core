@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 import org.testng.Assert;
 import org.vision.api.GrpcAPI;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.GrpcAPI.AccountResourceMessage;
 import org.vision.api.GrpcAPI.AssetIssueList;
 import org.vision.api.GrpcAPI.BytesMessage;
@@ -149,7 +149,7 @@ public class PublicMethed {
 
   public static Boolean createAssetIssue(byte[] address, String name, Long totalSupply,
       Integer vsNum, Integer icoNum, Long startTime, Long endTime, Integer voteScore,
-      String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
+      String description, String url, Long freeAssetPhotonLimit, Long publicFreeAssetPhotonLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -173,8 +173,8 @@ public class PublicMethed {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -203,8 +203,8 @@ public class PublicMethed {
 
   public static Boolean createAssetIssue(byte[] address, String name, String abbreviation,
       Long totalSupply, Integer vsNum, Integer icoNum, Long startTime, Long endTime,
-      Integer voteScore, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, Long fronzenAmount, Long frozenDay, String priKey,
+      Integer voteScore, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -228,22 +228,22 @@ public class PublicMethed {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
       frozenBuilder.setFrozenDays(frozenDay);
       builder.addFrozenSupply(0, frozenBuilder);
 
-      Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+      Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
       if (transaction == null || transaction.getRawData().getContractCount() == 0) {
         logger.info("transaction == null");
         return false;
       }
       transaction = signTransaction(ecKey, transaction);
 
-      GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
+      Return response = broadcastTransaction(transaction, blockingStubFull);
 
       return response.getResult();
     } catch (Exception ex) {
@@ -258,8 +258,8 @@ public class PublicMethed {
 
   public static Boolean createAssetIssue(byte[] address, String name, Long totalSupply,
       Integer vsNum, Integer icoNum, int precision, Long startTime, Long endTime,
-      Integer voteScore, String description, String url, Long freeAssetNetLimit,
-      Long publicFreeAssetNetLimit, Long fronzenAmount, Long frozenDay, String priKey,
+      Integer voteScore, String description, String url, Long freeAssetPhotonLimit,
+      Long publicFreeAssetPhotonLimit, Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
@@ -283,8 +283,8 @@ public class PublicMethed {
       builder.setPrecision(precision);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -313,7 +313,7 @@ public class PublicMethed {
 
   public static Return createAssetIssue2(byte[] address, String name, Long totalSupply,
       Integer vsNum, Integer icoNum, Long startTime, Long endTime, Integer voteScore,
-      String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
+      String description, String url, Long freeAssetPhotonLimit, Long publicFreeAssetPhotonLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
@@ -338,9 +338,9 @@ public class PublicMethed {
       builder.setVoteScore(voteScore);
       builder.setDescription(ByteString.copyFrom(description.getBytes()));
       builder.setUrl(ByteString.copyFrom(url.getBytes()));
-      builder.setFreeAssetNetLimit(freeAssetNetLimit);
-      builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
-      //builder.setPublicFreeAssetNetUsage();
+      builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
+      builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
+      //builder.setPublicFreeAssetPhotonUsage();
       //builder.setPublicLatestFreeNetTime();
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
@@ -1798,12 +1798,12 @@ public class PublicMethed {
    * constructor.
    */
 
-  public static AccountNetMessage getAccountNet(byte[] address,
-      WalletGrpc.WalletBlockingStub blockingStubFull) {
+  public static AccountPhotonMessage getAccountPhoton(byte[] address,
+                                                      WalletGrpc.WalletBlockingStub blockingStubFull) {
     Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ByteString addressBs = ByteString.copyFrom(address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    return blockingStubFull.getAccountNet(request);
+    return blockingStubFull.getAccountPhoton(request);
   }
 
   /*  public static byte[] addPreFix(byte[] address) {
@@ -4627,10 +4627,10 @@ public class PublicMethed {
     Account getAccount = queryAccount(ecKey, blockingStubFull);
 
     long balance = info.getBalance();
-    long totalNetLimit = resourceInfo.getTotalNetLimit();
-    long totalNetWeight = resourceInfo.getTotalNetWeight();
-    long netUsed = resourceInfo.getNetUsed();
-    long netLimit = resourceInfo.getNetLimit();
+    long totalNetLimit = resourceInfo.getTotalPhotonLimit();
+    long totalNetWeight = resourceInfo.getTotalPhotonWeight();
+    long netUsed = resourceInfo.getPhotonUsed();
+    long netLimit = resourceInfo.getPhotonLimit();
 
     if (netUsed > netLimit) {
       targetNet = netUsed - netLimit + targetNet;

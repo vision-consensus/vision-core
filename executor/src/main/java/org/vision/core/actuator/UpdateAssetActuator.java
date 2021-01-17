@@ -57,15 +57,15 @@ public class UpdateAssetActuator extends AbstractActuator {
       AssetIssueStore assetIssueStoreV2 = assetIssueV2Store;
       assetIssueCapsuleV2 = assetIssueStoreV2.get(accountCapsule.getAssetIssuedID().toByteArray());
 
-      assetIssueCapsuleV2.setFreeAssetNetLimit(newLimit);
-      assetIssueCapsuleV2.setPublicFreeAssetNetLimit(newPublicLimit);
+      assetIssueCapsuleV2.setFreeAssetPhotonLimit(newLimit);
+      assetIssueCapsuleV2.setPublicFreeAssetPhotonLimit(newPublicLimit);
       assetIssueCapsuleV2.setUrl(newUrl);
       assetIssueCapsuleV2.setDescription(newDescription);
 
       if (dynamicStore.getAllowSameTokenName() == 0) {
         assetIssueCapsule = assetIssueStore.get(accountCapsule.getAssetIssuedName().toByteArray());
-        assetIssueCapsule.setFreeAssetNetLimit(newLimit);
-        assetIssueCapsule.setPublicFreeAssetNetLimit(newPublicLimit);
+        assetIssueCapsule.setFreeAssetPhotonLimit(newLimit);
+        assetIssueCapsule.setPublicFreeAssetPhotonLimit(newPublicLimit);
         assetIssueCapsule.setUrl(newUrl);
         assetIssueCapsule.setDescription(newDescription);
 

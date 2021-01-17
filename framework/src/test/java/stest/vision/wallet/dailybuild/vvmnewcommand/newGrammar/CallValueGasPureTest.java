@@ -81,8 +81,8 @@ public class CallValueGasPureTest {
     Protocol.Account info = PublicMethed.queryAccount(testKey001, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getNetUsed();
-    Long beforeFreeNetUsed = accountResource.getFreeNetUsed();
+    Long beforeNetUsed = accountResource.getPhotonUsed();
+    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforeNetUsed:" + beforeNetUsed);
@@ -108,7 +108,7 @@ public class CallValueGasPureTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getNetUsage());
+    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);

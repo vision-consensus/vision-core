@@ -10,7 +10,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.vision.api.GrpcAPI.AccountNetMessage;
+import org.vision.api.GrpcAPI.AccountPhotonMessage;
 import org.vision.api.WalletGrpc;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.ByteArray;
@@ -115,12 +115,12 @@ public class WalletTestAssetIssue013 {
         transferAssetAddress, transferAssetCreateKey, blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     //Before use transfer net, query the net used from creator and transfer.
-    AccountNetMessage assetCreatorNet = PublicMethed
-        .getAccountNet(asset013Address, blockingStubFull);
-    AccountNetMessage assetTransferNet = PublicMethed
-        .getAccountNet(transferAssetAddress, blockingStubFull);
-    Long creatorBeforeNetUsed = assetCreatorNet.getNetUsed();
-    Long transferBeforeFreeNetUsed = assetTransferNet.getFreeNetUsed();
+    AccountPhotonMessage assetCreatorNet = PublicMethed
+        .getAccountPhoton(asset013Address, blockingStubFull);
+    AccountPhotonMessage assetTransferNet = PublicMethed
+        .getAccountPhoton(transferAssetAddress, blockingStubFull);
+    Long creatorBeforeNetUsed = assetCreatorNet.getPhotonUsed();
+    Long transferBeforeFreeNetUsed = assetTransferNet.getFreePhotonUsed();
     logger.info(Long.toString(creatorBeforeNetUsed));
     logger.info(Long.toString(transferBeforeFreeNetUsed));
 
@@ -129,11 +129,11 @@ public class WalletTestAssetIssue013 {
     Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 1L,
         transferAssetAddress, transferAssetCreateKey, blockingStubFull));
     assetCreatorNet = PublicMethed
-        .getAccountNet(asset013Address, blockingStubFull);
+        .getAccountPhoton(asset013Address, blockingStubFull);
     assetTransferNet = PublicMethed
-        .getAccountNet(transferAssetAddress, blockingStubFull);
-    Long creatorAfterNetUsed = assetCreatorNet.getNetUsed();
-    Long transferAfterFreeNetUsed = assetTransferNet.getFreeNetUsed();
+        .getAccountPhoton(transferAssetAddress, blockingStubFull);
+    Long creatorAfterNetUsed = assetCreatorNet.getPhotonUsed();
+    Long transferAfterFreeNetUsed = assetTransferNet.getFreePhotonUsed();
     logger.info(Long.toString(creatorAfterNetUsed));
     logger.info(Long.toString(transferAfterFreeNetUsed));
 
