@@ -42,12 +42,12 @@ public class EntropyCost {
   private final int TX_ZERO_DATA = 4;
   private final int TRANSACTION = 21000;
   private final int TRANSACTION_CREATE_CONTRACT = 53000;
-  private final int LOG_ENERGY = 375;
-  private final int LOG_DATA_ENERGY = 8;
-  private final int LOG_TOPIC_ENERGY = 375;
-  private final int COPY_ENERGY = 3;
-  private final int EXP_ENERGY = 10;
-  private final int EXP_BYTE_ENERGY = 10;
+  private final int LOG_ENTROPY = 375;
+  private final int LOG_DATA_ENTROPY = 8;
+  private final int LOG_TOPIC_ENTROPY = 375;
+  private final int COPY_ENTROPY = 3;
+  private final int EXP_ENTROPY = 10;
+  private final int EXP_BYTE_ENTROPY = 10;
   private final int IDENTITY = 15;
   private final int IDENTITY_WORD = 3;
   private final int RIPEMD160 = 600;
@@ -220,28 +220,28 @@ public class EntropyCost {
     return TRANSACTION_CREATE_CONTRACT;
   }
 
-  public int getLOG_ENERGY() {
-    return LOG_ENERGY;
+  public int getLOG_ENTROPY() {
+    return LOG_ENTROPY;
   }
 
-  public int getLOG_DATA_ENERGY() {
-    return LOG_DATA_ENERGY;
+  public int getLOG_DATA_ENTROPY() {
+    return LOG_DATA_ENTROPY;
   }
 
-  public int getLOG_TOPIC_ENERGY() {
-    return LOG_TOPIC_ENERGY;
+  public int getLOG_TOPIC_ENTROPY() {
+    return LOG_TOPIC_ENTROPY;
   }
 
-  public int getCOPY_ENERGY() {
-    return COPY_ENERGY;
+  public int getCOPY_ENTROPY() {
+    return COPY_ENTROPY;
   }
 
-  public int getEXP_ENERGY() {
-    return EXP_ENERGY;
+  public int getEXP_ENTROPY() {
+    return EXP_ENTROPY;
   }
 
-  public int getEXP_BYTE_ENERGY() {
-    return EXP_BYTE_ENERGY;
+  public int getEXP_BYTE_ENTROPY() {
+    return EXP_BYTE_ENTROPY;
   }
 
   public int getIDENTITY() {

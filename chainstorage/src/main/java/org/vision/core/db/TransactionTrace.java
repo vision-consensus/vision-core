@@ -201,7 +201,7 @@ public class TransactionTrace {
   }
 
   /**
-   * pay actually bill(include ENERGY and storage).
+   * pay actually bill(include ENTROPY and storage).
    */
   public void pay() throws BalanceInsufficientException {
     byte[] originAccount;

@@ -1047,7 +1047,7 @@ public class Program {
       returnDataBuffer = buffer;
     }
 
-    // 5. REFUND THE REMAIN ENERGY
+    // 5. REFUND THE REMAIN ENTROPY
     if (callResult != null) {
       BigInteger refundEntropy = msg.getEntropy().value()
           .subtract(BIUtil.toBI(callResult.getEntropyUsed()));

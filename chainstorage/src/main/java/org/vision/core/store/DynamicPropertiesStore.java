@@ -100,7 +100,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   //This value is only allowed to be 0, 1, -1
   private static final byte[] ALLOW_DELEGATE_RESOURCE = "ALLOW_DELEGATE_RESOURCE".getBytes();
   //This value is only allowed to be 0, 1, -1
-  private static final byte[] ALLOW_ADAPTIVE_ENERGY = "ALLOW_ADAPTIVE_ENERGY".getBytes();
+  private static final byte[] ALLOW_ADAPTIVE_ENTROPY = "ALLOW_ADAPTIVE_ENTROPY".getBytes();
   //This value is only allowed to be 0, 1, -1
   private static final byte[] ALLOW_UPDATE_ACCOUNT_NAME = "ALLOW_UPDATE_ACCOUNT_NAME".getBytes();
   //This value is only allowed to be 0, 1, -1
@@ -1035,7 +1035,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_ENERGY_LIMIT"));
+            () -> new IllegalArgumentException("not found TOTAL_ENTROPY_LIMIT"));
   }
 
   public void saveTotalEntropyCurrentLimit(long totalEntropyCurrentLimit) {
@@ -1061,7 +1061,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_ENERGY_TARGET_LIMIT"));
+            () -> new IllegalArgumentException("not found TOTAL_ENTROPY_TARGET_LIMIT"));
   }
 
   public void saveTotalEntropyAverageUsage(long totalEntropyAverageUsage) {
@@ -1074,7 +1074,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_ENERGY_AVERAGE_USAGE"));
+            () -> new IllegalArgumentException("not found TOTAL_ENTROPY_AVERAGE_USAGE"));
   }
 
   public void saveAdaptiveResourceLimitMultiplier(long adaptiveResourceLimitMultiplier) {
@@ -1128,7 +1128,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found BLOCK_ENERGY_USAGE"));
+            () -> new IllegalArgumentException("not found BLOCK_ENTROPY_USAGE"));
   }
 
   public void saveEntropyFee(long totalEntropyFee) {
@@ -1141,7 +1141,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found ENERGY_FEE"));
+            () -> new IllegalArgumentException("not found ENTROPY_FEE"));
   }
 
   public void saveMaxCpuTimeOfOneTx(long time) {
@@ -1490,16 +1490,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void saveAllowAdaptiveEntropy(long value) {
-    this.put(ALLOW_ADAPTIVE_ENERGY,
+    this.put(ALLOW_ADAPTIVE_ENTROPY,
         new BytesCapsule(ByteArray.fromLong(value)));
   }
 
   public long getAllowAdaptiveEntropy() {
-    return Optional.ofNullable(getUnchecked(ALLOW_ADAPTIVE_ENERGY))
+    return Optional.ofNullable(getUnchecked(ALLOW_ADAPTIVE_ENTROPY))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElseThrow(
-            () -> new IllegalArgumentException("not found ALLOW_ADAPTIVE_ENERGY"));
+            () -> new IllegalArgumentException("not found ALLOW_ADAPTIVE_ENTROPY"));
   }
 
   public void saveAllowVvmTransferVrc10(long value) {

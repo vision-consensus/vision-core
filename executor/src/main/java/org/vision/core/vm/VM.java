@@ -24,7 +24,7 @@ public class VM {
   private static final String SIZE_LOG = "size: ";
   private static final String VALUE_LOG = " value: ";
   private static final BigInteger _32_ = BigInteger.valueOf(32);
-  private static final String ENERGY_LOG_FORMATE = "{} Op:[{}]  Entropy:[{}] Deep:[{}] Hint:[{}]";
+  private static final String ENTROPY_LOG_FORMATE = "{} Op:[{}]  Entropy:[{}] Deep:[{}] Hint:[{}]";
   // 3MB
   private static final BigInteger MEM_LIMIT = BigInteger.valueOf(3L * 1024 * 1024);
   private final VMConfig config;
@@ -236,16 +236,16 @@ public class VM {
           int nTopics = op.val() - OpCode.LOG0.val();
           BigInteger dataSize = stack.get(stack.size() - 2).value();
           BigInteger dataCost = dataSize
-              .multiply(BigInteger.valueOf(entropyCosts.getLOG_DATA_ENERGY()));
+              .multiply(BigInteger.valueOf(entropyCosts.getLOG_DATA_ENTROPY()));
           if (program.getEntropyLimitLeft().value().compareTo(dataCost) < 0) {
             throw new Program.OutOfEntropyException(
                 "Not enough entropy for '%s' operation executing: opEntropy[%d], programEntropy[%d]",
                 op.name(),
                 dataCost.longValueExact(), program.getEntropyLimitLeft().longValueSafe());
           }
-          entropyCost = entropyCosts.getLOG_ENERGY()
-              + entropyCosts.getLOG_TOPIC_ENERGY() * nTopics
-              + entropyCosts.getLOG_DATA_ENERGY() * stack.get(stack.size() - 2).longValue()
+          entropyCost = entropyCosts.getLOG_ENTROPY()
+              + entropyCosts.getLOG_TOPIC_ENTROPY() * nTopics
+              + entropyCosts.getLOG_DATA_ENTROPY() * stack.get(stack.size() - 2).longValue()
               + calcMemEntropy(entropyCosts, oldMemSize,
               memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
 
@@ -256,7 +256,7 @@ public class VM {
           DataWord exp = stack.get(stack.size() - 2);
           int bytesOccupied = exp.bytesOccupied();
           entropyCost =
-              (long) entropyCosts.getEXP_ENERGY() + entropyCosts.getEXP_BYTE_ENERGY() * bytesOccupied;
+              (long) entropyCosts.getEXP_ENTROPY() + entropyCosts.getEXP_BYTE_ENTROPY() * bytesOccupied;
           break;
         default:
           break;
@@ -1330,7 +1330,7 @@ public class VM {
                 + " entropy: " + adjustedCallEntropy.shortHex()
                 + " inOff: " + inDataOffs.shortHex()
                 + " inSize: " + inDataSize.shortHex();
-            logger.debug(ENERGY_LOG_FORMATE, String.format("%5s", "[" + program.getPC() + "]"),
+            logger.debug(ENTROPY_LOG_FORMATE, String.format("%5s", "[" + program.getPC() + "]"),
                 String.format("%-12s", op.name()),
                 program.getEntropyLimitLeft().value(),
                 program.getCallDeep(), hint);
@@ -1470,7 +1470,7 @@ public class VM {
     }
 
     if (copySize > 0) {
-      long copyEntropy = entropyCosts.getCOPY_ENERGY() * ((copySize + 31) / 32);
+      long copyEntropy = entropyCosts.getCOPY_ENTROPY() * ((copySize + 31) / 32);
       entropyCost += copyEntropy;
     }
     return entropyCost;

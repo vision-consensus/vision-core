@@ -104,7 +104,7 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
     return new DataWord(addr);
   }
 
-  /*           ENERGYPRICE op       */
+  /*           ENTROPY PRICE op       */
   public DataWord getMinEntropyPrice() {
     byte[] minEntropyPrice = Hex.decode("09184e72a000");
     return new DataWord(minEntropyPrice);

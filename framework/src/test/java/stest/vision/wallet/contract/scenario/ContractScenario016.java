@@ -140,7 +140,7 @@ public class ContractScenario016 {
   }
 
 
-  @Test(enabled = true, description = "ContractResult is OUT_OF_ENERGY")
+  @Test(enabled = true, description = "ContractResult is OUT_OF_ENTROPY")
   public void test2Grammar002() {
 
     String filePath = "src/test/resources/soliditycode/contractUnknownException.sol";

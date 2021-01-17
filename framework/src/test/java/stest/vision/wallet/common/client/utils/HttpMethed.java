@@ -980,7 +980,7 @@ public class HttpMethed {
         userBaseObj2.addProperty("resource", "PHOTON");
       }
       if (resourceCode == 1) {
-        userBaseObj2.addProperty("resource", "ENERGY");
+        userBaseObj2.addProperty("resource", "ENTROPY");
       }
       if (receiverAddress != null) {
         userBaseObj2.addProperty("receiver_address", ByteArray.toHexString(receiverAddress));
