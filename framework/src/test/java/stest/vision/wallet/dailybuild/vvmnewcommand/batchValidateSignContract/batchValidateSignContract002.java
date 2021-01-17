@@ -199,14 +199,14 @@ public class batchValidateSignContract002 {
     }
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -221,8 +221,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "13 signatures with 1st incorrect address"
@@ -271,14 +271,14 @@ public class batchValidateSignContract002 {
     }
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -293,8 +293,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "16 signatures with 15th incorrect signatures"
@@ -340,14 +340,14 @@ public class batchValidateSignContract002 {
     Assert.assertEquals("11111111111111010000000000000000",
         PublicMethed.bytes32ToString(infoById.get().getContractResult(0).toByteArray()));
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -362,8 +362,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "15 signatures with 10th-15th incorrect address"
@@ -414,14 +414,14 @@ public class batchValidateSignContract002 {
     }
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -436,8 +436,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "16 signatures with 2nd、16th incorrect signatures"
@@ -490,14 +490,14 @@ public class batchValidateSignContract002 {
     }
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -512,8 +512,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "16 signatures with 6th、9th、11th、13nd incorrect address"
@@ -564,14 +564,14 @@ public class batchValidateSignContract002 {
       PublicMethed.waitProduceNextBlock(blockingStubFull);
     }
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -586,8 +586,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "16 signatures with Incorrect hash test multivalidatesign")
@@ -638,14 +638,14 @@ public class batchValidateSignContract002 {
       PublicMethed.waitProduceNextBlock(blockingStubFull);
     }
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     GrpcAPI.AccountResourceMessage resourceInfoafter = PublicMethed
@@ -660,8 +660,8 @@ public class batchValidateSignContract002 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   /**

@@ -117,14 +117,14 @@ public class typeNameTest {
     Assert.assertNotNull(smartContract.getAbi());
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Protocol.Account infoafter = PublicMethed.queryAccount(dev001Key, blockingStubFull);
@@ -142,8 +142,8 @@ public class typeNameTest {
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
 

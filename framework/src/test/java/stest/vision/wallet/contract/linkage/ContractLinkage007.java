@@ -209,15 +209,15 @@ public class ContractLinkage007 {
     Long entropyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     Long fee2 = infoById2.get().getFee();
     Long entropyFee2 = infoById2.get().getReceipt().getEntropyFee();
-    Long netUsed2 = infoById2.get().getReceipt().getPhotonUsage();
+    Long photonUsed2 = infoById2.get().getReceipt().getPhotonUsage();
     Long entropyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
-    Long netFee2 = infoById2.get().getReceipt().getPhotonFee();
+    Long photonFee2 = infoById2.get().getReceipt().getPhotonFee();
     logger.info("entropyUsageTotal2:" + entropyUsageTotal2);
     logger.info("fee2:" + fee2);
     logger.info("entropyFee2:" + entropyFee2);
-    logger.info("netUsed2:" + netUsed2);
+    logger.info("photonUsed2:" + photonUsed2);
     logger.info("entropyUsed2:" + entropyUsed2);
-    logger.info("netFee2:" + netFee2);
+    logger.info("photonFee2:" + photonFee2);
     Account infoafter2 = PublicMethed.queryAccount(linkage007Address, blockingStubFull1);
     AccountResourceMessage resourceInfoafter2 = PublicMethed.getAccountResource(linkage007Address,
         blockingStubFull1);

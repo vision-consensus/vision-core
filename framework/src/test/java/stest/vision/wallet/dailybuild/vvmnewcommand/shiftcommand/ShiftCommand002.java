@@ -131,13 +131,13 @@ public class ShiftCommand002 {
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
@@ -209,13 +209,13 @@ public class ShiftCommand002 {
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);

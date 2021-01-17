@@ -139,13 +139,13 @@ public class AssertException {
     Assert.assertEquals(contractResult.ILLEGAL_OPERATION, infoById.get().getReceipt().getResult());
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -159,10 +159,10 @@ public class AssertException {
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "Trigger contract index out of bounds")
@@ -201,14 +201,14 @@ public class AssertException {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -222,10 +222,10 @@ public class AssertException {
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
 
   }
 
@@ -263,14 +263,14 @@ public class AssertException {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -285,10 +285,10 @@ public class AssertException {
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
 
   }
 
@@ -327,14 +327,14 @@ public class AssertException {
 
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -349,10 +349,10 @@ public class AssertException {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "Trigger contract move a negative value to a binary")
@@ -392,14 +392,14 @@ public class AssertException {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -414,10 +414,10 @@ public class AssertException {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   @Test(enabled = true, description = "Trigger contract Call an uninitialized "
@@ -456,14 +456,14 @@ public class AssertException {
     Optional<TransactionInfo> infoById = null;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -478,10 +478,10 @@ public class AssertException {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue(afterBalance + maxFeeLimit + netFee == beforeBalance);
+    Assert.assertTrue(afterBalance + maxFeeLimit + photonFee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
 
   }
 
@@ -519,14 +519,14 @@ public class AssertException {
     Optional<TransactionInfo> infoById;
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress,
@@ -541,10 +541,10 @@ public class AssertException {
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertTrue((beforeBalance - maxFeeLimit - netFee) == afterBalance);
+    Assert.assertTrue((beforeBalance - maxFeeLimit - photonFee) == afterBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
   }
 
   /**

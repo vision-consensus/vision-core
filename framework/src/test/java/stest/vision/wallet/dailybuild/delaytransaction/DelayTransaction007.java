@@ -105,10 +105,10 @@ public class DelayTransaction007 {
         .getCreateTime() > 0);
     Long afterCreateAccountBalance = PublicMethed.queryAccount(doCreateAccountKey, blockingStubFull)
         .getBalance();
-    Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
+    Long photonFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
         .getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
-    Assert.assertTrue(fee - netFee == delayTransactionFee);
+    Assert.assertTrue(fee - photonFee == delayTransactionFee);
     Assert.assertTrue(beforeCreateAccountBalance - afterCreateAccountBalance
         == delayTransactionFee + 100000L);
 
@@ -138,7 +138,7 @@ public class DelayTransaction007 {
 
     final Long afterCreateBalance = PublicMethed.queryAccount(doCreateAccountKey, blockingStubFull)
         .getBalance();
-    final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
+    final Long photonFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getReceipt().getPhotonFee();
     final Long fee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getFee();
@@ -147,7 +147,7 @@ public class DelayTransaction007 {
     logger.info("Fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getFee());
 
-    Assert.assertTrue(fee - netFee == cancleDelayTransactionFee + delayTransactionFee);
+    Assert.assertTrue(fee - photonFee == cancleDelayTransactionFee + delayTransactionFee);
     Assert.assertTrue(beforeCreateBalance - afterCreateBalance
         == cancleDelayTransactionFee + delayTransactionFee);
 

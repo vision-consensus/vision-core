@@ -285,13 +285,13 @@ public class PhotonProcessor extends ResourceProcessor {
     AccountCapsule issuerAccountCapsule = chainBaseManager.getAccountStore()
         .get(assetIssueCapsule.getOwnerAddress().toByteArray());
 
-    long issuerNetUsage = issuerAccountCapsule.getPhotonUsage();
+    long issuerPhotonUsage = issuerAccountCapsule.getPhotonUsage();
     long latestConsumeTime = issuerAccountCapsule.getLatestConsumeTime();
-    long issuerNetLimit = calculateGlobalPhotonLimit(issuerAccountCapsule);
+    long issuerPhotonLimit = calculateGlobalPhotonLimit(issuerAccountCapsule);
 
-    long newIssuerNetUsage = increase(issuerNetUsage, 0, latestConsumeTime, now);
+    long newIssuerPhotonUsage = increase(issuerPhotonUsage, 0, latestConsumeTime, now);
 
-    if (bytes > (issuerNetLimit - newIssuerNetUsage)) {
+    if (bytes > (issuerPhotonLimit - newIssuerPhotonUsage)) {
       logger.debug("The " + tokenID + " issuer's photon is not enough");
       return false;
     }
@@ -301,13 +301,13 @@ public class PhotonProcessor extends ResourceProcessor {
     publicLatestFreePhotonTime = now;
     long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
 
-    newIssuerNetUsage = increase(newIssuerNetUsage, bytes, latestConsumeTime, now);
+    newIssuerPhotonUsage = increase(newIssuerPhotonUsage, bytes, latestConsumeTime, now);
     newFreeAssetPhotonUsage = increase(newFreeAssetPhotonUsage,
         bytes, latestAssetOperationTime, now);
     newPublicFreeAssetPhotonUsage = increase(newPublicFreeAssetPhotonUsage, bytes,
         publicLatestFreePhotonTime, now);
 
-    issuerAccountCapsule.setPhotonUsage(newIssuerNetUsage);
+    issuerAccountCapsule.setPhotonUsage(newIssuerPhotonUsage);
     issuerAccountCapsule.setLatestConsumeTime(latestConsumeTime);
 
     assetIssueCapsule.setPublicFreeAssetPhotonUsage(newPublicFreeAssetPhotonUsage);

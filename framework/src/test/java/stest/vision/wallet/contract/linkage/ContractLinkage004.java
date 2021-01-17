@@ -142,9 +142,9 @@ public class ContractLinkage004 {
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     logger.info("fee:" + fee);
     logger.info("entropyFee:" + entropyFee);
-    logger.info("netUsed:" + photonUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + photonFee);
+    logger.info("photonFee:" + photonFee);
 
     Account infoafter = PublicMethed.queryAccount(linkage004Address, blockingStubFull1);
     AccountResourceMessage resourceInfoafter = PublicMethed.getAccountResource(linkage004Address,
@@ -210,15 +210,15 @@ public class ContractLinkage004 {
     Long entropyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
     Long fee1 = infoById1.get().getFee();
     Long entropyFee1 = infoById1.get().getReceipt().getEntropyFee();
-    Long netUsed1 = infoById1.get().getReceipt().getPhotonUsage();
+    Long photonUsed1 = infoById1.get().getReceipt().getPhotonUsage();
     Long entropyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
-    Long netFee1 = infoById1.get().getReceipt().getPhotonFee();
+    Long photonFee1 = infoById1.get().getReceipt().getPhotonFee();
     logger.info("entropyUsageTotal1:" + entropyUsageTotal1);
     logger.info("fee1:" + fee1);
     logger.info("entropyFee1:" + entropyFee1);
-    logger.info("netUsed1:" + netUsed1);
+    logger.info("photonUsed1:" + photonUsed1);
     logger.info("entropyUsed1:" + entropyUsed1);
-    logger.info("netFee1:" + netFee1);
+    logger.info("photonFee1:" + photonFee1);
 
     Account infoafter1 = PublicMethed.queryAccount(linkage004Address, blockingStubFull1);
     AccountResourceMessage resourceInfoafter1 = PublicMethed.getAccountResource(linkage004Address,
@@ -272,15 +272,15 @@ public class ContractLinkage004 {
     Long entropyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     Long fee2 = infoById2.get().getFee();
     Long entropyFee2 = infoById2.get().getReceipt().getEntropyFee();
-    Long netUsed2 = infoById2.get().getReceipt().getPhotonUsage();
+    Long photonUsed2 = infoById2.get().getReceipt().getPhotonUsage();
     Long entropyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
-    Long netFee2 = infoById2.get().getReceipt().getPhotonFee();
+    Long photonFee2 = infoById2.get().getReceipt().getPhotonFee();
     logger.info("entropyUsageTotal2:" + entropyUsageTotal2);
     logger.info("fee2:" + fee2);
     logger.info("entropyFee2:" + entropyFee2);
-    logger.info("netUsed2:" + netUsed2);
+    logger.info("photonUsed2:" + photonUsed2);
     logger.info("entropyUsed2:" + entropyUsed2);
-    logger.info("netFee2:" + netFee2);
+    logger.info("photonFee2:" + photonFee2);
     Account infoafter2 = PublicMethed.queryAccount(linkage004Address, blockingStubFull1);
     AccountResourceMessage resourceInfoafter2 = PublicMethed.getAccountResource(linkage004Address,
         blockingStubFull1);
@@ -302,7 +302,7 @@ public class ContractLinkage004 {
     Assert.assertTrue(infoById2.get().getResultValue() == 0);
     Assert.assertTrue(infoById2.get().getReceipt().getEntropyUsageTotal() > 0);
     Assert.assertTrue((beforeBalance2 - fee2) == afterBalance2);
-    Assert.assertTrue((beforeNetUsed2 + netUsed2) >= afterNetUsed2);
+    Assert.assertTrue((beforeNetUsed2 + photonUsed2) >= afterNetUsed2);
 
     currentFee = fee2;
   }

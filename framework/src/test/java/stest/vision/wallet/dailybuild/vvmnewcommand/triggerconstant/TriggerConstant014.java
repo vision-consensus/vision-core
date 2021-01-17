@@ -132,13 +132,13 @@ public class TriggerConstant014 {
     Long fee = infoById.get().getFee();
     Long netUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee:" + fee);
     logger.info("netUsed:" + netUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
@@ -169,15 +169,15 @@ public class TriggerConstant014 {
     Optional<TransactionInfo> infoById1 = null;
     infoById1 = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Long fee1 = infoById1.get().getFee();
-    Long netUsed1 = infoById1.get().getReceipt().getPhotonUsage();
+    Long photonUsed1 = infoById1.get().getReceipt().getPhotonUsage();
     Long entropyUsed1 = infoById1.get().getReceipt().getEntropyUsage();
-    Long netFee1 = infoById1.get().getReceipt().getPhotonFee();
+    Long photonFee1 = infoById1.get().getReceipt().getPhotonFee();
     long entropyUsageTotal1 = infoById1.get().getReceipt().getEntropyUsageTotal();
 
     logger.info("fee1:" + fee1);
-    logger.info("netUsed1:" + netUsed1);
+    logger.info("photonUsed1:" + photonUsed1);
     logger.info("entropyUsed1:" + entropyUsed1);
-    logger.info("netFee1:" + netFee1);
+    logger.info("photonFee1:" + photonFee1);
     logger.info("entropyUsageTotal1:" + entropyUsageTotal1);
 
     Account infoafter1 = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
