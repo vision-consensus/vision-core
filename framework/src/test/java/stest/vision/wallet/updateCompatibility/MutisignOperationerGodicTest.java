@@ -373,7 +373,7 @@ public class MutisignOperationerGodicTest {
         blockingStubFull);
     final Long beforeBalance = PublicMethed
         .queryAccount(mutisignAccountAddress, blockingStubFull).getBalance();
-    final Long beforeNetUsed = PublicMethed
+    final Long beforePhotonUsed = PublicMethed
         .getAccountResource(mutisignAccountAddress, blockingStubFull).getFreePhotonUsed();
 
     String memo = "aaaaaaa";

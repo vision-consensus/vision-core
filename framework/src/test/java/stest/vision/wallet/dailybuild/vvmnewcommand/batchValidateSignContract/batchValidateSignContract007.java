@@ -82,12 +82,12 @@ public class batchValidateSignContract007 {
     Protocol.Account info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "src/test/resources/soliditycode/batchvalidatesign007.sol";
     String contractName = "Demo";
@@ -167,16 +167,16 @@ public class batchValidateSignContract007 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     Assert.assertTrue(afterBalance + fee1 + fee2 == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed1 + entropyUsed2 >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed1 + photonUsed2 >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed1 + photonUsed2 >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed1 + photonUsed2 >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed1 + photonUsed2 >= afterPhotonUsed);
   }
 
   /**

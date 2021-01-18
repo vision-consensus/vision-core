@@ -72,12 +72,12 @@ public class VerifyMintProof001 {
     Protocol.Account info = PublicMethed.queryAccount(testPriKey001, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getPhotonUsed();
-    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
+    Long beforePhotonUsed = accountResource.getPhotonUsed();
+    Long beforeFreePhotonUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "./src/test/resources/soliditycode/VerifyMintProof001.sol";
     String contractName = "VerifyMintProof001Test";
