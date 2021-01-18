@@ -98,7 +98,7 @@ public class ReceiptCapsule {
     return this.receipt.getPhotonUsage();
   }
 
-  public void setNetUsage(long photonUsage) {
+  public void setPhotonUsage(long photonUsage) {
     this.receipt = this.receipt.toBuilder().setPhotonUsage(photonUsage).build();
   }
 

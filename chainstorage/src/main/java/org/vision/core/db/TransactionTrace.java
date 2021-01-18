@@ -154,12 +154,12 @@ public class TransactionTrace {
   }
 
   //set net bill
-  public void setNetBill(long netUsage, long netFee) {
-    receipt.setNetUsage(netUsage);
+  public void setPhotonBill(long netUsage, long netFee) {
+    receipt.setPhotonUsage(netUsage);
     receipt.setPhotonFee(netFee);
   }
 
-  public void addNetBill(long netFee) {
+  public void addPhotonBill(long netFee) {
     receipt.addPhotonFee(netFee);
   }
 

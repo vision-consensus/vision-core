@@ -136,16 +136,16 @@ public class WalletTestMutiSign017 {
 
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
     long entropyFee = infoById.get().getReceipt().getEntropyFee();
-    long netFee = infoById.get().getReceipt().getPhotonFee();
+    long photonFee = infoById.get().getReceipt().getPhotonFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
     logger.info("entropyFee: " + entropyFee);
-    logger.info("netFee: " + netFee);
+    logger.info("photonFee: " + photonFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee);
-    Assert.assertEquals(fee, entropyFee + netFee + updateAccountPermissionFee);
+    Assert.assertEquals(fee, entropyFee + photonFee + updateAccountPermissionFee);
 
     balanceBefore = balanceAfter;
     String accountPermissionJson1 =
@@ -170,12 +170,12 @@ public class WalletTestMutiSign017 {
         .getTransactionInfoById(txid, blockingStubFull);
     balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
     entropyFee = infoById.get().getReceipt().getEntropyFee();
-    netFee = infoById.get().getReceipt().getPhotonFee();
+    photonFee = infoById.get().getReceipt().getPhotonFee();
     fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
     logger.info("entropyFee: " + entropyFee);
-    logger.info("netFee: " + netFee);
+    logger.info("photonFee: " + photonFee);
     logger.info("fee: " + fee);
 
 

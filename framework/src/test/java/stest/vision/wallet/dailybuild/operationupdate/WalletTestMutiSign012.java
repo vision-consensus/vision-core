@@ -265,16 +265,16 @@ public class WalletTestMutiSign012 {
     long balanceAfter = PublicMethed.queryAccount(participateAddress, blockingStubFull)
         .getBalance();
     long entropyFee = infoById.get().getReceipt().getEntropyFee();
-    long netFee = infoById.get().getReceipt().getPhotonFee();
+    long photonFee = infoById.get().getReceipt().getPhotonFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
     logger.info("entropyFee: " + entropyFee);
-    logger.info("netFee: " + netFee);
+    logger.info("photonFee: " + photonFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee);
-    Assert.assertEquals(fee, entropyFee + netFee + updateAccountPermissionFee);
+    Assert.assertEquals(fee, entropyFee + photonFee + updateAccountPermissionFee);
 
     balanceBefore = balanceAfter;
 
@@ -289,16 +289,16 @@ public class WalletTestMutiSign012 {
     balanceAfter = PublicMethed.queryAccount(participateAddress, blockingStubFull)
         .getBalance();
     entropyFee = infoById.get().getReceipt().getEntropyFee();
-    netFee = infoById.get().getReceipt().getPhotonFee();
+    photonFee = infoById.get().getReceipt().getPhotonFee();
     fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
     logger.info("entropyFee: " + entropyFee);
-    logger.info("netFee: " + netFee);
+    logger.info("photonFee: " + photonFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee + 10);
-    Assert.assertEquals(fee, entropyFee + netFee + multiSignFee);
+    Assert.assertEquals(fee, entropyFee + photonFee + multiSignFee);
   }
 
   /**
@@ -325,16 +325,16 @@ public class WalletTestMutiSign012 {
         .getTransactionInfoById(txid, blockingStubFull);
     long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
     long entropyFee = infoById.get().getReceipt().getEntropyFee();
-    long netFee = infoById.get().getReceipt().getPhotonFee();
+    long photonFee = infoById.get().getReceipt().getPhotonFee();
     long fee = infoById.get().getFee();
 
     logger.info("balanceAfter: " + balanceAfter);
     logger.info("entropyFee: " + entropyFee);
-    logger.info("netFee: " + netFee);
+    logger.info("photonFee: " + photonFee);
     logger.info("fee: " + fee);
 
     Assert.assertEquals(balanceBefore - balanceAfter, fee);
-    Assert.assertEquals(fee, entropyFee + netFee + multiSignFee);
+    Assert.assertEquals(fee, entropyFee + photonFee + multiSignFee);
   }
 
 

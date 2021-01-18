@@ -110,10 +110,10 @@ public class DelayTransaction005 {
     logger.info("newOriginEntropyLimit: " + smartContract.getOriginEntropyLimit());
     Assert.assertTrue(smartContract.getOriginEntropyLimit() == newOriginEntropyLimit);
 
-    Long netFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
+    Long photonFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
         .getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
-    Assert.assertTrue(fee - netFee == delayTransactionFee);
+    Assert.assertTrue(fee - photonFee == delayTransactionFee);
 
   }
 
@@ -142,18 +142,18 @@ public class DelayTransaction005 {
     logger.info("newOriginEntropyLimit: " + smartContract.getOriginEntropyLimit());
     Assert.assertTrue(smartContract.getOriginEntropyLimit() == oldOriginEntropyLimit);
 
-    final Long netFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
+    final Long photonFee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getReceipt().getPhotonFee();
     final Long fee = PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull).get()
         .getFee();
-    logger.info("net fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
+    logger.info("photon fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getReceipt().getPhotonFee());
     logger.info("Fee : " + PublicMethed.getTransactionInfoById(cancelTxid, blockingStubFull)
         .get().getFee());
 
     ownerAccount = PublicMethed.queryAccount(smartContractOwnerKey, blockingStubFull);
     Long afterCancelBalance = ownerAccount.getBalance();
-    Assert.assertTrue(fee - netFee == cancleDelayTransactionFee);
+    Assert.assertTrue(fee - photonFee == cancleDelayTransactionFee);
     Assert.assertTrue(fee == beforeCancelBalance - afterCancelBalance);
 
     logger.info("beforeCancelBalance: " + beforeCancelBalance);

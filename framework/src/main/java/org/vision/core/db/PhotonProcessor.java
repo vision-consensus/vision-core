@@ -90,7 +90,7 @@ public class PhotonProcessor extends ResourceProcessor {
       }
 
       logger.debug("trxId {}, photon cost: {}", trx.getTransactionId(), bytesSize);
-      trace.setNetBill(bytesSize, 0);
+      trace.setPhotonBill(bytesSize, 0);
       byte[] address = TransactionCapsule.getOwner(contract);
       AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(address);
       if (accountCapsule == null) {
@@ -131,7 +131,7 @@ public class PhotonProcessor extends ResourceProcessor {
       TransactionTrace trace) {
     long fee = chainBaseManager.getDynamicPropertiesStore().getTransactionFee() * bytes;
     if (consumeFee(accountCapsule, fee)) {
-      trace.setNetBill(0, fee);
+      trace.setPhotonBill(0, fee);
       chainBaseManager.getDynamicPropertiesStore().addTotalTransactionCost(fee);
       return true;
     } else {
@@ -182,7 +182,7 @@ public class PhotonProcessor extends ResourceProcessor {
       TransactionTrace trace) {
     long fee = chainBaseManager.getDynamicPropertiesStore().getCreateAccountFee();
     if (consumeFee(accountCapsule, fee)) {
-      trace.setNetBill(0, fee);
+      trace.setPhotonBill(0, fee);
       chainBaseManager.getDynamicPropertiesStore().addTotalCreateAccountCost(fee);
       return true;
     } else {
