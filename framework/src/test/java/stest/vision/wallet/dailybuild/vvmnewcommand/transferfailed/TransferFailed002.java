@@ -480,18 +480,18 @@ public class TransferFailed002 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
     Assert.assertNotEquals(10000000, entropyUsageTotal);
 
 
@@ -507,12 +507,12 @@ public class TransferFailed002 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     ECKey ecKey2 = new ECKey(Utils.getRandom());
     byte[] nonexistentAddress = ecKey2.getAddress();
     String txid = "";
@@ -542,12 +542,12 @@ public class TransferFailed002 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Account nonexistentAddressAccount = PublicMethed
         .queryAccount(nonexistentAddress, blockingStubFull1);
@@ -556,8 +556,8 @@ public class TransferFailed002 {
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
     Assert.assertTrue(entropyUsageTotal > EntropyCost.getInstance().getNEW_ACCT_CALL());
 
   }

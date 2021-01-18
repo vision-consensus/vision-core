@@ -307,21 +307,21 @@ public class ContractLinkage001 {
     Long afterBalance3 = infoafter3.getBalance();
     Long afterEntropyLimit3 = resourceInfoafter3.getEntropyLimit();
     Long afterEntropyUsed3 = resourceInfoafter3.getEntropyUsed();
-    Long afterFreeNetLimit3 = resourceInfoafter3.getFreePhotonLimit();
-    Long afterNetLimit3 = resourceInfoafter3.getPhotonLimit();
-    Long afterNetUsed3 = resourceInfoafter3.getPhotonUsed();
-    Long afterFreeNetUsed3 = resourceInfoafter3.getFreePhotonUsed();
+    Long afterFreePhotonLimit3 = resourceInfoafter3.getFreePhotonLimit();
+    Long afterPhotonLimit3 = resourceInfoafter3.getPhotonLimit();
+    Long afterPhotonUsed3 = resourceInfoafter3.getPhotonUsed();
+    Long afterFreePhotonUsed3 = resourceInfoafter3.getFreePhotonUsed();
     logger.info("afterBalance3:" + afterBalance3);
     logger.info("afterEntropyLimit3:" + afterEntropyLimit3);
     logger.info("afterEntropyUsed3:" + afterEntropyUsed3);
-    logger.info("afterFreeNetLimit3:" + afterFreeNetLimit3);
-    logger.info("afterNetLimit3:" + afterNetLimit3);
-    logger.info("afterNetUsed3:" + afterNetUsed3);
-    logger.info("afterFreeNetUsed3:" + afterFreeNetUsed3);
+    logger.info("afterFreePhotonLimit3:" + afterFreePhotonLimit3);
+    logger.info("afterPhotonLimit3:" + afterPhotonLimit3);
+    logger.info("afterPhotonUsed3:" + afterPhotonUsed3);
+    logger.info("afterFreePhotonUsed3:" + afterFreePhotonUsed3);
 
-    Assert.assertTrue(afterNetUsed3 > 0);
+    Assert.assertTrue(afterPhotonUsed3 > 0);
     Assert.assertTrue(afterEntropyUsed3 > 0);
-    Assert.assertTrue(afterFreeNetUsed3 > 0);
+    Assert.assertTrue(afterFreePhotonUsed3 > 0);
     Assert.assertTrue(beforeBalance2 - fee == afterBalance2);
     Assert.assertTrue(afterBalance3 == 0);
     Assert.assertTrue(PublicMethed.queryAccount(contractAddress, blockingStubFull)

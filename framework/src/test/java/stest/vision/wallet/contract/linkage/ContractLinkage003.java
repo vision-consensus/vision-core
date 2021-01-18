@@ -108,13 +108,13 @@ public class ContractLinkage003 {
     Long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     Long fee = infoById.get().getFee();
     Long entropyFee = infoById.get().getReceipt().getEntropyFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long photonFee = infoById.get().getReceipt().getPhotonFee();
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
     logger.info("fee:" + fee);
     logger.info("entropyFee:" + entropyFee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
     logger.info("photonFee:" + photonFee);
 
@@ -124,24 +124,24 @@ public class ContractLinkage003 {
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyLimit = resourceInfoafter.getEntropyLimit();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterFreeNetLimit = resourceInfoafter.getFreePhotonLimit();
-    Long afterNetLimit = resourceInfoafter.getPhotonLimit();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterFreePhotonLimit = resourceInfoafter.getFreePhotonLimit();
+    Long afterPhotonLimit = resourceInfoafter.getPhotonLimit();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyLimit:" + afterEntropyLimit);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterFreeNetLimit:" + afterFreeNetLimit);
-    logger.info("afterNetLimit:" + afterNetLimit);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterFreePhotonLimit:" + afterFreePhotonLimit);
+    logger.info("afterPhotonLimit:" + afterPhotonLimit);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     Assert.assertFalse(smartContract.getName().isEmpty());
     Assert.assertTrue((beforeBalance - fee) == afterBalance);
     Assert.assertTrue(afterEntropyUsed == 0L);
-    Assert.assertTrue(afterFreeNetUsed > 0L);
-    Assert.assertTrue(afterNetUsed == 0L);
+    Assert.assertTrue(afterFreePhotonUsed > 0L);
+    Assert.assertTrue(afterPhotonUsed == 0L);
 
 
   }

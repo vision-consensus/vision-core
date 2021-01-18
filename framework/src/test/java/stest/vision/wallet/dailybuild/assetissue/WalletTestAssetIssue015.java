@@ -117,10 +117,10 @@ public class WalletTestAssetIssue015 {
         .getAccountPhoton(asset015Address, blockingStubFull);
     AccountPhotonMessage assetTransferNet = PublicMethed
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
-    Long creatorBeforeFreeNetUsed = assetCreatorNet.getFreePhotonUsed();
-    Long transferBeforeFreeNetUsed = assetTransferNet.getFreePhotonUsed();
-    logger.info(Long.toString(creatorBeforeFreeNetUsed));
-    logger.info(Long.toString(transferBeforeFreeNetUsed));
+    Long creatorBeforeFreePhotonUsed = assetCreatorNet.getFreePhotonUsed();
+    Long transferBeforeFreePhotonUsed = assetTransferNet.getFreePhotonUsed();
+    logger.info(Long.toString(creatorBeforeFreePhotonUsed));
+    logger.info(Long.toString(transferBeforeFreePhotonUsed));
 
     //Transfer send some asset issue to default account, to test if this
     // transaction use the transaction free net.
@@ -131,16 +131,16 @@ public class WalletTestAssetIssue015 {
         .getAccountPhoton(asset015Address, blockingStubFull);
     assetTransferNet = PublicMethed
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
-    Long creatorAfterFreeNetUsed = assetCreatorNet.getFreePhotonUsed();
-    Long transferAfterFreeNetUsed = assetTransferNet.getFreePhotonUsed();
-    logger.info(Long.toString(creatorAfterFreeNetUsed));
-    logger.info(Long.toString(transferAfterFreeNetUsed));
+    Long creatorAfterFreePhotonUsed = assetCreatorNet.getFreePhotonUsed();
+    Long transferAfterFreePhotonUsed = assetTransferNet.getFreePhotonUsed();
+    logger.info(Long.toString(creatorAfterFreePhotonUsed));
+    logger.info(Long.toString(transferAfterFreePhotonUsed));
 
-    Assert.assertTrue(creatorAfterFreeNetUsed - creatorBeforeFreeNetUsed < netCostMeasure);
-    Assert.assertTrue(transferAfterFreeNetUsed - transferBeforeFreeNetUsed > netCostMeasure);
+    Assert.assertTrue(creatorAfterFreePhotonUsed - creatorBeforeFreePhotonUsed < netCostMeasure);
+    Assert.assertTrue(transferAfterFreePhotonUsed - transferBeforeFreePhotonUsed > netCostMeasure);
   }
 
-  @Test(enabled = true, description = "Use balance when transfer has not enough net")
+  @Test(enabled = true, description = "Use balance when transfer has not enough Photon")
   public void btestWhenTransferHasNoEnoughPhotonUseBalance() {
     Integer i = 0;
     AccountPhotonMessage assetTransferNet = PublicMethed

@@ -424,12 +424,12 @@ public class ContractGrammar004 {
     info = PublicMethed.queryAccount(testKeyForGrammarAddress, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     ECKey ecKey2 = new ECKey(Utils.getRandom());
     byte[] nonexistentAddress = ecKey2.getAddress();
     String txid = "";
@@ -459,12 +459,12 @@ public class ContractGrammar004 {
         .getAccountResource(grammarAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     logger.info(
@@ -478,8 +478,8 @@ public class ContractGrammar004 {
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
     Assert.assertNotEquals(10000000, entropyUsageTotal);
 
 

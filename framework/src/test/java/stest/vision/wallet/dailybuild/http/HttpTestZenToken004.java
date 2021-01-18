@@ -158,7 +158,7 @@ public class HttpTestZenToken004 {
         .getAssetIssueValue(httpnode, receiverPublicAddress, assetIssueId);
     response = HttpMethed.getAccountReource(httpnode, receiverPublicAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    final Long beforeNetUsed = responseContent.getLong("freeNetUsed");
+    final Long beforePhotonUsed = responseContent.getLong("freePhotonUsed");
 
     shieldOutList.clear();
     Long sendToPublicAddressAmount = 1 * zenTokenFee;
@@ -180,10 +180,10 @@ public class HttpTestZenToken004 {
         .getAssetIssueValue(httpnode, receiverPublicAddress, assetIssueId);
     response = HttpMethed.getAccountReource(httpnode, receiverPublicAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    final Long afterNetUsed = responseContent.getLong("freeNetUsed");
+    final Long afterPhotonUsed = responseContent.getLong("freePhotonUsed");
 
     Assert.assertTrue(afterAssetBalance - beforeAssetBalance == sendToPublicAddressAmount);
-    Assert.assertTrue(beforeNetUsed == afterNetUsed);
+    Assert.assertTrue(beforePhotonUsed == afterPhotonUsed);
 
     receiverNote3 = HttpMethed.scanNoteByIvk(httpnode, receiverShieldAddressInfo3.get()).get(0);
     Assert.assertTrue(receiverNote3.getValue() == sendToShiledAddressAmount);
@@ -233,7 +233,7 @@ public class HttpTestZenToken004 {
         .getAssetIssueValue(httpnode, receiverPublicAddress, assetIssueId);
     response = HttpMethed.getAccountReource(httpnode, receiverPublicAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    final Long beforeNetUsed = responseContent.getLong("freeNetUsed");
+    final Long beforePhotonUsed = responseContent.getLong("freePhotonUsed");
 
     shieldOutList.clear();
     Long sendToPublicAddressAmount = 1 * zenTokenFee;
@@ -259,10 +259,10 @@ public class HttpTestZenToken004 {
         .getAssetIssueValue(httpnode, receiverPublicAddress, assetIssueId);
     response = HttpMethed.getAccountReource(httpnode, receiverPublicAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    final Long afterNetUsed = responseContent.getLong("freeNetUsed");
+    final Long afterPhotonUsed = responseContent.getLong("freePhotonUsed");
 
     Assert.assertTrue(afterAssetBalance - beforeAssetBalance == sendToPublicAddressAmount);
-    Assert.assertTrue(beforeNetUsed == afterNetUsed);
+    Assert.assertTrue(beforePhotonUsed == afterPhotonUsed);
 
     receiverNote4 = HttpMethed.scanNoteByIvk(httpnode, receiverShieldAddressInfo4.get()).get(0);
     Assert.assertTrue(receiverNote4.getValue() == sendToShiledAddress1Amount);

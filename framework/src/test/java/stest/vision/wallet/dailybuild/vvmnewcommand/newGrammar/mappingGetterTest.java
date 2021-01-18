@@ -80,11 +80,11 @@ public class mappingGetterTest {
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
     Long beforePhotonUsed = accountResource.getPhotonUsed();
-    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
+    Long beforeFreePhotonUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
     logger.info("beforePhotonUsed:" + beforePhotonUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "./src/test/resources/soliditycode/mappingGetter.sol";
     String contractName = "mappingGetter";
@@ -116,12 +116,12 @@ public class mappingGetterTest {
     Assert.assertNotNull(smartContract.getAbi());
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
     Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
     logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
@@ -132,17 +132,17 @@ public class mappingGetterTest {
             blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforePhotonUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
   }
 
   /**

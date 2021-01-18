@@ -227,7 +227,7 @@ public class HttpTestZenToken001 {
         .getAssetIssueValue(httpnode, zenTokenOwnerAddress, assetIssueId);
     response = HttpMethed.getAccountReource(httpnode, zenTokenOwnerAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    final Long beforeNetUsed = responseContent.getLong("freeNetUsed");
+    final Long beforePhotonUsed = responseContent.getLong("freePhotonUsed");
 
     String memo1 = "Shield memo11 in " + System.currentTimeMillis();
     String memo2 = "Shield memo22 in " + System.currentTimeMillis();
@@ -254,10 +254,10 @@ public class HttpTestZenToken001 {
 
     response = HttpMethed.getAccountReource(httpnode, zenTokenOwnerAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    Long afterNetUsed = responseContent.getLong("freeNetUsed");
+    Long afterPhotonUsed = responseContent.getLong("freeNetUsed");
 
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == sendAmount);
-    Assert.assertTrue(beforeNetUsed == afterNetUsed);
+    Assert.assertTrue(beforePhotonUsed == afterPhotonUsed);
 
     String memo3 = "Shield memo33 in " + System.currentTimeMillis();
     Long sendSheldAddressAmount3 = costTokenAmount - sendAmount - zenTokenFee;

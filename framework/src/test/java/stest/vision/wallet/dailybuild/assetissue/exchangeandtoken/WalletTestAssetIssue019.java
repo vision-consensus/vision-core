@@ -125,7 +125,7 @@ public class WalletTestAssetIssue019 {
   }
 
   @Test(enabled = true)
-  public void testGetAssetLastOperationTimeAndAssetIssueFreeNetUsed() {
+  public void testGetAssetLastOperationTimeAndAssetIssueFreePhotonUsed() {
     Assert.assertTrue(PublicMethed.freezeBalance(asset019Address, 100000000L, 3,
         asset019Key, blockingStubFull));
     Assert.assertTrue(PublicMethed.freezeBalance(asset019SecondAddress, 100000000L, 3,

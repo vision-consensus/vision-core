@@ -127,12 +127,12 @@ public class Create2Test021 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     bytes = ByteArray.fromHexString("416CED4D6BF0AE10676347961BEFB7F47A8664AE36");
 
@@ -238,12 +238,12 @@ public class Create2Test021 {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
 
@@ -276,12 +276,12 @@ public class Create2Test021 {
         blockingStubFull);
     Long afterBalance1 = infoafter1.getBalance();
     Long afterEntropyUsed1 = resourceInfoafter1.getEntropyUsed();
-    Long afterNetUsed1 = resourceInfoafter1.getPhotonUsed();
-    Long afterFreeNetUsed1 = resourceInfoafter1.getFreePhotonUsed();
+    Long afterPhotonUsed1 = resourceInfoafter1.getPhotonUsed();
+    Long afterFreePhotonUsed1 = resourceInfoafter1.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance1);
     logger.info("afterEntropyUsed:" + afterEntropyUsed1);
-    logger.info("afterNetUsed:" + afterNetUsed1);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed1);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed1);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed1);
 
     Assert.assertTrue(infoById1.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance1 + fee1 == afterBalance);
