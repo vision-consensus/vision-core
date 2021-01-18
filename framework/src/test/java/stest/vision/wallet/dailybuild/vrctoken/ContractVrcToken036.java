@@ -143,8 +143,8 @@ public class ContractVrcToken036 {
     info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     Long beforeAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -160,8 +160,8 @@ public class ContractVrcToken036 {
         .queryAccount(user001Address, blockingStubFull).getBalance();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     logger.info("beforeAssetIssueCount:" + beforeAssetIssueContractAddress);
     logger.info("beforeAssetIssueDevAddress:" + beforeAssetIssueDevAddress);
     logger.info("beforeAssetIssueUserAddress:" + beforeAssetIssueUserAddress);
@@ -187,8 +187,8 @@ public class ContractVrcToken036 {
     Long afterAssetIssueDevAddress = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     Long afterAssetIssueContractAddress = PublicMethed
         .getAssetIssueValue(transferTokenContractAddress,
             assetAccountId,
@@ -201,8 +201,8 @@ public class ContractVrcToken036 {
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     logger.info("afterAssetIssueCount:" + afterAssetIssueDevAddress);
     logger.info("afterAssetIssueDevAddress:" + afterAssetIssueContractAddress);
     logger.info("afterAssetIssueUserAddress:" + afterAssetIssueUserAddress);
@@ -248,8 +248,8 @@ public class ContractVrcToken036 {
     info1 = PublicMethed.queryAccount(dev001Address, blockingStubFull);
     Long beforeBalance1 = info1.getBalance();
     Long beforeEntropyUsed1 = resourceInfo1.getEntropyUsed();
-    Long beforeNetUsed1 = resourceInfo1.getPhotonUsed();
-    Long beforeFreeNetUsed1 = resourceInfo1.getFreePhotonUsed();
+    Long beforePhotonUsed1 = resourceInfo1.getPhotonUsed();
+    Long beforeFreePhotonUsed1 = resourceInfo1.getFreePhotonUsed();
     Long beforeAssetIssueDevAddress1 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
@@ -265,8 +265,8 @@ public class ContractVrcToken036 {
         .queryAccount(user001Address, blockingStubFull).getBalance();
     logger.info("beforeBalance:" + beforeBalance1);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed1);
-    logger.info("beforeNetUsed:" + beforeNetUsed1);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed1);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed1);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed1);
     logger.info("beforeAssetIssueCount:" + beforeAssetIssueContractAddress1);
     logger.info("beforeAssetIssueDevAddress:" + beforeAssetIssueDevAddress1);
     logger.info("beforeAssetIssueUserAddress:" + beforeAssetIssueUserAddress1);
@@ -292,8 +292,8 @@ public class ContractVrcToken036 {
     Long afterAssetIssueDevAddress1 = PublicMethed
         .getAssetIssueValue(dev001Address, assetAccountId,
             blockingStubFull);
-    Long afterNetUsed1 = resourceInfoafter1.getPhotonUsed();
-    Long afterFreeNetUsed1 = resourceInfoafter1.getFreePhotonUsed();
+    Long afterPhotonUsed1 = resourceInfoafter1.getPhotonUsed();
+    Long afterFreePhotonUsed1 = resourceInfoafter1.getFreePhotonUsed();
     Long afterAssetIssueContractAddress1 = PublicMethed
         .getAssetIssueValue(transferTokenContractAddress,
             assetAccountId,
@@ -306,8 +306,8 @@ public class ContractVrcToken036 {
 
     logger.info("afterBalance:" + afterBalance1);
     logger.info("afterEntropyUsed:" + afterEntropyUsed1);
-    logger.info("afterNetUsed:" + afterNetUsed1);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed1);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed1);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed1);
     logger.info("afterAssetIssueCount:" + afterAssetIssueDevAddress1);
     logger.info("afterAssetIssueDevAddress:" + afterAssetIssueContractAddress1);
     logger.info("afterAssetIssueUserAddress:" + afterAssetIssueUserAddress1);

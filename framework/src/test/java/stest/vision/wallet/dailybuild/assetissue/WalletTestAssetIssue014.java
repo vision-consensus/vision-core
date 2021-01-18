@@ -116,10 +116,10 @@ public class WalletTestAssetIssue014 {
         .getAccountPhoton(asset014Address, blockingStubFull);
     AccountPhotonMessage assetTransferNet = PublicMethed
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
-    Long creatorBeforeNetUsed = assetCreatorNet.getPhotonUsed();
-    Long transferBeforeFreeNetUsed = assetTransferNet.getFreePhotonUsed();
-    logger.info(Long.toString(creatorBeforeNetUsed));
-    logger.info(Long.toString(transferBeforeFreeNetUsed));
+    Long creatorBeforePhotonUsed = assetCreatorNet.getPhotonUsed();
+    Long transferBeforeFreePhotonUsed = assetTransferNet.getFreePhotonUsed();
+    logger.info(Long.toString(creatorBeforePhotonUsed));
+    logger.info(Long.toString(transferBeforeFreePhotonUsed));
 
     //Transfer send some asset issue to default account, to test if this
     // transaction use the transaction free net.
@@ -130,13 +130,13 @@ public class WalletTestAssetIssue014 {
         .getAccountPhoton(asset014Address, blockingStubFull);
     assetTransferNet = PublicMethed
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
-    Long creatorAfterNetUsed = assetCreatorNet.getPhotonUsed();
-    Long transferAfterFreeNetUsed = assetTransferNet.getFreePhotonUsed();
-    logger.info(Long.toString(creatorAfterNetUsed));
-    logger.info(Long.toString(transferAfterFreeNetUsed));
+    Long creatorAfterPhotonUsed = assetCreatorNet.getPhotonUsed();
+    Long transferAfterFreePhotonUsed = assetTransferNet.getFreePhotonUsed();
+    logger.info(Long.toString(creatorAfterPhotonUsed));
+    logger.info(Long.toString(transferAfterFreePhotonUsed));
 
-    Assert.assertTrue(creatorAfterNetUsed - creatorBeforeNetUsed < netCostMeasure);
-    Assert.assertTrue(transferAfterFreeNetUsed - transferBeforeFreeNetUsed > netCostMeasure);
+    Assert.assertTrue(creatorAfterPhotonUsed - creatorBeforePhotonUsed < netCostMeasure);
+    Assert.assertTrue(transferAfterFreePhotonUsed - transferBeforeFreePhotonUsed > netCostMeasure);
 
     PublicMethed
         .freedResource(asset014Address, testKeyForAssetIssue014, fromAddress, blockingStubFull);

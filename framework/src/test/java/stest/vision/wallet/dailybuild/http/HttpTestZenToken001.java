@@ -254,7 +254,7 @@ public class HttpTestZenToken001 {
 
     response = HttpMethed.getAccountReource(httpnode, zenTokenOwnerAddress);
     responseContent = HttpMethed.parseResponseContent(response);
-    Long afterPhotonUsed = responseContent.getLong("freeNetUsed");
+    Long afterPhotonUsed = responseContent.getLong("freePhotonUsed");
 
     Assert.assertTrue(beforeAssetBalance - afterAssetBalance == sendAmount);
     Assert.assertTrue(beforePhotonUsed == afterPhotonUsed);

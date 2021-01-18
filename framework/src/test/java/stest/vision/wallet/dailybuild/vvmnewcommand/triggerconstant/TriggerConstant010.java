@@ -105,12 +105,12 @@ public class TriggerConstant010 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     String txid = "";
 
     txid = PublicMethed
@@ -148,8 +148,8 @@ public class TriggerConstant010 {
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + netUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforePhotonUsed + netUsed >= afterNetUsed);
     Long returnnumber = ByteArray.toLong(ByteArray
         .fromHexString(ByteArray.toHexString(infoById.get().getContractResult(0).toByteArray())));
     Assert.assertTrue(1 == returnnumber);

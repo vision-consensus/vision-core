@@ -114,10 +114,10 @@ public class ContractLinkage004 {
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyLimit:" + beforeEntropyLimit);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeFreeNetLimit:" + beforeFreePhotonLimit);
-    logger.info("beforeNetLimit:" + beforePhotonLimit);
-    logger.info("beforeNetUsed:" + beforePhotonUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreePhotonUsed);
+    logger.info("beforeFreePhotonLimit:" + beforeFreePhotonLimit);
+    logger.info("beforePhotonLimit:" + beforePhotonLimit);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "./src/test/resources/soliditycode/contractLinkage004.sol";
     String contractName = "divideIHaveArgsReturnStorage";
@@ -159,10 +159,10 @@ public class ContractLinkage004 {
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyLimit:" + afterEntropyLimit);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterFreeNetLimit:" + afterFreePhotonLimit);
-    logger.info("afterNetLimit:" + afterPhotonLimit);
-    logger.info("afterNetUsed:" + afterPhotonUsed);
-    logger.info("afterFreeNetUsed:" + afterFreePhotonUsed);
+    logger.info("afterFreePhotonLimit:" + afterFreePhotonLimit);
+    logger.info("afterPhotonLimit:" + afterPhotonLimit);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     logger.info("---------------:");
     Assert.assertTrue(infoById.isPresent());
     Assert.assertTrue((beforeBalance - fee) == afterBalance);
@@ -181,17 +181,17 @@ public class ContractLinkage004 {
     Long beforeBalance1 = info1.getBalance();
     Long beforeEntropyLimit1 = resourceInfo1.getEntropyLimit();
     Long beforeEntropyUsed1 = resourceInfo1.getEntropyUsed();
-    Long beforeFreeNetLimit1 = resourceInfo1.getFreePhotonLimit();
-    Long beforeNetLimit1 = resourceInfo1.getPhotonLimit();
-    Long beforeNetUsed1 = resourceInfo1.getPhotonUsed();
-    Long beforeFreeNetUsed1 = resourceInfo1.getFreePhotonUsed();
+    Long beforeFreePhotonLimit1 = resourceInfo1.getFreePhotonLimit();
+    Long beforePhotonLimit1 = resourceInfo1.getPhotonLimit();
+    Long beforePhotonUsed1 = resourceInfo1.getPhotonUsed();
+    Long beforeFreePhotonUsed1 = resourceInfo1.getFreePhotonUsed();
     logger.info("beforeBalance1:" + beforeBalance1);
     logger.info("beforeEntropyLimit1:" + beforeEntropyLimit1);
     logger.info("beforeEntropyUsed1:" + beforeEntropyUsed1);
-    logger.info("beforeFreeNetLimit1:" + beforeFreeNetLimit1);
-    logger.info("beforeNetLimit1:" + beforeNetLimit1);
-    logger.info("beforeNetUsed1:" + beforeNetUsed1);
-    logger.info("beforeFreeNetUsed1:" + beforeFreeNetUsed1);
+    logger.info("beforeFreePhotonLimit1:" + beforeFreePhotonLimit1);
+    logger.info("beforePhotonLimit1:" + beforePhotonLimit1);
+    logger.info("beforePhotonUsed1:" + beforePhotonUsed1);
+    logger.info("beforeFreePhotonUsed1:" + beforeFreePhotonUsed1);
 
     String filePath = "./src/test/resources/soliditycode/contractLinkage004.sol";
     String contractName = "divideIHaveArgsReturnStorage";
@@ -226,23 +226,23 @@ public class ContractLinkage004 {
     Long afterBalance1 = infoafter1.getBalance();
     Long afterEntropyLimit1 = resourceInfoafter1.getEntropyLimit();
     Long afterEntropyUsed1 = resourceInfoafter1.getEntropyUsed();
-    Long afterFreeNetLimit1 = resourceInfoafter1.getFreePhotonLimit();
-    Long afterNetLimit1 = resourceInfoafter1.getPhotonLimit();
-    Long afterNetUsed1 = resourceInfoafter1.getPhotonUsed();
-    Long afterFreeNetUsed1 = resourceInfoafter1.getFreePhotonUsed();
+    Long afterFreePhotonLimit1 = resourceInfoafter1.getFreePhotonLimit();
+    Long afterPhotonLimit1 = resourceInfoafter1.getPhotonLimit();
+    Long afterPhotonUsed1 = resourceInfoafter1.getPhotonUsed();
+    Long afterFreePhotonUsed1 = resourceInfoafter1.getFreePhotonUsed();
     logger.info("afterBalance1:" + afterBalance1);
     logger.info("afterEntropyLimit1:" + afterEntropyLimit1);
     logger.info("afterEntropyUsed1:" + afterEntropyUsed1);
-    logger.info("afterFreeNetLimit1:" + afterFreeNetLimit1);
-    logger.info("afterNetLimit1:" + afterNetLimit1);
-    logger.info("afterNetUsed1:" + afterNetUsed1);
-    logger.info("afterFreeNetUsed1:" + afterFreeNetUsed1);
+    logger.info("afterFreePhotonLimit1:" + afterFreePhotonLimit1);
+    logger.info("afterPhotonLimit1:" + afterPhotonLimit1);
+    logger.info("afterPhotonUsed1:" + afterPhotonUsed1);
+    logger.info("afterFreePhotonUsed1:" + afterFreePhotonUsed1);
 
     Assert.assertTrue((beforeBalance1 - fee1) == afterBalance1);
     Assert.assertTrue(infoById1.get().getResultValue() == 1);
     Assert.assertTrue(entropyUsageTotal1 > 0);
     Assert.assertTrue(afterEntropyUsed1 == 0);
-    Assert.assertTrue(beforeNetUsed1 < afterNetUsed1);
+    Assert.assertTrue(beforePhotonUsed1 < afterPhotonUsed1);
 
     //When the fee limit is just ok.use entropyFee,freezeBalanceGetNet,balance change.
     maxFeeLimit = currentFee;
@@ -252,17 +252,17 @@ public class ContractLinkage004 {
     Long beforeBalance2 = info2.getBalance();
     Long beforeEntropyLimit2 = resourceInfo2.getEntropyLimit();
     Long beforeEntropyUsed2 = resourceInfo2.getEntropyUsed();
-    Long beforeFreeNetLimit2 = resourceInfo2.getFreePhotonLimit();
-    Long beforeNetLimit2 = resourceInfo2.getPhotonLimit();
-    Long beforeNetUsed2 = resourceInfo2.getPhotonUsed();
-    Long beforeFreeNetUsed2 = resourceInfo2.getFreePhotonUsed();
+    Long beforeFreePhotonLimit2 = resourceInfo2.getFreePhotonLimit();
+    Long beforePhotonLimit2 = resourceInfo2.getPhotonLimit();
+    Long beforePhotonUsed2 = resourceInfo2.getPhotonUsed();
+    Long beforeFreePhotonUsed2 = resourceInfo2.getFreePhotonUsed();
     logger.info("beforeBalance2:" + beforeBalance2);
     logger.info("beforeEntropyLimit2:" + beforeEntropyLimit2);
     logger.info("beforeEntropyUsed2:" + beforeEntropyUsed2);
-    logger.info("beforeFreeNetLimit2:" + beforeFreeNetLimit2);
-    logger.info("beforeNetLimit2:" + beforeNetLimit2);
-    logger.info("beforeNetUsed2:" + beforeNetUsed2);
-    logger.info("beforeFreeNetUsed2:" + beforeFreeNetUsed2);
+    logger.info("beforeFreePhotonLimit2:" + beforeFreePhotonLimit2);
+    logger.info("beforePhotonLimit2:" + beforePhotonLimit2);
+    logger.info("beforePhotonUsed2:" + beforePhotonUsed2);
+    logger.info("beforeFreePhotonUsed2:" + beforeFreePhotonUsed2);
     txid = PublicMethed.deployContractAndGetTransactionInfoById(contractName, abi, code,
         "", maxFeeLimit, 0L, 50, null, linkage004Key, linkage004Address, blockingStubFull);
     //logger.info("testFeeLimitIsTooSmall, the txid is " + txid);
@@ -287,22 +287,22 @@ public class ContractLinkage004 {
     Long afterBalance2 = infoafter2.getBalance();
     Long afterEntropyLimit2 = resourceInfoafter2.getEntropyLimit();
     Long afterEntropyUsed2 = resourceInfoafter2.getEntropyUsed();
-    Long afterFreeNetLimit2 = resourceInfoafter2.getFreePhotonLimit();
-    Long afterNetLimit2 = resourceInfoafter2.getPhotonLimit();
-    Long afterNetUsed2 = resourceInfoafter2.getPhotonUsed();
-    Long afterFreeNetUsed2 = resourceInfoafter2.getFreePhotonUsed();
+    Long afterFreePhotonLimit2 = resourceInfoafter2.getFreePhotonLimit();
+    Long afterPhotonLimit2 = resourceInfoafter2.getPhotonLimit();
+    Long afterPhotonUsed2 = resourceInfoafter2.getPhotonUsed();
+    Long afterFreePhotonUsed2 = resourceInfoafter2.getFreePhotonUsed();
     logger.info("afterBalance2:" + afterBalance2);
     logger.info("afterEntropyLimit2:" + afterEntropyLimit2);
     logger.info("afterEntropyUsed2:" + afterEntropyUsed2);
-    logger.info("afterFreeNetLimit2:" + afterFreeNetLimit2);
-    logger.info("afterNetLimit2:" + afterNetLimit2);
-    logger.info("afterNetUsed2:" + afterNetUsed2);
-    logger.info("afterFreeNetUsed2:" + afterFreeNetUsed2);
+    logger.info("afterFreePhotonLimit2:" + afterFreePhotonLimit2);
+    logger.info("afterPhotonLimit2:" + afterPhotonLimit2);
+    logger.info("afterPhotonUsed2:" + afterPhotonUsed2);
+    logger.info("afterFreePhotonUsed2:" + afterFreePhotonUsed2);
 
     Assert.assertTrue(infoById2.get().getResultValue() == 0);
     Assert.assertTrue(infoById2.get().getReceipt().getEntropyUsageTotal() > 0);
     Assert.assertTrue((beforeBalance2 - fee2) == afterBalance2);
-    Assert.assertTrue((beforeNetUsed2 + photonUsed2) >= afterNetUsed2);
+    Assert.assertTrue((beforePhotonUsed2 + photonUsed2) >= afterPhotonUsed2);
 
     currentFee = fee2;
   }

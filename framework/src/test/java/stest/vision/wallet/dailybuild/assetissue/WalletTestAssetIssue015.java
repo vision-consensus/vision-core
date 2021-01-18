@@ -182,7 +182,7 @@ public class WalletTestAssetIssue015 {
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
     Account transferAccount = PublicMethed.queryAccount(transferAssetCreateKey, blockingStubFull);
 
-    final Long transferNetUsedBefore = assetTransferNet.getPhotonUsed();
+    final Long transferPhotonUsedBefore = assetTransferNet.getPhotonUsed();
     final Long transferBalanceBefore = transferAccount.getBalance();
     logger.info("before  " + Long.toString(transferBalanceBefore));
 
@@ -193,12 +193,12 @@ public class WalletTestAssetIssue015 {
     assetTransferNet = PublicMethed
         .getAccountPhoton(transferAssetAddress, blockingStubFull);
     transferAccount = PublicMethed.queryAccount(transferAssetCreateKey, blockingStubFull);
-    final Long transferNetUsedAfter = assetTransferNet.getPhotonUsed();
+    final Long transferPhotonUsedAfter = assetTransferNet.getPhotonUsed();
     final Long transferBalanceAfter = transferAccount.getBalance();
     logger.info("after " + Long.toString(transferBalanceAfter));
 
     Assert.assertTrue(transferBalanceAfter - transferBalanceBefore == 0);
-    Assert.assertTrue(transferNetUsedAfter - transferNetUsedBefore > 200);
+    Assert.assertTrue(transferPhotonUsedAfter - transferPhotonUsedBefore > 200);
 
 
   }

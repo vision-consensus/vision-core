@@ -135,8 +135,8 @@ public class ContractVrcToken052 {
     info = PublicMethed.queryAccount(user001Address, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     Long beforeAssetIssueCount = PublicMethed
         .getAssetIssueValue(user001Address, assetAccountId,
             blockingStubFull);
@@ -153,8 +153,8 @@ public class ContractVrcToken052 {
         .queryAccount(dev001Address, blockingStubFull).getBalance();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     logger.info("beforeAssetIssueCount:" + beforeAssetIssueCount);
     logger.info("beforeAssetIssueContractAddress:" + beforeAssetIssueContractAddress);
     logger.info("beforeAssetIssueDev:" + beforeAssetIssueDev);

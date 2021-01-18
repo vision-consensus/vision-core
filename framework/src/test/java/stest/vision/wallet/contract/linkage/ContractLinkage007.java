@@ -242,24 +242,24 @@ public class ContractLinkage007 {
     Assert.assertTrue(infoById2.get().getResultValue() == 0);
     contractAddress = infoById2.get().getContractAddress().toByteArray();
 
-    //When the feelimit is large, the trigger will be failed.Only use FreeNetUsed,Balance not change
+    //When the feelimit is large, the trigger will be failed.Only use FreePhotonUsed,Balance not change
     AccountResourceMessage resourceInfo3 = PublicMethed.getAccountResource(linkage007Address,
         blockingStubFull);
     Account info3 = PublicMethed.queryAccount(linkage007Address, blockingStubFull);
     Long beforeBalance3 = info3.getBalance();
     Long beforeEntropyLimit3 = resourceInfo3.getEntropyLimit();
     Long beforeEntropyUsed3 = resourceInfo3.getEntropyUsed();
-    Long beforeFreeNetLimit3 = resourceInfo3.getFreePhotonLimit();
-    Long beforeNetLimit3 = resourceInfo3.getPhotonLimit();
-    Long beforeNetUsed3 = resourceInfo3.getPhotonUsed();
-    Long beforeFreeNetUsed3 = resourceInfo3.getFreePhotonUsed();
+    Long beforeFreePhotonLimit3 = resourceInfo3.getFreePhotonLimit();
+    Long beforePhotonLimit3 = resourceInfo3.getPhotonLimit();
+    Long beforePhotonUsed3 = resourceInfo3.getPhotonUsed();
+    Long beforeFreePhotonUsed3 = resourceInfo3.getFreePhotonUsed();
     logger.info("beforeBalance3:" + beforeBalance3);
     logger.info("beforeEntropyLimit3:" + beforeEntropyLimit3);
     logger.info("beforeEntropyUsed3:" + beforeEntropyUsed3);
-    logger.info("beforeFreeNetLimit3:" + beforeFreeNetLimit3);
-    logger.info("beforeNetLimit3:" + beforeNetLimit3);
-    logger.info("beforeNetUsed3:" + beforeNetUsed3);
-    logger.info("beforeFreeNetUsed3:" + beforeFreeNetUsed3);
+    logger.info("beforeFreePhotonLimit3:" + beforeFreePhotonLimit3);
+    logger.info("beforePhotonLimit3:" + beforePhotonLimit3);
+    logger.info("beforePhotonUsed3:" + beforePhotonUsed3);
+    logger.info("beforeFreePhotonUsed3:" + beforeFreePhotonUsed3);
     //String initParmes = "\"" + Base58.encode58Check(fromAddress) + "\",\"63\"";
     String num = "4" + "," + "2";
     txid = PublicMethed.triggerContract(contractAddress,
@@ -272,41 +272,41 @@ public class ContractLinkage007 {
     Long afterBalance3 = infoafter3.getBalance();
     Long afterEntropyLimit3 = resourceInfoafter3.getEntropyLimit();
     Long afterEntropyUsed3 = resourceInfoafter3.getEntropyUsed();
-    Long afterFreeNetLimit3 = resourceInfoafter3.getFreePhotonLimit();
-    Long afterNetLimit3 = resourceInfoafter3.getPhotonLimit();
-    Long afterNetUsed3 = resourceInfoafter3.getPhotonUsed();
-    Long afterFreeNetUsed3 = resourceInfoafter3.getFreePhotonUsed();
+    Long afterFreePhotonLimit3 = resourceInfoafter3.getFreePhotonLimit();
+    Long afterPhotonLimit3 = resourceInfoafter3.getPhotonLimit();
+    Long afterPhotonUsed3 = resourceInfoafter3.getPhotonUsed();
+    Long afterFreePhotonUsed3 = resourceInfoafter3.getFreePhotonUsed();
     logger.info("afterBalance3:" + afterBalance3);
     logger.info("afterEntropyLimit3:" + afterEntropyLimit3);
     logger.info("afterEntropyUsed3:" + afterEntropyUsed3);
-    logger.info("afterFreeNetLimit3:" + afterFreeNetLimit3);
-    logger.info("afterNetLimit3:" + afterNetLimit3);
-    logger.info("afterNetUsed3:" + afterNetUsed3);
-    logger.info("afterFreeNetUsed3:" + afterFreeNetUsed3);
+    logger.info("afterFreePhotonLimit3:" + afterFreePhotonLimit3);
+    logger.info("afterPhotonLimit3:" + afterPhotonLimit3);
+    logger.info("afterPhotonUsed3:" + afterPhotonUsed3);
+    logger.info("afterFreePhotonUsed3:" + afterFreePhotonUsed3);
     logger.info("---------------:");
     Assert.assertTrue(txid == null);
     Assert.assertEquals(beforeBalance3, afterBalance3);
-    Assert.assertTrue(afterFreeNetUsed3 > beforeNetUsed3);
-    Assert.assertTrue(afterNetUsed3 == 0);
+    Assert.assertTrue(afterFreePhotonUsed3 > beforePhotonUsed3);
+    Assert.assertTrue(afterPhotonUsed3 == 0);
     Assert.assertTrue(afterEntropyUsed3 == 0);
-    //When the feelimit is 0, the trigger will be failed.Only use FreeNetUsed,Balance not change
+    //When the feelimit is 0, the trigger will be failed.Only use FreePhotonUsed,Balance not change
     AccountResourceMessage resourceInfo4 = PublicMethed.getAccountResource(linkage007Address,
         blockingStubFull);
     Account info4 = PublicMethed.queryAccount(linkage007Address, blockingStubFull);
     Long beforeBalance4 = info4.getBalance();
     Long beforeEntropyLimit4 = resourceInfo4.getEntropyLimit();
     Long beforeEntropyUsed4 = resourceInfo4.getEntropyUsed();
-    Long beforeFreeNetLimit4 = resourceInfo4.getFreePhotonLimit();
-    Long beforeNetLimit4 = resourceInfo4.getPhotonLimit();
-    Long beforeNetUsed4 = resourceInfo4.getPhotonUsed();
-    Long beforeFreeNetUsed4 = resourceInfo4.getFreePhotonUsed();
+    Long beforeFreePhotonLimit4 = resourceInfo4.getFreePhotonLimit();
+    Long beforePhotonLimit4 = resourceInfo4.getPhotonLimit();
+    Long beforePhotonUsed4 = resourceInfo4.getPhotonUsed();
+    Long beforeFreePhotonUsed4 = resourceInfo4.getFreePhotonUsed();
     logger.info("beforeBalance4:" + beforeBalance4);
     logger.info("beforeEntropyLimit4:" + beforeEntropyLimit4);
     logger.info("beforeEntropyUsed4:" + beforeEntropyUsed4);
-    logger.info("beforeFreeNetLimit4:" + beforeFreeNetLimit4);
-    logger.info("beforeNetLimit4:" + beforeNetLimit4);
-    logger.info("beforeNetUsed4:" + beforeNetUsed4);
-    logger.info("beforeFreeNetUsed4:" + beforeFreeNetUsed4);
+    logger.info("beforeFreePhotonLimit4:" + beforeFreePhotonLimit4);
+    logger.info("beforePhotonLimit4:" + beforePhotonLimit4);
+    logger.info("beforePhotonUsed4:" + beforePhotonUsed4);
+    logger.info("beforeFreePhotonUsed4:" + beforeFreePhotonUsed4);
     txid = PublicMethed.triggerContract(contractAddress,
         "divideIHaveArgsReturn(int256,int256)", num, false,
         1000, maxFeeLimit + 1, linkage007Address, linkage007Key, blockingStubFull);
@@ -316,21 +316,21 @@ public class ContractLinkage007 {
     Long afterBalance4 = infoafter4.getBalance();
     Long afterEntropyLimit4 = resourceInfoafter4.getEntropyLimit();
     Long afterEntropyUsed4 = resourceInfoafter4.getEntropyUsed();
-    Long afterFreeNetLimit4 = resourceInfoafter4.getFreePhotonLimit();
-    Long afterNetLimit4 = resourceInfoafter4.getPhotonLimit();
-    Long afterNetUsed4 = resourceInfoafter4.getPhotonUsed();
-    Long afterFreeNetUsed4 = resourceInfoafter4.getFreePhotonUsed();
+    Long afterFreePhotonLimit4 = resourceInfoafter4.getFreePhotonLimit();
+    Long afterPhotonLimit4 = resourceInfoafter4.getPhotonLimit();
+    Long afterPhotonUsed4 = resourceInfoafter4.getPhotonUsed();
+    Long afterFreePhotonUsed4 = resourceInfoafter4.getFreePhotonUsed();
     logger.info("afterBalance4:" + afterBalance4);
     logger.info("afterEntropyLimit4:" + afterEntropyLimit4);
     logger.info("afterEntropyUsed4:" + afterEntropyUsed4);
-    logger.info("afterFreeNetLimit4:" + afterFreeNetLimit4);
-    logger.info("afterNetLimit4:" + afterNetLimit4);
-    logger.info("afterNetUsed4:" + afterNetUsed4);
-    logger.info("afterFreeNetUsed4:" + afterFreeNetUsed4);
+    logger.info("afterFreePhotonLimit4:" + afterFreePhotonLimit4);
+    logger.info("afterPhotonLimit4:" + afterPhotonLimit4);
+    logger.info("afterPhotonUsed4:" + afterPhotonUsed4);
+    logger.info("afterFreePhotonUsed4:" + afterFreePhotonUsed4);
     logger.info("---------------:");
     Assert.assertEquals(beforeBalance4, afterBalance4);
-    Assert.assertTrue(afterFreeNetUsed4 > beforeNetUsed4);
-    Assert.assertTrue(afterNetUsed4 == 0);
+    Assert.assertTrue(afterFreePhotonUsed4 > beforePhotonUsed4);
+    Assert.assertTrue(afterPhotonUsed4 == 0);
     Assert.assertTrue(afterEntropyUsed4 == 0);
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     logger.info(Integer.toString(infoById.get().getResultValue()));
