@@ -98,17 +98,17 @@ public class ContractLinkage002 {
     Long beforeBalance = info.getBalance();
     Long beforeEntropyLimit = resourceInfo.getEntropyLimit();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeFreeNetLimit = resourceInfo.getFreePhotonLimit();
-    Long beforeNetLimit = resourceInfo.getPhotonLimit();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforeFreePhotonLimit = resourceInfo.getFreePhotonLimit();
+    Long beforePhotonLimit = resourceInfo.getPhotonLimit();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyLimit:" + beforeEntropyLimit);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeFreeNetLimit:" + beforeFreeNetLimit);
-    logger.info("beforeNetLimit:" + beforeNetLimit);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforeFreePhotonLimit:" + beforeFreePhotonLimit);
+    logger.info("beforePhotonLimit:" + beforePhotonLimit);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "./src/test/resources/soliditycode/contractLinkage002.sol";
     String contractName = "divideIHaveArgsReturnStorage";
@@ -128,21 +128,21 @@ public class ContractLinkage002 {
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyLimit = resourceInfoafter.getEntropyLimit();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterFreeNetLimit = resourceInfoafter.getFreePhotonLimit();
-    Long afterNetLimit = resourceInfoafter.getPhotonLimit();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterFreePhotonLimit = resourceInfoafter.getFreePhotonLimit();
+    Long afterPhotonLimit = resourceInfoafter.getPhotonLimit();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyLimit:" + afterEntropyLimit);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterFreeNetLimit:" + afterFreeNetLimit);
-    logger.info("afterNetLimit:" + afterNetLimit);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterFreePhotonLimit:" + afterFreePhotonLimit);
+    logger.info("afterPhotonLimit:" + afterPhotonLimit);
+    logger.info("afterNetUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     Assert.assertEquals(beforeBalance, afterBalance);
-    Assert.assertTrue(afterNetUsed == 0);
+    Assert.assertTrue(afterPhotonUsed == 0);
     Assert.assertTrue(afterEntropyUsed == 0);
-    Assert.assertTrue(afterFreeNetUsed > 0);
+    Assert.assertTrue(afterFreePhotonUsed > 0);
 
     //Set the consumeUserResourcePercent is 101,Nothing change.
     AccountResourceMessage resourceInfo3 = PublicMethed.getAccountResource(linkage002Address,
@@ -151,17 +151,17 @@ public class ContractLinkage002 {
     Long beforeBalance3 = info3.getBalance();
     Long beforeEntropyLimit3 = resourceInfo3.getEntropyLimit();
     Long beforeEntropyUsed3 = resourceInfo3.getEntropyUsed();
-    Long beforeFreeNetLimit3 = resourceInfo3.getFreePhotonLimit();
-    Long beforeNetLimit3 = resourceInfo3.getPhotonLimit();
-    Long beforeNetUsed3 = resourceInfo3.getPhotonUsed();
-    Long beforeFreeNetUsed3 = resourceInfo3.getFreePhotonUsed();
+    Long beforeFreePhotonLimit3 = resourceInfo3.getFreePhotonLimit();
+    Long beforePhotonLimit3 = resourceInfo3.getPhotonLimit();
+    Long beforePhotonUsed3 = resourceInfo3.getPhotonUsed();
+    Long beforeFreePhotonUsed3 = resourceInfo3.getFreePhotonUsed();
     logger.info("beforeBalance3:" + beforeBalance3);
     logger.info("beforeEntropyLimit3:" + beforeEntropyLimit3);
     logger.info("beforeEntropyUsed3:" + beforeEntropyUsed3);
-    logger.info("beforeFreeNetLimit3:" + beforeFreeNetLimit3);
-    logger.info("beforeNetLimit3:" + beforeNetLimit3);
-    logger.info("beforeNetUsed3:" + beforeNetUsed3);
-    logger.info("beforeFreeNetUsed3:" + beforeFreeNetUsed3);
+    logger.info("beforeFreePhotonLimit3:" + beforeFreePhotonLimit3);
+    logger.info("beforePhotonLimit3:" + beforePhotonLimit3);
+    logger.info("beforePhotonUsed3:" + beforePhotonUsed3);
+    logger.info("beforeFreePhotonUsed3:" + beforeFreePhotonUsed3);
 
     contractAddress = PublicMethed.deployContract(contractName, abi, code, "", maxFeeLimit,
         0L, 101, null, linkage002Key, linkage002Address, blockingStubFull);
@@ -171,22 +171,22 @@ public class ContractLinkage002 {
     Long afterBalance3 = infoafter3.getBalance();
     Long afterEntropyLimit3 = resourceInfoafter3.getEntropyLimit();
     Long afterEntropyUsed3 = resourceInfoafter3.getEntropyUsed();
-    Long afterFreeNetLimit3 = resourceInfoafter3.getFreePhotonLimit();
-    Long afterNetLimit3 = resourceInfoafter3.getPhotonLimit();
-    Long afterNetUsed3 = resourceInfoafter3.getPhotonUsed();
-    Long afterFreeNetUsed3 = resourceInfoafter3.getFreePhotonUsed();
+    Long afterFreePhotonLimit3 = resourceInfoafter3.getFreePhotonLimit();
+    Long afterPhotonLimit3 = resourceInfoafter3.getPhotonLimit();
+    Long afterPhotonUsed3 = resourceInfoafter3.getPhotonUsed();
+    Long afterFreePhotonUsed3 = resourceInfoafter3.getFreePhotonUsed();
     logger.info("afterBalance3:" + afterBalance3);
     logger.info("afterEntropyLimit3:" + afterEntropyLimit3);
     logger.info("afterEntropyUsed3:" + afterEntropyUsed3);
-    logger.info("afterFreeNetLimit3:" + afterFreeNetLimit3);
-    logger.info("afterNetLimit3:" + afterNetLimit3);
-    logger.info("afterNetUsed3:" + afterNetUsed3);
-    logger.info("afterFreeNetUsed3:" + afterFreeNetUsed3);
+    logger.info("afterFreePhotonLimit3:" + afterFreePhotonLimit3);
+    logger.info("afterPhotonLimit3:" + afterPhotonLimit3);
+    logger.info("afterPhotonUsed3:" + afterPhotonUsed3);
+    logger.info("afterFreePhotonUsed3:" + afterFreePhotonUsed3);
 
     Assert.assertEquals(beforeBalance3, afterBalance3);
-    Assert.assertTrue(afterNetUsed3 == 0);
+    Assert.assertTrue(afterPhotonUsed3 == 0);
     Assert.assertTrue(afterEntropyUsed3 == 0);
-    Assert.assertTrue(afterFreeNetUsed3 > 0);
+    Assert.assertTrue(afterFreePhotonUsed3 > 0);
 
     //Set consumeUserResourcePercent is 100,balance not change,use FreeNet freezeBalanceGetEntropy.
 

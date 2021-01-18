@@ -152,14 +152,14 @@ public class batchValidateSignContract007 {
       PublicMethed.waitProduceNextBlock(blockingStubFull);
     }
     Long fee2 = infoById2.get().getFee();
-    Long netUsed2 = infoById2.get().getReceipt().getPhotonUsage();
+    Long photonUsed2 = infoById2.get().getReceipt().getPhotonUsage();
     Long entropyUsed2 = infoById2.get().getReceipt().getEntropyUsage();
-    Long netFee2 = infoById2.get().getReceipt().getPhotonFee();
+    Long photonFee2 = infoById2.get().getReceipt().getPhotonFee();
     long entropyUsageTotal2 = infoById2.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee2:" + fee2);
-    logger.info("netUsed2:" + netUsed2);
+    logger.info("photonUsed2:" + photonUsed2);
     logger.info("entropyUsed2:" + entropyUsed2);
-    logger.info("netFee2:" + netFee2);
+    logger.info("photonFee2:" + photonFee2);
     logger.info("entropyUsageTotal2:" + entropyUsageTotal2);
 
     Protocol.Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
@@ -175,8 +175,8 @@ public class batchValidateSignContract007 {
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
     Assert.assertTrue(afterBalance + fee1 + fee2 == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed1 + entropyUsed2 >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed1 + netUsed2 >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed1 + netUsed2 >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed1 + photonUsed2 >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed1 + photonUsed2 >= afterNetUsed);
   }
 
   /**

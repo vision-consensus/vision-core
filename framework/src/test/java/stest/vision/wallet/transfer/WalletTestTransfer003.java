@@ -177,18 +177,18 @@ public class WalletTestTransfer003 {
     Long times = 0L;
     Account sendAccountInfo = PublicMethed.queryAccount(testKeyForSendCoin, blockingStubFull);
     final Long beforeBalance = sendAccountInfo.getBalance();
-    Long netUsed1 = 0L;
-    Long netUsed2 = 1L;
+    Long photonUsed1 = 0L;
+    Long photonUsed2 = 1L;
     logger.info("Before test, the account balance is " + Long.toString(beforeBalance));
 
-    while (!(netUsed1.equals(netUsed2))) {
+    while (!(photonUsed1.equals(photonUsed2))) {
       sendAccountInfo = PublicMethed.queryAccount(testKeyForSendCoin, blockingStubFull);
-      netUsed1 = sendAccountInfo.getFreePhotonUsage();
+      photonUsed1 = sendAccountInfo.getFreePhotonUsage();
       sendCoinTransaction = sendcoin(fromAddress, 1L, sendCoinAddress,
           testKeyForSendCoin, blockingStubFull);
 
       sendAccountInfo = PublicMethed.queryAccount(testKeyForSendCoin, blockingStubFull);
-      netUsed2 = sendAccountInfo.getFreePhotonUsage();
+      photonUsed2 = sendAccountInfo.getFreePhotonUsage();
 
       if (times++ < 1) {
         PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -206,15 +206,15 @@ public class WalletTestTransfer003 {
         Assert.assertTrue(getTransactionById.get().getBlockNumber() > 0);
       }
 
-      logger.info(Long.toString(netUsed1));
-      logger.info(Long.toString(netUsed2));
+      logger.info(Long.toString(photonUsed1));
+      logger.info(Long.toString(photonUsed2));
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
-    Assert.assertTrue(netUsed2 > 4500);
+    Assert.assertTrue(photonUsed2 > 4500);
     //Next time, use fee
     sendCoinTransaction = sendcoin(fromAddress, 1L, sendCoinAddress,
         testKeyForSendCoin, blockingStubFull);

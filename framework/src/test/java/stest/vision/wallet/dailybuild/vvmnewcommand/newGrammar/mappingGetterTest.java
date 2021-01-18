@@ -79,11 +79,11 @@ public class mappingGetterTest {
     Protocol.Account info = PublicMethed.queryAccount(dev001Key, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getPhotonUsed();
+    Long beforePhotonUsed = accountResource.getPhotonUsed();
     Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
     String filePath = "./src/test/resources/soliditycode/mappingGetter.sol";
@@ -142,7 +142,7 @@ public class mappingGetterTest {
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
     Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforePhotonUsed + netUsed >= afterNetUsed);
   }
 
   /**

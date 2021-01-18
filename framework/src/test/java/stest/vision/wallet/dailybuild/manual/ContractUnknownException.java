@@ -91,15 +91,15 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    long beforeentropyLimit = resourceInfo.getEntropyLimit();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    long beforeEntropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
-    logger.info("beforeentropyLimit:" + beforeentropyLimit);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
+    logger.info("beforeEntropyLimit:" + beforeEntropyLimit);
     String filePath = "src/test/resources/soliditycode/contractUnknownException.sol";
     String contractName = "testA";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -122,15 +122,15 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    long aftereentropyLimit = resourceInfo.getEntropyLimit();
+    Long afterPhotonUsed = resourceInfo.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    long aftereEntropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
-    logger.info("afterentropyLimit:" + aftereentropyLimit);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
+    logger.info("afterentropyLimit:" + aftereEntropyLimit);
     Assert.assertThat(s, containsString("REVERT opcode executed"));
     PublicMethed.unFreezeBalance(grammarAddress, testKeyForGrammarAddress, 1, grammarAddress,
         blockingStubFull);
@@ -152,15 +152,15 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress2, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    long beforeentropyLimit = resourceInfo.getEntropyLimit();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    long beforeEntropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
-    logger.info("beforeentropyLimit:" + beforeentropyLimit);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
+    logger.info("beforeEntropyLimit:" + beforeEntropyLimit);
     String filePath = "src/test/resources/soliditycode/contractUnknownException.sol";
     String contractName = "testB";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -185,15 +185,15 @@ public class ContractUnknownException {
         blockingStubFull);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfo.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    long aftereentropyLimit = resourceInfo.getEntropyLimit();
+    Long afterPhotonUsed = resourceInfo.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    long aftereEntropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
-    logger.info("afterentropyLimit:" + aftereentropyLimit);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
+    logger.info("afterentropyLimit:" + aftereEntropyLimit);
     Assert.assertThat(s, containsString("REVERT opcode executed"));
     Assert.assertFalse(entropyFee == 1000000000);
 
@@ -219,14 +219,14 @@ public class ContractUnknownException {
     info = PublicMethed.queryAccount(grammarAddress3, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     long beforeentropyLimit = resourceInfo.getEntropyLimit();
 
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     logger.info("beforeentropyLimit:" + beforeentropyLimit);
     String filePath = "src/test/resources/soliditycode/contractUnknownException.sol";
     String contractName = "testC";

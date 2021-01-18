@@ -316,16 +316,16 @@ public class ContractOriginEntropyLimit004 {
     long entropyUsage = infoById.get().getReceipt().getEntropyUsage();
     long originEntropyUsage = infoById.get().getReceipt().getOriginEntropyUsage();
     long entropyTotalUsage = infoById.get().getReceipt().getEntropyUsageTotal();
-    long netUsage = infoById.get().getReceipt().getPhotonUsage();
-    long netFee = infoById.get().getReceipt().getPhotonFee();
+    long photonUsage = infoById.get().getReceipt().getPhotonUsage();
+    long photonFee = infoById.get().getReceipt().getPhotonFee();
 
     logger.info("fee: " + fee);
     logger.info("entropyFee: " + entropyFee);
     logger.info("entropyUsage: " + entropyUsage);
     logger.info("originEntropyUsage: " + originEntropyUsage);
     logger.info("entropyTotalUsage: " + entropyTotalUsage);
-    logger.info("netUsage: " + netUsage);
-    logger.info("netFee: " + netFee);
+    logger.info("photonUsage: " + photonUsage);
+    logger.info("photonFee: " + photonFee);
 
     smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     long consumeUserPercent = smartContract.getConsumeUserResourcePercent();

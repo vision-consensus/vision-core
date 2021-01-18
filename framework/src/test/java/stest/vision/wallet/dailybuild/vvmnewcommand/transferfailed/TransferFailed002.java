@@ -97,12 +97,12 @@ public class TransferFailed002 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     String txid = "";
     String num = "3000001";
     txid = PublicMethed
@@ -127,19 +127,19 @@ public class TransferFailed002 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     logger.info("infoById:" + infoById);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
     Assert.assertNotEquals(10000000, entropyUsageTotal);
 
 
@@ -158,12 +158,12 @@ public class TransferFailed002 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     String txid = "";
     String num = "1";
     txid = PublicMethed
@@ -188,19 +188,19 @@ public class TransferFailed002 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
     logger.info("infoById:" + infoById);
 
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee - 1 == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
 
   }
 
@@ -215,12 +215,12 @@ public class TransferFailed002 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     ECKey ecKey2 = new ECKey(Utils.getRandom());
     byte[] nonexistentAddress = ecKey2.getAddress();
     String txid = "";
@@ -250,19 +250,19 @@ public class TransferFailed002 {
         .getAccountResource(contractExcAddress, blockingStubFull1);
     Long afterBalance = infoafter.getBalance();
     Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertEquals(0, infoById.get().getResultValue());
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
     Assert.assertNotEquals(10000000, entropyUsageTotal);
 
     Account nonexistentAddressAccount = PublicMethed
@@ -292,12 +292,12 @@ public class TransferFailed002 {
     resourceInfoafter = PublicMethed.getAccountResource(contractExcAddress, blockingStubFull1);
     afterBalance = infoafter.getBalance();
     afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    afterNetUsed = resourceInfoafter.getPhotonUsed();
-    afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
+    afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
     logger.info("afterBalance:" + afterBalance);
     logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
 
     Assert.assertEquals(0, infoById.get().getResultValue());
 
@@ -319,14 +319,143 @@ public class TransferFailed002 {
     info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
     String txid = "";
     String num = "1";
+    txid = PublicMethed
+        .triggerContract(contractAddress, "testSendVsSelf(uint256)", num, false, 0, maxFeeLimit,
+            contractExcAddress, contractExcKey, blockingStubFull);
+    Optional<TransactionInfo> infoById = null;
+    PublicMethed.waitProduceNextBlock(blockingStubFull);
+    infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
+    logger.info("infobyid : --- " + infoById);
+
+    Long fee = infoById.get().getFee();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
+    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    logger.info("fee:" + fee);
+    logger.info("photonUsed:" + photonUsed);
+    logger.info("entropyUsed:" + entropyUsed);
+    logger.info("photonFee:" + photonFee);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
+
+    Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
+    AccountResourceMessage resourceInfoafter = PublicMethed
+        .getAccountResource(contractExcAddress, blockingStubFull1);
+    Long afterBalance = infoafter.getBalance();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
+    logger.info("afterBalance:" + afterBalance);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
+
+    Assert.assertTrue(infoById.get().getResultValue() == 1);
+    Assert.assertEquals(contractResult.TRANSFER_FAILED, infoById.get().getReceipt().getResult());
+    Assert.assertEquals("transfer trx failed: Cannot transfer VS to yourself.",
+        ByteArray.toStr(infoById.get().getResMessage().toByteArray()));
+
+    Assert.assertTrue(afterBalance + fee == beforeBalance);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
+    Assert.assertNotEquals(10000000, entropyUsageTotal);
+    Assert.assertNotEquals(10000000, entropyUsageTotal);
+
+
+  }
+
+
+  @Test(enabled = true, description = "Send trx nonexistent target and balance not enough")
+  public void test5SendTrxNonexistentTarget() {
+    Account info;
+
+    AccountResourceMessage resourceInfo = PublicMethed
+        .getAccountResource(contractExcAddress, blockingStubFull);
+    info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
+    Long beforeBalance = info.getBalance();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    logger.info("beforeBalance:" + beforeBalance);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
+    ECKey ecKey2 = new ECKey(Utils.getRandom());
+    byte[] nonexistentAddress = ecKey2.getAddress();
+    String txid = "";
+
+    String num = "100000000" + ",\"" + Base58.encode58Check(contractExcAddress) + "\"";
+
+    txid = PublicMethed
+        .triggerContract(contractAddress, "testSendVsNonexistentTarget(uint256,address)", num,
+            false, 0, maxFeeLimit, contractExcAddress, contractExcKey, blockingStubFull);
+    Optional<TransactionInfo> infoById = null;
+    PublicMethed.waitProduceNextBlock(blockingStubFull);
+    infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
+    logger.info("infobyid : --- " + infoById);
+
+    Long fee = infoById.get().getFee();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
+    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
+    logger.info("fee:" + fee);
+    logger.info("photonUsed:" + photonUsed);
+    logger.info("entropyUsed:" + entropyUsed);
+    logger.info("photonFee:" + photonFee);
+    logger.info("entropyUsageTotal:" + entropyUsageTotal);
+
+    Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
+    AccountResourceMessage resourceInfoafter = PublicMethed
+        .getAccountResource(contractExcAddress, blockingStubFull1);
+    Long afterBalance = infoafter.getBalance();
+    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
+    Long afterPhotonUsed = resourceInfoafter.getPhotonUsed();
+    Long afterFreePhotonUsed = resourceInfoafter.getFreePhotonUsed();
+    logger.info("afterBalance:" + afterBalance);
+    logger.info("afterEntropyUsed:" + afterEntropyUsed);
+    logger.info("afterPhotonUsed:" + afterPhotonUsed);
+    logger.info("afterFreePhotonUsed:" + afterFreePhotonUsed);
+
+    Assert.assertTrue(infoById.get().getResultValue() == 0);
+    Assert.assertTrue(afterBalance + fee == beforeBalance);
+    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreePhotonUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterPhotonUsed);
+    Assert.assertNotEquals(10000000, entropyUsageTotal);
+
+  }
+
+
+  @Test(enabled = true, description = "Send trx self and balance not enough")
+  public void test6SendTrxSelf() {
+    Account info;
+
+    AccountResourceMessage resourceInfo = PublicMethed
+        .getAccountResource(contractExcAddress, blockingStubFull);
+    info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
+    Long beforeBalance = info.getBalance();
+    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
+    Long beforePhotonUsed = resourceInfo.getPhotonUsed();
+    Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
+    logger.info("beforeBalance:" + beforeBalance);
+    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
+    ECKey ecKey2 = new ECKey(Utils.getRandom());
+    String txid = "";
+
+    String num = "1000000000";
+
     txid = PublicMethed
         .triggerContract(contractAddress, "testSendVsSelf(uint256)", num, false, 0, maxFeeLimit,
             contractExcAddress, contractExcKey, blockingStubFull);
@@ -358,140 +487,11 @@ public class TransferFailed002 {
     logger.info("afterNetUsed:" + afterNetUsed);
     logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
 
-    Assert.assertTrue(infoById.get().getResultValue() == 1);
-    Assert.assertEquals(contractResult.TRANSFER_FAILED, infoById.get().getReceipt().getResult());
-    Assert.assertEquals("transfer trx failed: Cannot transfer VS to yourself.",
-        ByteArray.toStr(infoById.get().getResMessage().toByteArray()));
-
-    Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
-    Assert.assertNotEquals(10000000, entropyUsageTotal);
-    Assert.assertNotEquals(10000000, entropyUsageTotal);
-
-
-  }
-
-
-  @Test(enabled = true, description = "Send trx nonexistent target and balance not enough")
-  public void test5SendTrxNonexistentTarget() {
-    Account info;
-
-    AccountResourceMessage resourceInfo = PublicMethed
-        .getAccountResource(contractExcAddress, blockingStubFull);
-    info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
-    Long beforeBalance = info.getBalance();
-    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
-    ECKey ecKey2 = new ECKey(Utils.getRandom());
-    byte[] nonexistentAddress = ecKey2.getAddress();
-    String txid = "";
-
-    String num = "100000000" + ",\"" + Base58.encode58Check(contractExcAddress) + "\"";
-
-    txid = PublicMethed
-        .triggerContract(contractAddress, "testSendVsNonexistentTarget(uint256,address)", num,
-            false, 0, maxFeeLimit, contractExcAddress, contractExcKey, blockingStubFull);
-    Optional<TransactionInfo> infoById = null;
-    PublicMethed.waitProduceNextBlock(blockingStubFull);
-    infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    logger.info("infobyid : --- " + infoById);
-
-    Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
-    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
-    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
-    logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
-    logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
-    logger.info("entropyUsageTotal:" + entropyUsageTotal);
-
-    Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
-    AccountResourceMessage resourceInfoafter = PublicMethed
-        .getAccountResource(contractExcAddress, blockingStubFull1);
-    Long afterBalance = infoafter.getBalance();
-    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
-    logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
-
     Assert.assertTrue(infoById.get().getResultValue() == 0);
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
-    Assert.assertNotEquals(10000000, entropyUsageTotal);
-
-  }
-
-
-  @Test(enabled = true, description = "Send trx self and balance not enough")
-  public void test6SendTrxSelf() {
-    Account info;
-
-    AccountResourceMessage resourceInfo = PublicMethed
-        .getAccountResource(contractExcAddress, blockingStubFull);
-    info = PublicMethed.queryAccount(contractExcKey, blockingStubFull);
-    Long beforeBalance = info.getBalance();
-    Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeNetUsed = resourceInfo.getPhotonUsed();
-    Long beforeFreeNetUsed = resourceInfo.getFreePhotonUsed();
-    logger.info("beforeBalance:" + beforeBalance);
-    logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
-    ECKey ecKey2 = new ECKey(Utils.getRandom());
-    String txid = "";
-
-    String num = "1000000000";
-
-    txid = PublicMethed
-        .triggerContract(contractAddress, "testSendVsSelf(uint256)", num, false, 0, maxFeeLimit,
-            contractExcAddress, contractExcKey, blockingStubFull);
-    Optional<TransactionInfo> infoById = null;
-    PublicMethed.waitProduceNextBlock(blockingStubFull);
-    infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
-    logger.info("infobyid : --- " + infoById);
-
-    Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
-    Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
-    long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
-    logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
-    logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
-    logger.info("entropyUsageTotal:" + entropyUsageTotal);
-
-    Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
-    AccountResourceMessage resourceInfoafter = PublicMethed
-        .getAccountResource(contractExcAddress, blockingStubFull1);
-    Long afterBalance = infoafter.getBalance();
-    Long afterEntropyUsed = resourceInfoafter.getEntropyUsed();
-    Long afterNetUsed = resourceInfoafter.getPhotonUsed();
-    Long afterFreeNetUsed = resourceInfoafter.getFreePhotonUsed();
-    logger.info("afterBalance:" + afterBalance);
-    logger.info("afterEntropyUsed:" + afterEntropyUsed);
-    logger.info("afterNetUsed:" + afterNetUsed);
-    logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
-
-    Assert.assertTrue(infoById.get().getResultValue() == 0);
-    Assert.assertTrue(afterBalance + fee == beforeBalance);
-    Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreePhotonUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforePhotonUsed + photonUsed >= afterNetUsed);
     Assert.assertNotEquals(10000000, entropyUsageTotal);
 
 
@@ -527,14 +527,14 @@ public class TransferFailed002 {
     logger.info("infobyid : --- " + infoById);
 
     Long fee = infoById.get().getFee();
-    Long netUsed = infoById.get().getReceipt().getPhotonUsage();
+    Long photonUsed = infoById.get().getReceipt().getPhotonUsage();
     Long entropyUsed = infoById.get().getReceipt().getEntropyUsage();
-    Long netFee = infoById.get().getReceipt().getPhotonFee();
+    Long photonFee = infoById.get().getReceipt().getPhotonFee();
     long entropyUsageTotal = infoById.get().getReceipt().getEntropyUsageTotal();
     logger.info("fee:" + fee);
-    logger.info("netUsed:" + netUsed);
+    logger.info("photonUsed:" + photonUsed);
     logger.info("entropyUsed:" + entropyUsed);
-    logger.info("netFee:" + netFee);
+    logger.info("photonFee:" + photonFee);
     logger.info("entropyUsageTotal:" + entropyUsageTotal);
 
     Account infoafter = PublicMethed.queryAccount(contractExcKey, blockingStubFull1);
@@ -556,8 +556,8 @@ public class TransferFailed002 {
 
     Assert.assertTrue(afterBalance + fee == beforeBalance);
     Assert.assertTrue(beforeEntropyUsed + entropyUsed >= afterEntropyUsed);
-    Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-    Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+    Assert.assertTrue(beforeFreeNetUsed + photonUsed >= afterFreeNetUsed);
+    Assert.assertTrue(beforeNetUsed + photonUsed >= afterNetUsed);
     Assert.assertTrue(entropyUsageTotal > EntropyCost.getInstance().getNEW_ACCT_CALL());
 
   }

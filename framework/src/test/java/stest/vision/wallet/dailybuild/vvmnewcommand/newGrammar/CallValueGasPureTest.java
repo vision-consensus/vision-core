@@ -81,12 +81,12 @@ public class CallValueGasPureTest {
     Protocol.Account info = PublicMethed.queryAccount(testKey001, blockingStubFull);
     Long beforeBalance = info.getBalance();
     Long beforeEntropyUsed = accountResource.getEntropyUsed();
-    Long beforeNetUsed = accountResource.getPhotonUsed();
-    Long beforeFreeNetUsed = accountResource.getFreePhotonUsed();
+    Long beforePhotonUsed = accountResource.getPhotonUsed();
+    Long beforeFreePhotonUsed = accountResource.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeNetUsed:" + beforeNetUsed);
-    logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+    logger.info("beforePhotonUsed:" + beforePhotonUsed);
+    logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
     String filePath = "./src/test/resources/soliditycode/callValueGasPure.sol";
     String contractName = "C";

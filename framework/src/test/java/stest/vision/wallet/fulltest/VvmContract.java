@@ -85,29 +85,29 @@ public class VvmContract {
     String abi = Configuration.getByPath("testng.conf")
         .getString("abi.abi_VvmContract_deployErc721CryptoKitties");
     Long m = 0L;
-    Long freeNet;
+    Long freePhoton;
     accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-    Long net = accountResource.getFreePhotonUsed();
+    Long photon = accountResource.getFreePhotonUsed();
     Account account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
-    Long netUsed = account.getPhotonUsage();
-    logger.info("before net used is " + Long.toString(netUsed));
+    Long photonUsed = account.getPhotonUsage();
+    logger.info("before photon used is " + Long.toString(photonUsed));
     logger.info("before balance is " + account.getBalance());
 
     for (Integer i = 0; i < 1; i++) {
       byte[] contractAddress = PublicMethed.deployContract("1", abi, code, "",
           30000000L, 0L, 1, null, contract008Key, contract008Address, blockingStubFull);
       accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-      freeNet = accountResource.getFreePhotonUsed();
+      freePhoton = accountResource.getFreePhotonUsed();
       entropyUsage = accountResource.getEntropyUsed();
       logger.info(
           "Time " + Integer.toString(i) + ": entropy usage is " + Long.toString(entropyUsage - m));
-      logger.info("Time " + Integer.toString(i) + ": free net used is " + Long
-          .toString(freeNet - net));
+      logger.info("Time " + Integer.toString(i) + ": free photon used is " + Long
+          .toString(freePhoton - photon));
       account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
       logger.info("after balance is " + account.getBalance());
-      netUsed = account.getPhotonUsage();
-      logger.info("after net used is " + Long.toString(netUsed));
-      net = freeNet;
+      photonUsed = account.getPhotonUsage();
+      logger.info("after photon used is " + Long.toString(photonUsed));
+      photon = freePhoton;
       m = entropyUsage;
       try {
         Thread.sleep(2000);

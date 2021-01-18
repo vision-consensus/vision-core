@@ -204,7 +204,7 @@ public class ContractLinkage005 {
     Assert.assertTrue((beforeBalance1 - fee) == afterBalance1);
     Assert.assertTrue(afterEntropyUsed1 > beforeEntropyUsed1);
     Assert.assertTrue(afterNetUsed1 > beforeNetUsed1);
-    //use EntropyUsed and NetUsed.balance not change
+    //use EntropyUsed and PhotonUsed.balance not change
 
     String txid6 = PublicMethed.triggerContract(contractAddress,
         "testUseCpu(uint256)", secondForCycleTimes.toString(), false,
@@ -236,17 +236,17 @@ public class ContractLinkage005 {
     Long beforeBalance4 = info4.getBalance();
     Long beforeEntropyLimit4 = resourceInfo4.getEntropyLimit();
     Long beforeEntropyUsed4 = resourceInfo4.getEntropyUsed();
-    Long beforeFreeNetLimit4 = resourceInfo4.getFreePhotonLimit();
-    Long beforeNetLimit4 = resourceInfo4.getPhotonLimit();
-    Long beforeNetUsed4 = resourceInfo4.getPhotonUsed();
-    Long beforeFreeNetUsed4 = resourceInfo4.getFreePhotonUsed();
+    Long beforeFreePhotonLimit4 = resourceInfo4.getFreePhotonLimit();
+    Long beforePhotonLimit4 = resourceInfo4.getPhotonLimit();
+    Long beforePhotonUsed4 = resourceInfo4.getPhotonUsed();
+    Long beforeFreePhotonUsed4 = resourceInfo4.getFreePhotonUsed();
     logger.info("beforeBalance4:" + beforeBalance4);
     logger.info("beforeEntropyLimit4:" + beforeEntropyLimit4);
     logger.info("beforeEntropyUsed4:" + beforeEntropyUsed4);
-    logger.info("beforeFreeNetLimit4:" + beforeFreeNetLimit4);
-    logger.info("beforeNetLimit4:" + beforeNetLimit4);
-    logger.info("beforeNetUsed4:" + beforeNetUsed4);
-    logger.info("beforeFreeNetUsed4:" + beforeFreeNetUsed4);
+    logger.info("beforeFreePhotonLimit4:" + beforeFreePhotonLimit4);
+    logger.info("beforePhotonLimit4:" + beforePhotonLimit4);
+    logger.info("beforePhotonUsed4:" + beforePhotonUsed4);
+    logger.info("beforeFreePhotonUsed4:" + beforeFreePhotonUsed4);
     txid = PublicMethed.triggerContract(contractAddress,
         "testUseStorage(uint256)", zeroForCycleTimes.toString(), false,
         0, 100000000L, linkage005Address, linkage005Key, blockingStubFull);
@@ -260,21 +260,21 @@ public class ContractLinkage005 {
     Long afterBalance4 = infoafter4.getBalance();
     Long afterEntropyLimit4 = resourceInfoafter4.getEntropyLimit();
     Long afterEntropyUsed4 = resourceInfoafter4.getEntropyUsed();
-    Long afterFreeNetLimit4 = resourceInfoafter4.getFreePhotonLimit();
-    Long afterNetLimit4 = resourceInfoafter4.getPhotonLimit();
-    Long afterNetUsed4 = resourceInfoafter4.getPhotonUsed();
-    Long afterFreeNetUsed4 = resourceInfoafter4.getFreePhotonUsed();
+    Long afterFreePhotonLimit4 = resourceInfoafter4.getFreePhotonLimit();
+    Long afterPhotonLimit4 = resourceInfoafter4.getPhotonLimit();
+    Long afterPhotonUsed4 = resourceInfoafter4.getPhotonUsed();
+    Long afterFreePhotonUsed4 = resourceInfoafter4.getFreePhotonUsed();
     logger.info("afterBalance4:" + afterBalance4);
     logger.info("afterEntropyLimit4:" + afterEntropyLimit4);
     logger.info("afterEntropyUsed4:" + afterEntropyUsed4);
-    logger.info("afterFreeNetLimit4:" + afterFreeNetLimit4);
-    logger.info("afterNetLimit4:" + afterNetLimit4);
-    logger.info("afterNetUsed4:" + afterNetUsed4);
-    logger.info("afterFreeNetUsed4:" + afterFreeNetUsed4);
+    logger.info("afterFreePhotonLimit4:" + afterFreePhotonLimit4);
+    logger.info("afterPhotonLimit4:" + afterPhotonLimit4);
+    logger.info("afterPhotonUsed4:" + afterPhotonUsed4);
+    logger.info("afterFreePhotonUsed4:" + afterFreePhotonUsed4);
     logger.info("---------------:");
     Assert.assertTrue(beforeBalance4 - fee == afterBalance4);
     Assert.assertTrue(afterEntropyUsed4 > beforeEntropyUsed4);
-    Assert.assertTrue(afterNetUsed4 > beforeNetUsed4);
+    Assert.assertTrue(afterPhotonUsed4 > beforePhotonUsed4);
 
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     zeroForCycleCost = infoById.get().getReceipt().getEntropyUsageTotal();
