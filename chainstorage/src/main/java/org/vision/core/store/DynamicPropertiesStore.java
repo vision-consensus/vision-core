@@ -326,7 +326,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalNetLimit(43_200_000_000L);
+      this.saveTotalPhotonLimit(43_200_000_000L);
     }
 
     try {
@@ -906,9 +906,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
   }
 
-  public void saveOneDayPhotonLimit(long oneDayNetLimit) {
+  public void saveOneDayPhotonLimit(long oneDayPhotonLimit) {
     this.put(DynamicResourceProperties.ONE_DAY_PHOTON_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
+        new BytesCapsule(ByteArray.fromLong(oneDayPhotonLimit)));
   }
 
   public long getOneDayPhotonLimit() {
@@ -932,9 +932,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found PUBLIC_PHOTON_USAGE"));
   }
 
-  public void savePublicPhotonLimit(long publicNetLimit) {
+  public void savePublicPhotonLimit(long publicPhotonLimit) {
     this.put(DynamicResourceProperties.PUBLIC_PHOTON_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(publicNetLimit)));
+        new BytesCapsule(ByteArray.fromLong(publicPhotonLimit)));
   }
 
   public long getPublicPhotonLimit() {
@@ -958,9 +958,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found PUBLIC_PHOTON_TIME"));
   }
 
-  public void saveFreePhotonLimit(long freeNetLimit) {
+  public void saveFreePhotonLimit(long freePhotonLimit) {
     this.put(DynamicResourceProperties.FREE_PHOTON_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(freeNetLimit)));
+        new BytesCapsule(ByteArray.fromLong(freePhotonLimit)));
   }
 
   public long getFreePhotonLimit() {
@@ -997,9 +997,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
   }
 
-  public void saveTotalNetLimit(long totalNetLimit) {
+  public void saveTotalPhotonLimit(long totalPhotonLimit) {
     this.put(DynamicResourceProperties.TOTAL_PHOTON_LIMIT,
-        new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
+        new BytesCapsule(ByteArray.fromLong(totalPhotonLimit)));
   }
 
   public long getTotalPhotonLimit() {

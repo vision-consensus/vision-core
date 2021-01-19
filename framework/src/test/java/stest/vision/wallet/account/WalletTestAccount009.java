@@ -26,7 +26,7 @@ public class WalletTestAccount009 {
   private static final long now = System.currentTimeMillis();
   private static final long totalSupply = now;
   private static final long sendAmount = 10000000000L;
-  private static final long FREENETLIMIT = 5000L;
+  private static final long FREEPHOTONLIMIT = 5000L;
   private static final long BASELINE = 4800L;
   private static String name = "AssetIssue012_" + Long.toString(now);
   private final String testKey002 = Configuration.getByPath("testng.conf")

@@ -26,7 +26,7 @@ public class WalletTestAccount007 {
   private static final long now = System.currentTimeMillis();
   private static final long totalSupply = now;
   private static final long sendAmount = 10000000000L;
-  private static final long FREENETLIMIT = 5000L;
+  private static final long FREEPHOTONLIMIT = 5000L;
   private static final long BASELINE = 4800L;
   private static String name = "AssetIssue012_" + Long.toString(now);
   private final String testKey002 = Configuration.getByPath("testng.conf")
@@ -76,9 +76,9 @@ public class WalletTestAccount007 {
     Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     final Long beforeBalance = accountInfo.getBalance();
 
-    AccountPhotonMessage accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
+    AccountPhotonMessage accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    final Long beforeFreeNet = accountNetInfo.getFreePhotonUsed();
+    final Long beforeFreeNet = accountPhotonInfo.getFreePhotonUsed();
 
     Assert.assertTrue(PublicMethed.createAccount(account007Address, newAccountAddress,
         account007Key, blockingStubFull));
@@ -86,9 +86,9 @@ public class WalletTestAccount007 {
     accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     Long afterBalance = accountInfo.getBalance();
 
-    accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
+    accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    Long afterFreeNet = accountNetInfo.getFreePhotonUsed();
+    Long afterFreeNet = accountPhotonInfo.getFreePhotonUsed();
 
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));

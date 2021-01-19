@@ -1943,9 +1943,9 @@ public class HttpMethed {
   /**
    * constructor.
    */
-  public static HttpResponse getAccountNet(String httpNode, byte[] queryAddress) {
+  public static HttpResponse getAccountPhoton(String httpNode, byte[] queryAddress) {
     try {
-      String requestUrl = "http://" + httpNode + "/wallet/getaccountnet";
+      String requestUrl = "http://" + httpNode + "/wallet/getaccountphoton";
       JsonObject userBaseObj2 = new JsonObject();
       userBaseObj2.addProperty("address", ByteArray.toHexString(queryAddress));
       response = createConnect(requestUrl, userBaseObj2);

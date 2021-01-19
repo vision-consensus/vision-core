@@ -105,8 +105,8 @@ public class WalletTestAssetIssue007 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long participateAccountBeforePhotonUsed = participateAccountNetMessage.getFreePhotonUsed();
+    AccountPhotonMessage participateAccountPhotonMessage = blockingStubFull.getAccountPhoton(request);
+    final Long participateAccountBeforePhotonUsed = participateAccountPhotonMessage.getFreePhotonUsed();
     Assert.assertTrue(participateAccountBeforePhotonUsed == 0);
 
     Account getAssetIdFromThisAccount;
@@ -126,8 +126,8 @@ public class WalletTestAssetIssue007 {
 
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
-    participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long participateAccountAfterPhotonUsed = participateAccountNetMessage.getFreePhotonUsed();
+    participateAccountPhotonMessage = blockingStubFull.getAccountPhoton(request);
+    final Long participateAccountAfterPhotonUsed = participateAccountPhotonMessage.getFreePhotonUsed();
 
     logger.info(Long.toString(asset007BeforeFreePhotonUsed));
     logger.info(Long.toString(asset007AfterFreePhotonUsed));

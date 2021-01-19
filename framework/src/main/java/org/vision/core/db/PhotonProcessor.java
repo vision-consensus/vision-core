@@ -103,16 +103,16 @@ public class PhotonProcessor extends ResourceProcessor {
         continue;
       }
 
-      if (contract.getType() == TransferAssetContract && useAssetAccountNet(contract,
+      if (contract.getType() == TransferAssetContract && useAssetAccountPhoton(contract,
           accountCapsule, now, bytesSize)) {
         continue;
       }
 
-      if (useAccountNet(accountCapsule, bytesSize, now)) {
+      if (useAccountPhoton(accountCapsule, bytesSize, now)) {
         continue;
       }
 
-      if (useFreeNet(accountCapsule, bytesSize, now)) {
+      if (useFreePhoton(accountCapsule, bytesSize, now)) {
         continue;
       }
 
@@ -160,11 +160,11 @@ public class PhotonProcessor extends ResourceProcessor {
 
     long netUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalPhotonLimit(accountCapsule);
+    long photonLimit = calculateGlobalPhotonLimit(accountCapsule);
 
     long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
 
-    if (bytes * createNewAccountPhotonRatio <= (netLimit - newNetUsage)) {
+    if (bytes * createNewAccountPhotonRatio <= (photonLimit - newNetUsage)) {
       latestConsumeTime = now;
       long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
       newNetUsage = increase(newNetUsage, bytes * createNewAccountPhotonRatio,
@@ -221,8 +221,8 @@ public class PhotonProcessor extends ResourceProcessor {
   }
 
 
-  private boolean useAssetAccountNet(Contract contract, AccountCapsule accountCapsule, long now,
-      long bytes)
+  private boolean useAssetAccountPhoton(Contract contract, AccountCapsule accountCapsule, long now,
+                                        long bytes)
       throws ContractValidateException {
 
     ByteString assetName;
@@ -245,7 +245,7 @@ public class PhotonProcessor extends ResourceProcessor {
     String tokenName = ByteArray.toStr(assetName.toByteArray());
     String tokenID = assetIssueCapsule.getId();
     if (assetIssueCapsule.getOwnerAddress() == accountCapsule.getAddress()) {
-      return useAccountNet(accountCapsule, bytes, now);
+      return useAccountPhoton(accountCapsule, bytes, now);
     }
 
     long publicFreeAssetPhotonLimit = assetIssueCapsule.getPublicFreeAssetPhotonLimit();
@@ -360,15 +360,15 @@ public class PhotonProcessor extends ResourceProcessor {
     return (long) (photonWeight * ((double) totalPhotonLimit / totalPhotonWeight));
   }
 
-  private boolean useAccountNet(AccountCapsule accountCapsule, long bytes, long now) {
+  private boolean useAccountPhoton(AccountCapsule accountCapsule, long bytes, long now) {
 
     long netUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalPhotonLimit(accountCapsule);
+    long photonLimit = calculateGlobalPhotonLimit(accountCapsule);
 
     long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
 
-    if (bytes > (netLimit - newNetUsage)) {
+    if (bytes > (photonLimit - newNetUsage)) {
       logger.debug("net usage is running out, now use free net usage");
       return false;
     }
@@ -384,40 +384,40 @@ public class PhotonProcessor extends ResourceProcessor {
     return true;
   }
 
-  private boolean useFreeNet(AccountCapsule accountCapsule, long bytes, long now) {
+  private boolean useFreePhoton(AccountCapsule accountCapsule, long bytes, long now) {
 
-    long freeNetLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
-    long freeNetUsage = accountCapsule.getFreePhotonUsage();
+    long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
+    long freePhotonUsage = accountCapsule.getFreePhotonUsage();
     long latestConsumeFreeTime = accountCapsule.getLatestConsumeFreeTime();
-    long newFreeNetUsage = increase(freeNetUsage, 0, latestConsumeFreeTime, now);
+    long newFreeNetUsage = increase(freePhotonUsage, 0, latestConsumeFreeTime, now);
 
-    if (bytes > (freeNetLimit - newFreeNetUsage)) {
+    if (bytes > (freePhotonLimit - newFreeNetUsage)) {
       logger.debug("free net usage is running out");
       return false;
     }
 
-    long publicNetLimit = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonLimit();
-    long publicNetUsage = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonUsage();
-    long publicNetTime = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonTime();
+    long publicPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonLimit();
+    long publicPhotonUsage = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonUsage();
+    long publicPhotonTime = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonTime();
 
-    long newPublicNetUsage = increase(publicNetUsage, 0, publicNetTime, now);
+    long newPublicNetUsage = increase(publicPhotonUsage, 0, publicPhotonTime, now);
 
-    if (bytes > (publicNetLimit - newPublicNetUsage)) {
+    if (bytes > (publicPhotonLimit - newPublicNetUsage)) {
       logger.debug("free public net usage is running out");
       return false;
     }
 
     latestConsumeFreeTime = now;
     long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
-    publicNetTime = now;
+    publicPhotonTime = now;
     newFreeNetUsage = increase(newFreeNetUsage, bytes, latestConsumeFreeTime, now);
-    newPublicNetUsage = increase(newPublicNetUsage, bytes, publicNetTime, now);
+    newPublicNetUsage = increase(newPublicNetUsage, bytes, publicPhotonTime, now);
     accountCapsule.setFreePhotonUsage(newFreeNetUsage);
     accountCapsule.setLatestConsumeFreeTime(latestConsumeFreeTime);
     accountCapsule.setLatestOperationTime(latestOperationTime);
 
     chainBaseManager.getDynamicPropertiesStore().savePublicNetUsage(newPublicNetUsage);
-    chainBaseManager.getDynamicPropertiesStore().savePublicPhotonTime(publicNetTime);
+    chainBaseManager.getDynamicPropertiesStore().savePublicPhotonTime(publicPhotonTime);
     chainBaseManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
     return true;
 

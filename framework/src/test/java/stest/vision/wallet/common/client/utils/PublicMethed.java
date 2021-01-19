@@ -4617,8 +4617,8 @@ public class PublicMethed {
   /**
    * constructor.
    */
-  public static long getFreezeBalanceNetCount(byte[] accountAddress, String ecKey, Long targetNet,
-      WalletGrpc.WalletBlockingStub blockingStubFull) {
+  public static long getFreezeBalancePhotonCount(byte[] accountAddress, String ecKey, Long targetNet,
+                                                 WalletGrpc.WalletBlockingStub blockingStubFull) {
     //Precision change as the entire network freezes
     AccountResourceMessage resourceInfo = getAccountResource(accountAddress, blockingStubFull);
 
@@ -4630,10 +4630,10 @@ public class PublicMethed {
     long totalPhotonLimit = resourceInfo.getTotalPhotonLimit();
     long totalPhotonWeight = resourceInfo.getTotalPhotonWeight();
     long photonUsed = resourceInfo.getPhotonUsed();
-    long netLimit = resourceInfo.getPhotonLimit();
+    long photonLimit = resourceInfo.getPhotonLimit();
 
-    if (photonUsed > netLimit) {
-      targetNet = photonUsed - netLimit + targetNet;
+    if (photonUsed > photonLimit) {
+      targetNet = photonUsed - photonLimit + targetNet;
     }
 
     if (totalPhotonWeight == 0) {

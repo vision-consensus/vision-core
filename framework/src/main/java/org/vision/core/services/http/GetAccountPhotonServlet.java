@@ -14,7 +14,7 @@ import org.vision.protos.Protocol.Account;
 
 @Component
 @Slf4j(topic = "API")
-public class GetAccountNetServlet extends RateLimiterServlet {
+public class GetAccountPhotonServlet extends RateLimiterServlet {
 
   @Autowired
   private Wallet wallet;
@@ -45,7 +45,7 @@ public class GetAccountNetServlet extends RateLimiterServlet {
 
   private void fillResponse(boolean visible, ByteString address, HttpServletResponse response)
       throws Exception {
-    AccountPhotonMessage reply = wallet.getAccountNet(address);
+    AccountPhotonMessage reply = wallet.getAccountPhoton(address);
     if (reply != null) {
       response.getWriter().println(JsonFormat.printToString(reply, visible));
     } else {

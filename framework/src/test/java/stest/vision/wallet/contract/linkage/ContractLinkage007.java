@@ -190,14 +190,14 @@ public class ContractLinkage007 {
     Long beforeEntropyLimit2 = resourceInfo2.getEntropyLimit();
     Long beforeEntropyUsed2 = resourceInfo2.getEntropyUsed();
     Long beforeFreePhotonLimit2 = resourceInfo2.getFreePhotonLimit();
-    Long beforeNetLimit2 = resourceInfo2.getPhotonLimit();
+    Long beforePhotonLimit2 = resourceInfo2.getPhotonLimit();
     Long beforePhotonUsed2 = resourceInfo2.getPhotonUsed();
     Long beforeFreePhotonUsed2 = resourceInfo2.getFreePhotonUsed();
     logger.info("beforeBalance2:" + beforeBalance2);
     logger.info("beforeEntropyLimit2:" + beforeEntropyLimit2);
     logger.info("beforeEntropyUsed2:" + beforeEntropyUsed2);
     logger.info("beforeFreePhotonLimit2:" + beforeFreePhotonLimit2);
-    logger.info("beforeNetLimit2:" + beforeNetLimit2);
+    logger.info("beforePhotonLimit2:" + beforePhotonLimit2);
     logger.info("beforePhotonUsed2:" + beforePhotonUsed2);
     logger.info("beforeFreePhotonUsed2:" + beforeFreePhotonUsed2);
     txid = PublicMethed.deployContractAndGetTransactionInfoById(contractName, abi, code,

@@ -78,14 +78,14 @@ public class ContractLinkage003 {
     Long beforeBalance = info.getBalance();
     Long beforeEntropyLimit = resourceInfo.getEntropyLimit();
     Long beforeEntropyUsed = resourceInfo.getEntropyUsed();
-    Long beforeFreeNetLimit = resourceInfo.getFreePhotonLimit();
+    Long beforeFreePhotonLimit = resourceInfo.getFreePhotonLimit();
     Long beforePhotonLimit = resourceInfo.getPhotonLimit();
     Long beforePhotonUsed = resourceInfo.getPhotonUsed();
     Long beforeFreePhotonUsed = resourceInfo.getFreePhotonUsed();
     logger.info("beforeBalance:" + beforeBalance);
     logger.info("beforeEntropyLimit:" + beforeEntropyLimit);
     logger.info("beforeEntropyUsed:" + beforeEntropyUsed);
-    logger.info("beforeFreeNetLimit:" + beforeFreeNetLimit);
+    logger.info("beforeFreePhotonLimit:" + beforeFreePhotonLimit);
     logger.info("beforePhotonLimit:" + beforePhotonLimit);
     logger.info("beforePhotonUsed:" + beforePhotonUsed);
     logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);

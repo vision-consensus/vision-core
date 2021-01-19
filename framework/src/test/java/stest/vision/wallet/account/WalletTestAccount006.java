@@ -29,7 +29,7 @@ public class WalletTestAccount006 {
   private static final long now = System.currentTimeMillis();
   private static final long totalSupply = now;
   private static final long sendAmount = 20000000000L;
-  private static final long FREENETLIMIT = 5000L;
+  private static final long FREEPHOTONLIMIT = 5000L;
   private static final long BASELINE = 4800L;
   private static String name = "AssetIssue012_" + Long.toString(now);
   private final String testKey002 = Configuration.getByPath("testng.conf")
@@ -86,20 +86,20 @@ public class WalletTestAccount006 {
     //Get new account net information.
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
-    logger.info(Long.toString(accountNetMessage.getPhotonLimit()));
-    logger.info(Long.toString(accountNetMessage.getPhotonUsed()));
-    logger.info(Long.toString(accountNetMessage.getFreePhotonLimit()));
-    logger.info(Long.toString(accountNetMessage.getFreePhotonUsed()));
-    logger.info(Long.toString(accountNetMessage.getTotalPhotonLimit()));
-    logger.info(Long.toString(accountNetMessage.getTotalPhotonWeight()));
-    Assert.assertTrue(accountNetMessage.getPhotonLimit() == 0);
-    Assert.assertTrue(accountNetMessage.getPhotonUsed() == 0);
-    Assert.assertTrue(accountNetMessage.getFreePhotonLimit() == FREENETLIMIT);
-    Assert.assertTrue(accountNetMessage.getFreePhotonUsed() == 0);
-    Assert.assertTrue(accountNetMessage.getTotalPhotonLimit() > 0);
-    Assert.assertTrue(accountNetMessage.getTotalPhotonWeight() > 0);
-    logger.info("testGetAccountNet");
+    AccountPhotonMessage accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
+    logger.info(Long.toString(accountPhotonMessage.getPhotonLimit()));
+    logger.info(Long.toString(accountPhotonMessage.getPhotonUsed()));
+    logger.info(Long.toString(accountPhotonMessage.getFreePhotonLimit()));
+    logger.info(Long.toString(accountPhotonMessage.getFreePhotonUsed()));
+    logger.info(Long.toString(accountPhotonMessage.getTotalPhotonLimit()));
+    logger.info(Long.toString(accountPhotonMessage.getTotalPhotonWeight()));
+    Assert.assertTrue(accountPhotonMessage.getPhotonLimit() == 0);
+    Assert.assertTrue(accountPhotonMessage.getPhotonUsed() == 0);
+    Assert.assertTrue(accountPhotonMessage.getFreePhotonLimit() == FREEPHOTONLIMIT);
+    Assert.assertTrue(accountPhotonMessage.getFreePhotonUsed() == 0);
+    Assert.assertTrue(accountPhotonMessage.getTotalPhotonLimit() > 0);
+    Assert.assertTrue(accountPhotonMessage.getTotalPhotonWeight() > 0);
+    logger.info("testGetAccountPhoton");
 
   }
 
@@ -111,9 +111,9 @@ public class WalletTestAccount006 {
         account006Key, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    AccountPhotonMessage accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
     //Every transaction may cost 200 Photon.
-    Assert.assertTrue(accountNetMessage.getFreePhotonUsed() > 0 && accountNetMessage
+    Assert.assertTrue(accountPhotonMessage.getFreePhotonUsed() > 0 && accountPhotonMessage
         .getFreePhotonUsed() < 300);
     logger.info("testUseFreeNet");
   }
@@ -124,13 +124,13 @@ public class WalletTestAccount006 {
         testKey002, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    AccountPhotonMessage accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
     //Use out the free net
     Integer times = 0;
-    while (accountNetMessage.getFreePhotonUsed() < BASELINE && times++ < 30) {
+    while (accountPhotonMessage.getFreePhotonUsed() < BASELINE && times++ < 30) {
       PublicMethed.sendcoin(fromAddress, 1L, account006Address, account006Key,
           blockingStubFull);
-      accountNetMessage = blockingStubFull.getAccountPhoton(request);
+      accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
     }
 
     Account queryAccount = PublicMethed.queryAccount(account006Key, blockingStubFull);
@@ -153,9 +153,9 @@ public class WalletTestAccount006 {
         account006Key, blockingStubFull));
     ByteString addressBs = ByteString.copyFrom(account006Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
-    Assert.assertTrue(accountNetMessage.getPhotonLimit() > 0);
-    Assert.assertTrue(accountNetMessage.getPhotonUsed() > 150);
+    AccountPhotonMessage accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
+    Assert.assertTrue(accountPhotonMessage.getPhotonLimit() > 0);
+    Assert.assertTrue(accountPhotonMessage.getPhotonUsed() > 150);
 
     Account queryAccount = PublicMethed.queryAccount(account006Key, blockingStubFull);
     Long beforeSendBalance = queryAccount.getBalance();
@@ -169,10 +169,10 @@ public class WalletTestAccount006 {
     Assert.assertTrue(beforeSendBalance - afterSendBalance == 1);
     addressBs = ByteString.copyFrom(account006Address);
     request = Account.newBuilder().setAddress(addressBs).build();
-    accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
     //when you freeze balance and has net,you cost net.
-    logger.info(Long.toString(accountNetMessage.getPhotonUsed()));
-    Assert.assertTrue(accountNetMessage.getPhotonUsed() > 350);
+    logger.info(Long.toString(accountPhotonMessage.getPhotonUsed()));
+    Assert.assertTrue(accountPhotonMessage.getPhotonUsed() > 350);
   }
 
   /**

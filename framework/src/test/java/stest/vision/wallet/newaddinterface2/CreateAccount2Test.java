@@ -27,7 +27,7 @@ public class CreateAccount2Test {
   private static final long now = System.currentTimeMillis();
   private static final long totalSupply = now;
   private static final long sendAmount = 10000000000L;
-  private static final long FREENETLIMIT = 5000L;
+  private static final long FREEPHOTONLIMIT = 5000L;
   private static final long BASELINE = 4800L;
   private static String name = "AssetIssue012_" + Long.toString(now);
   private final String testKey002 = Configuration.getByPath("testng.conf")
@@ -71,18 +71,18 @@ public class CreateAccount2Test {
   public void testCreateAccount2() {
     Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     final Long beforeBalance = accountInfo.getBalance();
-    AccountPhotonMessage accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
+    AccountPhotonMessage accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    final Long beforeFreeNet = accountNetInfo.getFreePhotonUsed();
+    final Long beforeFreeNet = accountPhotonInfo.getFreePhotonUsed();
     GrpcAPI.Return ret1 = PublicMethed.createAccount2(account007Address, newAccountAddress,
         account007Key, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
     accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
     Long afterBalance = accountInfo.getBalance();
-    accountNetInfo = PublicMethed.getAccountPhoton(account007Address,
+    accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    Long afterFreeNet = accountNetInfo.getFreePhotonUsed();
+    Long afterFreeNet = accountPhotonInfo.getFreePhotonUsed();
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));
     //When creator has no photon, he can't use the free net.

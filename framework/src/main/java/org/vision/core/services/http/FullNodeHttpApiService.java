@@ -73,7 +73,7 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private GetAssetIssueByAccountServlet getAssetIssueByAccountServlet;
   @Autowired
-  private GetAccountNetServlet getAccountNetServlet;
+  private GetAccountPhotonServlet getAccountPhotonServlet;
   @Autowired
   private GetAssetIssueByNameServlet getAssetIssueByNameServlet;
   @Autowired
@@ -347,7 +347,7 @@ public class FullNodeHttpApiService implements Service {
       context.addServlet(new ServletHolder(listNodesServlet), "/wallet/listnodes");
       context.addServlet(
           new ServletHolder(getAssetIssueByAccountServlet), "/wallet/getassetissuebyaccount");
-      context.addServlet(new ServletHolder(getAccountNetServlet), "/wallet/getaccountnet");
+      context.addServlet(new ServletHolder(getAccountPhotonServlet), "/wallet/getaccountphoton");
       context.addServlet(new ServletHolder(getAssetIssueByNameServlet),
           "/wallet/getassetissuebyname");
       context.addServlet(new ServletHolder(getAssetIssueListByNameServlet),

@@ -68,15 +68,15 @@ public class HttpTestAccount001 {
   /**
    * constructor.
    */
-  @Test(enabled = true, description = "Get accountNet by http")
-  public void getAccountNet() {
-    response = HttpMethed.getAccountNet(httpnode, fromAddress);
+  @Test(enabled = true, description = "Get accountPhoton by http")
+  public void getAccountPhoton() {
+    response = HttpMethed.getAccountPhoton(httpnode, fromAddress);
     logger.info("code is " + response.getStatusLine().getStatusCode());
     Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
     responseContent = HttpMethed.parseResponseContent(response);
     HttpMethed.printJsonContent(responseContent);
-    Assert.assertEquals(Integer.parseInt(responseContent.get("freeNetLimit").toString()), 5000);
-    Assert.assertEquals(Long.parseLong(responseContent.get("TotalNetLimit").toString()),
+    Assert.assertEquals(Integer.parseInt(responseContent.get("freePhotonLimit").toString()), 5000);
+    Assert.assertEquals(Long.parseLong(responseContent.get("TotalPhotonLimit").toString()),
         43200000000L);
     Assert.assertTrue(responseContent.size() >= 2);
   }

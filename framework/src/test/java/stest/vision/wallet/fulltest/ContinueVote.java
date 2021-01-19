@@ -95,7 +95,7 @@ public class ContinueVote {
   public void testVoteWitness() {
     ByteString addressBs = ByteString.copyFrom(fromAddress);
     Account request = Account.newBuilder().setAddress(addressBs).build();
-    AccountPhotonMessage accountNetMessage = blockingStubFull.getAccountPhoton(request);
+    AccountPhotonMessage accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
     Random rand = new Random();
     Integer randNum = rand.nextInt(30) + 1;
     Base58.encode58Check(fromAddress);
@@ -123,8 +123,8 @@ public class ContinueVote {
         logger.info(Integer.toString(i++));
       }
       fromInfo = PublicMethed.queryAccount(testKey002, blockingStubFull);
-      accountNetMessage = blockingStubFull.getAccountPhoton(request);
-      logger.info("Now the from net used is " + Long.toString(accountNetMessage.getPhotonUsed()));
+      accountPhotonMessage = blockingStubFull.getAccountPhoton(request);
+      logger.info("Now the from net used is " + Long.toString(accountPhotonMessage.getPhotonUsed()));
 
     }
 

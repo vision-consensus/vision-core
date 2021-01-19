@@ -1598,7 +1598,7 @@ public class RpcApiService implements Service {
       ByteString fromBs = request.getAddress();
 
       if (fromBs != null) {
-        responseObserver.onNext(wallet.getAccountNet(fromBs));
+        responseObserver.onNext(wallet.getAccountPhoton(fromBs));
       } else {
         responseObserver.onNext(null);
       }

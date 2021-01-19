@@ -1040,7 +1040,7 @@ public class Wallet {
     return allFreeAssetPhotonUsage;
   }
 
-  public AccountPhotonMessage getAccountNet(ByteString accountAddress) {
+  public AccountPhotonMessage getAccountPhoton(ByteString accountAddress) {
     if (accountAddress == null || accountAddress.isEmpty()) {
       return null;
     }
@@ -1054,7 +1054,7 @@ public class Wallet {
     PhotonProcessor processor = new PhotonProcessor(chainBaseManager);
     processor.updateUsage(accountCapsule);
 
-    long netLimit = processor
+    long photonLimit = processor
         .calculateGlobalPhotonLimit(accountCapsule);
     long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
     long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
@@ -1066,7 +1066,7 @@ public class Wallet {
     builder.setFreePhotonUsed(accountCapsule.getFreePhotonUsage())
         .setFreePhotonLimit(freePhotonLimit)
         .setPhotonUsed(accountCapsule.getPhotonUsage())
-        .setPhotonLimit(netLimit)
+        .setPhotonLimit(photonLimit)
         .setTotalPhotonLimit(totalPhotonLimit)
         .setTotalPhotonWeight(totalPhotonWeight)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
@@ -1093,7 +1093,7 @@ public class Wallet {
         chainBaseManager.getAccountStore());
     entropyProcessor.updateUsage(accountCapsule);
 
-    long netLimit = processor
+    long photonLimit = processor
         .calculateGlobalPhotonLimit(accountCapsule);
     long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
     long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
@@ -1114,7 +1114,7 @@ public class Wallet {
     builder.setFreePhotonUsed(accountCapsule.getFreePhotonUsage())
         .setFreePhotonLimit(freePhotonLimit)
         .setPhotonUsed(accountCapsule.getPhotonUsage())
-        .setPhotonLimit(netLimit)
+        .setPhotonLimit(photonLimit)
         .setTotalPhotonLimit(totalPhotonLimit)
         .setTotalPhotonWeight(totalPhotonWeight)
         .setEntropyLimit(entropyLimit)
