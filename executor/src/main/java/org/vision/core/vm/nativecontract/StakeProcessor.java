@@ -146,7 +146,7 @@ public class StakeProcessor {
     accountCapsule.setBalance(newBalance);
     repository.updateAccount(accountCapsule.createDbKey(), accountCapsule);
     repository
-            .addTotalNetWeight(frozenBalance / ChainConstant.VS_PRECISION);
+            .addTotalPhotonWeight(frozenBalance / ChainConstant.VS_PRECISION);
   }
 
   private void executeVote(byte[] ownerAddress, Protocol.Vote vote, Repository repository)

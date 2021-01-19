@@ -148,7 +148,7 @@ public class UnfreezeBalanceActuatorTest {
         .setAny(getContractForPhoton(OWNER_ADDRESS));
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
-    long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+    long totalPhotonWeightBefore = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
     try {
       actuator.validate();
@@ -161,9 +161,9 @@ public class UnfreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getFrozenBalance(), 0);
       Assert.assertEquals(owner.getVisionPower(), 0L);
 
-      long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
-      Assert.assertEquals(totalNetWeightBefore,
-          totalNetWeightAfter + frozenBalance / 1000_000L);
+      long totalPhotonWeightAfter = dbManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+      Assert.assertEquals(totalPhotonWeightBefore,
+          totalPhotonWeightAfter + frozenBalance / 1000_000L);
 
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
@@ -928,61 +928,6 @@ public class UnfreezeBalanceActuatorTest {
     }
 
   }
-
-  /*@Test
-  public void InvalidTotalNetWeight(){
-    long now = System.currentTimeMillis();
-    dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
-    dbManager.getDynamicPropertiesStore().saveTotalNetWeight(smallTatalResource);
-
-    AccountCapsule accountCapsule = dbManager.getAccountStore()
-            .get(ByteArray.fromHexString(OWNER_ADDRESS));
-    accountCapsule.setFrozen(frozenBalance, now);
-    dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
-
-    Assert.assertTrue(frozenBalance/1000_000L > smallTatalResource );
-    UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-            getContract(OWNER_ADDRESS), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      actuator.validate();
-      actuator.execute(ret);
-
-      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalNetWeight() >= 0);
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertTrue(e instanceof ContractExeException);
-    }
-  }
-
-  @Test
-  public void InvalidTotalEntropyWeight(){
-    long now = System.currentTimeMillis();
-    dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
-    dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(smallTatalResource);
-
-    AccountCapsule accountCapsule = dbManager.getAccountStore()
-            .get(ByteArray.fromHexString(OWNER_ADDRESS));
-    accountCapsule.setFrozenForEntropy(frozenBalance, now);
-    dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
-
-    Assert.assertTrue(frozenBalance/1000_000L > smallTatalResource );
-    UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-            getContract(OWNER_ADDRESS, Contract.ResourceCode.ENTROPY), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      actuator.validate();
-      actuator.execute(ret);
-
-      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalEntropyWeight() >= 0);
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertTrue(e instanceof ContractExeException);
-    }
-  }*/
-
 
   @Test
   public void commonErrorCheck() {

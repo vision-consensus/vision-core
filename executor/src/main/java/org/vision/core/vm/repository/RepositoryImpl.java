@@ -840,23 +840,23 @@ public class RepositoryImpl implements Repository {
 
   //The unit is vs
   @Override
-  public void addTotalNetWeight(long amount) {
-    long totalNetWeight = getTotalNetWeight();
-    totalNetWeight += amount;
-    saveTotalNetWeight(totalNetWeight);
+  public void addTotalPhotonWeight(long amount) {
+    long totalPhotonWeight = getTotalPhotonWeight();
+    totalPhotonWeight += amount;
+    saveTotalPhotonWeight(totalPhotonWeight);
   }
 
   @Override
-  public void saveTotalNetWeight(long totalNetWeight) {
-    updateDynamic(TOTAL_PHOTON_WEIGHT, new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
+  public void saveTotalPhotonWeight(long totalPhotonWeight) {
+    updateDynamic(TOTAL_PHOTON_WEIGHT, new BytesCapsule(ByteArray.fromLong(totalPhotonWeight)));
   }
 
   @Override
-  public long getTotalNetWeight() {
+  public long getTotalPhotonWeight() {
     return Optional.ofNullable(getDynamic(TOTAL_PHOTON_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
-                    () -> new IllegalArgumentException("not found TOTAL_NET_WEIGHT"));
+                    () -> new IllegalArgumentException("not found TOTAL_PHOTON_WEIGHT"));
   }
 }

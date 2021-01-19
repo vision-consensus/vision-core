@@ -97,7 +97,7 @@ public class WalletTestAssetIssue007 {
     ByteString addressBs = ByteString.copyFrom(asset007Address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
     AccountPhotonMessage asset007NetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long asset007BeforeFreeNetUsed = asset007NetMessage.getFreePhotonUsed();
+    final Long asset007BeforeFreePhotonUsed = asset007NetMessage.getFreePhotonUsed();
 
     //SendCoin to participate account.
     Assert.assertTrue(PublicMethed
@@ -106,8 +106,8 @@ public class WalletTestAssetIssue007 {
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
     AccountPhotonMessage participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreePhotonUsed();
-    Assert.assertTrue(participateAccountBeforeNetUsed == 0);
+    final Long participateAccountBeforePhotonUsed = participateAccountNetMessage.getFreePhotonUsed();
+    Assert.assertTrue(participateAccountBeforePhotonUsed == 0);
 
     Account getAssetIdFromThisAccount;
     getAssetIdFromThisAccount = PublicMethed.queryAccount(asset007Address, blockingStubFull);
@@ -122,19 +122,19 @@ public class WalletTestAssetIssue007 {
     addressBs = ByteString.copyFrom(asset007Address);
     request = Account.newBuilder().setAddress(addressBs).build();
     asset007NetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long asset007AfterFreeNetUsed = asset007NetMessage.getFreePhotonUsed();
+    final Long asset007AfterFreePhotonUsed = asset007NetMessage.getFreePhotonUsed();
 
     addressBs = ByteString.copyFrom(participateAssetAddress);
     request = Account.newBuilder().setAddress(addressBs).build();
     participateAccountNetMessage = blockingStubFull.getAccountPhoton(request);
-    final Long participateAccountAfterNetUsed = participateAccountNetMessage.getFreePhotonUsed();
+    final Long participateAccountAfterPhotonUsed = participateAccountNetMessage.getFreePhotonUsed();
 
-    logger.info(Long.toString(asset007BeforeFreeNetUsed));
-    logger.info(Long.toString(asset007AfterFreeNetUsed));
-    logger.info(Long.toString(participateAccountBeforeNetUsed));
-    logger.info(Long.toString(participateAccountAfterNetUsed));
-    Assert.assertTrue(asset007AfterFreeNetUsed <= asset007BeforeFreeNetUsed);
-    Assert.assertTrue(participateAccountAfterNetUsed - participateAccountBeforeNetUsed > 150);
+    logger.info(Long.toString(asset007BeforeFreePhotonUsed));
+    logger.info(Long.toString(asset007AfterFreePhotonUsed));
+    logger.info(Long.toString(participateAccountBeforePhotonUsed));
+    logger.info(Long.toString(participateAccountAfterPhotonUsed));
+    Assert.assertTrue(asset007AfterFreePhotonUsed <= asset007BeforeFreePhotonUsed);
+    Assert.assertTrue(participateAccountAfterPhotonUsed - participateAccountBeforePhotonUsed > 150);
 
     Assert.assertTrue(PublicMethed
         .participateAssetIssue(asset007Address, assetAccountId.toByteArray(), 1L,

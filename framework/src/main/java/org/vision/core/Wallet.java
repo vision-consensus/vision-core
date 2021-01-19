@@ -1056,19 +1056,19 @@ public class Wallet {
 
     long netLimit = processor
         .calculateGlobalPhotonLimit(accountCapsule);
-    long freeNetLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
-    long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
-    long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+    long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
+    long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
+    long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
     Map<String, Long> assetPhotonLimitMap = new HashMap<>();
     Map<String, Long> allFreeAssetPhotonUsage = setAssetPhotonLimit(assetPhotonLimitMap, accountCapsule);
 
     builder.setFreePhotonUsed(accountCapsule.getFreePhotonUsage())
-        .setFreePhotonLimit(freeNetLimit)
+        .setFreePhotonLimit(freePhotonLimit)
         .setPhotonUsed(accountCapsule.getPhotonUsage())
         .setPhotonLimit(netLimit)
-        .setTotalPhotonLimit(totalNetLimit)
-        .setTotalPhotonWeight(totalNetWeight)
+        .setTotalPhotonLimit(totalPhotonLimit)
+        .setTotalPhotonWeight(totalPhotonWeight)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
         .putAllAssetPhotonLimit(assetPhotonLimitMap);
     return builder.build();
@@ -1095,9 +1095,9 @@ public class Wallet {
 
     long netLimit = processor
         .calculateGlobalPhotonLimit(accountCapsule);
-    long freeNetLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
-    long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
-    long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+    long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
+    long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
+    long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
     long entropyLimit = entropyProcessor
         .calculateGlobalEntropyLimit(accountCapsule);
     long totalEntropyLimit =
@@ -1112,11 +1112,11 @@ public class Wallet {
     Map<String, Long> allFreeAssetPhotonUsage = setAssetPhotonLimit(assetPhotonLimitMap, accountCapsule);
 
     builder.setFreePhotonUsed(accountCapsule.getFreePhotonUsage())
-        .setFreePhotonLimit(freeNetLimit)
+        .setFreePhotonLimit(freePhotonLimit)
         .setPhotonUsed(accountCapsule.getPhotonUsage())
         .setPhotonLimit(netLimit)
-        .setTotalPhotonLimit(totalNetLimit)
-        .setTotalPhotonWeight(totalNetWeight)
+        .setTotalPhotonLimit(totalPhotonLimit)
+        .setTotalPhotonWeight(totalPhotonWeight)
         .setEntropyLimit(entropyLimit)
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
         .setTotalEntropyLimit(totalEntropyLimit)

@@ -4627,24 +4627,24 @@ public class PublicMethed {
     Account getAccount = queryAccount(ecKey, blockingStubFull);
 
     long balance = info.getBalance();
-    long totalNetLimit = resourceInfo.getTotalPhotonLimit();
-    long totalNetWeight = resourceInfo.getTotalPhotonWeight();
-    long netUsed = resourceInfo.getPhotonUsed();
+    long totalPhotonLimit = resourceInfo.getTotalPhotonLimit();
+    long totalPhotonWeight = resourceInfo.getTotalPhotonWeight();
+    long photonUsed = resourceInfo.getPhotonUsed();
     long netLimit = resourceInfo.getPhotonLimit();
 
-    if (netUsed > netLimit) {
-      targetNet = netUsed - netLimit + targetNet;
+    if (photonUsed > netLimit) {
+      targetNet = photonUsed - netLimit + targetNet;
     }
 
-    if (totalNetWeight == 0) {
+    if (totalPhotonWeight == 0) {
       return 1000_000L;
     }
 
-    // totalNetLimit / (totalNetWeight + needBalance) = needNet / needBalance
-    final BigInteger totalNetWeightBi = BigInteger.valueOf(totalNetWeight);
-    long needBalance = totalNetWeightBi.multiply(BigInteger.valueOf(1_000_000))
+    // totalPhotonLimit / (totalPhotonWeight + needBalance) = needNet / needBalance
+    final BigInteger totalPhotonWeightBi = BigInteger.valueOf(totalPhotonWeight);
+    long needBalance = totalPhotonWeightBi.multiply(BigInteger.valueOf(1_000_000))
         .multiply(BigInteger.valueOf(targetNet))
-        .divide(BigInteger.valueOf(totalNetLimit - targetNet)).longValue();
+        .divide(BigInteger.valueOf(totalPhotonLimit - targetNet)).longValue();
 
     logger.info("getFreezeBalanceNetCount, needBalance: " + needBalance);
 

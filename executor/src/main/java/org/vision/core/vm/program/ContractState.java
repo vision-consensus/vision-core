@@ -354,17 +354,17 @@ public class ContractState implements Repository, ProgramListenerAware {
   }
 
   @Override
-  public void addTotalNetWeight(long amount) {
-    repository.addTotalNetWeight(amount);
+  public void addTotalPhotonWeight(long amount) {
+    repository.addTotalPhotonWeight(amount);
   }
 
   @Override
-  public void saveTotalNetWeight(long totalNetWeight) {
-    repository.saveTotalNetWeight(totalNetWeight);
+  public void saveTotalPhotonWeight(long totalPhotonWeight) {
+    repository.saveTotalPhotonWeight(totalPhotonWeight);
   }
 
   @Override
-  public long getTotalNetWeight() {
-    return repository.getTotalNetWeight();
+  public long getTotalPhotonWeight() {
+    return repository.getTotalPhotonWeight();
   }
 }

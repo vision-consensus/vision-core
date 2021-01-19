@@ -79,7 +79,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
           accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
         }
         dynamicStore
-            .addTotalNetWeight(frozenBalance / VS_PRECISION);
+            .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)

@@ -45,7 +45,7 @@ public class UnstakeProcessor {
     repository.updateVotesCapsule(ownerAddress, votesCapsule);
 
     repository
-            .addTotalNetWeight(-unfreezeBalance / ChainConstant.VS_PRECISION);
+            .addTotalPhotonWeight(-unfreezeBalance / ChainConstant.VS_PRECISION);
   }
 
   public void validate(UnstakeParam unstakeParam, Repository repository)

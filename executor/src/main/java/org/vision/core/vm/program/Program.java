@@ -599,7 +599,7 @@ public class Program {
               .removeFrozen(0).build());
       repository.updateAccount(realObtain, realObtainCapsule);
       repository
-              .addTotalNetWeight(-unfreezeBalance / Parameter.ChainConstant.VS_PRECISION);
+              .addTotalPhotonWeight(-unfreezeBalance / Parameter.ChainConstant.VS_PRECISION);
     } else {
       AccountCapsule obtainCapsule = repository.getAccount(obtainer);
       long now = getTimestamp().longValue() * 1000;

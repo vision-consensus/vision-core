@@ -351,13 +351,13 @@ public class PhotonProcessor extends ResourceProcessor {
     if (frozeBalance < VS_PRECISION) {
       return 0;
     }
-    long netWeight = frozeBalance / VS_PRECISION;
-    long totalNetLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
-    long totalNetWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
-    if (totalNetWeight == 0) {
+    long photonWeight = frozeBalance / VS_PRECISION;
+    long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
+    long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+    if (totalPhotonWeight == 0) {
       return 0;
     }
-    return (long) (netWeight * ((double) totalNetLimit / totalNetWeight));
+    return (long) (photonWeight * ((double) totalPhotonLimit / totalPhotonWeight));
   }
 
   private boolean useAccountNet(AccountCapsule accountCapsule, long bytes, long now) {

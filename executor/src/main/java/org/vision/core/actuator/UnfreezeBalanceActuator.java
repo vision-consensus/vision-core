@@ -206,7 +206,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     switch (unfreezeBalanceContract.getResource()) {
       case PHOTON:
         dynamicStore
-            .addTotalNetWeight(-unfreezeBalance / VS_PRECISION);
+            .addTotalPhotonWeight(-unfreezeBalance / VS_PRECISION);
         break;
       case ENTROPY:
         dynamicStore

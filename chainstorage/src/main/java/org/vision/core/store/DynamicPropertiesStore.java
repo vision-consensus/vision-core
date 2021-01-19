@@ -971,9 +971,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found FREE_PHOTON_LIMIT"));
   }
 
-  public void saveTotalPhotonWeight(long totalNetWeight) {
+  public void saveTotalPhotonWeight(long totalPhotonWeight) {
     this.put(DynamicResourceProperties.TOTAL_PHOTON_WEIGHT,
-        new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
+        new BytesCapsule(ByteArray.fromLong(totalPhotonWeight)));
   }
 
   public long getTotalPhotonWeight() {
@@ -1918,10 +1918,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   //The unit is vs
-  public void addTotalNetWeight(long amount) {
-    long totalNetWeight = getTotalPhotonWeight();
-    totalNetWeight += amount;
-    saveTotalPhotonWeight(totalNetWeight);
+  public void addTotalPhotonWeight(long amount) {
+    long totalPhotonWeight = getTotalPhotonWeight();
+    totalPhotonWeight += amount;
+    saveTotalPhotonWeight(totalPhotonWeight);
   }
 
   //The unit is vs

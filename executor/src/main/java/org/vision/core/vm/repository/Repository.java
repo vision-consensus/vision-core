@@ -126,9 +126,9 @@ public interface Repository {
 
   long getTokenIdNum();
 
-  void addTotalNetWeight(long amount);
+  void addTotalPhotonWeight(long amount);
 
-  void saveTotalNetWeight(long totalNetWeight);
+  void saveTotalPhotonWeight(long totalPhotonWeight);
 
-  long getTotalNetWeight();
+  long getTotalPhotonWeight();
 }
