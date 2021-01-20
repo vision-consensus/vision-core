@@ -438,8 +438,8 @@ public class ShieldedTransferActuatorTest {
       AccountCapsule accountCapsule =
           dbManager.getAccountStore().get(ByteArray.fromHexString(PUBLIC_ADDRESS_ONE));
       long balance = accountCapsule.getBalance();
-      long netUsage = accountCapsule.getPhotonUsage();
-      long freeNetUsage = accountCapsule.getFreePhotonUsage();
+      long photonUsage = accountCapsule.getPhotonUsage();
+      long freePhotonUsage = accountCapsule.getFreePhotonUsage();
       long assertBalance = getAssertBalance(accountCapsule);
 
       Assert.assertTrue(dbManager.pushTransaction(transactionCap));
@@ -448,8 +448,8 @@ public class ShieldedTransferActuatorTest {
           dbManager.getAccountStore().get(ByteArray.fromHexString(PUBLIC_ADDRESS_ONE));
       Assert.assertEquals(assertBalance - AMOUNT, getAssertBalance(accountCapsule));
       Assert.assertEquals(balance, accountCapsule.getBalance());
-      Assert.assertEquals(netUsage, accountCapsule.getPhotonUsage());
-      Assert.assertEquals(freeNetUsage, accountCapsule.getFreePhotonUsage());
+      Assert.assertEquals(photonUsage, accountCapsule.getPhotonUsage());
+      Assert.assertEquals(freePhotonUsage, accountCapsule.getFreePhotonUsage());
     } catch (Exception e) {
       Assert.assertTrue(false);
     }

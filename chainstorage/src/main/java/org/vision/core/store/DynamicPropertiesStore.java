@@ -290,7 +290,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getPublicPhotonUsage();
     } catch (IllegalArgumentException e) {
-      this.savePublicNetUsage(0L);
+      this.savePublicPhotonUsage(0L);
     }
 
     try {
@@ -919,9 +919,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found ONE_DAY_PHOTON_LIMIT"));
   }
 
-  public void savePublicNetUsage(long publicNetUsage) {
+  public void savePublicPhotonUsage(long publicPhotonUsage) {
     this.put(DynamicResourceProperties.PUBLIC_PHOTON_USAGE,
-        new BytesCapsule(ByteArray.fromLong(publicNetUsage)));
+        new BytesCapsule(ByteArray.fromLong(publicPhotonUsage)));
   }
 
   public long getPublicPhotonUsage() {

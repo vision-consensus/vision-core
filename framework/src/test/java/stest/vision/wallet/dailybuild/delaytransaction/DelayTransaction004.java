@@ -113,17 +113,17 @@ public class DelayTransaction004 {
         .getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
     Assert.assertTrue(fee - photonFee == delayTransactionFee);
-    Long afterFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
+    Long afterFreePhotonUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
         blockingStubFull).getFreePhotonUsage();
-    Long beforeFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
+    Long beforeFreePhotonUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
         blockingStubFull).getFreePhotonUsage();
-    Long inDelayFreeNetUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
+    Long inDelayFreePhotonUsaged = PublicMethed.queryAccount(smartContractOwnerKey,
         blockingStubFull).getFreePhotonUsage();
-    logger.info("beforeFreeNetUsaged: " + beforeFreeNetUsaged);
-    logger.info("inDelayFreeNetUsaged: " + inDelayFreeNetUsaged);
-    logger.info("afterFreeNetUsaged: " + afterFreeNetUsaged);
-    Assert.assertTrue(beforeFreeNetUsaged + 50 < inDelayFreeNetUsaged);
-    Assert.assertTrue(inDelayFreeNetUsaged + 50 < afterFreeNetUsaged);
+    logger.info("beforeFreePhotonUsaged: " + beforeFreePhotonUsaged);
+    logger.info("inDelayFreePhotonUsaged: " + inDelayFreePhotonUsaged);
+    logger.info("afterFreePhotonUsaged: " + afterFreePhotonUsaged);
+    Assert.assertTrue(beforeFreePhotonUsaged + 50 < inDelayFreePhotonUsaged);
+    Assert.assertTrue(inDelayFreePhotonUsaged + 50 < afterFreePhotonUsaged);
 
   }
 

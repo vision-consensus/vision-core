@@ -115,7 +115,7 @@ public class Create2Test004 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     factoryContractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(factoryContractAddress,
@@ -172,7 +172,7 @@ public class Create2Test004 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -285,7 +285,7 @@ public class Create2Test004 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     if (infoById.get().getResultValue() != 0) {
       Assert.fail(
@@ -400,7 +400,7 @@ public class Create2Test004 {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     Assert.assertEquals(1, infoById.get().getResultValue());
     Assert

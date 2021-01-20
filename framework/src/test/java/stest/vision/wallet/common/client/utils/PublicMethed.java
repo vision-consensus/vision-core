@@ -341,7 +341,7 @@ public class PublicMethed {
       builder.setFreeAssetPhotonLimit(freeAssetPhotonLimit);
       builder.setPublicFreeAssetPhotonLimit(publicFreeAssetPhotonLimit);
       //builder.setPublicFreeAssetPhotonUsage();
-      //builder.setPublicLatestFreeNetTime();
+      //builder.setPublicLatestFreePhotonTime();
       AssetIssueContract.FrozenSupply.Builder frozenBuilder = AssetIssueContract.FrozenSupply
           .newBuilder();
       frozenBuilder.setFrozenAmount(fronzenAmount);

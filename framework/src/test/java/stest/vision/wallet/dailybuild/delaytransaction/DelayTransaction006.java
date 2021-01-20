@@ -104,18 +104,18 @@ public class DelayTransaction006 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert.assertTrue(PublicMethed.getAssetIssueById(ByteArray.toStr(assetId
         .toByteArray()), blockingStubFull).getFreeAssetPhotonLimit() == newFreeAssetPhotonLimit);
-    Long afterNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
+    Long afterPhotonUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
     Long photonFee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get()
         .getReceipt().getPhotonFee();
     Long fee = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getFee();
-    Long beforeNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
+    Long beforePhotonUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
-    Long inDelayNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
+    Long inDelayPhotonUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
     Assert.assertTrue(fee - photonFee == delayTransactionFee);
-    Assert.assertTrue(beforeNetUsaged + 50 < inDelayNetUsaged);
-    Assert.assertTrue(inDelayNetUsaged + 50 < afterNetUsaged);
+    Assert.assertTrue(beforePhotonUsaged + 50 < inDelayPhotonUsaged);
+    Assert.assertTrue(inDelayPhotonUsaged + 50 < afterPhotonUsaged);
 
   }
 
@@ -162,14 +162,14 @@ public class DelayTransaction006 {
 
     Assert.assertTrue(fee - photonFee == cancleDelayTransactionFee);
 
-    Long afterNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
+    Long afterPhotonUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
-    Long beforeNetUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
+    Long beforePhotonUsaged = PublicMethed.queryAccount(assetOwnerKey, blockingStubFull)
         .getFreePhotonUsage();
 
-    logger.info("beforeNetUsaged: " + beforeNetUsaged);
-    logger.info("afterNetUsaged:  " + afterNetUsaged);
-    Assert.assertTrue(beforeNetUsaged >= afterNetUsaged);
+    logger.info("beforePhotonUsaged: " + beforePhotonUsaged);
+    logger.info("afterPhotonUsaged:  " + afterPhotonUsaged);
+    Assert.assertTrue(beforePhotonUsaged >= afterPhotonUsaged);
 
   }
 

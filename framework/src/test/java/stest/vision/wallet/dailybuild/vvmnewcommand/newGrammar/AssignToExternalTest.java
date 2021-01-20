@@ -105,7 +105,7 @@ public class AssignToExternalTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(contractAddress,

@@ -76,8 +76,8 @@ public class WalletTestAccount014 {
     blockingStubSoliInFull = WalletSolidityGrpc.newBlockingStub(channelSoliInFull);
   }
 
-  @Test(enabled = true, description = "Query freeNetUsage in 50061")
-  public void fullAndSoliMerged1ForFreeNetUsage() {
+  @Test(enabled = true, description = "Query freePhotonUsage in 50061")
+  public void fullAndSoliMerged1ForFreePhotonUsage() {
     //Create account014
     ecKey1 = new ECKey(Utils.getRandom());
     account014Address = ecKey1.getAddress();
@@ -91,7 +91,7 @@ public class WalletTestAccount014 {
     Assert.assertTrue(PublicMethed.sendcoin(account014Address, 1000000000L, fromAddress,
         testKey002, blockingStubFull));
 
-    //Test freeNetUsage in fullnode and soliditynode.
+    //Test freePhotonUsage in fullnode and soliditynode.
     Assert.assertTrue(PublicMethed.sendcoin(account014SecondAddress, 5000000L,
         account014Address, account014Key,
         blockingStubFull));
@@ -100,28 +100,28 @@ public class WalletTestAccount014 {
         blockingStubFull));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Account account014 = PublicMethed.queryAccount(account014Address, blockingStubFull);
-    final long freeNetUsageInFullnode = account014.getFreePhotonUsage();
+    final long freePhotonUsageInFullnode = account014.getFreePhotonUsage();
     final long createTimeInFullnode = account014.getCreateTime();
     final long lastOperationTimeInFullnode = account014.getLatestOprationTime();
     final long lastCustomeFreeTimeInFullnode = account014.getLatestConsumeFreeTime();
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSoliInFull);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSoliInFull);
-    final long freeNetUsageInSoliInFull = account014.getFreePhotonUsage();
+    final long freePhotonUsageInSoliInFull = account014.getFreePhotonUsage();
     final long createTimeInSoliInFull = account014.getCreateTime();
     final long lastOperationTimeInSoliInFull = account014.getLatestOprationTime();
     final long lastCustomeFreeTimeInSoliInFull = account014.getLatestConsumeFreeTime();
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSolidity);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSolidity);
-    final long freeNetUsageInSolidity = account014.getFreePhotonUsage();
+    final long freePhotonUsageInSolidity = account014.getFreePhotonUsage();
     final long createTimeInSolidity = account014.getCreateTime();
     final long lastOperationTimeInSolidity = account014.getLatestOprationTime();
     final long lastCustomeFreeTimeInSolidity = account014.getLatestConsumeFreeTime();
-    Assert.assertTrue(freeNetUsageInSoliInFull > 0 && freeNetUsageInSolidity > 0
-        && freeNetUsageInFullnode > 0);
-    Assert.assertTrue(freeNetUsageInFullnode <= freeNetUsageInSoliInFull + 5
-        && freeNetUsageInFullnode >= freeNetUsageInSoliInFull - 5);
-    Assert.assertTrue(freeNetUsageInFullnode <= freeNetUsageInSolidity + 5
-        && freeNetUsageInFullnode >= freeNetUsageInSolidity - 5);
+    Assert.assertTrue(freePhotonUsageInSoliInFull > 0 && freePhotonUsageInSolidity > 0
+        && freePhotonUsageInFullnode > 0);
+    Assert.assertTrue(freePhotonUsageInFullnode <= freePhotonUsageInSoliInFull + 5
+        && freePhotonUsageInFullnode >= freePhotonUsageInSoliInFull - 5);
+    Assert.assertTrue(freePhotonUsageInFullnode <= freePhotonUsageInSolidity + 5
+        && freePhotonUsageInFullnode >= freePhotonUsageInSolidity - 5);
     Assert.assertTrue(createTimeInFullnode == createTimeInSolidity && createTimeInFullnode
         == createTimeInSoliInFull);
     Assert.assertTrue(createTimeInSoliInFull != 0);
@@ -133,8 +133,8 @@ public class WalletTestAccount014 {
     Assert.assertTrue(lastCustomeFreeTimeInSoliInFull != 0);
   }
 
-  @Test(enabled = true, description = "Query net usage in 50061")
-  public void fullAndSoliMerged2ForNetUsage() {
+  @Test(enabled = true, description = "Query Photon usage in 50061")
+  public void fullAndSoliMerged2ForPhotonUsage() {
 
     Assert.assertTrue(PublicMethed.freezeBalance(account014Address, 1000000L, 3,
         account014Key, blockingStubFull));
@@ -158,7 +158,7 @@ public class WalletTestAccount014 {
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSoliInFull);
     Account account014 = PublicMethed.queryAccount(account014Address, blockingStubFull);
     final long lastCustomeTimeInFullnode = account014.getLatestConsumeTime();
-    final long netUsageInFullnode = account014.getPhotonUsage();
+    final long photonUsageInFullnode = account014.getPhotonUsage();
     final long acquiredForPhotonInFullnode = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
     final long delegatedPhotonInFullnode = account014.getDelegatedFrozenBalanceForPhoton();
@@ -170,8 +170,8 @@ public class WalletTestAccount014 {
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSoliInFull);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSoliInFull);
     final long lastCustomeTimeInSoliInFull = account014.getLatestConsumeTime();
-    logger.info("freeNetUsageInSoliInFull " + lastCustomeTimeInSoliInFull);
-    final long netUsageInSoliInFull = account014.getPhotonUsage();
+    logger.info("freePhotonUsageInSoliInFull " + lastCustomeTimeInSoliInFull);
+    final long photonUsageInSoliInFull = account014.getPhotonUsage();
     final long acquiredForPhotonInSoliInFull = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
     final long delegatedPhotonInSoliInFull = account014.getDelegatedFrozenBalanceForPhoton();
@@ -182,7 +182,7 @@ public class WalletTestAccount014 {
     logger.info("delegatedForEntropyInSoliInFull " + delegatedForEntropyInSoliInFull);
     PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSolidity);
     account014 = PublicMethed.queryAccount(account014Address, blockingStubSolidity);
-    final long netUsageInSolidity = account014.getPhotonUsage();
+    final long photonUsageInSolidity = account014.getPhotonUsage();
     final long lastCustomeTimeInSolidity = account014.getLatestConsumeTime();
     final long acquiredForPhotonInSolidity = account014
         .getAcquiredDelegatedFrozenBalanceForPhoton();
@@ -193,12 +193,12 @@ public class WalletTestAccount014 {
         .getDelegatedFrozenBalanceForEntropy();
 
     logger.info("delegatedForEntropyInSolidity " + delegatedForEntropyInSolidity);
-    Assert.assertTrue(netUsageInSoliInFull > 0 && netUsageInSolidity > 0
-        && netUsageInFullnode > 0);
-    Assert.assertTrue(netUsageInFullnode <= netUsageInSoliInFull + 5
-        && netUsageInFullnode >= netUsageInSoliInFull - 5);
-    Assert.assertTrue(netUsageInFullnode <= netUsageInSolidity + 5
-        && netUsageInFullnode >= netUsageInSolidity - 5);
+    Assert.assertTrue(photonUsageInSoliInFull > 0 && photonUsageInSolidity > 0
+        && photonUsageInFullnode > 0);
+    Assert.assertTrue(photonUsageInFullnode <= photonUsageInSoliInFull + 5
+        && photonUsageInFullnode >= photonUsageInSoliInFull - 5);
+    Assert.assertTrue(photonUsageInFullnode <= photonUsageInSolidity + 5
+        && photonUsageInFullnode >= photonUsageInSolidity - 5);
     Assert.assertTrue(acquiredForPhotonInFullnode == acquiredForPhotonInSoliInFull
         && acquiredForPhotonInFullnode == acquiredForPhotonInSolidity);
     Assert.assertTrue(delegatedPhotonInFullnode == delegatedPhotonInSoliInFull

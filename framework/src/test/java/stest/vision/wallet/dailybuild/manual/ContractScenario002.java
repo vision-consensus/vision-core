@@ -195,15 +195,15 @@ public class ContractScenario002 {
    */
   @Test(enabled = true, description = "Get transaction by id from Solidity")
   public void test05GetTransactionInfoByIdFromSolidity() throws Exception {
-    long netUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
+    long photonUsage = PublicMethed.getTransactionInfoById(txid, blockingStubFull).get().getReceipt()
         .getPhotonUsage();
 
     Assert.assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubSolidity)
-        .get().getReceipt().getPhotonUsage(), netUsage);
+        .get().getReceipt().getPhotonUsage(), photonUsage);
 
     Assert
         .assertEquals(PublicMethed.getTransactionInfoByIdFromSolidity(txid, blockingStubSoliInFull)
-            .get().getReceipt().getPhotonUsage(), netUsage);
+            .get().getReceipt().getPhotonUsage(), photonUsage);
   }
 
   /**

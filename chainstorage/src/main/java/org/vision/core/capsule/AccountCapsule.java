@@ -810,9 +810,9 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return this.account.getPhotonUsage();
   }
 
-  public void setPhotonUsage(long netUsage) {
+  public void setPhotonUsage(long photonUsage) {
     this.account = this.account.toBuilder()
-        .setPhotonUsage(netUsage).build();
+        .setPhotonUsage(photonUsage).build();
   }
 
   public AccountResource getAccountResource() {

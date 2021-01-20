@@ -115,7 +115,7 @@ public class WalletTestAccount006 {
     //Every transaction may cost 200 Photon.
     Assert.assertTrue(accountPhotonMessage.getFreePhotonUsed() > 0 && accountPhotonMessage
         .getFreePhotonUsed() < 300);
-    logger.info("testUseFreeNet");
+    logger.info("testUseFreePhoton");
   }
 
   @Test(enabled = true)

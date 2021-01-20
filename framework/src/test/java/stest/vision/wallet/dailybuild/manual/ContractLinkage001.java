@@ -93,7 +93,7 @@ public class ContractLinkage001 {
     logger.info("beforePhotonUsed:" + beforePhotonUsed);
     logger.info("beforeFreePhotonUsed:" + beforeFreePhotonUsed);
 
-    //Value is equal balance,this will be failed.Only use FreeNet,Other not change.
+    //Value is equal balance,this will be failed.Only use FreePhoton,Other not change.
     String filePath = "./src/test/resources/soliditycode/contractLinkage001.sol";
     String contractName = "divideIHaveArgsReturnStorage";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -172,7 +172,7 @@ public class ContractLinkage001 {
     logger.info("beforePhotonUsed1:" + beforePhotonUsed1);
     logger.info("beforeFreePhotonUsed1:" + beforeFreePhotonUsed1);
 
-    //Value is 1,use BalanceGetEntropy,use FreeNet,fee==0.
+    //Value is 1,use BalanceGetEntropy,use FreePhoton,fee==0.
     txid = PublicMethed
         .deployContractAndGetTransactionInfoById(contractName, payableAbi, payableCode,
             "", maxFeeLimit, 1L, 100, null, linkage001Key,

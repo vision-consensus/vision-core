@@ -73,7 +73,7 @@ public class CreateAccount2Test {
     final Long beforeBalance = accountInfo.getBalance();
     AccountPhotonMessage accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    final Long beforeFreeNet = accountPhotonInfo.getFreePhotonUsed();
+    final Long beforeFreePhoton = accountPhotonInfo.getFreePhotonUsed();
     GrpcAPI.Return ret1 = PublicMethed.createAccount2(account007Address, newAccountAddress,
         account007Key, blockingStubFull);
     Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
@@ -82,11 +82,11 @@ public class CreateAccount2Test {
     Long afterBalance = accountInfo.getBalance();
     accountPhotonInfo = PublicMethed.getAccountPhoton(account007Address,
         blockingStubFull);
-    Long afterFreeNet = accountPhotonInfo.getFreePhotonUsed();
+    Long afterFreePhoton = accountPhotonInfo.getFreePhotonUsed();
     logger.info(Long.toString(beforeBalance));
     logger.info(Long.toString(afterBalance));
     //When creator has no photon, he can't use the free net.
-    Assert.assertTrue(afterFreeNet == beforeFreeNet);
+    Assert.assertTrue(afterFreePhoton == beforeFreePhoton);
     //When the creator has no photon, create a new account should spend 0.1VS.
     Assert.assertTrue(beforeBalance - afterBalance == 100000);
   }

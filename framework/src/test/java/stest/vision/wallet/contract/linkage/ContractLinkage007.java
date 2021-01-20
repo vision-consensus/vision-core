@@ -150,7 +150,7 @@ public class ContractLinkage007 {
     logger.info("beforePhotonLimit1:" + beforePhotonLimit1);
     logger.info("beforePhotonUsed1:" + beforePhotonUsed1);
     logger.info("beforeFreePhotonUsed1:" + beforeFreePhotonUsed1);
-    //When the feelimit is 0, the deploy will be failed.Only use FreeNet,balance not change.
+    //When the feelimit is 0, the deploy will be failed.Only use FreePhoton,balance not change.
     txid = PublicMethed.deployContractAndGetTransactionInfoById(contractName, abi, code,
         "", 0L, 0L, 100, null, linkage007Key,
         linkage007Address, blockingStubFull);
@@ -182,7 +182,7 @@ public class ContractLinkage007 {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Assert.assertTrue(infoById.get().getResultValue() == 1);
 
-    //Deploy the contract.success.use FreeNet,EntropyFee.balcne change
+    //Deploy the contract.success.use FreePhoton,EntropyFee.balcne change
     AccountResourceMessage resourceInfo2 = PublicMethed.getAccountResource(linkage007Address,
         blockingStubFull);
     Account info2 = PublicMethed.queryAccount(linkage007Address, blockingStubFull);

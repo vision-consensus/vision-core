@@ -70,11 +70,11 @@ public class ContractScenario010 {
         blockingStubFull);
     Long entropyLimit = accountResource.getEntropyLimit();
     Long entropyUsage = accountResource.getEntropyUsed();
-    Long netUsage = accountResource.getPhotonUsed();
+    Long photonUsage = accountResource.getPhotonUsed();
 
     logger.info("before entropy limit is " + Long.toString(entropyLimit));
     logger.info("before entropy usage is " + Long.toString(entropyUsage));
-    logger.info("before Net usage is " + Long.toString(netUsage));
+    logger.info("before Net usage is " + Long.toString(photonUsage));
     String filePath = "./src/test/resources/soliditycode/contractScenario010.sol";
     String contractName = "VISION_ERC721";
     HashMap retMap = PublicMethed.getBycodeAbi(filePath, contractName);
@@ -94,13 +94,13 @@ public class ContractScenario010 {
     accountResource = PublicMethed.getAccountResource(contract009Address, blockingStubFull);
     entropyLimit = accountResource.getEntropyLimit();
     entropyUsage = accountResource.getEntropyUsed();
-    netUsage = accountResource.getPhotonUsed();
+    photonUsage = accountResource.getPhotonUsed();
     Assert.assertTrue(entropyLimit > 0);
     Assert.assertTrue(entropyUsage > 0);
 
     logger.info("after entropy limit is " + Long.toString(entropyLimit));
     logger.info("after entropy usage is " + Long.toString(entropyUsage));
-    logger.info("after Net usage is " + Long.toString(netUsage));
+    logger.info("after Net usage is " + Long.toString(photonUsage));
   }
 
   /**

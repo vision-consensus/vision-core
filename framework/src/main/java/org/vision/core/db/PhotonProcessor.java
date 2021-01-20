@@ -39,12 +39,12 @@ public class PhotonProcessor extends ResourceProcessor {
   }
 
   private void updateUsage(AccountCapsule accountCapsule, long now) {
-    long oldNetUsage = accountCapsule.getPhotonUsage();
+    long oldPhotonUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    accountCapsule.setPhotonUsage(increase(oldNetUsage, 0, latestConsumeTime, now));
-    long oldFreeNetUsage = accountCapsule.getFreePhotonUsage();
+    accountCapsule.setPhotonUsage(increase(oldPhotonUsage, 0, latestConsumeTime, now));
+    long oldFreePhotonUsage = accountCapsule.getFreePhotonUsage();
     long latestConsumeFreeTime = accountCapsule.getLatestConsumeFreeTime();
-    accountCapsule.setFreePhotonUsage(increase(oldFreeNetUsage, 0, latestConsumeFreeTime, now));
+    accountCapsule.setFreePhotonUsage(increase(oldFreePhotonUsage, 0, latestConsumeFreeTime, now));
 
     if (chainBaseManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
       Map<String, Long> assetMap = accountCapsule.getAssetMap();
@@ -158,20 +158,20 @@ public class PhotonProcessor extends ResourceProcessor {
     long createNewAccountPhotonRatio = chainBaseManager.getDynamicPropertiesStore()
         .getCreateNewAccountPhotonRate();
 
-    long netUsage = accountCapsule.getPhotonUsage();
+    long photonUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
     long photonLimit = calculateGlobalPhotonLimit(accountCapsule);
 
-    long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
+    long newPhotonUsage = increase(photonUsage, 0, latestConsumeTime, now);
 
-    if (bytes * createNewAccountPhotonRatio <= (photonLimit - newNetUsage)) {
+    if (bytes * createNewAccountPhotonRatio <= (photonLimit - newPhotonUsage)) {
       latestConsumeTime = now;
       long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
-      newNetUsage = increase(newNetUsage, bytes * createNewAccountPhotonRatio,
+      newPhotonUsage = increase(newPhotonUsage, bytes * createNewAccountPhotonRatio,
           latestConsumeTime, now);
       accountCapsule.setLatestConsumeTime(latestConsumeTime);
       accountCapsule.setLatestOperationTime(latestOperationTime);
-      accountCapsule.setPhotonUsage(newNetUsage);
+      accountCapsule.setPhotonUsage(newPhotonUsage);
       chainBaseManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
       return true;
     }
@@ -362,21 +362,21 @@ public class PhotonProcessor extends ResourceProcessor {
 
   private boolean useAccountPhoton(AccountCapsule accountCapsule, long bytes, long now) {
 
-    long netUsage = accountCapsule.getPhotonUsage();
+    long photonUsage = accountCapsule.getPhotonUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
     long photonLimit = calculateGlobalPhotonLimit(accountCapsule);
 
-    long newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
+    long newPhotonUsage = increase(photonUsage, 0, latestConsumeTime, now);
 
-    if (bytes > (photonLimit - newNetUsage)) {
+    if (bytes > (photonLimit - newPhotonUsage)) {
       logger.debug("net usage is running out, now use free net usage");
       return false;
     }
 
     latestConsumeTime = now;
     long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
-    newNetUsage = increase(newNetUsage, bytes, latestConsumeTime, now);
-    accountCapsule.setPhotonUsage(newNetUsage);
+    newPhotonUsage = increase(newPhotonUsage, bytes, latestConsumeTime, now);
+    accountCapsule.setPhotonUsage(newPhotonUsage);
     accountCapsule.setLatestOperationTime(latestOperationTime);
     accountCapsule.setLatestConsumeTime(latestConsumeTime);
 
@@ -389,9 +389,9 @@ public class PhotonProcessor extends ResourceProcessor {
     long freePhotonLimit = chainBaseManager.getDynamicPropertiesStore().getFreePhotonLimit();
     long freePhotonUsage = accountCapsule.getFreePhotonUsage();
     long latestConsumeFreeTime = accountCapsule.getLatestConsumeFreeTime();
-    long newFreeNetUsage = increase(freePhotonUsage, 0, latestConsumeFreeTime, now);
+    long newFreePhotonUsage = increase(freePhotonUsage, 0, latestConsumeFreeTime, now);
 
-    if (bytes > (freePhotonLimit - newFreeNetUsage)) {
+    if (bytes > (freePhotonLimit - newFreePhotonUsage)) {
       logger.debug("free net usage is running out");
       return false;
     }
@@ -400,9 +400,9 @@ public class PhotonProcessor extends ResourceProcessor {
     long publicPhotonUsage = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonUsage();
     long publicPhotonTime = chainBaseManager.getDynamicPropertiesStore().getPublicPhotonTime();
 
-    long newPublicNetUsage = increase(publicPhotonUsage, 0, publicPhotonTime, now);
+    long newPublicPhotonUsage = increase(publicPhotonUsage, 0, publicPhotonTime, now);
 
-    if (bytes > (publicPhotonLimit - newPublicNetUsage)) {
+    if (bytes > (publicPhotonLimit - newPublicPhotonUsage)) {
       logger.debug("free public net usage is running out");
       return false;
     }
@@ -410,13 +410,13 @@ public class PhotonProcessor extends ResourceProcessor {
     latestConsumeFreeTime = now;
     long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
     publicPhotonTime = now;
-    newFreeNetUsage = increase(newFreeNetUsage, bytes, latestConsumeFreeTime, now);
-    newPublicNetUsage = increase(newPublicNetUsage, bytes, publicPhotonTime, now);
-    accountCapsule.setFreePhotonUsage(newFreeNetUsage);
+    newFreePhotonUsage = increase(newFreePhotonUsage, bytes, latestConsumeFreeTime, now);
+    newPublicPhotonUsage = increase(newPublicPhotonUsage, bytes, publicPhotonTime, now);
+    accountCapsule.setFreePhotonUsage(newFreePhotonUsage);
     accountCapsule.setLatestConsumeFreeTime(latestConsumeFreeTime);
     accountCapsule.setLatestOperationTime(latestOperationTime);
 
-    chainBaseManager.getDynamicPropertiesStore().savePublicNetUsage(newPublicNetUsage);
+    chainBaseManager.getDynamicPropertiesStore().savePublicPhotonUsage(newPublicPhotonUsage);
     chainBaseManager.getDynamicPropertiesStore().savePublicPhotonTime(publicPhotonTime);
     chainBaseManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
     return true;

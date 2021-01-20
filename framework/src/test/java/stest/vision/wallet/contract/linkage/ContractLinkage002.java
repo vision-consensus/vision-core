@@ -188,14 +188,14 @@ public class ContractLinkage002 {
     Assert.assertTrue(afterEntropyUsed3 == 0);
     Assert.assertTrue(afterFreePhotonUsed3 > 0);
 
-    //Set consumeUserResourcePercent is 100,balance not change,use FreeNet freezeBalanceGetEntropy.
+    //Set consumeUserResourcePercent is 100,balance not change,use FreePhoton freezeBalanceGetEntropy.
 
     contractAddress = PublicMethed.deployContract(contractName, abi, code, "", maxFeeLimit,
         0L, 100, null, linkage002Key, linkage002Address, blockingStubFull);
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     Assert.assertTrue(smartContract.getConsumeUserResourcePercent() == 100);
 
-    //Set the consumeUserResourcePercent is 0,balance not change,use FreeNet freezeBalanceGetEntropy.
+    //Set the consumeUserResourcePercent is 0,balance not change,use FreePhoton freezeBalanceGetEntropy.
     AccountResourceMessage resourceInfo2 = PublicMethed.getAccountResource(linkage002Address,
         blockingStubFull);
     Account info2 = PublicMethed.queryAccount(linkage002Address, blockingStubFull);

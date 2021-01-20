@@ -116,7 +116,7 @@ public class MappingFixTest {
 
     TransactionInfo transactionInfo = infoById.get();
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     contractAddress = infoById.get().getContractAddress().toByteArray();
     SmartContract smartContract = PublicMethed.getContract(contractAddress,
@@ -161,7 +161,7 @@ public class MappingFixTest {
     Assert.assertEquals(WalletClient.encode58Check(dev001Address), tmpAddress);
 
     logger.info("EntropyUsageTotal: " + transactionInfo.getReceipt().getEntropyUsageTotal());
-    logger.info("NetUsage: " + transactionInfo.getReceipt().getPhotonUsage());
+    logger.info("PhotonUsage: " + transactionInfo.getReceipt().getPhotonUsage());
 
     methodStr = "balances(address)";
     argStr = "\"" + WalletClient.encode58Check(dev001Address) + "\"";

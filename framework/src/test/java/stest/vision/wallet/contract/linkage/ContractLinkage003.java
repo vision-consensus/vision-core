@@ -97,7 +97,7 @@ public class ContractLinkage003 {
     String code = retMap.get("byteCode").toString();
     String abi = retMap.get("abI").toString();
 
-    //use FreeNet and balance,EntropyUsed==0.
+    //use FreePhoton and balance,EntropyUsed==0.
     String txid = PublicMethed
         .deployContractAndGetTransactionInfoById(contractName, abi, code, "", maxFeeLimit,
             0L, 0, null, linkage002Key, linkage003Address, blockingStubFull);
