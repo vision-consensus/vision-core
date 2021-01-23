@@ -54,8 +54,8 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
   @Override
   public void put(byte[] key, AccountCapsule item) {
     logger.info("account:"+ ByteArray.toHexString(key));
-    logger.info("AccountCapsule1:"+ item.getAddress().toStringUtf8());
-    logger.info("AccountCapsule2:"+ Base58.encode(item.getAddress().toByteArray()));
+    logger.info("AccountCapsule1 Address:"+ ByteArray.toHexString(item.getAddress().toByteArray()));
+    logger.info("AccountCapsule2 Balance:"+ item.getBalance());
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
   }
