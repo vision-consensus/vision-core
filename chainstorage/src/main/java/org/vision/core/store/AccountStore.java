@@ -1,5 +1,6 @@
 package org.vision.core.store;
 
+import com.google.gson.JsonObject;
 import com.typesafe.config.ConfigObject;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
@@ -46,6 +48,8 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
 
   @Override
   public void put(byte[] key, AccountCapsule item) {
+    logger.info("account:"+ ByteArray.toHexString(key));
+    logger.info("AccountCapsule:"+ item.getAddress());
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
   }
