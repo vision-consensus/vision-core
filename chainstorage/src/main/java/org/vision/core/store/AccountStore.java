@@ -1,7 +1,6 @@
 package org.vision.core.store;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import com.typesafe.config.ConfigObject;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +52,7 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
     logger.info("account:"+ ByteArray.toHexString(key));
     logger.info("AccountCapsule1 Address:"+ ByteArray.toHexString(item.getAddress().toByteArray()));
     logger.info("AccountCapsule2 Balance:"+ item.getBalance());
-    try {
-      String json = JsonFormat.printer().print(item.getInstance());
-      logger.info("AccountCapsule3 JSON:"+ json);
-    } catch (InvalidProtocolBufferException e) {
-      e.printStackTrace();
-    }
+    logger.info("AccountCapsule2 JSON:"+ JsonFormat.printToString(item.getInstance()));
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
   }
