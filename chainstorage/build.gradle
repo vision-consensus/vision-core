@@ -43,6 +43,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.5'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.5'
     compile 'com.alibaba:fastjson:1.2.60'
+    compile group: 'org.zeromq', name: 'jeromq', version: '0.5.0'
     compile project(":vprotocol")
     compile project(":common")
     compile project(":crypto")
