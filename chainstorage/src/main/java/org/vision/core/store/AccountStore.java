@@ -1,6 +1,5 @@
 package org.vision.core.store;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.typesafe.config.ConfigObject;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.JsonFormat;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.db.accountstate.AccountStateCallBackUtils;
@@ -53,6 +53,7 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
     logger.info("AccountCapsule1 Address:"+ ByteArray.toHexString(item.getAddress().toByteArray()));
     logger.info("AccountCapsule2 Balance:"+ item.getBalance());
     logger.info("AccountCapsule2 JSON:"+ JsonFormat.printToString(item.getInstance()));
+
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
   }

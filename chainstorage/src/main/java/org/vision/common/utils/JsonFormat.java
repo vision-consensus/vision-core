@@ -1,4 +1,4 @@
-package org.vision.core.store;
+package org.vision.common.utils;
 
 /*
   Copyright (c) 2009, Orbitz World Wide
@@ -36,9 +36,6 @@ import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import org.apache.commons.lang3.StringUtils;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Commons;
-import org.vision.common.utils.StringUtil;
 
 import java.io.IOException;
 import java.math.BigInteger;

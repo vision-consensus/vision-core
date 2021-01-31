@@ -1,4 +1,4 @@
-package org.vision.core.store;
+package org.vision.common.utils;
 
 import java.util.HashMap;
 import java.util.Map;
