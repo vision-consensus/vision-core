@@ -25,6 +25,7 @@ public class Constant {
   public static final long TRANSACTION_MAX_BYTE_SIZE = 500 * 1_024L;
   public static final long MAXIMUM_TIME_UNTIL_EXPIRATION = 24 * 60 * 60 * 1_000L; //one day
   public static final long TRANSACTION_DEFAULT_EXPIRATION_TIME = 60 * 1_000L; //60 seconds
+  public static final long TRANSACTION_FEE_POOL_PERIOD = 1; //1 blocks
   // config for smart contract
   public static final long VDT_PER_ENTROPY = 100; // 1 us = 100 VDT = 100 * 10^-6 VS
   public static final long ENTROPY_LIMIT_IN_CONSTANT_TX = 3_000_000L; // ref: 1 us = 1 entropy

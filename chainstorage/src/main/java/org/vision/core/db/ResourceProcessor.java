@@ -72,7 +72,12 @@ abstract class ResourceProcessor {
       long latestOperationTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       accountCapsule.setLatestOperationTime(latestOperationTime);
       Commons.adjustBalance(accountStore, accountCapsule, -fee);
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), +fee);
+      if (dynamicPropertiesStore.supportTransactionFeePool()) {
+        dynamicPropertiesStore
+                .saveTransactionFeePool(dynamicPropertiesStore.getTransactionFeePool() + fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), +fee);
+      }
       return true;
     } catch (BalanceInsufficientException e) {
       return false;

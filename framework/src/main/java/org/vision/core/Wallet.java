@@ -971,6 +971,15 @@ public class Wallet {
     //        .setValue(dbManager.getDynamicPropertiesStore().getAllowVvmAssetIssue())
     //        .build());
 
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowTransactionFeePool")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowTransactionFeePool())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getMaxFeeLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getMaxFeeLimit())
+            .build());
+
     return builder.build();
   }
 
