@@ -1,5 +1,6 @@
 package org.vision.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -40,14 +41,6 @@ public class Producer {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        int i = 0;
-        while(i++<20){
-            Producer.getInstance().send("test", "test"+i);
-        }
-
     }
 }
 
