@@ -10,10 +10,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.JsonFormat;
 import org.vision.common.utils.Producer;
+import org.vision.core.Constant;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.db.accountstate.AccountStateCallBackUtils;
@@ -50,7 +52,9 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
 
   @Override
   public void put(byte[] key, AccountCapsule item) {
-    Producer.getInstance().send("ACCOUNT", JsonFormat.printToString(item.getInstance()));
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      Producer.getInstance().send("ACCOUNT", JsonFormat.printToString(item.getInstance()));
+    }
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
   }

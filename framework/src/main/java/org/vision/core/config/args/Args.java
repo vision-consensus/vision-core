@@ -742,7 +742,8 @@ public class Args extends CommonParameter {
     PARAMETER.setOpenHistoryQueryWhenLiteFN(
             config.hasPath(Constant.NODE_OPEN_HISTORY_QUERY_WHEN_LITEFN)
                     && config.getBoolean(Constant.NODE_OPEN_HISTORY_QUERY_WHEN_LITEFN));
-
+    PARAMETER.setKafkaEnable(config.hasPath(Constant.KAFKA_SENDER_ENABLE) && config.getBoolean(Constant.KAFKA_SENDER_ENABLE));
+    PARAMETER.kafkaBootStrapServers = config.hasPath(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) ? config.getString(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) : "";
     logConfig();
   }
 

@@ -1,14 +1,16 @@
 package org.vision.common.utils;
 
-import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.vision.common.parameter.CommonParameter;
 
 import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+@Slf4j
 public class Producer {
     private final KafkaProducer<String, String> producer;
     public static Producer instance;
@@ -24,8 +26,9 @@ public class Producer {
     }
 
     private Producer() {
+        logger.info("kafka bootstrap servers:"+CommonParameter.PARAMETER.getKafkaBootStrapServers());
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.1.120:19092,192.168.1.120:19093");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, CommonParameter.PARAMETER.getKafkaBootStrapServers());
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
