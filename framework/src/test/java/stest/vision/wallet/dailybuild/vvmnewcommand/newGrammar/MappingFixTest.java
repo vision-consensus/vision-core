@@ -70,8 +70,8 @@ public class MappingFixTest {
   }
 
   // after solidity version 0.5.4.
-  // Vron Solidity compiler is no longer compatible with Ethereum
-  // vron handles 46 Address in contract, and Ethereum do not
+  // Vision Solidity compiler is no longer compatible with Ethereum
+  // Vision handles 46 Address in contract, and Ethereum do not
 
   @Test(enabled = true, description = "Deploy contract")
   public void test01DeployContract() {

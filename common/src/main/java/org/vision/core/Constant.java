@@ -38,7 +38,7 @@ public class Constant {
   public static final int ONE_HUNDRED = 100;
   public static final int ONE_THOUSAND = 1000;
 
-  public static final byte[] ZVISION_EXPANDSEED_PERSONALIZATION = {'Z', 'v', 'r', 'o', 'n', '_', 'E',
+  public static final byte[] ZVISION_EXPANDSEED_PERSONALIZATION = {'Z', 'v', 'i', 's', 'i', 'o', 'n', '_', 'E',
       'x',
       'p', 'a', 'n', 'd', 'S', 'e', 'e', 'd'};
   public static final int ZC_DIVERSIFIER_SIZE = 11;
