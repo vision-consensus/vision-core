@@ -124,13 +124,13 @@ public class ReceiptCapsule {
 
     if (Objects.isNull(origin) && dynamicPropertiesStore.getAllowVvmConstantinople() == 1) {
       payEntropyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEntropyUsageTotal(), entropyProcessor, now);
+          receipt.getEntropyUsageTotal(), receipt.getResult(), entropyProcessor, now);
       return;
     }
 
     if (caller.getAddress().equals(origin.getAddress())) {
       payEntropyBill(dynamicPropertiesStore, accountStore, forkController, caller,
-          receipt.getEntropyUsageTotal(), entropyProcessor, now);
+          receipt.getEntropyUsageTotal(), receipt.getResult(), entropyProcessor, now);
     } else {
       long originUsage = Math.multiplyExact(receipt.getEntropyUsageTotal(), percent) / 100;
       originUsage = getOriginUsage(dynamicPropertiesStore, origin, originEntropyLimit,
@@ -141,7 +141,7 @@ public class ReceiptCapsule {
       entropyProcessor.useEntropy(origin, originUsage, now);
       this.setOriginEntropyUsage(originUsage);
       payEntropyBill(dynamicPropertiesStore, accountStore, forkController,
-          caller, callerUsage, entropyProcessor, now);
+          caller, callerUsage, receipt.getResult(), entropyProcessor, now);
     }
   }
 
@@ -161,6 +161,7 @@ public class ReceiptCapsule {
       ForkController forkController,
       AccountCapsule account,
       long usage,
+      contractResult contractResult,
       EntropyProcessor entropyProcessor,
       long now) throws BalanceInsufficientException {
     long accountEntropyLeft = entropyProcessor.getAccountLeftEntropyFromFreeze(account);
@@ -193,9 +194,16 @@ public class ReceiptCapsule {
       }
       account.setBalance(balance - entropyFee);
 
-      //send to blackHole
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().getAddress().toByteArray(),
-          entropyFee);
+      if (dynamicPropertiesStore.supportTransactionFeePool() &&
+              !contractResult.equals(contractResult.OUT_OF_TIME)) {
+        dynamicPropertiesStore
+                .saveTransactionFeePool(dynamicPropertiesStore.getTransactionFeePool() + entropyFee);
+      } else {
+        //send to blackHole
+        Commons.adjustBalance(accountStore, accountStore.getSingularity().getAddress().toByteArray(),
+                entropyFee);
+      }
+
     }
 
     accountStore.put(account.getAddress().toByteArray(), account);

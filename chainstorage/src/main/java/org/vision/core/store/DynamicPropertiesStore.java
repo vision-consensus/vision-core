@@ -149,6 +149,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] MARKET_CANCEL_FEE = "MARKET_CANCEL_FEE".getBytes();
   private static final byte[] MARKET_QUANTITY_LIMIT = "MARKET_QUANTITY_LIMIT".getBytes();
 
+
+  private static final byte[] ALLOW_TRANSACTION_FEE_POOL = "ALLOW_TRANSACTION_FEE_POOL".getBytes();
+  private static final byte[] TRANSACTION_FEE_POOL = "TRANSACTION_FEE_POOL".getBytes();
+
+  private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
+
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
     super(dbName);
@@ -462,6 +468,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.saveMarketQuantityLimit(1_000_000_000_000_000L);
     }
 
+
+    try {
+      this.getAllowTransactionFeePool();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowTransactionFeePool(0L);
+    }
+
+    try {
+      this.getTransactionFeePool();
+    } catch (IllegalArgumentException e) {
+      this.saveTransactionFeePool(0L);
+    }
+
     try {
       this.getTotalTransactionCost();
     } catch (IllegalArgumentException e) {
@@ -693,6 +712,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     } catch (IllegalArgumentException e) {
       this.saveAllowPBFT(CommonParameter.getInstance().getAllowPBFT());
     }
+
+    try {
+      this.getMaxFeeLimit();
+    } catch (IllegalArgumentException e) {
+      this.saveMaxFeeLimit(1_000_000_000L);
+    }
+
 
   }
 
@@ -1372,6 +1398,36 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found MARKET_QUANTITY_LIMIT"));
   }
 
+  public boolean supportTransactionFeePool() {
+    return getAllowTransactionFeePool() == 1L;
+  }
+
+  public void saveAllowTransactionFeePool(long limit) {
+    this.put(ALLOW_TRANSACTION_FEE_POOL,
+            new BytesCapsule(ByteArray.fromLong(limit)));
+  }
+
+  public long getAllowTransactionFeePool() {
+    return Optional.ofNullable(getUnchecked(ALLOW_TRANSACTION_FEE_POOL))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found ALLOW_TRANSACTION_FEE_POOL"));
+  }
+
+  public void saveTransactionFeePool(long value) {
+    this.put(TRANSACTION_FEE_POOL,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getTransactionFeePool() {
+    return Optional.ofNullable(getUnchecked(TRANSACTION_FEE_POOL))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found TRANSACTION_FEE_POOL"));
+  }
+
   public void saveTotalTransactionCost(long value) {
     this.put(TOTAL_TRANSACTION_COST,
         new BytesCapsule(ByteArray.fromLong(value)));
@@ -2043,6 +2099,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public boolean allowPBFT() {
     return getAllowPBFT() == 1;
+  }
+
+  public long getMaxFeeLimit() {
+    return Optional.ofNullable(getUnchecked(MAX_FEE_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found MAX_FEE_LIMIT"));
+  }
+
+  public void saveMaxFeeLimit(long maxFeeLimit) {
+    this.put(MAX_FEE_LIMIT,
+            new BytesCapsule(ByteArray.fromLong(maxFeeLimit)));
   }
 
   private static class DynamicResourceProperties {

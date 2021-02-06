@@ -24,7 +24,7 @@ import stest.vision.wallet.common.client.Parameter.CommonConstant;
 import stest.vision.wallet.common.client.utils.PublicMethed;
 
 @Slf4j
-public class VronDice {
+public class VisionDice {
 
   private final String testKey002 = Configuration.getByPath("testng.conf")
       .getString("foundationAccount.key1");
@@ -64,19 +64,19 @@ public class VronDice {
   }
 
   @Test(enabled = true, threadPoolSize = 30, invocationCount = 30)
-  public void vronDice() {
+  public void visionDice() {
     ECKey ecKey1 = new ECKey(Utils.getRandom());
-    byte[] vronDiceAddress = ecKey1.getAddress();
-    String vronDiceKey = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
+    byte[] visionDiceAddress = ecKey1.getAddress();
+    String visionDiceKey = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
     PublicMethed
-        .sendcoin(vronDiceAddress, 100000000000L, fromAddress, testKey002, blockingStubFull);
-    String contractName = "VronDice";
+        .sendcoin(visionDiceAddress, 100000000000L, fromAddress, testKey002, blockingStubFull);
+    String contractName = "VisionDice";
     String code = Configuration.getByPath("testng.conf")
-        .getString("code.code_VronDice_vronDice");
+        .getString("code.code_VisionDice_visionDice");
     String abi = Configuration.getByPath("testng.conf")
-        .getString("abi.abi_VronDice_vronDice");
+        .getString("abi.abi_VisionDice_VisionDice");
     byte[] contractAddress = PublicMethed.deployContract(contractName, abi, code, "",
-        maxFeeLimit, 1000000000L, 100, null, vronDiceKey, vronDiceAddress, blockingStubFull);
+        maxFeeLimit, 1000000000L, 100, null, visionDiceKey, visionDiceAddress, blockingStubFull);
     SmartContract smartContract = PublicMethed.getContract(contractAddress, blockingStubFull);
     try {
       Thread.sleep(10000);
@@ -92,7 +92,7 @@ public class VronDice {
       String initParmes = "\"" + "10" + "\"";
       txid = PublicMethed.triggerContract(contractAddress,
           "rollDice(uint256)", initParmes, false,
-          1000000, maxFeeLimit, vronDiceAddress, vronDiceKey, blockingStubFull);
+          1000000, maxFeeLimit, visionDiceAddress, visionDiceKey, blockingStubFull);
       logger.info(txid);
       txidList.add(txid);
 
