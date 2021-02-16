@@ -332,7 +332,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalPhotonLimit(43_200_000_000L);
+      this.saveTotalPhotonLimit(2_000_000_000L); //43_200_000_000L
     }
 
     try {
@@ -357,13 +357,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalEntropyLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalEntropyLimit(50_000_000_000L);
+      this.saveTotalEntropyLimit(3_000_000_000L); //50_000_000_000L
     }
 
     try {
       this.getEntropyFee();
     } catch (IllegalArgumentException e) {
-      this.saveEntropyFee(100L);// 100 vdt per entropy
+      this.saveEntropyFee(5L);// 100 vdt per entropy
     }
 
     try {
