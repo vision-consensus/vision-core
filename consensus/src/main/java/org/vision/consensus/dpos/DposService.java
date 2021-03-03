@@ -152,6 +152,7 @@ public class DposService implements ConsensusInterface {
     int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100));
     long newSolidNum = numbers.get(position);
     long oldSolidNum = consensusDelegate.getLatestSolidifiedBlockNum();
+    logger.info(" number size:"+ numbers.size()+"size:"+ size+" position:"+ position);
     if (newSolidNum < oldSolidNum) {
       logger.warn("Update solid block number failed, new: {} < old: {}", newSolidNum, oldSolidNum);
       return;
