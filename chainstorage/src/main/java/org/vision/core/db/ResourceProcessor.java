@@ -77,7 +77,7 @@ abstract class ResourceProcessor {
       } else if (dynamicPropertiesStore.supportBlackHoleOptimization()) {
         dynamicPropertiesStore.burnTrx(fee);
       } else {
-        Commons.adjustBalance(accountStore, accountStore.getBlackhole().createDbKey(), +fee);
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), +fee);
       }
       return true;
     } catch (BalanceInsufficientException e) {

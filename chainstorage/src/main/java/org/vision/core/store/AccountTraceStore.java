@@ -33,7 +33,7 @@ import org.vision.core.capsule.AccountTraceCapsule;
 import org.vision.core.capsule.BlockBalanceTraceCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.BadItemException;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace;
@@ -41,7 +41,7 @@ import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace;
 
 @Component
 @Slf4j(topic = "DB")
-public class AccountTraceStore extends TronStoreWithRevoking<AccountTraceCapsule>  {
+public class AccountTraceStore extends VisionStoreWithRevoking<AccountTraceCapsule>  {
 
   @Autowired
   protected AccountTraceStore(@Value("account-trace") String dbName) {

@@ -50,7 +50,7 @@ public class ScanShieldedVRC20NotesByIvkServlet extends RateLimiterServlet {
               ivkDecryptVRC20Parameters.getAk().toByteArray(),
               ivkDecryptVRC20Parameters.getNk().toByteArray(),
               ivkDecryptVRC20Parameters.getEventsList());
-      response.getWriter().println(convertOutput(notes, visible));
+      response.getWriter().println(convertOutput(notes, params.isVisible()));
     } catch (Exception e) {
       Util.processError(e, response);
     }

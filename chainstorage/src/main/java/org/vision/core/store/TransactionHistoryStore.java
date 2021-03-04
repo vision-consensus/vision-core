@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.core.capsule.TransactionInfoCapsule;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.BadItemException;
 
 @Component

@@ -1,6 +1,6 @@
 package org.vision.core.exception;
 
-public class TooBigTransactionException extends TronException {
+public class TooBigTransactionException extends VisionException {
 
   public TooBigTransactionException() {
     super();

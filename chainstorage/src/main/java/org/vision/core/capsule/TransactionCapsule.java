@@ -17,6 +17,7 @@ package org.vision.core.capsule;
 
 import static org.vision.common.utils.StringUtil.encode58Check;
 import static org.vision.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
+import static org.vision.common.utils.WalletUtil.checkPermissionOperations;
 
 import com.google.common.primitives.Bytes;
 import com.google.protobuf.Any;

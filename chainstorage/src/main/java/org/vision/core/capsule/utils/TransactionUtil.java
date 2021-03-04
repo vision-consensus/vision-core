@@ -79,11 +79,11 @@ public class TransactionUtil {
         .getChainBaseManager().getDynamicPropertiesStore().supportTransactionFeePool();
     if (supportTransactionFeePool) {
       long packingFee = 0L;
-      if (trace.isNetFeeForBandwidth()) {
-        packingFee += traceReceipt.getNetFee();
+      if (trace.isPhotonFeeForPhoton()) {
+        packingFee += traceReceipt.getPhotonFee();
       }
       if (!traceReceipt.getResult().equals(Transaction.Result.contractResult.OUT_OF_TIME)) {
-        packingFee += traceReceipt.getEnergyFee();
+        packingFee += traceReceipt.getEntropyFee();
       }
       builder.setPackingFee(packingFee);
     }

@@ -167,7 +167,7 @@ public class NodeStatistics {
         + " "
         + messageStatistics.discoverOutNeighbours + "/" + messageStatistics.discoverInFindNode
         + " "
-        + ((int) discoverMessageLatency.getAvrg()) + "ms"
+        + ((int) discoverMessageLatency.getAvg()) + "ms"
         + ", p2p: " + p2pHandShake + "/" + messageStatistics.p2pInHello + "/"
         + messageStatistics.p2pOutHello + " "
         + ", vision: " + messageStatistics.visionInMessage + "/" + messageStatistics.visionOutMessage

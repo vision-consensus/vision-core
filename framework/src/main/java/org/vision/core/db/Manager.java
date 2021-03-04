@@ -1,8 +1,8 @@
 package org.vision.core.db;
 
 import static org.vision.common.utils.Commons.adjustBalance;
-import static org.tron.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
-import static org.tron.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
+import static org.vision.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
+import static org.vision.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

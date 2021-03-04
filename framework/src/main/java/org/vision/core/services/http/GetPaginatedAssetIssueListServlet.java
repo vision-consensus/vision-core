@@ -9,6 +9,8 @@ import org.vision.api.GrpcAPI.AssetIssueList;
 import org.vision.api.GrpcAPI.PaginatedMessage;
 import org.vision.core.Wallet;
 
+import java.io.IOException;
+
 
 @Component
 @Slf4j(topic = "API")

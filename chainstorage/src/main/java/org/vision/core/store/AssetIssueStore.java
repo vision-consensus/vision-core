@@ -1,5 +1,7 @@
 package org.vision.core.store;
 
+import static org.vision.common.utils.Commons.ASSET_ISSUE_COUNT_LIMIT_MAX;
+
 import com.google.common.collect.Streams;
 import java.util.List;
 import java.util.Map.Entry;
@@ -9,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.core.capsule.AssetIssueCapsule;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 
 @Slf4j(topic = "DB")
 @Component

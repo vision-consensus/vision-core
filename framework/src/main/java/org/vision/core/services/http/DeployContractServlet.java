@@ -1,6 +1,6 @@
 package org.vision.core.services.http;
-import static org.tron.core.services.http.Util.getHexAddress;
-import static org.tron.core.services.http.Util.setTransactionPermissionId;
+import static org.vision.core.services.http.Util.getHexAddress;
+import static org.vision.core.services.http.Util.setTransactionPermissionId;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;

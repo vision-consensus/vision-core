@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import org.tron.core.capsule.BytesCapsule;
+import org.vision.core.capsule.BytesCapsule;
 
 public class ConcurrentHashDB implements DB<byte[], BytesCapsule> {
 

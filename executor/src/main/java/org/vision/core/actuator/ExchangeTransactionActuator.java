@@ -24,7 +24,7 @@ import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.ExchangeStore;
 import org.vision.core.store.ExchangeV2Store;
-import org.tron.core.utils.TransactionUtil;
+import org.vision.core.utils.TransactionUtil;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.ExchangeContract.ExchangeTransactionContract;

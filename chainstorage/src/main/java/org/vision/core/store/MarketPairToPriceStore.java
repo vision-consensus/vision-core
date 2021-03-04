@@ -8,7 +8,7 @@ import org.vision.common.utils.ByteArray;
 import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 
 /**
  * This store is used to store the first price Key of specific token pair

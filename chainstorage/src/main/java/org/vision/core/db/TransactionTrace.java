@@ -74,7 +74,7 @@ public class TransactionTrace {
   private TimeResultType timeResultType = TimeResultType.NORMAL;
   @Getter
   @Setter
-  private boolean photonFeeForBandwidth = true;
+  private boolean photonFeeForPhoton = true;
 
   public TransactionTrace(TransactionCapsule trx, StoreFactory storeFactory,
       Runtime runtime) {

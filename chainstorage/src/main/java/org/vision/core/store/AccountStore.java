@@ -15,7 +15,7 @@ import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Commons;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.db.accountstate.AccountStateCallBackUtils;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace;
@@ -107,7 +107,7 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
     return getUnchecked(assertsAddress.get("Singularity"));
   }
 
-  public byte[] getBlackholeAddress() {
+  public byte[] getSingularityAddress() {
     return assertsAddress.get("Singularity");
   }
   /**

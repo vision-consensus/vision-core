@@ -54,7 +54,7 @@ public class GetTransactionInfoByIdServlet extends RateLimiterServlet {
       JsonFormat.merge(params.getParams(), build, params.isVisible());
       TransactionInfo reply = wallet.getTransactionInfoById(build.getValue());
       if (reply != null) {
-        response.getWriter().println(convertLogAddressToVisionAddress(reply, params.visible));
+        response.getWriter().println(convertLogAddressToVisionAddress(reply, params.isVisible()));
       } else {
         response.getWriter().println("{}");
       }

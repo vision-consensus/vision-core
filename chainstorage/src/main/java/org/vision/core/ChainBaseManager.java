@@ -25,7 +25,7 @@ import org.vision.core.db.KhaosDatabase;
 import org.vision.core.db.PbftSignDataStore;
 import org.vision.core.db.RecentBlockStore;
 import org.vision.core.db.TransactionStore;
-import org.vision.core.db2.core.ITronChainBase;
+import org.vision.core.db2.core.IVisionChainBase;
 import org.vision.core.exception.BadItemException;
 import org.vision.core.exception.HeaderNotFound;
 import org.vision.core.exception.ItemNotFoundException;

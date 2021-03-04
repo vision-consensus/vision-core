@@ -15,7 +15,7 @@ import org.vision.common.utils.MarketOrderPriceComparatorForRockDB;
 import org.vision.common.utils.StorageUtils;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.ItemNotFoundException;
 
 @Component

@@ -1,8 +1,8 @@
 package org.vision.core.actuator;
 
-import static org.tron.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.tron.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.tron.core.actuator.ActuatorConstant.PROPOSAL_EXCEPTION_STR;
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.actuator.ActuatorConstant.PROPOSAL_EXCEPTION_STR;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Objects;

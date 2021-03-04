@@ -15,6 +15,7 @@ import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.*;
 import org.vision.core.db.*;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.common.crypto.Hash;
 import org.vision.common.parameter.CommonParameter;

@@ -1,6 +1,6 @@
 package org.vision.core.actuator;
 
-import static org.tron.core.capsule.TransactionCapsule.getShieldTransactionHashIgnoreTypeException;
+import static org.vision.core.capsule.TransactionCapsule.getShieldTransactionHashIgnoreTypeException;
 import static org.vision.core.utils.ZenChainParams.ZC_ENCCIPHERTEXT_SIZE;
 import static org.vision.core.utils.ZenChainParams.ZC_OUTCIPHERTEXT_SIZE;
 

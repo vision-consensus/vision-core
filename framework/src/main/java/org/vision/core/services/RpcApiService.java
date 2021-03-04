@@ -65,6 +65,9 @@ import org.vision.protos.contract.AccountContract.SetAccountIdContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.*;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
+import org.vision.protos.contract.BalanceContract.AccountBalanceResponse;
+import org.vision.protos.contract.BalanceContract.AccountBalanceRequest;
+import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeCreateContract;
@@ -83,6 +86,8 @@ import org.vision.protos.contract.StorageContract.UpdateBrokerageContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
+
+import static org.vision.core.Wallet.CONTRACT_VALIDATE_ERROR;
 
 
 @Component
@@ -582,7 +587,8 @@ public class RpcApiService implements Service {
     public void getBrokerageInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
       getBrokerageInfoCommon(request, responseObserver);
-      }
+    }
+
     @Override
     public void getBurnTrx(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
       getBurnTrxCommon(request, responseObserver);
@@ -927,7 +933,7 @@ public class RpcApiService implements Service {
       } catch (ContractValidateException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
             .setMessage(ByteString
-                .copyFromUtf8(Wallet.CONTRACT_VALIDATE_ERROR + e.getMessage()));
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
@@ -1804,8 +1810,7 @@ public class RpcApiService implements Service {
         trxExtBuilder.setResult(retBuilder);
       } catch (ContractValidateException | VMIllegalException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(Wallet
-                .CONTRACT_VALIDATE_ERROR + e.getMessage()));
+            .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         trxExtBuilder.setResult(retBuilder);
         logger.warn(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (RuntimeException e) {
@@ -1979,7 +1984,7 @@ public class RpcApiService implements Service {
       } catch (ContractValidateException | ZksnarkException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
             .setMessage(ByteString
-                .copyFromUtf8(Wallet.CONTRACT_VALIDATE_ERROR + e.getMessage()));
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
@@ -2010,7 +2015,7 @@ public class RpcApiService implements Service {
       } catch (ContractValidateException | ZksnarkException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
             .setMessage(ByteString
-                .copyFromUtf8(Wallet.CONTRACT_VALIDATE_ERROR + e.getMessage()));
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)

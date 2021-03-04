@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.vision.core.Constant;
 import org.vision.core.net.service.AdvService;
 import org.vision.core.net.service.SyncService;
 import org.vision.common.overlay.message.HelloMessage;

@@ -22,7 +22,7 @@ import org.vision.common.utils.Sha256Hash;
 import org.vision.core.capsule.BlockBalanceTraceCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.BadItemException;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace;
@@ -32,7 +32,7 @@ import java.util.Objects;
 
 @Component
 @Slf4j(topic = "DB")
-public class BalanceTraceStore extends TronStoreWithRevoking<BlockBalanceTraceCapsule>  {
+public class BalanceTraceStore extends VisionStoreWithRevoking<BlockBalanceTraceCapsule>  {
 
   @Getter
   private BlockCapsule.BlockId currentBlockId;

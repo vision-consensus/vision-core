@@ -3,11 +3,11 @@ package org.vision.core.capsule;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.zksnark.JLibrustzcash;
-import org.tron.common.zksnark.LibrustzcashParam.MerkleHashParams;
-import org.tron.core.exception.ZksnarkException;
-import org.tron.protos.contract.ShieldContract.PedersenHash;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.zksnark.JLibrustzcash;
+import org.vision.common.zksnark.LibrustzcashParam.MerkleHashParams;
+import org.vision.core.exception.ZksnarkException;
+import org.vision.protos.contract.ShieldContract.PedersenHash;
 
 
 @Slf4j

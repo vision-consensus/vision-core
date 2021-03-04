@@ -12,7 +12,7 @@ import org.vision.common.utils.ByteArray;
 import org.vision.core.capsule.TransactionInfoCapsule;
 import org.vision.core.capsule.TransactionRetCapsule;
 import org.vision.core.db.TransactionStore;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.BadItemException;
 import org.vision.protos.Protocol.TransactionInfo;
 

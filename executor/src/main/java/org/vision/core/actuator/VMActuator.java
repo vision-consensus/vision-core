@@ -236,14 +236,14 @@ public class VMActuator implements Actuator2 {
         repository.commit();
       }
     } catch (JVMStackOverFlowException e) {
-      program.spendAllEnergy();
+      program.spendAllEntropy();
       result = program.getResult();
       result.setException(e);
       result.rejectInternalTransactions();
       result.setRuntimeError(result.getException().getMessage());
       logger.info("JVMStackOverFlowException: {}", result.getException().getMessage());
     } catch (OutOfTimeException e) {
-      program.spendAllEnergy();
+      program.spendAllEntropy();
       result = program.getResult();
       result.setException(e);
       result.rejectInternalTransactions();

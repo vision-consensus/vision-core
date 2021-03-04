@@ -27,7 +27,7 @@ import org.vision.core.db2.common.IRevokingDB;
 import org.vision.core.db2.common.LevelDB;
 import org.vision.core.db2.common.RocksDB;
 import org.vision.core.db2.core.Chainbase;
-import org.vision.core.db2.core.ITronChainBase;
+import org.vision.core.db2.core.IVisionChainBase;
 import org.vision.core.db2.core.RevokingDBWithCachingOldValue;
 import org.vision.core.db2.core.SnapshotRoot;
 import org.vision.core.exception.BadItemException;

@@ -23,7 +23,7 @@ public class IsShieldedVRC20ContractNoteSpentServlet extends RateLimiterServlet 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       PostParams params = PostParams.getPostParams(request);
-      NfTRC20Parameters.Builder build = NfTRC20Parameters.newBuilder();
+      NfVRC20Parameters.Builder build = NfVRC20Parameters.newBuilder();
       JsonFormat.merge(params.getParams(), build, params.isVisible());
       GrpcAPI.NullifierResult result = wallet.isShieldedVRC20ContractNoteSpent(build.build());
       response.getWriter().println(JsonFormat.printToString(result, params.isVisible()));

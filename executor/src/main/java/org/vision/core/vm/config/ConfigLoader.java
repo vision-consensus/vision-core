@@ -1,7 +1,7 @@
 package org.vision.core.vm.config;
 
 
-import static org.vision.core.capsule.ReceiptCapsule.checkForEnergyLimit;
+import static org.vision.core.capsule.ReceiptCapsule.checkForEntropyLimit;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.core.store.DynamicPropertiesStore;

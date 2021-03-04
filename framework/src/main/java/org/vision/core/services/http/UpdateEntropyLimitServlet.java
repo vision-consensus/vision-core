@@ -27,10 +27,10 @@ public class UpdateEntropyLimitServlet extends RateLimiterServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       PostParams params = PostParams.getPostParams(request);
-      UpdateEnergyLimitContract.Builder build = UpdateEnergyLimitContract.newBuilder();
+      UpdateEntropyLimitContract.Builder build = UpdateEntropyLimitContract.newBuilder();
       JsonFormat.merge(params.getParams(), build, params.isVisible());
       Transaction tx = wallet
-          .createTransactionCapsule(build.build(), ContractType.UpdateEnergyLimitContract)
+          .createTransactionCapsule(build.build(), ContractType.UpdateEntropyLimitContract)
           .getInstance();
       JSONObject jsonObject = JSONObject.parseObject(params.getParams());
       tx = Util.setTransactionPermissionId(jsonObject, tx);

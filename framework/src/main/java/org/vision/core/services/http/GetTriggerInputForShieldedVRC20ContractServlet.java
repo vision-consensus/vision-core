@@ -23,8 +23,8 @@ public class GetTriggerInputForShieldedVRC20ContractServlet extends RateLimiterS
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       PostParams params = PostParams.getPostParams(request);
-      ShieldedTRC20TriggerContractParameters.Builder builder =
-          ShieldedTRC20TriggerContractParameters
+      ShieldedVRC20TriggerContractParameters.Builder builder =
+          ShieldedVRC20TriggerContractParameters
               .newBuilder();
       JsonFormat.merge(params.getParams(), builder, params.isVisible());
       BytesMessage result = wallet.getTriggerInputForShieldedVRC20Contract(builder.build());

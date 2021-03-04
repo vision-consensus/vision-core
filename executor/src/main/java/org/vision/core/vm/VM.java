@@ -2,7 +2,7 @@ package org.vision.core.vm;
 
 import static org.vision.common.crypto.Hash.sha3;
 import static org.vision.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
-import static org.vision.core.db.TransactionTrace.convertToTronAddress;
+import static org.vision.core.db.TransactionTrace.convertToVisionAddress;
 import static org.vision.core.vm.OpCode.*;
 
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ import org.vision.common.utils.ByteArray;
 import org.vision.core.vm.config.VMConfig;
 import org.vision.core.vm.program.Program;
 import org.vision.core.vm.program.Program.JVMStackOverFlowException;
-import org.vision.core.vm.program.Program.OutOfEnergyException;
+import org.vision.core.vm.program.Program.OutOfEntropyException;
 import org.vision.core.vm.program.Program.OutOfTimeException;
 import org.vision.core.vm.program.Program.TransferException;
 import org.vision.core.vm.program.Stack;
@@ -92,13 +92,13 @@ public class VM {
     try {
       OpCode op = OpCode.code(program.getCurrentOp());
       if (op == null
-          || (!VMConfig.allowTvmTransferTrc10()
+          || (!VMConfig.allowVvmTransferVrc10()
               && (op == CALLTOKEN || op == TOKENBALANCE || op == CALLTOKENVALUE
           || op == CALLTOKENID))
-          || (!VMConfig.allowTvmConstantinople()
+          || (!VMConfig.allowVvmConstantinople()
               && (op == SHL || op == SHR || op == SAR || op == CREATE2 || op == EXTCODEHASH))
-          || (!VMConfig.allowTvmSolidity059() && op == ISCONTRACT)
-          || (!VMConfig.allowTvmIstanbul() && (op == SELFBALANCE || op == CHAINID))
+          || (!VMConfig.allowVvmSolidity059() && op == ISCONTRACT)
+          || (!VMConfig.allowVvmIstanbul() && (op == SELFBALANCE || op == CHAINID))
           ) {
         throw Program.Exception.invalidOpCode(program.getCurrentOp());
       }

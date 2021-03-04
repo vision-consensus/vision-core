@@ -175,18 +175,18 @@ public class MessageStatistics {
         InventoryMessage inventoryMessage = (InventoryMessage) msg;
         int inventorySize = inventoryMessage.getInventory().getIdsCount();
         messageProcess(inventoryMessage.getInvMessageType(),
-                tronInTrxInventory,tronInTrxInventoryElement,tronInBlockInventory,
-                tronInBlockInventoryElement,tronOutTrxInventory,tronOutTrxInventoryElement,
-                tronOutBlockInventory,tronOutBlockInventoryElement,
+                visionInTrxInventory,visionInTrxInventoryElement,visionInBlockInventory,
+                visionInBlockInventoryElement,visionOutTrxInventory,visionOutTrxInventoryElement,
+                visionOutBlockInventory,visionOutBlockInventoryElement,
                 flag, inventorySize);
         break;
       case FETCH_INV_DATA:
         FetchInvDataMessage fetchInvDataMessage = (FetchInvDataMessage) msg;
         int fetchSize = fetchInvDataMessage.getInventory().getIdsCount();
         messageProcess(fetchInvDataMessage.getInvMessageType(),
-                tronInTrxFetchInvData,tronInTrxFetchInvDataElement,tronInBlockFetchInvData,
-                tronInBlockFetchInvDataElement,tronOutTrxFetchInvData,tronOutTrxFetchInvDataElement,
-                tronOutBlockFetchInvData,tronOutBlockFetchInvDataElement,
+                visionInTrxFetchInvData,visionInTrxFetchInvDataElement,visionInBlockFetchInvData,
+                visionInBlockFetchInvDataElement,visionOutTrxFetchInvData,visionOutTrxFetchInvDataElement,
+                visionOutBlockFetchInvData,visionOutBlockFetchInvDataElement,
                 flag, fetchSize);
         break;
       case TRXS:

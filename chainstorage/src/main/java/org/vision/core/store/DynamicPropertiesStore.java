@@ -17,7 +17,7 @@ import org.vision.common.utils.Sha256Hash;
 import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
-import org.vision.core.db.TronStoreWithRevoking;
+import org.vision.core.db.VisionStoreWithRevoking;
 
 @Slf4j(topic = "DB")
 @Component
