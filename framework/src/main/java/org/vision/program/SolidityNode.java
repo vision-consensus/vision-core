@@ -1,5 +1,6 @@
 package org.vision.program;
 
+import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +125,7 @@ public class SolidityNode {
     while (flag) {
       try {
         if (blockNum > remoteBlockNum.get()) {
-          sleep(Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL);
+          sleep(BLOCK_PRODUCED_INTERVAL);
           remoteBlockNum.set(getLastSolidityBlockNum());
           continue;
         }

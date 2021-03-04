@@ -4,6 +4,9 @@ import com.google.protobuf.ByteString;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,6 @@ import org.vision.protos.contract.ShieldContract.IncrementalMerkleVoucherInfo;
 import org.vision.protos.contract.ShieldContract.OutputPointInfo;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "API")
 public class RpcApiServiceOnSolidity implements Service {
@@ -276,7 +276,7 @@ public class RpcApiServiceOnSolidity implements Service {
 
     @Override
     public void getDelegatedResourceAccountIndex(BytesMessage request,
-        StreamObserver<Protocol.DelegatedResourceAccountIndex> responseObserver) {
+        StreamObserver<org.vision.protos.Protocol.DelegatedResourceAccountIndex> responseObserver) {
       walletOnSolidity.futureGet(() -> rpcApiService.getWalletSolidityApi()
           .getDelegatedResourceAccountIndex(request, responseObserver));
     }
@@ -444,7 +444,7 @@ public class RpcApiServiceOnSolidity implements Service {
     }
 
     @Override
-    public void getMarketOrderListByPair(Protocol.MarketOrderPair request,
+    public void getMarketOrderListByPair(org.vision.protos.Protocol.MarketOrderPair request,
         StreamObserver<MarketOrderList> responseObserver) {
       walletOnSolidity.futureGet(
           () -> rpcApiService.getWalletSolidityApi()
@@ -461,5 +461,11 @@ public class RpcApiServiceOnSolidity implements Service {
       );
     }
 
+    @Override
+    public void getBurnTrx(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+      walletOnSolidity.futureGet(
+          () -> rpcApiService.getWalletSolidityApi().getBurnTrx(request, responseObserver)
+      );
+    }
   }
 }

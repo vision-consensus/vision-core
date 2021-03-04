@@ -13,7 +13,7 @@ import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Utils;
 import org.vision.core.Constant;
 import org.vision.core.config.args.Args;
-import org.vision.keystore.CipherException;
+import org.vision.core.exception.CipherException;
 import org.vision.keystore.Credentials;
 import org.vision.keystore.WalletUtils;
 

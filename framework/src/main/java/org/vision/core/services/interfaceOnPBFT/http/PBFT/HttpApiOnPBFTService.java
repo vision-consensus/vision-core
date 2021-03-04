@@ -24,6 +24,7 @@ import org.vision.core.services.interfaceOnPBFT.http.GetBlockByLatestNumOnPBFTSe
 import org.vision.core.services.interfaceOnPBFT.http.GetBlockByLimitNextOnPBFTServlet;
 import org.vision.core.services.interfaceOnPBFT.http.GetBlockByNumOnPBFTServlet;
 import org.vision.core.services.interfaceOnPBFT.http.GetBrokerageOnPBFTServlet;
+import org.vision.core.services.interfaceOnPBFT.http.GetBurnTrxOnPBFTServlet;
 import org.vision.core.services.interfaceOnPBFT.http.GetDelegatedResourceAccountIndexOnPBFTServlet;
 import org.vision.core.services.interfaceOnPBFT.http.GetDelegatedResourceOnPBFTServlet;
 import org.vision.core.services.interfaceOnPBFT.http.GetExchangeByIdOnPBFTServlet;
@@ -140,6 +141,8 @@ public class HttpApiOnPBFTService implements Service {
   private ScanShieldedVRC20NotesByOvkOnPBFTServlet scanShieldedVRC20NotesByOvkOnPBFTServlet;
   @Autowired
   private IsShieldedVRC20ContractNoteSpentOnPBFTServlet isShieldedVRC20ContractNoteSpentOnPBFTServlet;
+  @Autowired
+  private GetBurnTrxOnPBFTServlet getBurnTrxOnPBFTServlet;
 
   @Override
   public void init() {
@@ -223,6 +226,8 @@ public class HttpApiOnPBFTService implements Service {
           "/scanshieldedvrc20notesbyovk");
       context.addServlet(new ServletHolder(isShieldedVRC20ContractNoteSpentOnPBFTServlet),
           "/isshieldedvrc20contractnotespent");
+      context.addServlet(new ServletHolder(getBurnTrxOnPBFTServlet),
+          "/getburntrx");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

@@ -18,6 +18,7 @@ import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
 import org.vision.common.utils.Utils;
 import org.vision.core.config.args.Args;
+import org.tron.core.exception.CipherException;
 
 /**
  * Utility functions for working with Wallet files.

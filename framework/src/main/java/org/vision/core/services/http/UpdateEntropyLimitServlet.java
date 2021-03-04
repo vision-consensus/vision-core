@@ -26,19 +26,16 @@ public class UpdateEntropyLimitServlet extends RateLimiterServlet {
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String contract = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(contract);
-      boolean visible = Util.getVisiblePost(contract);
-      UpdateEntropyLimitContract.Builder build = UpdateEntropyLimitContract.newBuilder();
-      JsonFormat.merge(contract, build, visible);
+      PostParams params = PostParams.getPostParams(request);
+      UpdateEnergyLimitContract.Builder build = UpdateEnergyLimitContract.newBuilder();
+      JsonFormat.merge(params.getParams(), build, params.isVisible());
       Transaction tx = wallet
-          .createTransactionCapsule(build.build(), ContractType.UpdateEntropyLimitContract)
+          .createTransactionCapsule(build.build(), ContractType.UpdateEnergyLimitContract)
           .getInstance();
-      JSONObject jsonObject = JSONObject.parseObject(contract);
+      JSONObject jsonObject = JSONObject.parseObject(params.getParams());
       tx = Util.setTransactionPermissionId(jsonObject, tx);
 
-      response.getWriter().println(Util.printCreateTransaction(tx, visible));
+      response.getWriter().println(Util.printCreateTransaction(tx, params.isVisible()));
     } catch (Exception e) {
       Util.processError(e, response);
     }

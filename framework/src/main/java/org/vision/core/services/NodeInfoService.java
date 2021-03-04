@@ -15,7 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.common.overlay.server.SyncPool;
 import org.vision.common.entity.NodeInfo;
 import org.vision.common.entity.NodeInfo.ConfigNodeInfo;
 import org.vision.common.entity.NodeInfo.MachineInfo;
@@ -23,6 +22,7 @@ import org.vision.common.entity.NodeInfo.MachineInfo.DeadLockThreadInfo;
 import org.vision.common.entity.NodeInfo.MachineInfo.MemoryDescInfo;
 import org.vision.common.entity.PeerInfo;
 import org.vision.common.overlay.discover.node.NodeManager;
+import org.vision.common.overlay.server.SyncPool;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.db.Manager;
@@ -131,7 +131,7 @@ public class NodeInfoService {
       PeerInfo peerInfo = new PeerInfo();
       peerInfo.setHeadBlockWeBothHave(peerConnection.getBlockBothHave().getString());
       peerInfo.setActive(peerConnection.isActive());
-      peerInfo.setAvgLatency(peerConnection.getNodeStatistics().pingMessageLatency.getAvrg());
+      peerInfo.setAvgLatency(peerConnection.getNodeStatistics().pingMessageLatency.getAvg());
       peerInfo.setBlockInPorcSize(peerConnection.getSyncBlockInProcess().size());
       peerInfo.setConnectTime(peerConnection.getStartTime());
       peerInfo.setDisconnectTimes(peerConnection.getNodeStatistics().getDisconnectTimes());
@@ -169,7 +169,7 @@ public class NodeInfoService {
   private void setConfigNodeInfo(NodeInfo nodeInfo) {
     ConfigNodeInfo configNodeInfo = new ConfigNodeInfo();
     configNodeInfo.setCodeVersion(Version.getVersion());
-    configNodeInfo.setVersionNum(Version.versionCode);
+    configNodeInfo.setVersionNum(Version.VERSION_CODE);
     configNodeInfo.setP2pVersion(String.valueOf(parameter.getNodeP2pVersion()));
     configNodeInfo.setListenPort(parameter.getNodeListenPort());
     configNodeInfo.setDiscoverEnable(parameter.isNodeDiscoveryEnable());
