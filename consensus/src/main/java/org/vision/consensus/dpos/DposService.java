@@ -148,6 +148,13 @@ public class DposService implements ConsensusInterface {
         .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
         .sorted()
         .collect(Collectors.toList());
+    StringBuilder numsb = new StringBuilder();
+    numbers.forEach(n-> numsb.append(String.valueOf(n)).append(", "));
+    StringBuilder addsb = new StringBuilder();
+    consensusDelegate.getActiveWitnesses().forEach(addr -> addsb.append(ByteArray.toHexString(addr.toByteArray()))
+            .append(", "));
+    logger.info("number details: "+ numsb.toString());
+    logger.info("address details: "+ addsb.toString());
     long size = consensusDelegate.getActiveWitnesses().size();
     int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100));
     long newSolidNum = numbers.get(position);
