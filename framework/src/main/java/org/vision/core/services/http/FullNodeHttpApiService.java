@@ -228,7 +228,7 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private BroadcastHexServlet broadcastHexServlet;
   @Autowired
-  private GetBurnTrxServlet getBurnTrxServlet;
+  private GetBurnVsServlet getBurnVsServlet;
   @Autowired
   private GetBrokerageServlet getBrokerageServlet;
   @Autowired
@@ -513,7 +513,7 @@ public class FullNodeHttpApiService implements Service {
           "/wallet/getaccountbalance");
       context.addServlet(new ServletHolder(getBlockBalanceServlet),
           "/wallet/getblockbalance");
-      context.addServlet(new ServletHolder(getBurnTrxServlet), "/wallet/getburntrx");
+      context.addServlet(new ServletHolder(getBurnVsServlet), "/wallet/getburnvs");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

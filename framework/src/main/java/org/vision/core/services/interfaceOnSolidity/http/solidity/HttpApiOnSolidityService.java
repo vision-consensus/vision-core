@@ -24,7 +24,7 @@ import org.vision.core.services.interfaceOnSolidity.http.GetBlockByLatestNumOnSo
 import org.vision.core.services.interfaceOnSolidity.http.GetBlockByLimitNextOnSolidityServlet;
 import org.vision.core.services.interfaceOnSolidity.http.GetBlockByNumOnSolidityServlet;
 import org.vision.core.services.interfaceOnSolidity.http.GetBrokerageOnSolidityServlet;
-import org.vision.core.services.interfaceOnSolidity.http.GetBurnTrxOnSolidityServlet;
+import org.vision.core.services.interfaceOnSolidity.http.GetBurnVsOnSolidityServlet;
 import org.vision.core.services.interfaceOnSolidity.http.GetDelegatedResourceAccountIndexOnSolidityServlet;
 import org.vision.core.services.interfaceOnSolidity.http.GetDelegatedResourceOnSolidityServlet;
 import org.vision.core.services.interfaceOnSolidity.http.GetExchangeByIdOnSolidityServlet;
@@ -126,7 +126,7 @@ public class HttpApiOnSolidityService implements Service {
   @Autowired
   private GetRewardOnSolidityServlet getRewardServlet;
   @Autowired
-  private GetBurnTrxOnSolidityServlet getBurnTrxOnSolidityServlet;
+  private GetBurnVsOnSolidityServlet getBurnVsOnSolidityServlet;
   @Autowired
   private TriggerConstantContractOnSolidityServlet triggerConstantContractOnSolidityServlet;
   @Autowired
@@ -242,7 +242,7 @@ public class HttpApiOnSolidityService implements Service {
       context.addServlet(new ServletHolder(getBrokerageServlet), "/walletsolidity/getBrokerage");
       context.addServlet(new ServletHolder(getRewardServlet), "/walletsolidity/getReward");
       context
-          .addServlet(new ServletHolder(getBurnTrxOnSolidityServlet), "/walletsolidity/getburntrx");
+          .addServlet(new ServletHolder(getBurnVsOnSolidityServlet), "/walletsolidity/getburnvs");
 
       // filters the specified APIs
       // when node is lite fullnode and openHistoryQueryWhenLiteFN is false

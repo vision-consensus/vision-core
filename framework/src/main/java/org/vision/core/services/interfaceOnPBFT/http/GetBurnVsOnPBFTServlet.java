@@ -5,13 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.core.services.http.GetBurnTrxServlet;
+import org.vision.core.services.http.GetBurnVsServlet;
 import org.vision.core.services.interfaceOnPBFT.WalletOnPBFT;
 
 
 @Component
 @Slf4j(topic = "API")
-public class GetBurnTrxOnPBFTServlet extends GetBurnTrxServlet {
+public class GetBurnVsOnPBFTServlet extends GetBurnVsServlet {
 
   @Autowired
   private WalletOnPBFT walletOnPBFT;

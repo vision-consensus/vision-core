@@ -11,7 +11,7 @@ import org.vision.core.db.Manager;
 
 @Component
 @Slf4j(topic = "API")
-public class GetBurnTrxServlet extends RateLimiterServlet {
+public class GetBurnVsServlet extends RateLimiterServlet {
 
   @Autowired
   private Manager manager;
@@ -19,7 +19,7 @@ public class GetBurnTrxServlet extends RateLimiterServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
       long value = manager.getDynamicPropertiesStore().getBurnVsAmount();
-      response.getWriter().println("{\"burnTrxAmount\": " + value + "}");
+      response.getWriter().println("{\"burnVsAmount\": " + value + "}");
     } catch (Exception e) {
       logger.error("", e);
       try {
