@@ -22,12 +22,7 @@ public class GetPaginatedAssetIssueListServlet extends RateLimiterServlet {
       boolean visible = Util.getVisible(request);
       long offset = Long.parseLong(request.getParameter("offset"));
       long limit = Long.parseLong(request.getParameter("limit"));
-      AssetIssueList reply = wallet.getAssetIssueList(offset, limit);
-      if (reply != null) {
-        response.getWriter().println(JsonFormat.printToString(reply, visible));
-      } else {
-        response.getWriter().println("{}");
-      }
+      fillResponse(offset, limit, visible, response);
     } catch (Exception e) {
       Util.processError(e, response);
     }
@@ -40,14 +35,18 @@ public class GetPaginatedAssetIssueListServlet extends RateLimiterServlet {
       boolean visible = params.isVisible();
       PaginatedMessage.Builder build = PaginatedMessage.newBuilder();
       JsonFormat.merge(input, build, visible);
-      AssetIssueList reply = wallet.getAssetIssueList(build.getOffset(), build.getLimit());
+      fillResponse(build.getOffset(), build.getLimit(), visible, response);
+    } catch (Exception e) {
+      Util.processError(e, response);
+    }
+  }
+  private void fillResponse(long offset, long limit, boolean visible, HttpServletResponse response)
+      throws IOException {
+    AssetIssueList reply = wallet.getAssetIssueList(offset, limit);
       if (reply != null) {
         response.getWriter().println(JsonFormat.printToString(reply, visible));
       } else {
         response.getWriter().println("{}");
-      }
-    } catch (Exception e) {
-      Util.processError(e, response);
     }
   }
 }

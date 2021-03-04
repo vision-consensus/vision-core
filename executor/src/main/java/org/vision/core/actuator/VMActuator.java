@@ -17,18 +17,20 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
+import org.vision.common.logsfilter.trigger.ContractTrigger;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.InternalTransaction;
+import org.vision.common.runtime.InternalTransaction.ExecutorType;
+import org.vision.common.runtime.InternalTransaction.TrxType;
 import org.vision.common.runtime.ProgramResult;
 import org.vision.common.utils.StorageUtils;
+import org.vision.common.utils.StringUtil;
 import org.vision.common.utils.WalletUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.ContractCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.db.TransactionContext;
-import org.vision.common.logsfilter.trigger.ContractTrigger;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.StringUtil;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.utils.TransactionUtil;
@@ -75,7 +77,7 @@ public class VMActuator implements Actuator2 {
   @Getter
   @Setter
   private InternalTransaction.TrxType trxType;
-  private InternalTransaction.ExecutorType executorType;
+  private ExecutorType executorType;
 
   @Getter
   @Setter
@@ -86,6 +88,200 @@ public class VMActuator implements Actuator2 {
 
   private LogInfoTriggerParser logInfoTriggerParser;
 
+  public VMActuator(boolean isConstantCall) {
+    this.isConstantCall = isConstantCall;
+    programInvokeFactory = new ProgramInvokeFactoryImpl();
+  }
+
+  private static long getEntropyFee(long callerEntropyUsage, long callerEntropyFrozen,
+                                    long callerEntropyTotal) {
+    if (callerEntropyTotal <= 0) {
+      return 0;
+    }
+    return BigInteger.valueOf(callerEntropyFrozen).multiply(BigInteger.valueOf(callerEntropyUsage))
+        .divide(BigInteger.valueOf(callerEntropyTotal)).longValueExact();
+  }
+
+  @Override
+  public void validate(Object object) throws ContractValidateException {
+
+    TransactionContext context = (TransactionContext) object;
+    if (Objects.isNull(context)) {
+      throw new RuntimeException("TransactionContext is null");
+    }
+
+    //Load Config
+    ConfigLoader.load(context.getStoreFactory());
+    trx = context.getTrxCap().getInstance();
+    blockCap = context.getBlockCap();
+    //Route Type
+    ContractType contractType = this.trx.getRawData().getContract(0).getType();
+    //Prepare Repository
+    repository = RepositoryImpl.createRoot(context.getStoreFactory());
+
+    enableEventListener = context.isEventPluginLoaded();
+
+    //set executorType type
+    if (Objects.nonNull(blockCap)) {
+      this.executorType = ExecutorType.ET_NORMAL_TYPE;
+    } else {
+      this.blockCap = new BlockCapsule(Block.newBuilder().build());
+      this.executorType = ExecutorType.ET_PRE_TYPE;
+    }
+    if (isConstantCall) {
+      this.executorType = ExecutorType.ET_PRE_TYPE;
+    }
+
+    switch (contractType.getNumber()) {
+      case ContractType.TriggerSmartContract_VALUE:
+        trxType = TrxType.TRX_CONTRACT_CALL_TYPE;
+        call();
+        break;
+      case ContractType.CreateSmartContract_VALUE:
+        trxType = TrxType.TRX_CONTRACT_CREATION_TYPE;
+        create();
+        break;
+      default:
+        throw new ContractValidateException("Unknown contract type");
+    }
+  }
+
+  @Override
+  public void execute(Object object) throws ContractExeException {
+    TransactionContext context = (TransactionContext) object;
+    if (Objects.isNull(context)) {
+      throw new RuntimeException("TransactionContext is null");
+    }
+
+    ProgramResult result = context.getProgramResult();
+    try {
+      if (vm != null) {
+        if (null != blockCap && blockCap.generatedByMyself && blockCap.hasWitnessSignature()
+            && null != TransactionUtil.getContractRet(trx)
+            && contractResult.OUT_OF_TIME == TransactionUtil.getContractRet(trx)) {
+          result = program.getResult();
+          program.spendAllEntropy();
+
+          OutOfTimeException e = Program.Exception.alreadyTimeOut();
+          result.setRuntimeError(e.getMessage());
+          result.setException(e);
+          throw e;
+        }
+
+        vm.play(program);
+        result = program.getResult();
+
+        if (isConstantCall) {
+          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
+          long callTokenValue = TransactionUtil
+              .getCallTokenValue(trx.getRawData().getContract(0));
+          if (callValue > 0 || callTokenValue > 0) {
+            result.setRuntimeError("constant cannot set call value or call token value.");
+            result.rejectInternalTransactions();
+          }
+          if (result.getException() != null) {
+            result.setRuntimeError(result.getException().getMessage());
+            result.rejectInternalTransactions();
+          }
+          context.setProgramResult(result);
+          return;
+        }
+
+        if (TrxType.TRX_CONTRACT_CREATION_TYPE == trxType && !result.isRevert()) {
+          byte[] code = program.getResult().getHReturn();
+          long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
+          long afterSpend = program.getEntropyLimitLeft().longValue() - saveCodeEntropy;
+          if (afterSpend < 0) {
+            if (null == result.getException()) {
+              result.setException(Program.Exception
+                  .notEnoughSpendEntropy("save just created contract code",
+                      saveCodeEntropy, program.getEntropyLimitLeft().longValue()));
+            }
+          } else {
+            result.spendEntropy(saveCodeEntropy);
+            if (VMConfig.allowVvmConstantinople()) {
+              repository.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
+            }
+          }
+        }
+
+        if (result.getException() != null || result.isRevert()) {
+          result.getDeleteAccounts().clear();
+          result.getLogInfoList().clear();
+          result.resetFutureRefund();
+          result.rejectInternalTransactions();
+          result.getDeleteVotes().clear();
+          result.getDeleteDelegation().clear();
+
+          if (result.getException() != null) {
+            if (!(result.getException() instanceof TransferException)) {
+              program.spendAllEntropy();
+            }
+            result.setRuntimeError(result.getException().getMessage());
+            throw result.getException();
+          } else {
+            result.setRuntimeError("REVERT opcode executed");
+          }
+        } else {
+          repository.commit();
+
+          if (logInfoTriggerParser != null) {
+            List<ContractTrigger> triggers = logInfoTriggerParser
+                .parseLogInfos(program.getResult().getLogInfoList(), repository);
+            program.getResult().setTriggerList(triggers);
+          }
+
+        }
+      } else {
+        repository.commit();
+      }
+    } catch (JVMStackOverFlowException e) {
+      program.spendAllEnergy();
+      result = program.getResult();
+      result.setException(e);
+      result.rejectInternalTransactions();
+      result.setRuntimeError(result.getException().getMessage());
+      logger.info("JVMStackOverFlowException: {}", result.getException().getMessage());
+    } catch (OutOfTimeException e) {
+      program.spendAllEnergy();
+      result = program.getResult();
+      result.setException(e);
+      result.rejectInternalTransactions();
+      result.setRuntimeError(result.getException().getMessage());
+      logger.info("timeout: {}", result.getException().getMessage());
+    } catch (Throwable e) {
+      if (!(e instanceof TransferException)) {
+        program.spendAllEntropy();
+      }
+      result = program.getResult();
+      result.rejectInternalTransactions();
+      if (Objects.isNull(result.getException())) {
+        logger.error(e.getMessage(), e);
+        result.setException(new RuntimeException("Unknown Throwable"));
+      }
+      if (StringUtils.isEmpty(result.getRuntimeError())) {
+        result.setRuntimeError(result.getException().getMessage());
+      }
+      logger.info("runtime result is :{}", result.getException().getMessage());
+    }
+    //use program returned fill context
+    context.setProgramResult(result);
+
+    if (VMConfig.vmTrace() && program != null) {
+      String traceContent = program.getTrace()
+          .result(result.getHReturn())
+          .error(result.getException())
+          .toString();
+
+      if (VMConfig.vmTraceCompressed()) {
+        traceContent = VMUtils.zipAndEncode(traceContent);
+      }
+
+      String txHash = Hex.toHexString(rootInternalTransaction.getHash());
+      VMUtils.saveProgramTraceFile(txHash, traceContent);
+    }
+
+  }
 
   private void create()
           throws ContractValidateException {
@@ -172,7 +368,7 @@ public class VMActuator implements Actuator2 {
       long vmStartInUs = System.nanoTime() / VMConstant.ONE_THOUSAND;
       long vmShouldEndInUs = vmStartInUs + thisTxCPULimitInUs;
       ProgramInvoke programInvoke = programInvokeFactory
-              .createProgramInvoke(InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
+          .createProgramInvoke(TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
                       tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
                       vmShouldEndInUs, entropyLimit);
       this.vm = new VM();
@@ -209,209 +405,7 @@ public class VMActuator implements Actuator2 {
 
   }
 
-  public VMActuator(boolean isConstantCall) {
-    this.isConstantCall = isConstantCall;
-    programInvokeFactory = new ProgramInvokeFactoryImpl();
-  }
-
-  private static long getEntropyFee(long callerEntropyUsage, long callerEntropyFrozen,
-                                    long callerEntropyTotal) {
-    if (callerEntropyTotal <= 0) {
-      return 0;
-    }
-    return BigInteger.valueOf(callerEntropyFrozen).multiply(BigInteger.valueOf(callerEntropyUsage))
-        .divide(BigInteger.valueOf(callerEntropyTotal)).longValueExact();
-  }
-
-  @Override
-  public void validate(Object object) throws ContractValidateException {
-
-    TransactionContext context = (TransactionContext) object;
-    if (Objects.isNull(context)) {
-      throw new RuntimeException("TransactionContext is null");
-    }
-
-    //Load Config
-    ConfigLoader.load(context.getStoreFactory());
-    trx = context.getTrxCap().getInstance();
-    blockCap = context.getBlockCap();
-    //Route Type
-    ContractType contractType = this.trx.getRawData().getContract(0).getType();
-    //Prepare Repository
-    repository = RepositoryImpl.createRoot(context.getStoreFactory());
-
-    enableEventListener = context.isEventPluginLoaded();
-
-    //set executorType type
-    if (Objects.nonNull(blockCap)) {
-      this.executorType = InternalTransaction.ExecutorType.ET_NORMAL_TYPE;
-    } else {
-      this.blockCap = new BlockCapsule(Block.newBuilder().build());
-      this.executorType = InternalTransaction.ExecutorType.ET_PRE_TYPE;
-    }
-    if (isConstantCall) {
-      this.executorType = InternalTransaction.ExecutorType.ET_PRE_TYPE;
-    }
-
-    switch (contractType.getNumber()) {
-      case ContractType.TriggerSmartContract_VALUE:
-        trxType = InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
-        call();
-        break;
-      case ContractType.CreateSmartContract_VALUE:
-        trxType = InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
-        create();
-        break;
-      default:
-        throw new ContractValidateException("Unknown contract type");
-    }
-  }
-
-  @Override
-  public void execute(Object object) throws ContractExeException {
-    logger.info("VMActuator execute begin");
-    TransactionContext context = (TransactionContext) object;
-    if (Objects.isNull(context)) {
-      throw new RuntimeException("TransactionContext is null");
-    }
-    logger.info("VMActuator execute context is not null, check vm:"+(vm != null));
-    ProgramResult result = context.getProgramResult();
-    try {
-      if (vm != null) {
-        if (null != blockCap && blockCap.generatedByMyself && blockCap.hasWitnessSignature()
-            && null != TransactionUtil.getContractRet(trx)
-            && contractResult.OUT_OF_TIME == TransactionUtil.getContractRet(trx)) {
-          logger.info("VMActuator execute will throw OutOfTimeException");
-          result = program.getResult();
-          program.spendAllEntropy();
-
-          OutOfTimeException e = Program.Exception.alreadyTimeOut();
-          result.setRuntimeError(e.getMessage());
-          result.setException(e);
-          throw e;
-        }
-        logger.info("VMActuator execute will vm.play(program)");
-        vm.play(program);
-        result = program.getResult();
-
-        if (isConstantCall) {
-          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
-          long callTokenValue = TransactionUtil
-              .getCallTokenValue(trx.getRawData().getContract(0));
-          if (callValue > 0 || callTokenValue > 0) {
-            result.setRuntimeError("constant cannot set call value or call token value.");
-            result.rejectInternalTransactions();
-          }
-          if (result.getException() != null) {
-            result.setRuntimeError(result.getException().getMessage());
-            result.rejectInternalTransactions();
-          }
-          context.setProgramResult(result);
-          return;
-        }
-        logger.info("VMActuator execute trxType:"+(InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE == trxType)+" revert:"+!result.isRevert());
-        if (InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE == trxType && !result.isRevert()) {
-          byte[] code = program.getResult().getHReturn();
-          long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
-          long afterSpend = program.getEntropyLimitLeft().longValue() - saveCodeEntropy;
-          if (afterSpend < 0) {
-            if (null == result.getException()) {
-              result.setException(Program.Exception
-                  .notEnoughSpendEntropy("save just created contract code",
-                      saveCodeEntropy, program.getEntropyLimitLeft().longValue()));
-            }
-          } else {
-            result.spendEntropy(saveCodeEntropy);
-            if (VMConfig.allowVvmConstantinople()) {
-              repository.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
-            }
-          }
-        }
-        logger.info("VMActuator execute exception:"+(result.getException() != null)+" revert:"+result.isRevert());
-        if (result.getException() != null || result.isRevert()) {
-          result.getDeleteAccounts().clear();
-          result.getLogInfoList().clear();
-          result.resetFutureRefund();
-          result.rejectInternalTransactions();
-          result.getDeleteVotes().clear();
-          result.getDeleteDelegation().clear();
-
-          if (result.getException() != null) {
-            if (!(result.getException() instanceof TransferException)) {
-              program.spendAllEntropy();
-            }
-            result.setRuntimeError(result.getException().getMessage());
-            throw result.getException();
-          } else {
-            result.setRuntimeError("REVERT opcode executed");
-          }
-        } else {
-          repository.commit();
-
-          if (logInfoTriggerParser != null) {
-            List<ContractTrigger> triggers = logInfoTriggerParser
-                .parseLogInfos(program.getResult().getLogInfoList(), repository);
-            program.getResult().setTriggerList(triggers);
-          }
-
-        }
-      } else {
-        repository.commit();
-      }
-    } catch (JVMStackOverFlowException e) {
-      logger.info("VMActuator execute JVMStackOverFlowException");
-      e.printStackTrace();
-      program.spendAllEntropy();
-      result = program.getResult();
-      result.setException(e);
-      result.rejectInternalTransactions();
-      result.setRuntimeError(result.getException().getMessage());
-      logger.info("JVMStackOverFlowException: {}", result.getException().getMessage());
-    } catch (OutOfTimeException e) {
-      logger.info("VMActuator execute OutOfTimeException");
-      e.printStackTrace();
-      program.spendAllEntropy();
-      result = program.getResult();
-      result.setException(e);
-      result.rejectInternalTransactions();
-      result.setRuntimeError(result.getException().getMessage());
-      logger.info("timeout: {}", result.getException().getMessage());
-    } catch (Throwable e) {
-      logger.info("VMActuator execute Throwable");
-      e.printStackTrace();
-      if (!(e instanceof TransferException)) {
-        program.spendAllEntropy();
-      }
-      result = program.getResult();
-      result.rejectInternalTransactions();
-      if (Objects.isNull(result.getException())) {
-        logger.error(e.getMessage(), e);
-        result.setException(new RuntimeException("Unknown Throwable"));
-      }
-      if (StringUtils.isEmpty(result.getRuntimeError())) {
-        result.setRuntimeError(result.getException().getMessage());
-      }
-      logger.info("runtime result is :{}", result.getException().getMessage());
-    }
-    //use program returned fill context
-    context.setProgramResult(result);
-
-    if (VMConfig.vmTrace() && program != null) {
-      String traceContent = program.getTrace()
-          .result(result.getHReturn())
-          .error(result.getException())
-          .toString();
-
-      if (VMConfig.vmTraceCompressed()) {
-        traceContent = VMUtils.zipAndEncode(traceContent);
-      }
-
-      String txHash = Hex.toHexString(rootInternalTransaction.getHash());
-      VMUtils.saveProgramTraceFile(txHash, traceContent);
-    }
-
-  }
-
+ 
   private void call()
       throws ContractValidateException {
 
@@ -483,7 +477,7 @@ public class VMActuator implements Actuator2 {
       long vmStartInUs = System.nanoTime() / VMConstant.ONE_THOUSAND;
       long vmShouldEndInUs = vmStartInUs + thisTxCPULimitInUs;
       ProgramInvoke programInvoke = programInvokeFactory
-          .createProgramInvoke(InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE, executorType, trx,
+          .createProgramInvoke(TrxType.TRX_CONTRACT_CALL_TYPE, executorType, trx,
               tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
               vmShouldEndInUs, entropyLimit);
       if (isConstantCall) {
@@ -514,6 +508,23 @@ public class VMActuator implements Actuator2 {
 
   }
 
+  public long getAccountEntropyLimitWithFixRatio(AccountCapsule account, long feeLimit,
+                                                 long callValue) {
+
+    long vdtPerEntropy = VMConstant.VDT_PER_ENTROPY;
+    if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
+      vdtPerEntropy = repository.getDynamicPropertiesStore().getEntropyFee();
+    }
+
+    long leftFrozenEntropy = repository.getAccountLeftEntropyFromFreeze(account);
+
+    long entropyFromBalance = max(account.getBalance() - callValue, 0) / vdtPerEntropy;
+    long availableEntropy = Math.addExact(leftFrozenEntropy, entropyFromBalance);
+
+    long entropyFromFeeLimit = feeLimit / vdtPerEntropy;
+    return min(availableEntropy, entropyFromFeeLimit);
+
+  }
   private long getAccountEntropyLimitWithFloatRatio(AccountCapsule account, long feeLimit,
                                                     long callValue) {
 
@@ -553,24 +564,7 @@ public class VMActuator implements Actuator2 {
     return min(Math.addExact(leftEntropyFromFreeze, entropyFromBalance), entropyFromFeeLimit);
   }
 
-  public long getAccountEntropyLimitWithFixRatio(AccountCapsule account, long feeLimit,
-                                                 long callValue) {
-
-    long vdtPerEntropy = VMConstant.VDT_PER_ENTROPY;
-    if (repository.getDynamicPropertiesStore().getEntropyFee() > 0) {
-      vdtPerEntropy = repository.getDynamicPropertiesStore().getEntropyFee();
-    }
-
-    long leftFrozenEntropy = repository.getAccountLeftEntropyFromFreeze(account);
-
-    long entropyFromBalance = max(account.getBalance() - callValue, 0) / vdtPerEntropy;
-    long availableEntropy = Math.addExact(leftFrozenEntropy, entropyFromBalance);
-
-    long entropyFromFeeLimit = feeLimit / vdtPerEntropy;
-    return min(availableEntropy, entropyFromFeeLimit);
-
-  }
-
+ 
 
 
   public long getTotalEntropyLimit(AccountCapsule creator, AccountCapsule caller,
@@ -609,7 +603,7 @@ public class VMActuator implements Actuator2 {
 
     double cpuLimitRatio;
 
-    if (InternalTransaction.ExecutorType.ET_NORMAL_TYPE == executorType) {
+    if (ExecutorType.ET_NORMAL_TYPE == executorType) {
       // self witness generates block
       if (this.blockCap != null && blockCap.generatedByMyself &&
           !this.blockCap.hasWitnessSignature()) {

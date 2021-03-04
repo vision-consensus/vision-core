@@ -1,5 +1,6 @@
 package org.vision.core.actuator;
 
+import static org.tron.core.capsule.TransactionCapsule.getShieldTransactionHashIgnoreTypeException;
 import static org.vision.core.utils.ZenChainParams.ZC_ENCCIPHERTEXT_SIZE;
 import static org.vision.core.utils.ZenChainParams.ZC_OUTCIPHERTEXT_SIZE;
 
@@ -11,18 +12,19 @@ import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.Sha256Hash;
 import org.vision.common.zksnark.IncrementalMerkleTreeContainer;
 import org.vision.common.zksnark.JLibrustzcash;
-import org.vision.common.zksnark.LibrustzcashParam;
+import org.vision.common.zksnark.LibrustzcashParam.CheckOutputParams;
+import org.vision.common.zksnark.LibrustzcashParam.CheckSpendParams;
+import org.vision.common.zksnark.LibrustzcashParam.FinalCheckParams;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BytesCapsule;
-import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.Sha256Hash;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -74,7 +76,7 @@ public class ShieldedTransferActuator extends AbstractActuator {
         executeTransparentFrom(shieldedTransferContract.getTransparentFromAddress().toByteArray(),
             shieldedTransferContract.getFromAmount(), ret, fee);
       }
-      Commons.adjustAssetBalanceV2(accountStore.getSingularity().createDbKey(),
+      Commons.adjustAssetBalanceV2(accountStore.getSingularity(),
           CommonParameter.getInstance().getZenTokenId(), fee,
           accountStore, assetIssueStore, dynamicStore);
     } catch (BalanceInsufficientException e) {
@@ -284,7 +286,7 @@ public class ShieldedTransferActuator extends AbstractActuator {
       }
     }
 
-    byte[] signHash = TransactionCapsule.getShieldTransactionHashIgnoreTypeException(tx.getInstance());
+    byte[] signHash = getShieldTransactionHashIgnoreTypeException(tx.getInstance());
 
     if (CollectionUtils.isNotEmpty(spendDescriptions)
         || CollectionUtils.isNotEmpty(receiveDescriptions)) {
@@ -292,7 +294,7 @@ public class ShieldedTransferActuator extends AbstractActuator {
       try {
         for (SpendDescription spendDescription : spendDescriptions) {
           if (!JLibrustzcash.librustzcashSaplingCheckSpend(
-              new LibrustzcashParam.CheckSpendParams(ctx,
+              new CheckSpendParams(ctx,
                   spendDescription.getValueCommitment().toByteArray(),
                   spendDescription.getAnchor().toByteArray(),
                   spendDescription.getNullifier().toByteArray(),
@@ -311,7 +313,7 @@ public class ShieldedTransferActuator extends AbstractActuator {
             throw new ZkProofValidateException("Cout or CEnc size error", true);
           }
           if (!JLibrustzcash.librustzcashSaplingCheckOutput(
-              new LibrustzcashParam.CheckOutputParams(ctx,
+              new CheckOutputParams(ctx,
                   receiveDescription.getValueCommitment().toByteArray(),
                   receiveDescription.getNoteCommitment().toByteArray(),
                   receiveDescription.getEpk().toByteArray(),
@@ -338,7 +340,7 @@ public class ShieldedTransferActuator extends AbstractActuator {
         }
 
         if (!JLibrustzcash.librustzcashSaplingFinalCheck(
-            new LibrustzcashParam.FinalCheckParams(ctx,
+            new FinalCheckParams(ctx,
                 valueBalance,
                 shieldedTransferContract.getBindingSignature().toByteArray(),
                 signHash)

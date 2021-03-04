@@ -18,11 +18,11 @@
 
 package org.vision.common.overlay.discover.node.statistics;
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 import org.vision.core.config.args.Args;
 import org.vision.protos.Protocol.ReasonCode;
 
-import java.util.concurrent.atomic.AtomicLong;
 
 public class NodeStatistics {
 
@@ -206,7 +206,7 @@ public class NodeStatistics {
       count++;
     }
 
-    public long getAvrg() {
+    public long getAvg() {
       return count == 0 ? 0 : sum / count;
     }
 

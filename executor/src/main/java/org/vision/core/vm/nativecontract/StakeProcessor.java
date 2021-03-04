@@ -3,20 +3,22 @@ package org.vision.core.vm.nativecontract;
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.actuator.ActuatorConstant;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.VotesCapsule;
-import org.vision.core.store.WitnessStore;
-import org.vision.core.vm.nativecontract.param.StakeParam;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.core.actuator.ActuatorConstant;
+import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.WitnessStore;
+import org.vision.core.vm.nativecontract.param.StakeParam;
 import org.vision.core.vm.repository.Repository;
 import org.vision.protos.Protocol;
 
+import static org.vision.core.actuator.ActuatorConstant.*;
 
 @Slf4j(topic = "Processor")
 public class StakeProcessor {
@@ -61,7 +63,7 @@ public class StakeProcessor {
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
       throw new ContractValidateException(
-          "Account[" + readableOwnerAddress + "] not exists");
+              ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
   }
 

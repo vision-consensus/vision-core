@@ -2,6 +2,8 @@ package org.vision.core.vm;
 
 import static org.vision.common.crypto.Hash.sha3;
 import static org.vision.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
+import static org.vision.core.db.TransactionTrace.convertToTronAddress;
+import static org.vision.core.vm.OpCode.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,12 +11,16 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.util.StringUtils;
-import org.vision.core.db.TransactionTrace;
-import org.vision.core.vm.config.VMConfig;
-import org.vision.core.vm.program.Program;
-import org.vision.core.vm.program.Stack;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.runtime.vm.LogInfo;
+import org.vision.common.utils.ByteArray;
+import org.vision.core.vm.config.VMConfig;
+import org.vision.core.vm.program.Program;
+import org.vision.core.vm.program.Program.JVMStackOverFlowException;
+import org.vision.core.vm.program.Program.OutOfEnergyException;
+import org.vision.core.vm.program.Program.OutOfTimeException;
+import org.vision.core.vm.program.Program.TransferException;
+import org.vision.core.vm.program.Stack;
 
 @Slf4j(topic = "VM")
 public class VM {
@@ -49,6 +55,35 @@ public class VM {
     return size.isZero() ? BigInteger.ZERO : offset.value().add(size.value());
   }
 
+  private void checkMemorySize(OpCode op, BigInteger newMemSize) {
+    if (newMemSize.compareTo(MEM_LIMIT) > 0) {
+      throw Program.Exception.memoryOverflow(op);
+    }
+  }
+
+    private long calcMemEntropy(EntropyCost entropyCosts, long oldMemSize, BigInteger newMemSize,
+                              long copySize, OpCode op) {
+    long entropyCost = 0;
+
+    checkMemorySize(op, newMemSize);
+
+    // memory VDT consume calc
+    long memoryUsage = (newMemSize.longValueExact() + 31) / 32 * 32;
+    if (memoryUsage > oldMemSize) {
+      long memWords = (memoryUsage / 32);
+      long memWordsOld = (oldMemSize / 32);
+      //TODO #POC9 c_quadCoeffDiv = 512, this should be a constant, not magic number
+      long memEntropy = (entropyCosts.getMEMORY() * memWords + memWords * memWords / 512)
+              - (entropyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
+      entropyCost += memEntropy;
+    }
+
+    if (copySize > 0) {
+      long copyEntropy = entropyCosts.getCOPY_ENTROPY() * ((copySize + 31) / 32);
+      entropyCost += copyEntropy;
+    }
+    return entropyCost;
+  }
   public void step(Program program) {
     if (config.vmTrace()) {
       program.saveOpTrace();
@@ -57,13 +92,13 @@ public class VM {
     try {
       OpCode op = OpCode.code(program.getCurrentOp());
       if (op == null
-          || (!VMConfig.allowVvmTransferVrc10()
-              && (op == OpCode.CALLTOKEN || op == OpCode.TOKENBALANCE || op == OpCode.CALLTOKENVALUE
-          || op == OpCode.CALLTOKENID))
-          || (!VMConfig.allowVvmConstantinople()
-              && (op == OpCode.SHL || op == OpCode.SHR || op == OpCode.SAR || op == OpCode.CREATE2 || op == OpCode.EXTCODEHASH))
-          || (!VMConfig.allowVvmSolidity059() && op == OpCode.ISCONTRACT)
-          || (!VMConfig.allowVvmIstanbul() && (op == OpCode.SELFBALANCE || op == OpCode.CHAINID))
+          || (!VMConfig.allowTvmTransferTrc10()
+              && (op == CALLTOKEN || op == TOKENBALANCE || op == CALLTOKENVALUE
+          || op == CALLTOKENID))
+          || (!VMConfig.allowTvmConstantinople()
+              && (op == SHL || op == SHR || op == SAR || op == CREATE2 || op == EXTCODEHASH))
+          || (!VMConfig.allowTvmSolidity059() && op == ISCONTRACT)
+          || (!VMConfig.allowTvmIstanbul() && (op == SELFBALANCE || op == CHAINID))
           ) {
         throw Program.Exception.invalidOpCode(program.getCurrentOp());
       }
@@ -1239,7 +1274,7 @@ public class VM {
         case PUSH31:
         case PUSH32: {
           program.step();
-          int nPush = op.val() - OpCode.PUSH1.val() + 1;
+          int nPush = op.val() - PUSH1.val() + 1;
 
           byte[] data = program.sweep(nPush);
 
@@ -1312,7 +1347,7 @@ public class VM {
 
           DataWord tokenId = new DataWord(0);
           boolean isTokenTransferMsg = false;
-          if (op == OpCode.CALLTOKEN) {
+          if (op == CALLTOKEN) {
             tokenId = program.stackPop();
             if (VMConfig.allowMultiSign()) { // allowMultiSign proposal
               isTokenTransferMsg = true;
@@ -1375,7 +1410,7 @@ public class VM {
           program.step();
           program.stop();
 
-          if (op == OpCode.REVERT) {
+          if (op == REVERT) {
             program.getResult().setRevert();
           }
           break;
@@ -1403,7 +1438,7 @@ public class VM {
       program.setPreviouslyExecutedOp(op.val());
     } catch (RuntimeException e) {
       logger.info("VM halted: [{}]", e.getMessage());
-      if (!(e instanceof Program.TransferException)) {
+      if (!(e instanceof TransferException)) {
         program.spendAllEntropy();
       }
       program.resetFutureRefund();
@@ -1411,12 +1446,7 @@ public class VM {
       throw e;
     } finally {
       program.fullTrace();
-    }
-  }
 
-  private void checkMemorySize(OpCode op, BigInteger newMemSize) {
-    if (newMemSize.compareTo(MEM_LIMIT) > 0) {
-      throw Program.Exception.memoryOverflow(op);
     }
   }
 
@@ -1430,7 +1460,7 @@ public class VM {
         this.step(program);
       }
 
-    } catch (Program.JVMStackOverFlowException | Program.OutOfTimeException e) {
+    } catch (JVMStackOverFlowException | OutOfTimeException e) {
       throw e;
     } catch (RuntimeException e) {
       if (StringUtils.isEmpty(e.getMessage())) {
@@ -1443,36 +1473,14 @@ public class VM {
     } catch (StackOverflowError soe) {
       logger
           .info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
-      throw new Program.JVMStackOverFlowException();
+      throw new JVMStackOverFlowException();
     }
   }
 
   private boolean isDeadAccount(Program program, DataWord address) {
-    return program.getContractState().getAccount(TransactionTrace.convertToVisionAddress(address.getLast20Bytes()))
+    return program.getContractState().getAccount(convertToVisionAddress(address.getLast20Bytes()))
         == null;
   }
 
-  private long calcMemEntropy(EntropyCost entropyCosts, long oldMemSize, BigInteger newMemSize,
-                              long copySize, OpCode op) {
-    long entropyCost = 0;
 
-    checkMemorySize(op, newMemSize);
-
-    // memory VDT consume calc
-    long memoryUsage = (newMemSize.longValueExact() + 31) / 32 * 32;
-    if (memoryUsage > oldMemSize) {
-      long memWords = (memoryUsage / 32);
-      long memWordsOld = (oldMemSize / 32);
-      //TODO #POC9 c_quadCoeffDiv = 512, this should be a constant, not magic number
-      long memEntropy = (entropyCosts.getMEMORY() * memWords + memWords * memWords / 512)
-              - (entropyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
-      entropyCost += memEntropy;
-    }
-
-    if (copySize > 0) {
-      long copyEntropy = entropyCosts.getCOPY_ENTROPY() * ((copySize + 31) / 32);
-      entropyCost += copyEntropy;
-    }
-    return entropyCost;
-  }
 }

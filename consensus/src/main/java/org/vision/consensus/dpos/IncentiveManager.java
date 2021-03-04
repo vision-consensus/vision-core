@@ -7,11 +7,8 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.common.utils.ActuatorRateUtil;
 import org.vision.consensus.ConsensusDelegate;
-import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.AccountCapsule;
-import org.vision.protos.Protocol;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -20,8 +17,6 @@ public class IncentiveManager {
   @Autowired
   private ConsensusDelegate consensusDelegate;
 
-  @Autowired
-  private ChainBaseManager chainBaseManager;
 
   public void reward(List<ByteString> witnesses) {
     if (consensusDelegate.allowChangeDelegation()) {
@@ -42,9 +37,8 @@ public class IncentiveManager {
       byte[] address = witness.toByteArray();
       long pay = (long) (consensusDelegate.getWitness(address).getVoteCount() * ((double) totalPay
           / voteSum));
-      Protocol.Block lstBlock = chainBaseManager.getBlockStore().getBlockByLatestNum(1).get(0).getInstance();
       AccountCapsule accountCapsule = consensusDelegate.getAccount(address);
-      accountCapsule.setAllowance(accountCapsule.getAllowance() + pay * ActuatorRateUtil.getActuatorRate(ActuatorRateUtil.getActuatorRate(lstBlock.getBlockHeader().getRawData().getNumber())));
+      accountCapsule.setAllowance(accountCapsule.getAllowance() + pay);
       consensusDelegate.saveAccount(accountCapsule);
     }
   }

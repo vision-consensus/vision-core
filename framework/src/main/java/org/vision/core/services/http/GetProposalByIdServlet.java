@@ -25,12 +25,7 @@ public class GetProposalByIdServlet extends RateLimiterServlet {
       boolean visible = Util.getVisible(request);
       String input = request.getParameter("id");
       long id = new Long(input);
-      Proposal reply = wallet.getProposalById(ByteString.copyFrom(ByteArray.fromLong(id)));
-      if (reply != null) {
-        response.getWriter().println(JsonFormat.printToString(reply, visible));
-      } else {
-        response.getWriter().println("{}");
-      }
+      fillResponse(ByteString.copyFrom(ByteArray.fromLong(id)), visible, response);
     } catch (Exception e) {
       Util.processError(e, response);
     }
@@ -38,20 +33,22 @@ public class GetProposalByIdServlet extends RateLimiterServlet {
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String input = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(input);
-      boolean visible = Util.getVisiblePost(input);
-      JSONObject jsonObject = JSONObject.parseObject(input);
+      PostParams params = PostParams.getPostParams(request);
+      JSONObject jsonObject = JSONObject.parseObject(params.getParams());
       long id = Util.getJsonLongValue(jsonObject, "id", true);
-      Proposal reply = wallet.getProposalById(ByteString.copyFrom(ByteArray.fromLong(id)));
-      if (reply != null) {
-        response.getWriter().println(JsonFormat.printToString(reply, visible));
-      } else {
-        response.getWriter().println("{}");
-      }
+      fillResponse(ByteString.copyFrom(ByteArray.fromLong(id)), params.isVisible(), response);
     } catch (Exception e) {
       Util.processError(e, response);
+    }
+  }
+
+  private void fillResponse(ByteString proposalId, boolean visible, HttpServletResponse response)
+      throws IOException {
+    Proposal reply = wallet.getProposalById(proposalId);
+    if (reply != null) {
+      response.getWriter().println(JsonFormat.printToString(reply, visible));
+    } else {
+      response.getWriter().println("{}");
     }
   }
 }

@@ -18,6 +18,7 @@ import org.vision.core.vm.config.VMConfig;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.SmartContractOuterClass.ClearABIContract;
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 
 @Slf4j(topic = "actuator")
 public class ClearABIContractActuator extends AbstractActuator {
@@ -90,7 +91,7 @@ public class ClearABIContractActuator extends AbstractActuator {
     if (accountCapsule == null) {
       throw new ContractValidateException(
           ActuatorConstant.ACCOUNT_EXCEPTION_STR
-              + readableOwnerAddress + "] not exists");
+              + readableOwnerAddress + NOT_EXIST_STR);
     }
 
     byte[] contractAddress = contract.getContractAddress().toByteArray();

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.backup.BackupManager;
+import org.vision.common.backup.BackupManager.BackupStatusEnum;
 import org.vision.consensus.Consensus;
 import org.vision.consensus.base.BlockHandle;
 import org.vision.consensus.base.Param.Miner;
@@ -31,7 +32,7 @@ public class BlockHandleImpl implements BlockHandle {
 
   @Override
   public State getState() {
-    if (!backupManager.getStatus().equals(BackupManager.BackupStatusEnum.MASTER)) {
+    if (!backupManager.getStatus().equals(BackupStatusEnum.MASTER)) {
       return State.BACKUP_IS_NOT_MASTER;
     }
     return State.OK;

@@ -1,5 +1,6 @@
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
@@ -10,19 +11,19 @@ import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
 import org.vision.core.capsule.DelegatedResourceCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
+import org.vision.core.exception.ContractExeException;
+import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DelegatedResourceAccountIndexStore;
 import org.vision.core.store.DelegatedResourceStore;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.StringUtil;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -142,7 +143,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
       throw new ContractValidateException(
-          ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] not exists");
+          ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
@@ -207,7 +208,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         String readableOwnerAddress = StringUtil.createReadableString(receiverAddress);
         throw new ContractValidateException(
             ActuatorConstant.ACCOUNT_EXCEPTION_STR
-                + readableOwnerAddress + "] not exists");
+                + readableOwnerAddress + NOT_EXIST_STR);
       }
 
       if (dynamicStore.getAllowVvmConstantinople() == 1

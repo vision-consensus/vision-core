@@ -2,14 +2,15 @@ package org.vision.core.vm.nativecontract;
 
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.AssetIssueCapsule;
-import org.vision.core.utils.TransactionUtil;
-import org.vision.core.vm.nativecontract.param.TokenIssueParam;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.AssetIssueCapsule;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.utils.TransactionUtil;
+import org.vision.core.vm.nativecontract.param.TokenIssueParam;
 import org.vision.core.vm.repository.Repository;
+import static org.vision.core.vm.nativecontract.ContractProcessorConstant.*;
 
 @Slf4j(topic = "Processor")
 public class TokenIssueProcessor {
@@ -42,10 +43,10 @@ public class TokenIssueProcessor {
 
   public void validate(Object contract, Repository repository) throws ContractValidateException {
     if (Objects.isNull(contract)) {
-      throw new ContractValidateException(ContractProcessorConstant.CONTRACT_NULL);
+      throw new ContractValidateException(CONTRACT_NULL);
     }
     if (repository == null) {
-      throw new ContractValidateException(ContractProcessorConstant.STORE_NOT_EXIST);
+      throw new ContractValidateException(STORE_NOT_EXIST);
     }
     if (!(contract instanceof TokenIssueParam)) {
       throw new ContractValidateException(
@@ -59,11 +60,11 @@ public class TokenIssueProcessor {
     if (!TransactionUtil.validAssetName(tokenIssueParam.getName())) {
       throw new ContractValidateException("Invalid assetName");
     }
-    if ((ContractProcessorConstant.VS.equalsIgnoreCase(ByteArray.toStr(tokenIssueParam.getName())))) {
+    if ((VS.equalsIgnoreCase(ByteArray.toStr(tokenIssueParam.getName())))) {
       throw new ContractValidateException("assetName can't be vs or null");
     }
     if (tokenIssueParam.getPrecision() < 0
-        || tokenIssueParam.getPrecision() > ContractProcessorConstant.TOKEN_ISSUE_PRECISION) {
+        || tokenIssueParam.getPrecision() > TOKEN_ISSUE_PRECISION) {
       throw new ContractValidateException("precision cannot exceed 6");
     }
     if (Objects.nonNull(tokenIssueParam.getAbbr())

@@ -38,7 +38,7 @@ public class BlockMsgHandler implements VisionMsgHandler {
   @Autowired
   private WitnessProductBlockService witnessProductBlockService;
 
-  private int maxBlockSize = BLOCK_SIZE + 1000;
+  private int maxBlockSize = BLOCK_SIZE + Constant.ONE_THOUSAND;
 
   private boolean fastForward = Args.getInstance().isFastForward();
 

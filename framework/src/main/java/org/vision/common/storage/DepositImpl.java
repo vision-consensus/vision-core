@@ -175,7 +175,7 @@ public class DepositImpl implements Deposit {
   public byte[] getBlackHoleAddress() {
     // using dbManager directly, black hole address should not be changed
     // when executing smart contract.
-    return getAccountStore().getSingularity().getAddress().toByteArray();
+    return getAccountStore().getSingularityAddress();
   }
 
   @Override

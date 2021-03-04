@@ -12,12 +12,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.vision.core.capsule.utils.MarketUtils;
 import org.vision.common.utils.ByteUtil;
+import org.vision.core.capsule.utils.MarketUtils;
 import org.vision.core.db2.common.IRevokingDB;
 import org.vision.core.db2.common.LevelDB;
 import org.vision.core.db2.common.RocksDB;
 import org.vision.core.db2.common.Value;
+import org.vision.core.db2.common.Value.Operator;
 import org.vision.core.db2.common.WrappedByteArray;
 import org.vision.core.exception.ItemNotFoundException;
 
@@ -200,7 +201,7 @@ public class Chainbase implements IRevokingDB {
       return Collections.emptyList();
     }
 
-    Map<WrappedByteArray, Value.Operator> collectionList = new HashMap<>();
+    Map<WrappedByteArray, Operator> collectionList = new HashMap<>();
     if (head.getPrevious() != null) {
       ((SnapshotImpl) head).collectUnique(collectionList);
     }
@@ -226,8 +227,7 @@ public class Chainbase implements IRevokingDB {
     }
 
     // just get the same token pair
-    List<WrappedByteArray> levelDBListFiltered = new ArrayList<>();
-    levelDBListFiltered = levelDBList.stream()
+    List<WrappedByteArray> levelDBListFiltered = levelDBList.stream()
         .filter(e -> MarketUtils.pairKeyIsEqual(e.getBytes(), key))
         .collect(Collectors.toList());
 
@@ -240,7 +240,7 @@ public class Chainbase implements IRevokingDB {
       if (!keyList.contains(ssKey)) {
         keyList.add(ssKey);
       }
-      if (collectionList.get(ssKey) == Value.Operator.DELETE) {
+      if (collectionList.get(ssKey) == Operator.DELETE) {
         keyList.remove(ssKey);
       }
     });
@@ -287,5 +287,37 @@ public class Chainbase implements IRevokingDB {
     }
 
     return result;
+  }
+  @Override
+  public Map<byte[], byte[]> getNext(byte[] key, long limit) {
+    return getNext(head(), key, limit);
+  }
+  private Map<byte[], byte[]> getNext(Snapshot head, byte[] key, long limit) {
+    if (limit <= 0) {
+      return Collections.emptyMap();
+    }
+    Map<WrappedByteArray, WrappedByteArray> collection = new HashMap<>();
+    if (head.getPrevious() != null) {
+      ((SnapshotImpl) head).collect(collection);
+    }
+    Map<WrappedByteArray, WrappedByteArray> levelDBMap = new HashMap<>();
+    if (((SnapshotRoot) head.getRoot()).db.getClass() == LevelDB.class) {
+      ((LevelDB) ((SnapshotRoot) head.getRoot()).db).getDb().getNext(key, limit).entrySet().stream()
+          .map(e -> Maps
+              .immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
+          .forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
+    } else if (((SnapshotRoot) head.getRoot()).db.getClass() == RocksDB.class) {
+      ((RocksDB) ((SnapshotRoot) head.getRoot()).db).getDb().getNext(key, limit).entrySet().stream()
+          .map(e -> Maps
+              .immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
+          .forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
+    }
+    levelDBMap.putAll(collection);
+    return levelDBMap.entrySet().stream()
+        .map(e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes()))
+        .sorted((e1, e2) -> ByteUtil.compare(e1.getKey(), e2.getKey()))
+        .filter(e -> ByteUtil.greaterOrEquals(e.getKey(), key))
+        .limit(limit)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

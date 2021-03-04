@@ -4,9 +4,9 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.storage.WriteOptionsWrapper;
 import org.vision.common.storage.leveldb.LevelDbDataSourceImpl;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.core.db.common.iterator.DBIterator;
 
 public class LevelDB implements DB<byte[], byte[]>, Flusher {

@@ -17,17 +17,19 @@
  */
 package org.vision.core.vm.program.invoke;
 
+import static org.vision.common.runtime.InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
+import static org.vision.common.runtime.InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
+import static org.vision.common.utils.WalletUtil.generateContractAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.vision.common.runtime.InternalTransaction;
-import org.vision.common.utils.WalletUtil;
-import org.vision.core.capsule.ContractCapsule;
-import org.vision.core.vm.repository.Repository;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteUtil;
+import org.vision.core.capsule.ContractCapsule;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.vm.program.Program;
+import org.vision.core.vm.repository.Repository;
 import org.vision.protos.Protocol.Block;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
@@ -58,9 +60,9 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
     long timestamp = 0L;
     long number = -1L;
 
-    if (trxType == InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE) {
+    if (trxType == TRX_CONTRACT_CREATION_TYPE) {
       CreateSmartContract contract = ContractCapsule.getSmartContractFromTransaction(tx);
-      contractAddress = WalletUtil.generateContractAddress(tx);
+      contractAddress = generateContractAddress(tx);
       ownerAddress = contract.getOwnerAddress().toByteArray();
       balance = deposit.getBalance(ownerAddress);
       data = ByteUtil.EMPTY_BYTE_ARRAY;
@@ -85,7 +87,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
           tokenValue, tokenId, data, lastHash, coinbase, timestamp, number, deposit, vmStartInUs,
           vmShouldEndInUs, entropyLimit);
 
-    } else if (trxType == InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE) {
+    } else if (trxType == TRX_CONTRACT_CALL_TYPE) {
       TriggerSmartContract contract = ContractCapsule
           .getTriggerContractFromTransaction(tx);
       /***         ADDRESS op       ***/

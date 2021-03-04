@@ -1,4 +1,6 @@
 package org.vision.core.services.http;
+import static org.tron.core.services.http.Util.getHexAddress;
+import static org.tron.core.services.http.Util.setTransactionPermissionId;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
@@ -35,7 +37,7 @@ public class DeployContractServlet extends RateLimiterServlet {
       JSONObject jsonObject = JSONObject.parseObject(params.getParams());
       String owner_address = jsonObject.getString("owner_address");
       if (params.isVisible()) {
-        owner_address = Util.getHexAddress(owner_address);
+        owner_address = getHexAddress(owner_address);
       }
       byte[] ownerAddress = ByteArray.fromHexString(owner_address);
       build.setOwnerAddress(ByteString.copyFrom(ownerAddress));
@@ -82,7 +84,7 @@ public class DeployContractServlet extends RateLimiterServlet {
       Transaction.raw.Builder rawBuilder = tx.getRawData().toBuilder();
       rawBuilder.setFeeLimit(feeLimit);
       txBuilder.setRawData(rawBuilder);
-      tx = Util.setTransactionPermissionId(jsonObject, txBuilder.build());
+      tx = setTransactionPermissionId(jsonObject, txBuilder.build());
       response.getWriter().println(Util.printCreateTransaction(tx, params.isVisible()));
     } catch (Exception e) {
       Util.processError(e, response);

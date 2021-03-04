@@ -23,8 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.BlockCapsule;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.exception.BadItemException;
 
 @Slf4j(topic = "DB")
@@ -37,7 +38,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
   }
 
   public List<BlockCapsule> getLimitNumber(long startNumber, long limit) {
-    BlockCapsule.BlockId startBlockId = new BlockCapsule.BlockId(Sha256Hash.ZERO_HASH, startNumber);
+    BlockId startBlockId = new BlockId(Sha256Hash.ZERO_HASH, startNumber);
     return revokingDB.getValuesNext(startBlockId.getBytes(), limit).stream()
         .map(bytes -> {
           try {

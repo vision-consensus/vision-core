@@ -37,25 +37,8 @@ public class GenerateAddressServlet extends RateLimiterServlet {
     }
   }
 
-  public static void main(String[] args) {
-    int i = 5;
-    while(i-->0){
-      SignInterface sign = SignUtils.getGeneratedRandomSign(Utils.getRandom(),
-              Args.getInstance().isECKeyCryptoEngine());
-      byte[] priKey = sign.getPrivateKey();
-      byte[] address = sign.getAddress();
-      String priKeyStr = Hex.encodeHexString(priKey);
-      String base58check = StringUtil.encode58Check(address);
-      String hexString = ByteArray.toHexString(address);
-      JSONObject jsonAddress = new JSONObject();
-      jsonAddress.put("address", base58check);
-      jsonAddress.put("hexAddress", hexString);
-      jsonAddress.put("privateKey", priKeyStr);
-      System.out.println(jsonAddress.toJSONString());
-    }
 
 
-  }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     doGet(request, response);

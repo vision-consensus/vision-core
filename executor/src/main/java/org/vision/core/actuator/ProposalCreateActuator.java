@@ -1,15 +1,18 @@
 package org.vision.core.actuator;
 
+import static org.tron.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.tron.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.tron.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.capsule.ProposalCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.core.capsule.ProposalCapsule;
+import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.utils.ProposalUtil;
@@ -96,12 +99,12 @@ public class ProposalCreateActuator extends AbstractActuator {
 
     if (!chainBaseManager.getAccountStore().has(ownerAddress)) {
       throw new ContractValidateException(
-          ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + ActuatorConstant.NOT_EXIST_STR);
+          ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
     if (!chainBaseManager.getWitnessStore().has(ownerAddress)) {
       throw new ContractValidateException(
-          ActuatorConstant.WITNESS_EXCEPTION_STR + readableOwnerAddress + ActuatorConstant.NOT_EXIST_STR);
+          WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
     if (contract.getParametersMap().size() == 0) {

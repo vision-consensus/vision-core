@@ -18,6 +18,7 @@ import org.vision.core.Wallet;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.config.args.Args;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.services.http.JsonFormat.ParseException;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
 
@@ -63,7 +64,7 @@ public class EasyTransferAssetServlet extends RateLimiterServlet {
       responseBuild.setTransaction(transactionCapsule.getInstance());
       responseBuild.setResult(result);
       response.getWriter().println(Util.printEasyTransferResponse(responseBuild.build(), visible));
-    } catch (JsonFormat.ParseException e) {
+    } catch (ParseException e) {
       logger.debug("ParseException: {}", e.getMessage());
       returnBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
           .setMessage(ByteString.copyFromUtf8(e.getMessage()));

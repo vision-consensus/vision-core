@@ -2,8 +2,8 @@ package org.vision.core.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.PbftSignCapsule;
 import org.vision.common.utils.ByteUtil;
+import org.vision.core.capsule.PbftSignCapsule;
 import org.vision.protos.Protocol.PBFTMessage.DataType;
 
 @Slf4j

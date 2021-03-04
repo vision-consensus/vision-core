@@ -64,7 +64,7 @@ public class RepositoryImpl implements Repository {
   @Getter
   private VotesStore votesStore;
   @Getter
-  private DelegationService delegationService;
+  private MortgageService mortgageService;
   @Getter
   private DelegationStore delegationStore;
 
@@ -104,7 +104,7 @@ public class RepositoryImpl implements Repository {
       blockIndexStore = manager.getBlockIndexStore();
       witnessStore = manager.getWitnessStore();
       votesStore = manager.getVotesStore();
-      delegationService = manager.getDelegationService();
+      mortgageService = manager.getMortgageService();
       delegationStore = manager.getDelegationStore();
     }
     this.parent = parent;
@@ -634,7 +634,7 @@ public class RepositoryImpl implements Repository {
 
   @Override
   public byte[] getBlackHoleAddress() {
-    return getAccountStore().getSingularity().getAddress().toByteArray();
+    return getAccountStore().getSingularityAddress();
   }
 
   @Override

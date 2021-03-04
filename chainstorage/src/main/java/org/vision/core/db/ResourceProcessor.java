@@ -5,14 +5,14 @@ import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTE
 import org.vision.common.utils.Commons;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.config.Parameter.AdaptiveResourceLimitConstants;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.AccountResourceInsufficientException;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.TooBigTransactionResultException;
+import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
 
 abstract class ResourceProcessor {
 
@@ -73,8 +73,24 @@ abstract class ResourceProcessor {
       accountCapsule.setLatestOperationTime(latestOperationTime);
       Commons.adjustBalance(accountStore, accountCapsule, -fee);
       if (dynamicPropertiesStore.supportTransactionFeePool()) {
-        dynamicPropertiesStore
-                .saveTransactionFeePool(dynamicPropertiesStore.getTransactionFeePool() + fee);
+        dynamicPropertiesStore.addTransactionFeePool(fee);
+      } else if (dynamicPropertiesStore.supportBlackHoleOptimization()) {
+        dynamicPropertiesStore.burnTrx(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getBlackhole().createDbKey(), +fee);
+      }
+      return true;
+    } catch (BalanceInsufficientException e) {
+      return false;
+    }
+  }
+  protected boolean consumeFeeForNewAccount(AccountCapsule accountCapsule, long fee) {
+    try {
+      long latestOperationTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+      accountCapsule.setLatestOperationTime(latestOperationTime);
+      Commons.adjustBalance(accountStore, accountCapsule, -fee);
+      if (dynamicPropertiesStore.supportBlackHoleOptimization()) {
+        dynamicPropertiesStore.burnTrx(fee);
       } else {
         Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), +fee);
       }

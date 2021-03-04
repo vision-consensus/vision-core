@@ -4,11 +4,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.utils.ByteArray;
 import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.common.utils.ByteArray;
-import org.vision.core.db.VisionStoreWithRevoking;
+import org.vision.core.db.TronStoreWithRevoking;
 
 /**
  * This store is used to store the first price Key of specific token pair

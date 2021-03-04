@@ -7,15 +7,15 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.ContractCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.ContractStore;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.StringUtil;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.store.AccountStore;
+import org.vision.core.store.ContractStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.SmartContractOuterClass.UpdateSettingContract;
@@ -107,7 +107,7 @@ public class UpdateSettingContractActuator extends AbstractActuator {
 
     if (!Arrays.equals(ownerAddress, deployedContractOwnerAddress)) {
       throw new ContractValidateException(
-          "Account[" + readableOwnerAddress + "] is not the owner of the contract");
+          ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] is not the owner of the contract");
     }
 
     return true;

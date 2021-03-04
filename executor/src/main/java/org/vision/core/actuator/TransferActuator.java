@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.common.utils.DecodeUtil;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -55,11 +55,14 @@ public class TransferActuator extends AbstractActuator {
 
         fee = fee + dynamicStore.getCreateNewAccountFeeInSystemContract();
       }
-      Commons.adjustBalance(accountStore, ownerAddress, -fee);
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), fee);
-      ret.setStatus(fee, code.SUCESS);
-      Commons.adjustBalance(accountStore, ownerAddress, -amount);
+      Commons.adjustBalance(accountStore, ownerAddress, -(Math.addExact(fee, amount)));
+      if (dynamicStore.supportBlackHoleOptimization()) {
+        dynamicStore.burnTrx(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);
+      }
       Commons.adjustBalance(accountStore, toAddress, amount);
+      ret.setStatus(fee, code.SUCESS);
     } catch (BalanceInsufficientException | ArithmeticException | InvalidProtocolBufferException e) {
       logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);

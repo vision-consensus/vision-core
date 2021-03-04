@@ -15,17 +15,20 @@
 
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.CONTRACT_NOT_EXIST;
+import static org.vision.core.actuator.ActuatorConstant.STORE_NOT_EXIST;
+import static org.vision.core.actuator.ActuatorConstant.TX_RESULT_NULL;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.MarketOrderCapsule;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.common.utils.DecodeUtil;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -77,7 +80,7 @@ public class MarketCancelOrderActuator extends AbstractActuator {
 
     TransactionResultCapsule ret = (TransactionResultCapsule) object;
     if (Objects.isNull(ret)) {
-      throw new RuntimeException("TransactionResultCapsule is null");
+      throw new RuntimeException(TX_RESULT_NULL);
     }
     long fee = calcFee();
 
@@ -93,10 +96,14 @@ public class MarketCancelOrderActuator extends AbstractActuator {
 
       // fee
       accountCapsule.setBalance(accountCapsule.getBalance() - fee);
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), fee);
-
+      if (dynamicStore.supportBlackHoleOptimization()) {
+        dynamicStore.burnTrx(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);
+      }
       // 1. return balance and token
-      MarketUtils.returnSellTokenRemain(orderCapsule, accountCapsule, dynamicStore, assetIssueStore);
+      MarketUtils
+          .returnSellTokenRemain(orderCapsule, accountCapsule, dynamicStore, assetIssueStore);
 
       MarketUtils.updateOrderState(orderCapsule, State.CANCELED, marketAccountStore);
       accountStore.put(orderCapsule.getOwnerAddress().toByteArray(), accountCapsule);
@@ -145,10 +152,10 @@ public class MarketCancelOrderActuator extends AbstractActuator {
   @Override
   public boolean validate() throws ContractValidateException {
     if (this.any == null) {
-      throw new ContractValidateException("No contract!");
+      throw new ContractValidateException(CONTRACT_NOT_EXIST);
     }
     if (chainBaseManager == null) {
-      throw new ContractValidateException("No account store or dynamic store!");
+      throw new ContractValidateException(STORE_NOT_EXIST);
     }
 
     initStores();

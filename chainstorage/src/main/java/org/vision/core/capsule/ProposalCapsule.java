@@ -1,5 +1,6 @@
 package org.vision.core.capsule;
 
+import static org.vision.common.utils.WalletUtil.getAddressStringList;
 import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
 
 import com.google.common.collect.Lists;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.common.utils.WalletUtil;
 import org.vision.common.utils.ByteArray;
 import org.vision.protos.Protocol.Proposal;
 import org.vision.protos.Protocol.Proposal.State;
@@ -159,7 +159,7 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
     if (count != this.proposal.getApprovalsCount()) {
       List<ByteString> InvalidApprovalList = this.proposal.getApprovalsList().stream()
           .filter(witness -> !activeWitnesses.contains(witness)).collect(Collectors.toList());
-      logger.info("InvalidApprovalList:" + WalletUtil.getAddressStringList(InvalidApprovalList));
+      logger.info("InvalidApprovalList:" + getAddressStringList(InvalidApprovalList));
     }
     if (activeWitnesses.size() != MAX_ACTIVE_WITNESS_NUM) {
       logger.info("activeWitnesses size = {}", activeWitnesses.size());

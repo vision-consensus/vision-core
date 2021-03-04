@@ -7,8 +7,9 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vision.common.backup.BackupManager;
-import org.vision.core.config.args.Args;
+import org.vision.common.backup.BackupManager.BackupStatusEnum;
 import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.config.args.Args;
 
 @Slf4j
 @Aspect
@@ -21,7 +22,7 @@ public class BackupRocksDBAspect {
   private BackupManager backupManager;
 
 
-  @Pointcut("execution(** Manager.pushBlock(..)) && args(block)")
+  @Pointcut("execution(** org.tron.core.db.Manager.pushBlock(..)) && args(block)")
   public void pointPushBlock(BlockCapsule block) {
 
   }
@@ -29,7 +30,7 @@ public class BackupRocksDBAspect {
   @Before("pointPushBlock(block)")
   public void backupDb(BlockCapsule block) {
     //SR-Master Node do not backup db;
-    if (Args.getInstance().isWitness() && backupManager.getStatus() != BackupManager.BackupStatusEnum.SLAVER) {
+    if (Args.getInstance().isWitness() && backupManager.getStatus() != BackupStatusEnum.SLAVER) {
       return;
     }
 

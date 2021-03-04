@@ -1,11 +1,11 @@
 package org.vision.core.vm.config;
 
 
+import static org.vision.core.capsule.ReceiptCapsule.checkForEnergyLimit;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.capsule.ReceiptCapsule;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.StoreFactory;
-import org.vision.common.parameter.CommonParameter;
 
 @Slf4j(topic = "VMConfigLoader")
 public class ConfigLoader {
@@ -18,7 +18,7 @@ public class ConfigLoader {
       DynamicPropertiesStore ds = storeFactory.getChainBaseManager().getDynamicPropertiesStore();
       VMConfig.setVmTrace(CommonParameter.getInstance().isVmTrace());
       if (ds != null) {
-        VMConfig.initVmHardFork(ReceiptCapsule.checkForEntropyLimit(ds));
+        VMConfig.initVmHardFork(checkForEntropyLimit(ds));
         VMConfig.initAllowMultiSign(ds.getAllowMultiSign());
         VMConfig.initAllowVvmTransferVrc10(ds.getAllowVvmTransferVrc10());
         VMConfig.initAllowVvmConstantinople(ds.getAllowVvmConstantinople());

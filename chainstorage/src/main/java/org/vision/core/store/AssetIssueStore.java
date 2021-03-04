@@ -8,9 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.common.utils.Commons;
 import org.vision.core.capsule.AssetIssueCapsule;
-import org.vision.core.db.VisionStoreWithRevoking;
+import org.vision.core.db.TronStoreWithRevoking;
 
 @Slf4j(topic = "DB")
 @Component
@@ -58,7 +57,7 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
       }
       return Long.compare(o1.getOrder(), o2.getOrder());
     });
-    limit = limit > Commons.ASSET_ISSUE_COUNT_LIMIT_MAX ? Commons.ASSET_ISSUE_COUNT_LIMIT_MAX : limit;
+    limit = limit > ASSET_ISSUE_COUNT_LIMIT_MAX ? ASSET_ISSUE_COUNT_LIMIT_MAX : limit;
     long end = offset + limit;
     end = end > assetIssueList.size() ? assetIssueList.size() : end;
     return assetIssueList.subList((int) offset, (int) end);

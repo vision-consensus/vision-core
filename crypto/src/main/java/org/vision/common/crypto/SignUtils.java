@@ -2,8 +2,9 @@ package org.vision.common.crypto;
 
 import java.security.SecureRandom;
 import java.security.SignatureException;
-
+import org.vision.common.crypto.ECKey.ECDSASignature;
 import org.vision.common.crypto.sm2.SM2;
+import org.vision.common.crypto.sm2.SM2.SM2Signature;
 
 public class SignUtils {
 
@@ -43,8 +44,8 @@ public class SignUtils {
       byte[] messageHash, SignatureInterface signatureInterface, boolean isECKeyCryptoEngine)
       throws SignatureException {
     if (isECKeyCryptoEngine) {
-      return ECKey.signatureToAddress(messageHash, (ECKey.ECDSASignature) signatureInterface);
+      return ECKey.signatureToAddress(messageHash, (ECDSASignature) signatureInterface);
     }
-    return SM2.signatureToAddress(messageHash, (SM2.SM2Signature) signatureInterface);
+    return SM2.signatureToAddress(messageHash, (SM2Signature) signatureInterface);
   }
 }

@@ -387,19 +387,18 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
 
   private void updateByBatchInner(Map<byte[], byte[]> rows) throws Exception {
     try (WriteBatch batch = database.createWriteBatch()) {
-      rows.forEach((key, value) -> {
-        if (value == null) {
-          batch.delete(key);
-        } else {
-          batch.put(key, value);
-        }
-      });
+      innerBatchUpdate(rows,batch);
       database.write(batch, writeOptions);
     }
   }
 
   private void updateByBatchInner(Map<byte[], byte[]> rows, WriteOptions options) throws Exception {
     try (WriteBatch batch = database.createWriteBatch()) {
+      innerBatchUpdate(rows,batch);
+      database.write(batch, options);
+    }
+  }
+  private void innerBatchUpdate(Map<byte[], byte[]> rows, WriteBatch batch) {
       rows.forEach((key, value) -> {
         if (value == null) {
           batch.delete(key);
@@ -407,8 +406,6 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
           batch.put(key, value);
         }
       });
-      database.write(batch, options);
-    }
   }
 
   @Override

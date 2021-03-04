@@ -2,8 +2,8 @@ package org.vision.common.logsfilter.capsule;
 
 import static org.vision.common.logsfilter.EventPluginLoader.matchFilter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +11,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.crypto.Hash;
+import org.vision.common.logsfilter.ContractEventParserAbi;
+import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.common.logsfilter.trigger.ContractEventTrigger;
 import org.vision.common.logsfilter.trigger.ContractLogTrigger;
 import org.vision.common.logsfilter.trigger.ContractTrigger;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.runtime.vm.LogInfo;
 import org.vision.core.config.args.Args;
-import org.vision.common.logsfilter.ContractEventParserAbi;
-import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 
 @Slf4j(topic = "DB")
@@ -132,7 +132,8 @@ public class ContractTriggerCapsule extends TriggerCapsule {
 
         if (EventPluginLoader.getInstance().isSolidityEventTriggerEnable()) {
           Args.getSolidityContractEventTriggerMap().computeIfAbsent(event
-              .getBlockNumber(), listBlk -> new ArrayList<>()).add((ContractEventTrigger) event);
+              .getBlockNumber(), listBlk -> new LinkedBlockingQueue())
+                  .offer((ContractEventTrigger) event);
         }
 
       } else {
@@ -142,7 +143,8 @@ public class ContractTriggerCapsule extends TriggerCapsule {
 
         if (EventPluginLoader.getInstance().isSolidityLogTriggerEnable()) {
           Args.getSolidityContractLogTriggerMap().computeIfAbsent(event
-              .getBlockNumber(), listBlk -> new ArrayList<>()).add((ContractLogTrigger) event);
+              .getBlockNumber(), listBlk -> new LinkedBlockingQueue())
+                  .offer((ContractLogTrigger) event);
         }
       }
     }
