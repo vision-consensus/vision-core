@@ -15,7 +15,6 @@ import org.vision.core.Wallet;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
 import org.vision.core.consensus.ConsensusService;
-import org.vision.core.db.DelegationService;
 import org.vision.core.db.Manager;
 import org.vision.core.store.StoreFactory;
 import org.vision.core.store.WitnessStore;
@@ -40,7 +39,6 @@ public class VMContractTestBase {
   protected static String WITNESS_SR1_ADDRESS;
 
   WitnessStore witnessStore;
-  DelegationService delegationService;
 
   static {
     // 27Ssb1WE8FArwJVRRb8Dwy3ssVGuLY8L3S1 (test.config)
@@ -68,7 +66,6 @@ public class VMContractTestBase {
     witnessStore = context.getBean(WitnessStore.class);
     consensusService = context.getBean(ConsensusService.class);
     maintenanceManager = context.getBean(MaintenanceManager.class);
-    delegationService = context.getBean(DelegationService.class);
     consensusService.start();
   }
 

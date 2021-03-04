@@ -86,7 +86,7 @@ public class AssetIssueActuator extends AbstractActuator {
 
       Commons.adjustBalance(accountStore, ownerAddress, -fee);
       if (dynamicStore.supportBlackHoleOptimization()) {
-        dynamicStore.burnTrx(fee);
+        dynamicStore.burnVs(fee);
       } else {
         Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);//send to blackhole
       }

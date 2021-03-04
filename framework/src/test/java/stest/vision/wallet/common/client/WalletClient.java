@@ -29,7 +29,7 @@ import org.vision.common.utils.FileUtil;
 import org.vision.common.utils.Sha256Hash;
 import org.vision.common.utils.Utils;
 import org.vision.core.exception.CancelException;
-import org.vision.keystore.CipherException;
+import org.vision.core.exception.CipherException;
 import org.vision.protos.Protocol.Account;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Block;

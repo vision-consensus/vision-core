@@ -775,7 +775,7 @@ service Wallet {
   rpc GetTransactionInfoByBlockNum (NumberMessage) returns (TransactionInfoList) {
   }
 
-  rpc GetBurnTrx (EmptyMessage) returns (NumberMessage) {
+  rpc GetBurnVs (EmptyMessage) returns (NumberMessage) {
   }
 };
 
@@ -960,6 +960,8 @@ service WalletSolidity {
   rpc GetMarketPairList (EmptyMessage) returns (MarketOrderPairList) {
   }
 
+  rpc GetBurnVs (EmptyMessage) returns (NumberMessage) {
+  }
 };
 
 service WalletExtension {

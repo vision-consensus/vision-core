@@ -486,9 +486,9 @@ public class RpcApiServiceOnPBFT implements Service {
     }
 
     @Override
-    public void getBurnTrx(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+    public void getBurnVs(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
       walletOnPBFT.futureGet(
-          () -> rpcApiService.getWalletSolidityApi().getBurnTrx(request, responseObserver)
+          () -> rpcApiService.getWalletSolidityApi().getBurnVs(request, responseObserver)
       );
     }
   }

@@ -590,8 +590,8 @@ public class RpcApiService implements Service {
     }
 
     @Override
-    public void getBurnTrx(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
-      getBurnTrxCommon(request, responseObserver);
+    public void getBurnVs(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+      getBurnVsCommon(request, responseObserver);
     }
 
     @Override
@@ -2423,10 +2423,11 @@ public class RpcApiService implements Service {
     public void getBrokerageInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
       getBrokerageInfoCommon(request, responseObserver);
-      }
+    }
+
     @Override
-    public void getBurnTrx(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
-      getBurnTrxCommon(request, responseObserver);
+    public void getBurnVs(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+      getBurnVsCommon(request, responseObserver);
     }
 
     @Override
@@ -2577,10 +2578,10 @@ public class RpcApiService implements Service {
     }
     responseObserver.onCompleted();
   }
-  public void getBurnTrxCommon(EmptyMessage request,
-      StreamObserver<NumberMessage> responseObserver) {
+  public void getBurnVsCommon(EmptyMessage request,
+                              StreamObserver<NumberMessage> responseObserver) {
     try {
-      long value = dbManager.getDynamicPropertiesStore().getBurnTrxAmount();
+      long value = dbManager.getDynamicPropertiesStore().getBurnVsAmount();
       NumberMessage.Builder builder = NumberMessage.newBuilder();
       builder.setNum(value);
       responseObserver.onNext(builder.build());

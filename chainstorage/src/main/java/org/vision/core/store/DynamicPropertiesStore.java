@@ -154,7 +154,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] TRANSACTION_FEE_POOL = "TRANSACTION_FEE_POOL".getBytes();
 
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
-  private static final byte[] BURN_TRX_AMOUNT = "BURN_TRX_AMOUNT".getBytes();
+  private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
 
   @Autowired
@@ -722,9 +722,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getBurnTrxAmount();
+      this.getBurnVsAmount();
     } catch (IllegalArgumentException e) {
-      this.saveBurnTrx(0L);
+      this.saveBurnVs(0L);
     }
     try {
       this.getAllowBlackHoleOptimization();
@@ -2133,21 +2133,21 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             new BytesCapsule(ByteArray.fromLong(maxFeeLimit)));
   }
 
-  public long getBurnTrxAmount() {
-    return Optional.ofNullable(getUnchecked(BURN_TRX_AMOUNT))
+  public long getBurnVsAmount() {
+    return Optional.ofNullable(getUnchecked(BURN_VS_AMOUNT))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElseThrow(() -> new IllegalArgumentException("not found BURN_TRX_AMOUNT"));
+        .orElseThrow(() -> new IllegalArgumentException("not found BURN_VS_AMOUNT"));
   }
-  public void burnTrx(long amount) {
+  public void burnVs(long amount) {
     if (amount <= 0) {
       return;
     }
-    amount += getBurnTrxAmount();
-    saveBurnTrx(amount);
+    amount += getBurnVsAmount();
+    saveBurnVs(amount);
   }
-  private void saveBurnTrx(long amount) {
-    this.put(BURN_TRX_AMOUNT, new BytesCapsule(ByteArray.fromLong(amount)));
+  private void saveBurnVs(long amount) {
+    this.put(BURN_VS_AMOUNT, new BytesCapsule(ByteArray.fromLong(amount)));
   }
   public boolean supportBlackHoleOptimization() {
     return getAllowBlackHoleOptimization() == 1L;

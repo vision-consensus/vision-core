@@ -18,7 +18,7 @@ public class GetBurnTrxServlet extends RateLimiterServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
-      long value = manager.getDynamicPropertiesStore().getBurnTrxAmount();
+      long value = manager.getDynamicPropertiesStore().getBurnVsAmount();
       response.getWriter().println("{\"burnTrxAmount\": " + value + "}");
     } catch (Exception e) {
       logger.error("", e);
