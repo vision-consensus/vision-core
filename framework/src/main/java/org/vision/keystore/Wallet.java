@@ -24,6 +24,7 @@ import org.vision.common.crypto.SignUtils;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.config.args.Args;
+import org.vision.core.exception.CipherException;
 
 /**
  * <p>Ethereum wallet file management. For reference, refer to <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">

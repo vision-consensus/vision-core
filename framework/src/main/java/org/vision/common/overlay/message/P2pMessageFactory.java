@@ -20,6 +20,7 @@ package org.vision.common.overlay.message;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.vision.core.exception.P2pException;
+import org.vision.core.exception.P2pException.TypeEnum;
 import org.vision.core.net.message.MessageTypes;
 
 public class P2pMessageFactory extends MessageFactory {
@@ -27,7 +28,7 @@ public class P2pMessageFactory extends MessageFactory {
   @Override
   public P2pMessage create(byte[] data) throws Exception {
     if (data.length <= 1) {
-      throw new P2pException(P2pException.TypeEnum.MESSAGE_WITH_WRONG_LENGTH,
+      throw new P2pException(TypeEnum.MESSAGE_WITH_WRONG_LENGTH,
           "messageType=" + (data.length == 1 ? data[0] : "unknown"));
     }
     try {

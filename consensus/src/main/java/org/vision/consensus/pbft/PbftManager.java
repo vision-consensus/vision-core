@@ -8,11 +8,11 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.consensus.pbft.message.PbftBaseMessage;
-import org.vision.consensus.pbft.message.PbftMessage;
 import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.consensus.dpos.MaintenanceManager;
+import org.vision.consensus.pbft.message.PbftBaseMessage;
+import org.vision.consensus.pbft.message.PbftMessage;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.BlockCapsule;
 

@@ -228,6 +228,8 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private BroadcastHexServlet broadcastHexServlet;
   @Autowired
+  private GetBurnVsServlet getBurnVsServlet;
+  @Autowired
   private GetBrokerageServlet getBrokerageServlet;
   @Autowired
   private GetRewardServlet getRewardServlet;
@@ -266,6 +268,10 @@ public class FullNodeHttpApiService implements Service {
   private GetMarketOrderListByPairServlet getMarketOrderListByPairServlet;
   @Autowired
   private GetMarketPairListServlet getMarketPairListServlet;
+  @Autowired
+  private GetAccountBalanceServlet getAccountBalanceServlet;
+  @Autowired
+  private GetBlockBalanceServlet getBlockBalanceServlet;
 
   @Autowired
   private LiteFnQueryHttpFilter liteFnQueryHttpFilter;
@@ -503,6 +509,11 @@ public class FullNodeHttpApiService implements Service {
           "/wallet/getmarketorderlistbypair");
       context.addServlet(new ServletHolder(getMarketPairListServlet),
           "/wallet/getmarketpairlist");
+      context.addServlet(new ServletHolder(getAccountBalanceServlet),
+          "/wallet/getaccountbalance");
+      context.addServlet(new ServletHolder(getBlockBalanceServlet),
+          "/wallet/getblockbalance");
+      context.addServlet(new ServletHolder(getBurnVsServlet), "/wallet/getburnvs");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

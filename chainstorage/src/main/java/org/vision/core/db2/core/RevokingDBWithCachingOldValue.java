@@ -10,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteOptions;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.storage.leveldb.LevelDbDataSourceImpl;
 import org.vision.common.utils.StorageUtils;
-import org.vision.core.db2.common.IRevokingDB;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.core.db.AbstractRevokingStore;
 import org.vision.core.db.RevokingStore;
+import org.vision.core.db2.common.IRevokingDB;
 import org.vision.core.exception.ItemNotFoundException;
 
 @Slf4j

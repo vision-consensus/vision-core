@@ -1,4 +1,4 @@
-package org.vision.core.db;
+package org.vision.core.service;
 
 import com.google.protobuf.ByteString;
 import java.util.ArrayList;
@@ -10,20 +10,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+import org.vision.core.config.Parameter.ChainConstant;
+import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.WitnessStore;
-import org.vision.common.utils.StringUtil;
-import org.vision.core.config.Parameter.ChainConstant;
-import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.protos.Protocol.Vote;
 
-@Slf4j(topic = "delegation")
+@Slf4j(topic = "mortgage")
 @Component
-public class DelegationService {
+public class MortgageService {
 
   @Setter
   private WitnessStore witnessStore;

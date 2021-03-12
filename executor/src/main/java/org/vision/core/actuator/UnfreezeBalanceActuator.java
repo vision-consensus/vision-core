@@ -1,5 +1,6 @@
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 import com.google.common.collect.Lists;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.vision.core.db.DelegationService;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
@@ -22,6 +22,7 @@ import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DelegatedResourceAccountIndexStore;
 import org.vision.core.store.DelegatedResourceStore;
@@ -56,7 +57,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     DelegatedResourceAccountIndexStore delegatedResourceAccountIndexStore = chainBaseManager
         .getDelegatedResourceAccountIndexStore();
     VotesStore votesStore = chainBaseManager.getVotesStore();
-    DelegationService delegationService = chainBaseManager.getDelegationService();
+    MortgageService mortgageService = chainBaseManager.getMortgageService();
     try {
       unfreezeBalanceContract = any.unpack(UnfreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
@@ -67,7 +68,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();
 
     //
-    delegationService.withdrawReward(ownerAddress);
+    mortgageService.withdrawReward(ownerAddress);
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     long oldBalance = accountCapsule.getBalance();
@@ -269,7 +270,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
       throw new ContractValidateException(
-          "Account[" + readableOwnerAddress + "] does not exist");
+          ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] does not exist");
     }
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();

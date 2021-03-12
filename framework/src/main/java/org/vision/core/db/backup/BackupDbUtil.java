@@ -121,8 +121,8 @@ public class BackupDbUtil {
     List<Chainbase> stores = ((SnapshotManager) db).getDbs();
     for (Chainbase store : stores) {
       if (((SnapshotRoot) (store.getHead().getRoot())).getDb().getClass()
-          == RocksDB.class) {
-        ((RocksDB) ((SnapshotRoot) (store.getHead().getRoot())).getDb())
+          == org.vision.core.db2.common.RocksDB.class) {
+        ((org.vision.core.db2.common.RocksDB) ((SnapshotRoot) (store.getHead().getRoot())).getDb())
             .getDb().backup(path);
       }
     }
@@ -140,8 +140,8 @@ public class BackupDbUtil {
     List<Chainbase> stores = ((SnapshotManager) db).getDbs();
     for (Chainbase store : stores) {
       if (((SnapshotRoot) (store.getHead().getRoot())).getDb().getClass()
-          == RocksDB.class) {
-        ((RocksDB) (((SnapshotRoot) (store.getHead().getRoot())).getDb()))
+          == org.vision.core.db2.common.RocksDB.class) {
+        ((org.vision.core.db2.common.RocksDB) (((SnapshotRoot) (store.getHead().getRoot())).getDb()))
             .getDb().deleteDbBakPath(path);
       }
     }

@@ -3,13 +3,14 @@ package org.vision.core.vm.nativecontract;
 import com.google.protobuf.ByteString;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.AssetIssueCapsule;
+import org.vision.core.exception.ContractValidateException;
 import org.vision.core.utils.TransactionUtil;
 import org.vision.core.vm.nativecontract.param.UpdateAssetParam;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.core.exception.ContractValidateException;
 import org.vision.core.vm.repository.Repository;
+import static org.vision.core.vm.nativecontract.ContractProcessorConstant.CONTRACT_NULL;
 
 @Slf4j(topic = "Processor")
 public class UpdateAssetProcessor {
@@ -28,7 +29,7 @@ public class UpdateAssetProcessor {
 
   public void validate(Object contract, Repository repository) throws ContractValidateException {
     if (Objects.isNull(contract)) {
-      throw new ContractValidateException(ContractProcessorConstant.CONTRACT_NULL);
+      throw new ContractValidateException(CONTRACT_NULL);
     }
     if (repository == null) {
       throw new ContractValidateException(ContractProcessorConstant.STORE_NOT_EXIST);

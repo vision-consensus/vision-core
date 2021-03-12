@@ -7,10 +7,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.BlockCapsule;
-import org.vision.core.capsule.TransactionCapsule;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.TransactionCapsule;
+import org.vision.core.db.KhaosDatabase.KhaosBlock;
 import org.vision.core.exception.BadItemException;
 
 @Slf4j(topic = "DB")
@@ -50,8 +51,8 @@ public class TransactionStore extends VisionStoreWithRevoking<TransactionCapsule
   }
 
   private TransactionCapsule getTransactionFromKhaosDatabase(byte[] key, long high) {
-    List<KhaosDatabase.KhaosBlock> khaosBlocks = khaosDatabase.getMiniStore().getBlockByNum(high);
-    for (KhaosDatabase.KhaosBlock bl : khaosBlocks) {
+    List<KhaosBlock> khaosBlocks = khaosDatabase.getMiniStore().getBlockByNum(high);
+    for (KhaosBlock bl : khaosBlocks) {
       for (TransactionCapsule e : bl.getBlk().getTransactions()) {
         if (e.getTransactionId().equals(Sha256Hash.wrap(key))) {
           return e;

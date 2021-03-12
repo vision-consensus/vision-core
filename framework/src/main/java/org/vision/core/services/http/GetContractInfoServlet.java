@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI.BytesMessage;
 import org.vision.core.Wallet;
+import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 
 
@@ -44,10 +45,9 @@ public class GetContractInfoServlet extends RateLimiterServlet {
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String input = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(input);
-      boolean visible = Util.getVisiblePost(input);
+      PostParams params = PostParams.getPostParams(request);
+      String input = params.getParams();
+      boolean visible = params.isVisible();
       if (visible) {
         JSONObject jsonObject = JSONObject.parseObject(input);
         String value = jsonObject.getString(VALUE);

@@ -21,18 +21,18 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
+import org.vision.core.exception.BalanceInsufficientException;
+import org.vision.core.exception.ContractExeException;
+import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.AssetIssueV2Store;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.core.exception.BalanceInsufficientException;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -73,8 +73,6 @@ public class TransferAssetActuator extends AbstractActuator {
       ByteString assetName = transferAssetContract.getAssetName();
       long amount = transferAssetContract.getAmount();
 
-      Commons.adjustBalance(accountStore, ownerAddress, -fee);
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), fee);
 
       AccountCapsule ownerAccountCapsule = accountStore.get(ownerAddress);
       if (!ownerAccountCapsule
@@ -87,6 +85,12 @@ public class TransferAssetActuator extends AbstractActuator {
           .addAssetAmountV2(assetName.toByteArray(), amount, dynamicStore, assetIssueStore);
       accountStore.put(toAddress, toAccountCapsule);
 
+      Commons.adjustBalance(accountStore, ownerAccountCapsule, -fee);
+      if (dynamicStore.supportBlackHoleOptimization()) {
+        dynamicStore.burnVs(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);
+      }
       ret.setStatus(fee, code.SUCESS);
     } catch (BalanceInsufficientException e) {
       logger.debug(e.getMessage(), e);

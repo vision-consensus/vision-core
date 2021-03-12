@@ -11,29 +11,32 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.utils.ForkController;
+import org.vision.common.utils.Sha256Hash;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.utils.BlockUtil;
-import org.vision.core.db2.core.IVisionChainBase;
-import org.vision.common.utils.Sha256Hash;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.db.BlockStore;
 import org.vision.core.db.CommonDataBase;
 import org.vision.core.db.CommonStore;
-import org.vision.core.db.DelegationService;
 import org.vision.core.db.KhaosDatabase;
 import org.vision.core.db.PbftSignDataStore;
 import org.vision.core.db.RecentBlockStore;
 import org.vision.core.db.TransactionStore;
+import org.vision.core.db2.core.IVisionChainBase;
 import org.vision.core.exception.BadItemException;
 import org.vision.core.exception.HeaderNotFound;
 import org.vision.core.exception.ItemNotFoundException;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountIdIndexStore;
 import org.vision.core.store.AccountIndexStore;
 import org.vision.core.store.AccountStore;
+import org.vision.core.store.AccountTraceStore;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.AssetIssueV2Store;
+import org.vision.core.store.BalanceTraceStore;
 import org.vision.core.store.CodeStore;
 import org.vision.core.store.ContractStore;
 import org.vision.core.store.DelegatedResourceAccountIndexStore;
@@ -149,7 +152,7 @@ public class ChainBaseManager {
 
   @Getter
   @Setter
-  private DelegationService delegationService;
+  private MortgageService mortgageService;
 
   @Autowired
   @Getter
@@ -188,6 +191,12 @@ public class ChainBaseManager {
   @Getter
   private PbftSignDataStore pbftSignDataStore;
 
+  @Autowired
+  @Getter
+  private BalanceTraceStore balanceTraceStore;
+  @Autowired
+  @Getter
+  private AccountTraceStore accountTraceStore;
   @Getter
   private ForkController forkController = ForkController.instance();
 
@@ -262,8 +271,8 @@ public class ChainBaseManager {
     }
   }
 
-  public synchronized BlockCapsule.BlockId getHeadBlockId() {
-    return new BlockCapsule.BlockId(
+  public synchronized BlockId getHeadBlockId() {
+    return new BlockId(
         dynamicPropertiesStore.getLatestBlockHeaderHash(),
         dynamicPropertiesStore.getLatestBlockHeaderNumber());
   }
@@ -301,7 +310,7 @@ public class ChainBaseManager {
     }
   }
 
-  public boolean containBlockInMainChain(BlockCapsule.BlockId blockId) {
+  public boolean containBlockInMainChain(BlockId blockId) {
     try {
       return getBlockStore().get(blockId.getBytes()) != null;
     } catch (ItemNotFoundException | BadItemException e) {
@@ -335,7 +344,7 @@ public class ChainBaseManager {
     trans.setReference(headNum, headHash);
   }
 
-  public BlockCapsule.BlockId getSolidBlockId() {
+  public BlockId getSolidBlockId() {
     try {
       long num = getDynamicPropertiesStore().getLatestSolidifiedBlockNum();
       return getBlockIdByNum(num);
@@ -344,7 +353,7 @@ public class ChainBaseManager {
     }
   }
 
-  public BlockCapsule.BlockId getGenesisBlockId() {
+  public BlockId getGenesisBlockId() {
     return getGenesisBlock().getBlockId();
   }
 
@@ -352,7 +361,7 @@ public class ChainBaseManager {
   /**
    * Get the block id from the number.
    */
-  public BlockCapsule.BlockId getBlockIdByNum(final long num) throws ItemNotFoundException {
+  public BlockId getBlockIdByNum(final long num) throws ItemNotFoundException {
     return getBlockIndexStore().get(num);
   }
 

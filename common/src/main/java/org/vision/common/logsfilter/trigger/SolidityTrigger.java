@@ -10,7 +10,7 @@ public class SolidityTrigger extends Trigger {
   private long latestSolidifiedBlockNumber;
 
   public SolidityTrigger() {
-    setTriggerName(SOLIDITY_TRIGGER_NAME);
+    setTriggerName(Trigger.SOLIDITY_TRIGGER_NAME);
   }
 
   @Override

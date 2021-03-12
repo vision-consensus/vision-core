@@ -18,11 +18,11 @@
 
 package org.vision.common.overlay.discover.node.statistics;
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 import org.vision.core.config.args.Args;
 import org.vision.protos.Protocol.ReasonCode;
 
-import java.util.concurrent.atomic.AtomicLong;
 
 public class NodeStatistics {
 
@@ -167,7 +167,7 @@ public class NodeStatistics {
         + " "
         + messageStatistics.discoverOutNeighbours + "/" + messageStatistics.discoverInFindNode
         + " "
-        + ((int) discoverMessageLatency.getAvrg()) + "ms"
+        + ((int) discoverMessageLatency.getAvg()) + "ms"
         + ", p2p: " + p2pHandShake + "/" + messageStatistics.p2pInHello + "/"
         + messageStatistics.p2pOutHello + " "
         + ", vision: " + messageStatistics.visionInMessage + "/" + messageStatistics.visionOutMessage
@@ -206,7 +206,7 @@ public class NodeStatistics {
       count++;
     }
 
-    public long getAvrg() {
+    public long getAvg() {
       return count == 0 ? 0 : sum / count;
     }
 

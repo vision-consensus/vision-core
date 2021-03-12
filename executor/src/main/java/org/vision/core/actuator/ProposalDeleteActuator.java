@@ -1,20 +1,23 @@
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.actuator.ActuatorConstant.PROPOSAL_EXCEPTION_STR;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.capsule.ProposalCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.ProposalStore;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.core.capsule.ProposalCapsule;
+import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
+import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.ProposalStore;
 import org.vision.protos.Protocol.Proposal.State;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -84,15 +87,15 @@ public class ProposalDeleteActuator extends AbstractActuator {
     }
 
     if (!accountStore.has(ownerAddress)) {
-      throw new ContractValidateException(ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress
-          + ActuatorConstant.NOT_EXIST_STR);
+      throw new ContractValidateException(ACCOUNT_EXCEPTION_STR + readableOwnerAddress
+          + NOT_EXIST_STR);
     }
 
     long latestProposalNum = dynamicStore
         .getLatestProposalNum();
     if (contract.getProposalId() > latestProposalNum) {
-      throw new ContractValidateException(ActuatorConstant.PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-          + ActuatorConstant.NOT_EXIST_STR);
+      throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
+          + NOT_EXIST_STR);
     }
 
     ProposalCapsule proposalCapsule;
@@ -100,21 +103,21 @@ public class ProposalDeleteActuator extends AbstractActuator {
       proposalCapsule = proposalStore.
           get(ByteArray.fromLong(contract.getProposalId()));
     } catch (ItemNotFoundException ex) {
-      throw new ContractValidateException(ActuatorConstant.PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-          + ActuatorConstant.NOT_EXIST_STR);
+      throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
+          + NOT_EXIST_STR);
     }
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     if (!proposalCapsule.getProposalAddress().equals(contract.getOwnerAddress())) {
-      throw new ContractValidateException(ActuatorConstant.PROPOSAL_EXCEPTION_STR + contract.getProposalId() + "] "
+      throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId() + "] "
           + "is not proposed by " + readableOwnerAddress);
     }
     if (now >= proposalCapsule.getExpirationTime()) {
-      throw new ContractValidateException(ActuatorConstant.PROPOSAL_EXCEPTION_STR + contract.getProposalId()
+      throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
           + "] expired");
     }
     if (proposalCapsule.getState() == State.CANCELED) {
-      throw new ContractValidateException(ActuatorConstant.PROPOSAL_EXCEPTION_STR + contract.getProposalId()
+      throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
           + "] canceled");
     }
 

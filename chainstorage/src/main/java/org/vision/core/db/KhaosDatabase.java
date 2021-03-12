@@ -18,9 +18,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.BlockCapsule;
 import org.vision.common.utils.Pair;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.exception.BadNumberBlockException;
 import org.vision.core.exception.NonCommonBlockException;
 import org.vision.core.exception.UnLinkedBlockException;
@@ -151,8 +152,8 @@ public class KhaosDatabase extends VisionDatabase {
   }
 
   public void setMaxSize(int maxSize) {
-    miniUnlinkedStore.setMaxCapcity(maxSize);
-    miniStore.setMaxCapcity(maxSize);
+    miniUnlinkedStore.setMaxCapacity(maxSize);
+    miniStore.setMaxCapacity(maxSize);
   }
 
   /**
@@ -207,7 +208,7 @@ public class KhaosDatabase extends VisionDatabase {
    */
   @Deprecated
   public Pair<LinkedList<BlockCapsule>, LinkedList<BlockCapsule>> getBranch(
-          BlockCapsule.BlockId block1, BlockCapsule.BlockId block2) {
+      BlockId block1, BlockId block2) {
     LinkedList<BlockCapsule> list1 = new LinkedList<>();
     LinkedList<BlockCapsule> list2 = new LinkedList<>();
     KhaosBlock kblk1 = miniStore.getByHash(block1);
@@ -254,7 +255,7 @@ public class KhaosDatabase extends VisionDatabase {
     @Getter
     private BlockCapsule blk;
     private Reference<KhaosBlock> parent = new WeakReference<>(null);
-    private BlockCapsule.BlockId id;
+    private BlockId id;
     private long num;
 
     public KhaosBlock(BlockCapsule blk) {
@@ -306,7 +307,7 @@ public class KhaosDatabase extends VisionDatabase {
 
   public class KhaosStore {
 
-    private Map<BlockCapsule.BlockId, KhaosBlock> hashKblkMap = new ConcurrentHashMap<>();
+    private Map<BlockId, KhaosBlock> hashKblkMap = new ConcurrentHashMap<>();
     // private HashMap<Sha256Hash, KhaosBlock> parentHashKblkMap = new HashMap<>();
     private int maxCapacity = 1024;
 
@@ -333,7 +334,7 @@ public class KhaosDatabase extends VisionDatabase {
           }
         };
 
-    public synchronized void setMaxCapcity(int maxCapacity) {
+    public synchronized void setMaxCapacity(int maxCapacity) {
       this.maxCapacity = maxCapacity;
     }
 

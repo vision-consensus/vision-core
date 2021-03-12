@@ -22,6 +22,7 @@ import org.vision.core.services.http.GetBlockByLatestNumServlet;
 import org.vision.core.services.http.GetBlockByLimitNextServlet;
 import org.vision.core.services.http.GetBlockByNumServlet;
 import org.vision.core.services.http.GetBrokerageServlet;
+import org.vision.core.services.http.GetBurnVsServlet;
 import org.vision.core.services.http.GetDelegatedResourceAccountIndexServlet;
 import org.vision.core.services.http.GetDelegatedResourceServlet;
 import org.vision.core.services.http.GetExchangeByIdServlet;
@@ -127,7 +128,8 @@ public class SolidityNodeHttpApiService implements Service {
   private GetMarketOrderListByPairServlet getMarketOrderListByPairServlet;
   @Autowired
   private GetMarketPairListServlet getMarketPairListServlet;
-
+  @Autowired
+  private GetBurnVsServlet getBurnVsServlet;
   @Autowired
   private GetBrokerageServlet getBrokerageServlet;
   @Autowired
@@ -237,6 +239,7 @@ public class SolidityNodeHttpApiService implements Service {
       context.addServlet(new ServletHolder(getNodeInfoServlet), "/wallet/getnodeinfo");
       context.addServlet(new ServletHolder(getBrokerageServlet), "/walletsolidity/getBrokerage");
       context.addServlet(new ServletHolder(getRewardServlet), "/walletsolidity/getReward");
+      context.addServlet(new ServletHolder(getBurnVsServlet), "/walletsolidity/getburnvs");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

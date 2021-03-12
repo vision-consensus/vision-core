@@ -1,22 +1,23 @@
 package org.vision.core.db;
 
+import static org.vision.common.runtime.InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
+import static org.vision.common.runtime.InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.util.StringUtils;
-import org.vision.common.runtime.InternalTransaction;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.runtime.InternalTransaction.TrxType;
 import org.vision.common.runtime.ProgramResult;
 import org.vision.common.runtime.Runtime;
-import org.vision.common.utils.ForkController;
-import org.vision.common.utils.WalletUtil;
-import org.vision.core.store.*;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.ForkController;
 import org.vision.common.utils.Sha256Hash;
 import org.vision.common.utils.StringUtil;
+import org.vision.common.utils.WalletUtil;
 import org.vision.core.Constant;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
@@ -28,6 +29,7 @@ import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ReceiptCheckErrException;
 import org.vision.core.exception.VMIllegalException;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.contractResult;
@@ -53,7 +55,7 @@ public class TransactionTrace {
 
   private EntropyProcessor entropyProcessor;
 
-  private InternalTransaction.TrxType trxType;
+  private TrxType trxType;
 
   private long txStartTimeInMs;
 
@@ -70,6 +72,9 @@ public class TransactionTrace {
   @Getter
   @Setter
   private TimeResultType timeResultType = TimeResultType.NORMAL;
+  @Getter
+  @Setter
+  private boolean photonFeeForPhoton = true;
 
   public TransactionTrace(TransactionCapsule trx, StoreFactory storeFactory,
       Runtime runtime) {
@@ -78,13 +83,13 @@ public class TransactionTrace {
         .getContract(0).getType();
     switch (contractType.getNumber()) {
       case ContractType.TriggerSmartContract_VALUE:
-        trxType = InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
+        trxType = TRX_CONTRACT_CALL_TYPE;
         break;
       case ContractType.CreateSmartContract_VALUE:
-        trxType = InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
+        trxType = TRX_CONTRACT_CREATION_TYPE;
         break;
       default:
-        trxType = InternalTransaction.TrxType.TRX_PRECOMPILED_TYPE;
+        trxType = TrxType.TRX_PRECOMPILED_TYPE;
     }
     this.storeFactory = storeFactory;
     this.dynamicPropertiesStore = storeFactory.getChainBaseManager().getDynamicPropertiesStore();
@@ -107,8 +112,8 @@ public class TransactionTrace {
   }
 
   private boolean needVM() {
-    return this.trxType == InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE
-        || this.trxType == InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
+    return this.trxType == TRX_CONTRACT_CALL_TYPE
+        || this.trxType == TRX_CONTRACT_CREATION_TYPE;
   }
 
   public void init(BlockCapsule blockCap) {
@@ -128,7 +133,7 @@ public class TransactionTrace {
     }
     TriggerSmartContract triggerContractFromTransaction = ContractCapsule
         .getTriggerContractFromTransaction(this.getTrx().getInstance());
-    if (InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE == this.trxType) {
+    if (TRX_CONTRACT_CALL_TYPE == this.trxType) {
       ContractCapsule contract = contractStore
           .get(triggerContractFromTransaction.getContractAddress().toByteArray());
       if (contract == null) {
@@ -159,6 +164,11 @@ public class TransactionTrace {
     receipt.setPhotonFee(photonFee);
   }
 
+  public void setPhotonBillForCreateNewAccount(long netUsage, long netFee) {
+    receipt.setPhotonUsage(netUsage);
+    receipt.setPhotonFee(netFee);
+    setPhotonFeeForPhoton(false);
+  }
   public void addPhotonBill(long photonFee) {
     receipt.addPhotonFee(photonFee);
   }
@@ -169,7 +179,7 @@ public class TransactionTrace {
     runtime.execute(transactionContext);
     setBill(transactionContext.getProgramResult().getEntropyUsed());
 
-    if (InternalTransaction.TrxType.TRX_PRECOMPILED_TYPE != trxType) {
+    if (TrxType.TRX_PRECOMPILED_TYPE != trxType) {
       if (contractResult.OUT_OF_TIME
           .equals(receipt.getResult())) {
         setTimeResultType(TimeResultType.OUT_OF_TIME);

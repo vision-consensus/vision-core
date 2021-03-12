@@ -3,9 +3,9 @@ package org.vision.core.capsule;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.common.zksnark.JLibrustzcash;
-import org.vision.common.zksnark.LibrustzcashParam;
 import org.vision.common.utils.ByteArray;
+import org.vision.common.zksnark.JLibrustzcash;
+import org.vision.common.zksnark.LibrustzcashParam.MerkleHashParams;
 import org.vision.core.exception.ZksnarkException;
 import org.vision.protos.contract.ShieldContract.PedersenHash;
 
@@ -35,7 +35,7 @@ public class PedersenHashCapsule implements ProtoCapsule<PedersenHash> {
       throws ZksnarkException {
     byte[] res = new byte[32];
 
-    JLibrustzcash.librustzcashMerkleHash(new LibrustzcashParam.MerkleHashParams(depth, a.getContent().toByteArray(),
+    JLibrustzcash.librustzcashMerkleHash(new MerkleHashParams(depth, a.getContent().toByteArray(),
         b.getContent().toByteArray(), res));
 
     PedersenHashCapsule pedersenHashCapsule = new PedersenHashCapsule();

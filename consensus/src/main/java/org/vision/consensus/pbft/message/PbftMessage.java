@@ -5,6 +5,7 @@ import java.util.List;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.crypto.ECKey.ECDSASignature;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.net.message.MessageTypes;

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.vision.core.Constant;
 import org.vision.core.net.service.AdvService;
 import org.vision.core.net.service.SyncService;
 import org.vision.common.overlay.message.HelloMessage;
@@ -162,11 +163,11 @@ public class PeerConnection extends Channel {
 
         getNodeStatistics().pingMessageLatency.getCount(),
         getNodeStatistics().pingMessageLatency.getMax(),
-        getNodeStatistics().pingMessageLatency.getAvrg(),
+        getNodeStatistics().pingMessageLatency.getAvg(),
         getNodeStatistics().pingMessageLatency.getMin(),
         getNodeStatistics().pingMessageLatency.getLast(),
 
-        (now - getStartTime()) / 1000,
+        (now - getStartTime()) / Constant.ONE_THOUSAND,
         fastForwardBlock != null ? fastForwardBlock.getNum() : blockBothHave.getNum(),
         isNeedSyncFromPeer(),
         isNeedSyncFromUs(),
@@ -174,7 +175,8 @@ public class PeerConnection extends Channel {
         !syncBlockToFetch.isEmpty() ? syncBlockToFetch.peek().getNum() : -1,
         syncBlockRequested.size(),
         remainNum,
-        syncChainRequested == null ? 0 : (now - syncChainRequested.getValue()) / 1000,
+        syncChainRequested == null ? 0 : (now - syncChainRequested.getValue()) 
+                / Constant.ONE_THOUSAND,
         syncBlockInProcess.size())
         + nodeStatistics.toString() + "\n";
   }

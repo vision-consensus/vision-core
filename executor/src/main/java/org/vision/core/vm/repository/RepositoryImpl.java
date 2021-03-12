@@ -15,6 +15,7 @@ import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.*;
 import org.vision.core.db.*;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.common.crypto.Hash;
 import org.vision.common.parameter.CommonParameter;
@@ -64,7 +65,7 @@ public class RepositoryImpl implements Repository {
   @Getter
   private VotesStore votesStore;
   @Getter
-  private DelegationService delegationService;
+  private MortgageService mortgageService;
   @Getter
   private DelegationStore delegationStore;
 
@@ -104,7 +105,7 @@ public class RepositoryImpl implements Repository {
       blockIndexStore = manager.getBlockIndexStore();
       witnessStore = manager.getWitnessStore();
       votesStore = manager.getVotesStore();
-      delegationService = manager.getDelegationService();
+      mortgageService = manager.getMortgageService();
       delegationStore = manager.getDelegationStore();
     }
     this.parent = parent;
@@ -634,7 +635,7 @@ public class RepositoryImpl implements Repository {
 
   @Override
   public byte[] getBlackHoleAddress() {
-    return getAccountStore().getSingularity().getAddress().toByteArray();
+    return getAccountStore().getSingularityAddress();
   }
 
   @Override

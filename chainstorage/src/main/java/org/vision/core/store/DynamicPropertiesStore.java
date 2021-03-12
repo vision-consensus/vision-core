@@ -11,10 +11,10 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.BytesCapsule;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
@@ -154,6 +154,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] TRANSACTION_FEE_POOL = "TRANSACTION_FEE_POOL".getBytes();
 
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
+  private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
+  private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -472,7 +474,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAllowTransactionFeePool();
     } catch (IllegalArgumentException e) {
-      this.saveAllowTransactionFeePool(0L);
+      this.saveAllowTransactionFeePool(CommonParameter.getInstance().getAllowTransactionFeePool());
     }
 
     try {
@@ -719,6 +721,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.saveMaxFeeLimit(1_000_000_000L);
     }
 
+    try {
+      this.getBurnVsAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveBurnVs(0L);
+    }
+    try {
+      this.getAllowBlackHoleOptimization();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowBlackHoleOptimization(CommonParameter.getInstance().getAllowBlackHoleOptimization());
+    }
 
   }
 
@@ -1402,9 +1414,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getAllowTransactionFeePool() == 1L;
   }
 
-  public void saveAllowTransactionFeePool(long limit) {
+  public void saveAllowTransactionFeePool(long value) {
     this.put(ALLOW_TRANSACTION_FEE_POOL,
-            new BytesCapsule(ByteArray.fromLong(limit)));
+        new BytesCapsule(ByteArray.fromLong(value)));
   }
 
   public long getAllowTransactionFeePool() {
@@ -1413,6 +1425,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found ALLOW_TRANSACTION_FEE_POOL"));
+  }
+  public void addTransactionFeePool(long amount) {
+    if (amount <= 0) {
+      return;
+    }
+    amount += getTransactionFeePool();
+    saveTransactionFeePool(amount);
   }
 
   public void saveTransactionFeePool(long value) {
@@ -2114,6 +2133,35 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             new BytesCapsule(ByteArray.fromLong(maxFeeLimit)));
   }
 
+  public long getBurnVsAmount() {
+    return Optional.ofNullable(getUnchecked(BURN_VS_AMOUNT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElseThrow(() -> new IllegalArgumentException("not found BURN_VS_AMOUNT"));
+  }
+  public void burnVs(long amount) {
+    if (amount <= 0) {
+      return;
+    }
+    amount += getBurnVsAmount();
+    saveBurnVs(amount);
+  }
+  private void saveBurnVs(long amount) {
+    this.put(BURN_VS_AMOUNT, new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+  public boolean supportBlackHoleOptimization() {
+    return getAllowBlackHoleOptimization() == 1L;
+  }
+  public void saveAllowBlackHoleOptimization(long value) {
+    this.put(ALLOW_BLACKHOLE_OPTIMIZATION, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getAllowBlackHoleOptimization() {
+    return Optional.ofNullable(getUnchecked(ALLOW_BLACKHOLE_OPTIMIZATION))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElseThrow(
+            () -> new IllegalArgumentException("not found ALLOW_BLACKHOLE_OPTIMIZATION"));
+  }
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();

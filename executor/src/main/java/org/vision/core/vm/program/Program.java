@@ -63,6 +63,7 @@ import static java.lang.StrictMath.min;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ArrayUtils.*;
 import static org.vision.common.utils.ByteUtil.stripLeadingZeroes;
+import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 /**
  * @author Roman Mandeleil
@@ -1809,17 +1810,14 @@ public class Program {
     TokenIssueParam tokenIssueParam = new TokenIssueParam();
     tokenIssueParam.setName(name.getNoEndZeroesData());
     tokenIssueParam.setAbbr(abbr.getNoEndZeroesData());
+    tokenIssueParam.setTotalSupply(totalSupply.sValue().longValueExact());
+    tokenIssueParam.setPrecision(precision.sValue().intValueExact());
     tokenIssueParam.setOwnerAddress(ownerAddress);
     try {
-      tokenIssueParam.setTotalSupply(totalSupply.sValue().longValueExact());
-      tokenIssueParam.setPrecision(precision.sValue().intValueExact());
       tokenIssueProcessor.validate(tokenIssueParam, repository);
       tokenIssueProcessor.execute(tokenIssueParam, repository);
       stackPush(new DataWord(repository.getTokenIdNum()));
       repository.commit();
-    } catch (ArithmeticException e) {
-      logger.error("totalSupply or precision out of long range");
-      stackPushZero();
     } catch (ContractValidateException e) {
       logger.error("validateForAssetIssue failure:{}", e.getMessage());
       stackPushZero();

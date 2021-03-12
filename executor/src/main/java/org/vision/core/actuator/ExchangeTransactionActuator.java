@@ -1,5 +1,7 @@
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.capsule.utils.TransactionUtil.isNumber;
 import static org.vision.core.config.Parameter.ChainSymbol.VS_SYMBOL_BYTES;
 
 import com.google.protobuf.ByteString;
@@ -7,14 +9,13 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.ExchangeCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.utils.TransactionUtil;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.StringUtil;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
@@ -23,6 +24,7 @@ import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.ExchangeStore;
 import org.vision.core.store.ExchangeV2Store;
+import org.vision.core.utils.TransactionUtil;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.ExchangeContract.ExchangeTransactionContract;
@@ -136,7 +138,7 @@ public class ExchangeTransactionActuator extends AbstractActuator {
     }
 
     if (!accountStore.has(ownerAddress)) {
-      throw new ContractValidateException("account[" + readableOwnerAddress + "] not exists");
+      throw new ContractValidateException("account[" + readableOwnerAddress + NOT_EXIST_STR);
     }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
@@ -165,7 +167,7 @@ public class ExchangeTransactionActuator extends AbstractActuator {
 
     if (dynamicStore.getAllowSameTokenName() == 1 &&
         !Arrays.equals(tokenID, VS_SYMBOL_BYTES) &&
-        !TransactionUtil.isNumber(tokenID)) {
+        !isNumber(tokenID)) {
       throw new ContractValidateException("token id is not a valid number");
     }
     if (!Arrays.equals(tokenID, firstTokenID) && !Arrays.equals(tokenID, secondTokenID)) {

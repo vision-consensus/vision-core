@@ -181,8 +181,8 @@ public class PhotonProcessor extends ResourceProcessor {
   public boolean consumeFeeForCreateNewAccount(AccountCapsule accountCapsule,
       TransactionTrace trace) {
     long fee = chainBaseManager.getDynamicPropertiesStore().getCreateAccountFee();
-    if (consumeFee(accountCapsule, fee)) {
-      trace.setPhotonBill(0, fee);
+    if (consumeFeeForNewAccount(accountCapsule, fee)) {
+      trace.setPhotonBillForCreateNewAccount(0, fee);
       chainBaseManager.getDynamicPropertiesStore().addTotalCreateAccountCost(fee);
       return true;
     } else {

@@ -1,4 +1,4 @@
-package org.vision.keystore;
+package org.vision.core.exception;
 
 /**
  * Cipher exception wrapper.

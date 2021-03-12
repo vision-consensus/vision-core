@@ -25,11 +25,10 @@ public class MarketCancelOrderServlet extends RateLimiterServlet {
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String contract = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(contract);
+      PostParams params = PostParams.getPostParams(request);
+      String contract = params.getParams();
 
-      boolean visible = Util.getVisiblePost(contract);
+      boolean visible = params.isVisible();
       MarketCancelOrderContract.Builder build = MarketCancelOrderContract.newBuilder();
       JsonFormat.merge(contract, build, visible);
 

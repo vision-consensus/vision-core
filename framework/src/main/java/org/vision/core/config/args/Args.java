@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -59,8 +60,8 @@ import org.vision.core.Wallet;
 import org.vision.core.config.Configuration;
 import org.vision.core.config.Parameter.NetConstants;
 import org.vision.core.config.Parameter.NodeConstant;
+import org.vision.core.exception.CipherException;
 import org.vision.core.store.AccountStore;
-import org.vision.keystore.CipherException;
 import org.vision.keystore.Credentials;
 import org.vision.keystore.WalletUtils;
 import org.vision.program.Version;
@@ -76,12 +77,12 @@ public class Args extends CommonParameter {
 
   @Autowired(required = false)
   @Getter
-  private static ConcurrentHashMap<Long, List<ContractLogTrigger>>
+  private static ConcurrentHashMap<Long, BlockingQueue<ContractLogTrigger>>
       solidityContractLogTriggerMap = new ConcurrentHashMap<>();
 
   @Autowired(required = false)
   @Getter
-  private static ConcurrentHashMap<Long, List<ContractEventTrigger>>
+  private static ConcurrentHashMap<Long, BlockingQueue<ContractEventTrigger>>
       solidityContractEventTriggerMap = new ConcurrentHashMap<>();
 
   public static void clearParam() {
@@ -122,6 +123,7 @@ public class Args extends CommonParameter {
     PARAMETER.nodeDiscoveryBindIp = "";
     PARAMETER.nodeExternalIp = "";
     PARAMETER.nodeDiscoveryPublicHomeNode = false;
+    PARAMETER.nodeDiscoveryPingTimeout = 15000;
     PARAMETER.nodeP2pPingInterval = 0L;
     PARAMETER.nodeP2pVersion = 0;
     PARAMETER.rpcPort = 0;
@@ -177,9 +179,12 @@ public class Args extends CommonParameter {
     PARAMETER.allowPBFT = 0;
     PARAMETER.allowShieldedVRC20Transaction = 0;
     PARAMETER.allowMarketTransaction = 0;
+    PARAMETER.allowTransactionFeePool = 0;
+    PARAMETER.allowBlackHoleOptimization = 0;
     PARAMETER.allowVvmIstanbul = 0;
     PARAMETER.allowVvmStake = 0;
     PARAMETER.allowVvmAssetIssue = 0;
+    PARAMETER.historyBalanceLookup = false;
   }
 
   /**
@@ -190,7 +195,7 @@ public class Args extends CommonParameter {
     if (PARAMETER.version) {
       JCommander.getConsole()
           .println(Version.getVersion()
-              + "\n" + Version.versionName + "\n" + Version.versionCode);
+              + "\n" + Version.VERSION_NAME + "\n" + Version.VERSION_CODE);
       exit(0);
     }
 
@@ -227,16 +232,7 @@ public class Args extends CommonParameter {
       List<String> localwitness = config.getStringList(Constant.LOCAL_WITNESS);
       localWitnesses.setPrivateKeys(localwitness);
 
-      if (config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS)) {
-        byte[] bytes = Commons
-            .decodeFromBase58Check(config.getString(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS));
-        if (bytes != null) {
-          localWitnesses.setWitnessAccountAddress(bytes);
-          logger.debug("Got localWitnessAccountAddress from config.conf");
-        } else {
-          logger.warn(IGNORE_WRONG_WITNESS_ADDRESS_FORMAT);
-        }
-      }
+      witnessAddressCheck(config);
       localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
       logger.debug("Got privateKey from config.conf");
     } else if (config.hasPath(Constant.LOCAL_WITNESS_KEYSTORE)) {
@@ -270,16 +266,7 @@ public class Args extends CommonParameter {
       }
       localWitnesses.setPrivateKeys(privateKeys);
 
-      if (config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS)) {
-        byte[] bytes = Commons
-            .decodeFromBase58Check(config.getString(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS));
-        if (bytes != null) {
-          localWitnesses.setWitnessAccountAddress(bytes);
-          logger.debug("Got localWitnessAccountAddress from config.conf");
-        } else {
-          logger.warn(IGNORE_WRONG_WITNESS_ADDRESS_FORMAT);
-        }
-      }
+      witnessAddressCheck(config);
       localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
       logger.debug("Got privateKey from keystore");
     }
@@ -426,6 +413,9 @@ public class Args extends CommonParameter {
         config.hasPath(Constant.NODE_DISCOVERY_PUBLIC_HOME_NODE) && config
             .getBoolean(Constant.NODE_DISCOVERY_PUBLIC_HOME_NODE);
 
+    PARAMETER.nodeDiscoveryPingTimeout =
+        config.hasPath(Constant.NODE_DISCOVERY_PING_TIMEOUT)
+            ? config.getLong(Constant.NODE_DISCOVERY_PING_TIMEOUT) : 15000;
     PARAMETER.nodeP2pPingInterval =
         config.hasPath(Constant.NODE_P2P_PING_INTERVAL)
             ? config.getLong(Constant.NODE_P2P_PING_INTERVAL) : 0;
@@ -639,6 +629,12 @@ public class Args extends CommonParameter {
         config.hasPath(Constant.COMMITTEE_ALLOW_MARKET_TRANSACTION) ? config
             .getInt(Constant.COMMITTEE_ALLOW_MARKET_TRANSACTION) : 0;
 
+    PARAMETER.allowTransactionFeePool =
+        config.hasPath(Constant.COMMITTEE_ALLOW_TRANSACTION_FEE_POOL) ? config
+            .getInt(Constant.COMMITTEE_ALLOW_TRANSACTION_FEE_POOL) : 0;
+    PARAMETER.allowBlackHoleOptimization =
+        config.hasPath(Constant.COMMITTEE_ALLOW_BLACK_HOLE_OPTIMIZATION) ? config
+            .getInt(Constant.COMMITTEE_ALLOW_BLACK_HOLE_OPTIMIZATION) : 0;
     PARAMETER.allowVvmIstanbul =
         config.hasPath(Constant.COMMITTEE_ALLOW_VVM_ISTANBUL) ? config
             .getInt(Constant.COMMITTEE_ALLOW_VVM_ISTANBUL) : 0;
@@ -729,7 +725,7 @@ public class Args extends CommonParameter {
     PARAMETER.metricsStorageEnable = config.hasPath(Constant.METRICS_STORAGE_ENABLE) && config
             .getBoolean(Constant.METRICS_STORAGE_ENABLE);
     PARAMETER.influxDbIp = config.hasPath(Constant.METRICS_INFLUXDB_IP) ? config
-            .getString(Constant.METRICS_INFLUXDB_IP) : "127.0.0.1";
+            .getString(Constant.METRICS_INFLUXDB_IP) : Constant.LOCAL_HOST;
     PARAMETER.influxDbPort = config.hasPath(Constant.METRICS_INFLUXDB_PORT) ? config
             .getInt(Constant.METRICS_INFLUXDB_PORT) : 8086;
     PARAMETER.influxDbDatabase = config.hasPath(Constant.METRICS_INFLUXDB_DATABASE) ? config
@@ -742,8 +738,9 @@ public class Args extends CommonParameter {
     PARAMETER.setOpenHistoryQueryWhenLiteFN(
             config.hasPath(Constant.NODE_OPEN_HISTORY_QUERY_WHEN_LITEFN)
                     && config.getBoolean(Constant.NODE_OPEN_HISTORY_QUERY_WHEN_LITEFN));
-    PARAMETER.setKafkaEnable(config.hasPath(Constant.KAFKA_SENDER_ENABLE) && config.getBoolean(Constant.KAFKA_SENDER_ENABLE));
-    PARAMETER.kafkaBootStrapServers = config.hasPath(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) ? config.getString(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) : "";
+    PARAMETER.historyBalanceLookup = config.hasPath(Constant.HISTORY_BALANCE_LOOKUP) && config
+        .getBoolean(Constant.HISTORY_BALANCE_LOOKUP);
+
     logConfig();
   }
 
@@ -806,7 +803,7 @@ public class Args extends CommonParameter {
       Node n = Node.instanceOf(configString);
       if (!(PARAMETER.nodeDiscoveryBindIp.equals(n.getHost())
           || PARAMETER.nodeExternalIp.equals(n.getHost())
-          || "127.0.0.1".equals(n.getHost()))
+          || Constant.LOCAL_HOST.equals(n.getHost()))
           || PARAMETER.nodeListenPort != n.getPort()) {
         ret.add(n);
       }
@@ -1068,7 +1065,7 @@ public class Args extends CommonParameter {
     logger.info("Backup member size: {}", parameter.getBackupMembers().size());
     logger.info("************************ Code version *************************");
     logger.info("Code version : {}", Version.getVersion());
-    logger.info("Version code: {}", Version.versionCode);
+    logger.info("Version code: {}", Version.VERSION_CODE);
     logger.info("************************ DB config *************************");
     logger.info("DB version : {}", parameter.getStorage().getDbVersion());
     logger.info("DB engine : {}", parameter.getStorage().getDbEngine());
@@ -1101,6 +1098,18 @@ public class Args extends CommonParameter {
       return this.outputDirectory + File.separator;
     }
     return this.outputDirectory;
+  }
+  private static void witnessAddressCheck(Config config) {
+    if (config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS)) {
+      byte[] bytes = Commons
+              .decodeFromBase58Check(config.getString(Constant.LOCAL_WITNESS_ACCOUNT_ADDRESS));
+      if (bytes != null) {
+        localWitnesses.setWitnessAccountAddress(bytes);
+        logger.debug("Got localWitnessAccountAddress from config.conf");
+      } else {
+        logger.warn(IGNORE_WRONG_WITNESS_ADDRESS_FORMAT);
+      }
+    }
   }
 }
 

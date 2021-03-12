@@ -1,8 +1,8 @@
 package org.vision.core.db;
 
+import org.vision.core.db2.ISession;
 import org.vision.core.db2.common.IRevokingDB;
 import org.vision.core.db2.core.Chainbase;
-import org.vision.core.db2.ISession;
 import org.vision.core.exception.RevokingStoreIllegalStateException;
 
 public interface RevokingDatabase {

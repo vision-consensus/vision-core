@@ -10,16 +10,16 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.db.DelegationService;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.service.MortgageService;
+import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
@@ -42,7 +42,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     final WithdrawBalanceContract withdrawBalanceContract;
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
-    DelegationService delegationService = chainBaseManager.getDelegationService();
+    MortgageService mortgageService = chainBaseManager.getMortgageService();
     try {
       withdrawBalanceContract = any.unpack(WithdrawBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
@@ -51,7 +51,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
       throw new ContractExeException(e.getMessage());
     }
 
-    delegationService.withdrawReward(withdrawBalanceContract.getOwnerAddress()
+    mortgageService.withdrawReward(withdrawBalanceContract.getOwnerAddress()
         .toByteArray());
     AccountCapsule accountCapsule = accountStore.
         get(withdrawBalanceContract.getOwnerAddress().toByteArray());
@@ -81,7 +81,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
-    DelegationService delegationService = chainBaseManager.getDelegationService();
+    MortgageService mortgageService = chainBaseManager.getMortgageService();
     if (!this.any.is(WithdrawBalanceContract.class)) {
       throw new ContractValidateException(
           "contract type error, expected type [WithdrawBalanceContract], real type[" + any
@@ -127,7 +127,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        delegationService.queryReward(ownerAddress) <= 0) {
+        mortgageService.queryReward(ownerAddress) <= 0) {
       throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {

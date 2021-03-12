@@ -1,5 +1,6 @@
 package org.vision.core.actuator;
 
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -7,15 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
+import org.vision.core.exception.ContractExeException;
+import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.StringUtil;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
 import org.vision.protos.Protocol.Account.Frozen;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -112,7 +113,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
       throw new ContractValidateException(
-          "Account[" + readableOwnerAddress + "] does not exist");
+          ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] does not exist");
     }
 
     if (accountCapsule.getFrozenSupplyCount() <= 0) {

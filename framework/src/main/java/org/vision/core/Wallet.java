@@ -50,6 +50,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,12 +92,13 @@ import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
+import org.vision.core.capsule.*;
 import org.vision.core.config.args.Args;
-import org.vision.core.db.PhotonProcessor;
-import org.vision.core.db.Manager;
+import org.vision.core.db.*;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
 import org.vision.core.net.message.TransactionMessage;
+import org.vision.core.store.*;
 import org.vision.core.zen.ShieldedVRC20ParametersBuilder;
 import org.vision.core.zen.ZenTransactionBuilder;
 import org.vision.core.zen.note.Note;
@@ -127,31 +129,8 @@ import org.vision.consensus.ConsensusDelegate;
 import org.vision.core.actuator.Actuator;
 import org.vision.core.actuator.ActuatorFactory;
 import org.vision.core.actuator.VMActuator;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.AssetIssueCapsule;
-import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.BlockCapsule.BlockId;
-import org.vision.core.capsule.BytesCapsule;
-import org.vision.core.capsule.CodeCapsule;
-import org.vision.core.capsule.ContractCapsule;
-import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.vision.core.capsule.DelegatedResourceCapsule;
-import org.vision.core.capsule.ExchangeCapsule;
-import org.vision.core.capsule.IncrementalMerkleTreeCapsule;
-import org.vision.core.capsule.IncrementalMerkleVoucherCapsule;
-import org.vision.core.capsule.MarketAccountOrderCapsule;
-import org.vision.core.capsule.MarketOrderCapsule;
-import org.vision.core.capsule.MarketOrderIdListCapsule;
-import org.vision.core.capsule.PedersenHashCapsule;
-import org.vision.core.capsule.ProposalCapsule;
-import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.capsule.TransactionInfoCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.TransactionRetCapsule;
-import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.core.db.EntropyProcessor;
-import org.vision.core.db.TransactionContext;
 import org.vision.core.exception.AccountResourceInsufficientException;
 import org.vision.core.exception.BadItemException;
 import org.vision.core.exception.ContractExeException;
@@ -169,13 +148,6 @@ import org.vision.core.exception.TransactionExpirationException;
 import org.vision.core.exception.VMIllegalException;
 import org.vision.core.exception.ValidateSignatureException;
 import org.vision.core.exception.ZksnarkException;
-import org.vision.core.store.AccountIdIndexStore;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.ContractStore;
-import org.vision.core.store.MarketOrderStore;
-import org.vision.core.store.MarketPairPriceToOrderStore;
-import org.vision.core.store.MarketPairToPriceStore;
-import org.vision.core.store.StoreFactory;
 import org.vision.core.utils.TransactionUtil;
 import org.vision.core.zen.address.DiversifierT;
 import org.vision.core.zen.address.ExpandedSpendingKey;
@@ -200,7 +172,9 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.TransactionInfo;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
+import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
+import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
 import org.vision.protos.contract.ShieldContract.IncrementalMerkleTree;
 import org.vision.protos.contract.ShieldContract.IncrementalMerkleVoucherInfo;
 import org.vision.protos.contract.ShieldContract.OutputPoint;
@@ -978,6 +952,10 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getMaxFeeLimit")
             .setValue(dbManager.getDynamicPropertiesStore().getMaxFeeLimit())
+        .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+        .setKey("getAllowOptimizeBlackHole")
+        .setValue(dbManager.getDynamicPropertiesStore().getAllowBlackHoleOptimization())
             .build());
 
     return builder.build();
@@ -2458,7 +2436,7 @@ public class Wallet {
       TransactionCapsule trxCap, Builder builder,
       Return.Builder retBuilder)
       throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
-    logger.info("Wallet triggerConstantContract begin");
+
     ContractStore contractStore = chainBaseManager.getContractStore();
     byte[] contractAddress = triggerSmartContract.getContractAddress()
         .toByteArray();
@@ -2473,7 +2451,7 @@ public class Wallet {
     if (!Args.getInstance().isSupportConstant()) {
       throw new ContractValidateException("this node does not support constant");
     }
-    logger.info("Wallet will callConstantContract");
+
     return callConstantContract(trxCap, builder, retBuilder);
   }
 
@@ -2481,11 +2459,11 @@ public class Wallet {
       builder,
       Return.Builder retBuilder)
       throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
-    logger.info("Wallet callConstantContract begin");
+
     if (!Args.getInstance().isSupportConstant()) {
       throw new ContractValidateException("this node does not support constant");
     }
-    logger.info("Wallet callConstantContract :"+Args.getInstance().isSupportConstant());
+
     Block headBlock;
     List<BlockCapsule> blockCapsuleList = chainBaseManager.getBlockStore()
         .getBlockByLatestNum(1);
@@ -2494,7 +2472,7 @@ public class Wallet {
     } else {
       headBlock = blockCapsuleList.get(0).getInstance();
     }
-    logger.info("Wallet callConstantContract latest block:"+headBlock.getSerializedSize());
+
     TransactionContext context = new TransactionContext(new BlockCapsule(headBlock), trxCap,
         StoreFactory.getInstance(), true,
         false);
@@ -3646,6 +3624,69 @@ public class Wallet {
     }
     BytesMessage.Builder bytesBuilder = BytesMessage.newBuilder();
     return bytesBuilder.setValue(ByteString.copyFrom(Hex.decode(input))).build();
+  }
+  public BalanceContract.AccountBalanceResponse getAccountBalance(
+      BalanceContract.AccountBalanceRequest request)
+      throws ItemNotFoundException {
+    BalanceContract.AccountIdentifier accountIdentifier = request.getAccountIdentifier();
+    checkAccountIdentifier(accountIdentifier);
+    BlockBalanceTrace.BlockIdentifier blockIdentifier = request.getBlockIdentifier();
+    checkBlockIdentifier(blockIdentifier);
+    AccountTraceStore accountTraceStore = chainBaseManager.getAccountTraceStore();
+    BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
+    BlockId blockId = blockIndexStore.get(blockIdentifier.getNumber());
+    if (!blockId.getByteString().equals(blockIdentifier.getHash())) {
+      throw new IllegalArgumentException("number and hash do not match");
+    }
+    Pair<Long, Long> pair = accountTraceStore.getPrevBalance(
+        accountIdentifier.getAddress().toByteArray(), blockIdentifier.getNumber());
+    BalanceContract.AccountBalanceResponse.Builder builder =
+        BalanceContract.AccountBalanceResponse.newBuilder();
+    if (pair.getLeft() == blockIdentifier.getNumber()) {
+      builder.setBlockIdentifier(blockIdentifier);
+    } else {
+      blockId = blockIndexStore.get(pair.getLeft());
+      builder.setBlockIdentifier(BlockBalanceTrace.BlockIdentifier.newBuilder()
+          .setNumber(pair.getLeft())
+          .setHash(blockId.getByteString()));
+    }
+    builder.setBalance(pair.getRight());
+    return builder.build();
+  }
+  public BalanceContract.BlockBalanceTrace getBlockBalance(
+      BalanceContract.BlockBalanceTrace.BlockIdentifier request) throws ItemNotFoundException, BadItemException {
+    checkBlockIdentifier(request);
+    BalanceTraceStore balanceTraceStore = chainBaseManager.getBalanceTraceStore();
+    BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
+    BlockId blockId = blockIndexStore.get(request.getNumber());
+    if (!blockId.getByteString().equals(request.getHash())) {
+      throw new IllegalArgumentException("number and hash do not match");
+    }
+    BlockBalanceTraceCapsule blockBalanceTraceCapsule =
+        balanceTraceStore.getBlockBalanceTrace(blockId);
+    if (blockBalanceTraceCapsule == null) {
+      throw new ItemNotFoundException("This block does not exist");
+    }
+    return blockBalanceTraceCapsule.getInstance();
+  }
+  public void checkBlockIdentifier(BlockBalanceTrace.BlockIdentifier blockIdentifier) {
+    if (blockIdentifier == blockIdentifier.getDefaultInstanceForType()) {
+      throw new IllegalArgumentException("block_identifier null");
+    }
+    if (blockIdentifier.getNumber() < 0) {
+      throw new IllegalArgumentException("block_identifier number less than 0");
+    }
+    if (blockIdentifier.getHash().size() != 32) {
+      throw new IllegalArgumentException("block_identifier hash length not equals 32");
+    }
+  }
+  public void checkAccountIdentifier(BalanceContract.AccountIdentifier accountIdentifier) {
+    if (accountIdentifier == accountIdentifier.getDefaultInstanceForType()) {
+      throw new IllegalArgumentException("account_identifier is null");
+    }
+    if (accountIdentifier.getAddress().isEmpty()) {
+      throw new IllegalArgumentException("account_identifier address is null");
+    }
   }
 }
 

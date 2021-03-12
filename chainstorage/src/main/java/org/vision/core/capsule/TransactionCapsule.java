@@ -17,6 +17,7 @@ package org.vision.core.capsule;
 
 import static org.vision.common.utils.StringUtil.encode58Check;
 import static org.vision.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
+import static org.vision.common.utils.WalletUtil.checkPermissionOperations;
 
 import com.google.common.primitives.Bytes;
 import com.google.protobuf.Any;
@@ -38,16 +39,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.vision.common.overlay.message.Message;
-import org.vision.common.utils.WalletUtil;
-import org.vision.core.actuator.TransactionFactory;
 import org.vision.common.crypto.ECKey.ECDSASignature;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
+import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.ReflectUtils;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.actuator.TransactionFactory;
 import org.vision.core.db.TransactionContext;
 import org.vision.core.db.TransactionTrace;
 import org.vision.core.exception.BadItemException;
@@ -70,6 +70,7 @@ import org.vision.protos.contract.AccountContract.AccountCreateContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.ParticipateAssetIssueContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
+import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
@@ -447,15 +448,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     if (permission == null) {
       throw new PermissionException("permission isn't exit");
     }
-    if (permissionId != 0) {
-      if (permission.getType() != PermissionType.Active) {
-        throw new PermissionException("Permission type is error");
-      }
       //check oprations
-      if (!WalletUtil.checkPermissionOperations(permission, contract)) {
-        throw new PermissionException("Permission denied");
-      }
-    }
+    checkPermission(permissionId, permission, contract);
     long weight = checkWeight(permission, transaction.getSignatureList(), hash, null);
     if (weight >= permission.getThreshold()) {
       return true;
@@ -499,6 +493,12 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   public void setTimestamp() {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder()
         .setTimestamp(System.currentTimeMillis())
+        .build();
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+  }
+  public void setTimestamp(long timestamp) {
+    Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+        .setTimestamp(timestamp)
         .build();
     this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
   }
@@ -549,15 +549,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     if (permission == null) {
       throw new PermissionException("permission isn't exit");
     }
-    if (permissionId != 0) {
-      if (permission.getType() != PermissionType.Active) {
-        throw new PermissionException("Permission type is error");
-      }
       //check oprations
-      if (!WalletUtil.checkPermissionOperations(permission, contract)) {
-        throw new PermissionException("Permission denied");
-      }
-    }
+    checkPermission(permissionId, permission, contract);
     List<ByteString> approveList = new ArrayList<>();
     SignInterface cryptoEngine = SignUtils
         .fromPrivate(privateKey, CommonParameter.getInstance().isECKeyCryptoEngine());
@@ -581,6 +574,17 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         .signHash(getRawHash().getBytes())));
     this.transaction = this.transaction.toBuilder().addSignature(sig).build();
   }
+  private static void checkPermission(int permissionId, Permission permission, Transaction.Contract contract) throws PermissionException {
+    if (permissionId != 0) {
+      if (permission.getType() != PermissionType.Active) {
+        throw new PermissionException("Permission type is error");
+      }
+      //check operations
+      if (!checkPermissionOperations(permission, contract)) {
+        throw new PermissionException("Permission denied");
+      }
+    }
+  }
 
   /**
    * validate signature
@@ -588,9 +592,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   public boolean validatePubSignature(AccountStore accountStore,
       DynamicPropertiesStore dynamicPropertiesStore)
       throws ValidateSignatureException {
-    if (isVerified) {
-      return true;
-    }
+    if (!isVerified) {
     if (this.transaction.getSignatureCount() <= 0
         || this.transaction.getRawData().getContractCount() <= 0) {
       throw new ValidateSignatureException("miss sig or contract");
@@ -612,6 +614,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       throw new ValidateSignatureException(e.getMessage());
     }
     isVerified = true;
+    }
     return true;
   }
 
@@ -620,9 +623,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
    */
   public boolean validateSignature(AccountStore accountStore,
       DynamicPropertiesStore dynamicPropertiesStore) throws ValidateSignatureException {
-    if (isVerified) {
-      return true;
-    }
+    if (!isVerified) {
     //Do not support multi contracts in one transaction
     Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
     if (contract.getType() != ContractType.ShieldedTransferContract) {
@@ -640,6 +641,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
 
     isVerified = true;
+    }  
     return true;
   }
 
@@ -764,6 +766,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     } catch (Exception ex) {
       logger.warn("check contract type failed, reason {}", ex.getMessage());
       return false;
+    }
+  }
+  public BalanceContract.TransferContract getTransferContract() {
+    try {
+      return transaction.getRawData()
+          .getContract(0)
+          .getParameter()
+          .unpack(BalanceContract.TransferContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
     }
   }
 }

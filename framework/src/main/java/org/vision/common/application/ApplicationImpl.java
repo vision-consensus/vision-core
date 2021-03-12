@@ -3,6 +3,7 @@ package org.vision.common.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.config.args.Args;
@@ -10,7 +11,6 @@ import org.vision.core.consensus.ConsensusService;
 import org.vision.core.db.Manager;
 import org.vision.core.metrics.MetricsUtil;
 import org.vision.core.net.VisionNetService;
-import org.vision.common.logsfilter.EventPluginLoader;
 
 @Slf4j(topic = "app")
 @Component

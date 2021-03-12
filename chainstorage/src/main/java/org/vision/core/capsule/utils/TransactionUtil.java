@@ -75,6 +75,18 @@ public class TransactionUtil {
     long fee =
         programResult.getRet().getFee() + traceReceipt.getEntropyFee()
             + traceReceipt.getPhotonFee() + traceReceipt.getMultiSignFee();
+    boolean supportTransactionFeePool = trace.getTransactionContext().getStoreFactory()
+        .getChainBaseManager().getDynamicPropertiesStore().supportTransactionFeePool();
+    if (supportTransactionFeePool) {
+      long packingFee = 0L;
+      if (trace.isPhotonFeeForPhoton()) {
+        packingFee += traceReceipt.getPhotonFee();
+      }
+      if (!traceReceipt.getResult().equals(Transaction.Result.contractResult.OUT_OF_TIME)) {
+        packingFee += traceReceipt.getEntropyFee();
+      }
+      builder.setPackingFee(packingFee);
+    }
     ByteString contractResult = ByteString.copyFrom(programResult.getHReturn());
     ByteString ContractAddress = ByteString.copyFrom(programResult.getContractAddress());
 

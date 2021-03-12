@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.vision.common.logsfilter.EventPluginConfig;
-import org.vision.common.logsfilter.FilterQuery;
 import org.vision.common.args.GenesisBlock;
 import org.vision.common.config.DbBackupConfig;
+import org.vision.common.logsfilter.EventPluginConfig;
+import org.vision.common.logsfilter.FilterQuery;
 import org.vision.common.overlay.discover.node.Node;
 import org.vision.common.setting.RocksDbSettings;
 import org.vision.core.Constant;
@@ -136,6 +136,9 @@ public class CommonParameter {
   @Getter
   @Setter
   public boolean nodeDiscoveryPublicHomeNode;
+  @Getter
+  @Setter
+  public long nodeDiscoveryPingTimeout;
   @Getter
   @Setter
   public long nodeP2pPingInterval;
@@ -297,6 +300,12 @@ public class CommonParameter {
   @Getter
   @Setter
   public long allowMarketTransaction; //committee parameter
+  @Getter
+  @Setter
+  public long allowTransactionFeePool;
+  @Getter
+  @Setter
+  public long allowBlackHoleOptimization;
   // full node used this parameter to close shielded transaction
   @Getter
   @Setter
@@ -440,6 +449,10 @@ public class CommonParameter {
   @Getter
   @Setter
   public boolean isLiteFullNode = false;
+  @Getter
+  @Setter
+  @Parameter(names = {"--history-balance-lookup"})
+  public boolean historyBalanceLookup = false;
 
   @Getter
   @Setter

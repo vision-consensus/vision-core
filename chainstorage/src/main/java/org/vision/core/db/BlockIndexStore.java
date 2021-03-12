@@ -5,10 +5,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.vision.core.capsule.BlockCapsule;
-import org.vision.core.capsule.BytesCapsule;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.capsule.BlockCapsule.BlockId;
+import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.exception.ItemNotFoundException;
 
 @Component
@@ -21,17 +21,17 @@ public class BlockIndexStore extends VisionStoreWithRevoking<BytesCapsule> {
 
   }
 
-  public void put(BlockCapsule.BlockId id) {
+  public void put(BlockId id) {
     put(ByteArray.fromLong(id.getNum()), new BytesCapsule(id.getBytes()));
   }
 
-  public BlockCapsule.BlockId get(Long num)
+  public BlockId get(Long num)
       throws ItemNotFoundException {
     BytesCapsule value = getUnchecked(ByteArray.fromLong(num));
     if (value == null || value.getData() == null) {
       throw new ItemNotFoundException("number: " + num + " is not found!");
     }
-    return new BlockCapsule.BlockId(Sha256Hash.wrap(value.getData()), num);
+    return new BlockId(Sha256Hash.wrap(value.getData()), num);
   }
 
   @Override

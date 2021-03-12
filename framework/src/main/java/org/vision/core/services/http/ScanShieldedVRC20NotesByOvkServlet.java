@@ -20,13 +20,10 @@ public class ScanShieldedVRC20NotesByOvkServlet extends RateLimiterServlet {
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
-      String input = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(input);
-      boolean visible = Util.getVisiblePost(input);
+      PostParams params = PostParams.getPostParams(request);
       OvkDecryptVRC20Parameters.Builder ovkDecryptVRC20Parameters = OvkDecryptVRC20Parameters
           .newBuilder();
-      JsonFormat.merge(input, ovkDecryptVRC20Parameters, visible);
+      JsonFormat.merge(params.getParams(), ovkDecryptVRC20Parameters, params.isVisible());
 
       GrpcAPI.DecryptNotesVRC20 notes = wallet
           .scanShieldedVRC20NotesByOvk(ovkDecryptVRC20Parameters.getStartBlockIndex(),
@@ -36,7 +33,7 @@ public class ScanShieldedVRC20NotesByOvkServlet extends RateLimiterServlet {
               ovkDecryptVRC20Parameters.getEventsList()
           );
       response.getWriter()
-          .println(ScanShieldedVRC20NotesByIvkServlet.convertOutput(notes, visible));
+          .println(ScanShieldedVRC20NotesByIvkServlet.convertOutput(notes, params.isVisible()));
     } catch (Exception e) {
       Util.processError(e, response);
     }

@@ -3,9 +3,10 @@ package org.vision.core.capsule;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.ForkController;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Sha256Hash;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.Constant;
@@ -196,11 +197,12 @@ public class ReceiptCapsule {
 
       if (dynamicPropertiesStore.supportTransactionFeePool() &&
               !contractResult.equals(contractResult.OUT_OF_TIME)) {
-        dynamicPropertiesStore
-                .saveTransactionFeePool(dynamicPropertiesStore.getTransactionFeePool() + entropyFee);
+        dynamicPropertiesStore.addTransactionFeePool(entropyFee);
+      } else if (dynamicPropertiesStore.supportBlackHoleOptimization()) {
+        dynamicPropertiesStore.burnVs(entropyFee);
       } else {
         //send to blackHole
-        Commons.adjustBalance(accountStore, accountStore.getSingularity().getAddress().toByteArray(),
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(),
                 entropyFee);
       }
 

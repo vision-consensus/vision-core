@@ -9,12 +9,12 @@ import org.rocksdb.DirectComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.MarketOrderPriceComparatorForLevelDB;
 import org.vision.common.utils.MarketOrderPriceComparatorForRockDB;
 import org.vision.common.utils.StorageUtils;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.common.utils.ByteUtil;
 import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.exception.ItemNotFoundException;
 

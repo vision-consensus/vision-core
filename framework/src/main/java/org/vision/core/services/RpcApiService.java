@@ -10,6 +10,13 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -58,6 +65,9 @@ import org.vision.protos.contract.AccountContract.SetAccountIdContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.*;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
+import org.vision.protos.contract.BalanceContract.AccountBalanceResponse;
+import org.vision.protos.contract.BalanceContract.AccountBalanceRequest;
+import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeCreateContract;
@@ -77,20 +87,14 @@ import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import static org.vision.core.Wallet.CONTRACT_VALIDATE_ERROR;
+
 
 @Component
 @Slf4j(topic = "API")
 public class RpcApiService implements Service {
 
   public static final String CONTRACT_VALIDATE_EXCEPTION = "ContractValidateException: {}";
-  public static final String CONTRACT_VALIDATE_ERROR = "contract validate error : ";
   private static final String EXCEPTION_CAUGHT = "exception caught";
   private static final long BLOCK_LIMIT_NUM = 100;
   private static final long TRANSACTION_LIMIT_NUM = 1000;
@@ -536,16 +540,7 @@ public class RpcApiService implements Service {
     @Override
     public void getTransactionCountByBlockNum(NumberMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      NumberMessage.Builder builder = NumberMessage.newBuilder();
-      try {
-        Block block = chainBaseManager.getBlockByNum(request.getNum()).getInstance();
-        builder.setNum(block.getTransactionsCount());
-      } catch (StoreException e) {
-        logger.error(e.getMessage());
-        builder.setNum(-1);
-      }
-      responseObserver.onNext(builder.build());
-      responseObserver.onCompleted();
+      getTransactionCountByBlockNumCommon(request, responseObserver);
     }
 
     @Override
@@ -579,47 +574,24 @@ public class RpcApiService implements Service {
     @Override
     public void generateAddress(EmptyMessage request,
         StreamObserver<GrpcAPI.AddressPrKeyPairMessage> responseObserver) {
-      SignInterface cryptoEngine = SignUtils.getGeneratedRandomSign(Utils.getRandom(),
-          Args.getInstance().isECKeyCryptoEngine());
-      byte[] priKey = cryptoEngine.getPrivateKey();
-      byte[] address = cryptoEngine.getAddress();
-      String addressStr = StringUtil.encode58Check(address);
-      String priKeyStr = Hex.encodeHexString(priKey);
-      AddressPrKeyPairMessage.Builder builder = AddressPrKeyPairMessage.newBuilder();
-      builder.setAddress(addressStr);
-      builder.setPrivateKey(priKeyStr);
-      responseObserver.onNext(builder.build());
-      responseObserver.onCompleted();
+      generateAddressCommon(request, responseObserver);
     }
 
     @Override
     public void getRewardInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      try {
-        long value = dbManager.getDelegationService().queryReward(request.getValue().toByteArray());
-        NumberMessage.Builder builder = NumberMessage.newBuilder();
-        builder.setNum(value);
-        responseObserver.onNext(builder.build());
-      } catch (Exception e) {
-        responseObserver.onError(e);
-      }
-      responseObserver.onCompleted();
+      getRewardInfoCommon(request, responseObserver);
     }
 
     @Override
     public void getBrokerageInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      try {
-        long cycle = dbManager.getDynamicPropertiesStore().getCurrentCycleNumber();
-        long value = dbManager.getDelegationStore()
-            .getBrokerage(cycle, request.getValue().toByteArray());
-        NumberMessage.Builder builder = NumberMessage.newBuilder();
-        builder.setNum(value);
-        responseObserver.onNext(builder.build());
-      } catch (Exception e) {
-        responseObserver.onError(e);
-      }
-      responseObserver.onCompleted();
+      getBrokerageInfoCommon(request, responseObserver);
+    }
+
+    @Override
+    public void getBurnVs(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+      getBurnVsCommon(request, responseObserver);
     }
 
     @Override
@@ -908,6 +880,26 @@ public class RpcApiService implements Service {
       responseObserver.onCompleted();
     }
 
+    public void getAccountBalance(AccountBalanceRequest request,
+        StreamObserver<AccountBalanceResponse> responseObserver) {
+      try {
+        AccountBalanceResponse accountBalanceResponse = wallet.getAccountBalance(request);
+        responseObserver.onNext(accountBalanceResponse);
+        responseObserver.onCompleted();
+      } catch (Exception e) {
+        responseObserver.onError(e);
+      }
+    }
+    public void getBlockBalanceTrace(BlockBalanceTrace.BlockIdentifier request,
+        StreamObserver<BlockBalanceTrace> responseObserver) {
+      try {
+        BlockBalanceTrace blockBalanceTrace = wallet.getBlockBalance(request);
+        responseObserver.onNext(blockBalanceTrace);
+        responseObserver.onCompleted();
+      } catch (Exception e) {
+        responseObserver.onError(e);
+      }
+    }
     @Override
     public void createTransaction(TransferContract request,
         StreamObserver<Transaction> responseObserver) {
@@ -940,7 +932,8 @@ public class RpcApiService implements Service {
         retBuilder.setResult(true).setCode(response_code.SUCCESS);
       } catch (ContractValidateException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
+            .setMessage(ByteString
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
@@ -1500,16 +1493,7 @@ public class RpcApiService implements Service {
     @Override
     public void getTransactionCountByBlockNum(NumberMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      NumberMessage.Builder builder = NumberMessage.newBuilder();
-      try {
-        Block block = chainBaseManager.getBlockByNum(request.getNum()).getInstance();
-        builder.setNum(block.getTransactionsCount());
-      } catch (StoreException e) {
-        logger.error(e.getMessage());
-        builder.setNum(-1);
-      }
-      responseObserver.onNext(builder.build());
-      responseObserver.onCompleted();
+      getTransactionCountByBlockNumCommon(request, responseObserver);
     }
 
     @Override
@@ -1931,17 +1915,7 @@ public class RpcApiService implements Service {
     @Override
     public void generateAddress(EmptyMessage request,
         StreamObserver<GrpcAPI.AddressPrKeyPairMessage> responseObserver) {
-      SignInterface cryptoEngine = SignUtils.getGeneratedRandomSign(Utils.getRandom(),
-          Args.getInstance().isECKeyCryptoEngine());
-      byte[] priKey = cryptoEngine.getPrivateKey();
-      byte[] address = cryptoEngine.getAddress();
-      String addressStr = StringUtil.encode58Check(address);
-      String priKeyStr = Hex.encodeHexString(priKey);
-      AddressPrKeyPairMessage.Builder builder = AddressPrKeyPairMessage.newBuilder();
-      builder.setAddress(addressStr);
-      builder.setPrivateKey(priKeyStr);
-      responseObserver.onNext(builder.build());
-      responseObserver.onCompleted();
+      generateAddressCommon(request, responseObserver);
     }
 
     @Override
@@ -2009,7 +1983,8 @@ public class RpcApiService implements Service {
         retBuilder.setResult(true).setCode(response_code.SUCCESS);
       } catch (ContractValidateException | ZksnarkException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
+            .setMessage(ByteString
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
@@ -2039,7 +2014,8 @@ public class RpcApiService implements Service {
         retBuilder.setResult(true).setCode(response_code.SUCCESS);
       } catch (ContractValidateException | ZksnarkException e) {
         retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
+            .setMessage(ByteString
+                .copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
         logger.debug(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
       } catch (Exception e) {
         retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
@@ -2440,31 +2416,18 @@ public class RpcApiService implements Service {
     @Override
     public void getRewardInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      try {
-        long value = dbManager.getDelegationService().queryReward(request.getValue().toByteArray());
-        NumberMessage.Builder builder = NumberMessage.newBuilder();
-        builder.setNum(value);
-        responseObserver.onNext(builder.build());
-      } catch (Exception e) {
-        responseObserver.onError(e);
-      }
-      responseObserver.onCompleted();
+      getRewardInfoCommon(request, responseObserver);
     }
 
     @Override
     public void getBrokerageInfo(BytesMessage request,
         StreamObserver<NumberMessage> responseObserver) {
-      try {
-        long cycle = dbManager.getDynamicPropertiesStore().getCurrentCycleNumber();
-        long value = dbManager.getDelegationStore()
-            .getBrokerage(cycle, request.getValue().toByteArray());
-        NumberMessage.Builder builder = NumberMessage.newBuilder();
-        builder.setNum(value);
-        responseObserver.onNext(builder.build());
-      } catch (Exception e) {
-        responseObserver.onError(e);
-      }
-      responseObserver.onCompleted();
+      getBrokerageInfoCommon(request, responseObserver);
+    }
+
+    @Override
+    public void getBurnVs(EmptyMessage request, StreamObserver<NumberMessage> responseObserver) {
+      getBurnVsCommon(request, responseObserver);
     }
 
     @Override
@@ -2586,7 +2549,72 @@ public class RpcApiService implements Service {
       responseObserver.onNext(metricsApiService.getMetricProtoInfo());
       responseObserver.onCompleted();
     }
+  }
 
+  public void generateAddressCommon(EmptyMessage request,
+      StreamObserver<GrpcAPI.AddressPrKeyPairMessage> responseObserver) {
+    SignInterface cryptoEngine = SignUtils.getGeneratedRandomSign(Utils.getRandom(),
+        Args.getInstance().isECKeyCryptoEngine());
+    byte[] priKey = cryptoEngine.getPrivateKey();
+    byte[] address = cryptoEngine.getAddress();
+    String addressStr = StringUtil.encode58Check(address);
+    String priKeyStr = Hex.encodeHexString(priKey);
+    AddressPrKeyPairMessage.Builder builder = AddressPrKeyPairMessage.newBuilder();
+    builder.setAddress(addressStr);
+    builder.setPrivateKey(priKeyStr);
+    responseObserver.onNext(builder.build());
+    responseObserver.onCompleted();
+  }
 
+  public void getRewardInfoCommon(BytesMessage request,
+      StreamObserver<NumberMessage> responseObserver) {
+    try {
+      long value = dbManager.getMortgageService().queryReward(request.getValue().toByteArray());
+      NumberMessage.Builder builder = NumberMessage.newBuilder();
+      builder.setNum(value);
+      responseObserver.onNext(builder.build());
+    } catch (Exception e) {
+      responseObserver.onError(e);
+    }
+    responseObserver.onCompleted();
+  }
+  public void getBurnVsCommon(EmptyMessage request,
+                              StreamObserver<NumberMessage> responseObserver) {
+    try {
+      long value = dbManager.getDynamicPropertiesStore().getBurnVsAmount();
+      NumberMessage.Builder builder = NumberMessage.newBuilder();
+      builder.setNum(value);
+      responseObserver.onNext(builder.build());
+    } catch (Exception e) {
+      responseObserver.onError(e);
+    }
+    responseObserver.onCompleted();
+  }
+  public void getBrokerageInfoCommon(BytesMessage request,
+      StreamObserver<NumberMessage> responseObserver) {
+    try {
+      long cycle = dbManager.getDynamicPropertiesStore().getCurrentCycleNumber();
+      long value = dbManager.getDelegationStore()
+          .getBrokerage(cycle, request.getValue().toByteArray());
+      NumberMessage.Builder builder = NumberMessage.newBuilder();
+      builder.setNum(value);
+      responseObserver.onNext(builder.build());
+    } catch (Exception e) {
+      responseObserver.onError(e);
+    }
+    responseObserver.onCompleted();
+  }
+  public void getTransactionCountByBlockNumCommon(NumberMessage request,
+      StreamObserver<NumberMessage> responseObserver) {
+    NumberMessage.Builder builder = NumberMessage.newBuilder();
+    try {
+      Block block = chainBaseManager.getBlockByNum(request.getNum()).getInstance();
+      builder.setNum(block.getTransactionsCount());
+    } catch (StoreException e) {
+      logger.error(e.getMessage());
+      builder.setNum(-1);
+    }
+    responseObserver.onNext(builder.build());
+    responseObserver.onCompleted();
   }
 }

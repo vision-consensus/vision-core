@@ -14,6 +14,10 @@
  */
 
 package org.vision.core.actuator;
+import static org.vision.core.actuator.ActuatorConstant.CONTRACT_NOT_EXIST;
+import static org.vision.core.actuator.ActuatorConstant.STORE_NOT_EXIST;
+import static org.vision.core.actuator.ActuatorConstant.TX_RESULT_NULL;
+import static org.vision.core.capsule.utils.TransactionUtil.isNumber;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -24,8 +28,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.Commons;
-import org.vision.core.capsule.utils.MarketUtils;
-import org.vision.core.capsule.utils.TransactionUtil;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.AssetIssueCapsule;
@@ -33,6 +35,7 @@ import org.vision.core.capsule.MarketAccountOrderCapsule;
 import org.vision.core.capsule.MarketOrderCapsule;
 import org.vision.core.capsule.MarketOrderIdListCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
+import org.vision.core.capsule.utils.MarketUtils;
 import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -99,7 +102,7 @@ public class MarketSellAssetActuator extends AbstractActuator {
 
     TransactionResultCapsule ret = (TransactionResultCapsule) object;
     if (Objects.isNull(ret)) {
-      throw new RuntimeException("TransactionResultCapsule is null");
+      throw new RuntimeException(TX_RESULT_NULL);
     }
 
     long fee = calcFee();
@@ -122,8 +125,11 @@ public class MarketSellAssetActuator extends AbstractActuator {
       // fee
       accountCapsule.setBalance(accountCapsule.getBalance() - fee);
       // add to blackhole address
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), fee);
-
+      if (dynamicStore.supportBlackHoleOptimization()) {
+        dynamicStore.burnVs(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);
+      }
       // 1. transfer of balance
       transferBalanceOrToken(accountCapsule);
 
@@ -158,10 +164,10 @@ public class MarketSellAssetActuator extends AbstractActuator {
   @Override
   public boolean validate() throws ContractValidateException {
     if (this.any == null) {
-      throw new ContractValidateException("No contract!");
+      throw new ContractValidateException(CONTRACT_NOT_EXIST);
     }
     if (chainBaseManager == null) {
-      throw new ContractValidateException("No account store or dynamic store!");
+      throw new ContractValidateException(STORE_NOT_EXIST);
     }
 
     initStores();
@@ -203,10 +209,10 @@ public class MarketSellAssetActuator extends AbstractActuator {
       throw new ContractValidateException("Account does not exist!");
     }
 
-    if (!Arrays.equals(sellTokenID, "_".getBytes()) && !TransactionUtil.isNumber(sellTokenID)) {
+    if (!Arrays.equals(sellTokenID, "_".getBytes()) && !isNumber(sellTokenID)) {
       throw new ContractValidateException("sellTokenId is not a valid number");
     }
-    if (!Arrays.equals(buyTokenID, "_".getBytes()) && !TransactionUtil.isNumber(buyTokenID)) {
+    if (!Arrays.equals(buyTokenID, "_".getBytes()) && !isNumber(buyTokenID)) {
       throw new ContractValidateException("buyTokenId is not a valid number");
     }
 

@@ -15,11 +15,11 @@
 
 package org.vision.common.args;
 
+import static org.vision.common.utils.DecodeUtil.addressValid;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 
 public class Witness implements Serializable {
@@ -40,7 +40,7 @@ public class Witness implements Serializable {
    * set address.
    */
   public void setAddress(final byte[] address) {
-    if (!DecodeUtil.addressValid(address)) {
+    if (!addressValid(address)) {
       throw new IllegalArgumentException(
           "The address(" + StringUtil.createReadableString(address) + ") must be 21 bytes.");
     }

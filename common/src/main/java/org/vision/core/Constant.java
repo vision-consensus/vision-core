@@ -8,7 +8,6 @@ public class Constant {
   //config for junit test
   public static final String TEST_CONF = "config-test.conf";
 
-  public static final String DATABASE_DIR = "storage.directory";
 
   // locate in storageDbDirectory, store the db infos,
   // now only has the split block number
@@ -84,6 +83,7 @@ public class Constant {
   public static final String NODE_MIN_PARTICIPATION_RATE = "node.minParticipationRate";
   public static final String NODE_LISTEN_PORT = "node.listen.port";
   public static final String NODE_DISCOVERY_PUBLIC_HOME_NODE = "node.discovery.public.home.node";
+  public static final String NODE_DISCOVERY_PING_TIMEOUT = "node.discovery.ping.timeout";
 
   public static final String NODE_P2P_PING_INTERVAL = "node.p2p.pingInterval";
   public static final String NODE_P2P_VERSION = "node.p2p.version";
@@ -264,12 +264,13 @@ public class Constant {
 
   public static final String COMMITTEE_ALLOW_VVM_ASSETISSUE = "committee.allowVvmAssetIssue";
 
+  public static final String COMMITTEE_ALLOW_TRANSACTION_FEE_POOL = "committee.allowTransactionFeePool";
+  public static final String COMMITTEE_ALLOW_BLACK_HOLE_OPTIMIZATION = "committee.allowBlackHoleOptimization";
   public static final String METRICS_STORAGE_ENABLE = "node.metrics.storageEnable";
   public static final String METRICS_INFLUXDB_IP = "node.metrics.influxdb.ip";
   public static final String METRICS_INFLUXDB_PORT = "node.metrics.influxdb.port";
   public static final String METRICS_INFLUXDB_DATABASE = "node.metrics.influxdb.database";
   public static final String METRICS_REPORT_INTERVAL = "node.metrics.influxdb.metricsReportInterval";
-
-  public static final String KAFKA_SENDER_ENABLE = "kafka.enable";
-  public static final String KAFKA_BOOTSTRAP_SERVERS_CONFIG = "kafka.bootstrap.servers";
+  public static final String HISTORY_BALANCE_LOOKUP = "storage.balance.history.lookup";
+  public static final String LOCAL_HOST = "127.0.0.1";
 }

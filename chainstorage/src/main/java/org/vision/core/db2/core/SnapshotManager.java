@@ -21,9 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vision.common.storage.WriteOptionsWrapper;
-import org.vision.core.store.CheckTmpStore;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.storage.WriteOptionsWrapper;
 import org.vision.core.db.RevokingDatabase;
 import org.vision.core.db2.ISession;
 import org.vision.core.db2.common.DB;
@@ -32,6 +31,7 @@ import org.vision.core.db2.common.Key;
 import org.vision.core.db2.common.Value;
 import org.vision.core.db2.common.WrappedByteArray;
 import org.vision.core.exception.RevokingStoreIllegalStateException;
+import org.vision.core.store.CheckTmpStore;
 
 @Slf4j(topic = "DB")
 public class SnapshotManager implements RevokingDatabase {

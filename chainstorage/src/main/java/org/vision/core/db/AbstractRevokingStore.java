@@ -1,4 +1,5 @@
 package org.vision.core.db;
+import static org.vision.core.db2.core.SnapshotManager.simpleDecode;
 
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
@@ -20,18 +21,17 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteOptions;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.storage.WriteOptionsWrapper;
 import org.vision.common.storage.leveldb.LevelDbDataSourceImpl;
+import org.vision.common.utils.FileUtil;
 import org.vision.common.utils.StorageUtils;
+import org.vision.common.utils.Utils;
 import org.vision.core.db.common.SourceInter;
+import org.vision.core.db2.ISession;
 import org.vision.core.db2.common.IRevokingDB;
 import org.vision.core.db2.core.Chainbase;
 import org.vision.core.db2.core.RevokingDBWithCachingOldValue;
-import org.vision.core.db2.core.SnapshotManager;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.FileUtil;
-import org.vision.common.utils.Utils;
-import org.vision.core.db2.ISession;
 import org.vision.core.exception.RevokingStoreIllegalStateException;
 
 @Slf4j(topic = "DB")
@@ -99,7 +99,7 @@ public abstract class AbstractRevokingStore implements RevokingDatabase {
       for (Map.Entry<byte[], byte[]> e : check) {
         byte[] key = e.getKey();
         byte[] value = e.getValue();
-        String db = SnapshotManager.simpleDecode(key);
+        String db = simpleDecode(key);
         if (dbMap.get(db) == null) {
           continue;
         }

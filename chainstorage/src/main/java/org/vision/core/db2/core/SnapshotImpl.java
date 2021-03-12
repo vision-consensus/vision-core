@@ -7,12 +7,14 @@ import com.google.common.collect.Streams;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import org.vision.core.db2.common.HashDB;
 import org.vision.core.db2.common.Key;
 import org.vision.core.db2.common.Value;
+import org.vision.core.db2.common.Value.Operator;
 import org.vision.core.db2.common.WrappedByteArray;
 
 public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
@@ -21,12 +23,12 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
   protected Snapshot root;
 
   SnapshotImpl(Snapshot snapshot) {
-    root = snapshot.getRoot();
-    previous = snapshot;
-    snapshot.setNext(this);
     synchronized (this) {
       db = new HashDB(SnapshotImpl.class.getSimpleName());
     }
+    root = snapshot.getRoot();
+    previous = snapshot;
+    snapshot.setNext(this);
   }
 
   @Override
@@ -122,7 +124,7 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
    * More than that, there will be some item which has been deleted, but just assigned in Operator,
    * so we need Operator value to determine next step.
    * */
-  synchronized void collectUnique(Map<WrappedByteArray, Value.Operator> all) {
+  synchronized void collectUnique(Map<WrappedByteArray, Operator> all) {
     Snapshot next = getRoot().getNext();
     while (next != null) {
       Streams.stream(((SnapshotImpl) next).db)

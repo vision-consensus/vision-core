@@ -32,6 +32,9 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
   public TransactionInfoCapsule() {
     this.transactionInfo = TransactionInfo.newBuilder().build();
   }
+  public long getPackingFee() {
+    return transactionInfo.getPackingFee();
+  }
 
   public long getFee() {
     return transactionInfo.getFee();

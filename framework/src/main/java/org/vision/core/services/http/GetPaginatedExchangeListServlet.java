@@ -9,6 +9,8 @@ import org.vision.api.GrpcAPI.ExchangeList;
 import org.vision.api.GrpcAPI.PaginatedMessage;
 import org.vision.core.Wallet;
 
+import java.io.IOException;
+
 
 @Component
 @Slf4j(topic = "API")
@@ -22,12 +24,7 @@ public class GetPaginatedExchangeListServlet extends RateLimiterServlet {
       boolean visible = Util.getVisible(request);
       long offset = Long.parseLong(request.getParameter("offset"));
       long limit = Long.parseLong(request.getParameter("limit"));
-      ExchangeList reply = wallet.getPaginatedExchangeList(offset, limit);
-      if (reply != null) {
-        response.getWriter().println(JsonFormat.printToString(reply, visible));
-      } else {
-        response.getWriter().println("{}");
-      }
+      fillResponse(offset, limit, visible, response);
     } catch (Exception e) {
       Util.processError(e, response);
     }
@@ -38,14 +35,19 @@ public class GetPaginatedExchangeListServlet extends RateLimiterServlet {
       PostParams params = PostParams.getPostParams(request);
       PaginatedMessage.Builder build = PaginatedMessage.newBuilder();
       JsonFormat.merge(params.getParams(), build, params.isVisible());
-      ExchangeList reply = wallet.getPaginatedExchangeList(build.getOffset(), build.getLimit());
-      if (reply != null) {
-        response.getWriter().println(JsonFormat.printToString(reply, params.isVisible()));
-      } else {
-        response.getWriter().println("{}");
-      }
+      fillResponse(build.getOffset(), build.getLimit(), params.isVisible(), response);
     } catch (Exception e) {
       Util.processError(e, response);
     }
   }
+  private void fillResponse(long offset, long limit, boolean visible, HttpServletResponse response)
+      throws IOException {
+    ExchangeList reply = wallet.getPaginatedExchangeList(offset, limit);
+      if (reply != null) {
+      response.getWriter().println(JsonFormat.printToString(reply, visible));
+      } else {
+        response.getWriter().println("{}");
+      }
+    }
+
 }

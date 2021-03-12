@@ -53,7 +53,11 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
       accountStore.put(ownerAddress, account);
 
       Commons.adjustBalance(accountStore, ownerAddress, -fee);
-      Commons.adjustBalance(accountStore, accountStore.getSingularity().createDbKey(), fee);
+      if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()) {
+        chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), fee);
+      }
 
       result.setStatus(fee, code.SUCESS);
     } catch (BalanceInsufficientException | InvalidProtocolBufferException e) {
