@@ -61,7 +61,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] WITNESS_PAY_PER_BLOCK = "WITNESS_PAY_PER_BLOCK".getBytes();
 
-  private static final byte[] WITNESS_127_PAY_PER_BLOCK = "WITNESS_127_PAY_PER_BLOCK".getBytes();
+  private static final byte[] WITNESS_100_PAY_PER_BLOCK = "WITNESS_100_PAY_PER_BLOCK".getBytes();
 
   private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
   private static final byte[] ENTROPY_FEE = "ENTROPY_FEE".getBytes();
@@ -273,13 +273,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessPayPerBlock(32000000L);
+      this.saveWitnessPayPerBlock(100000L);//0.1VS
     }
 
     try {
       this.getWitnessStandbyAllowance();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessStandbyAllowance(115_200_000_000L);
+      this.saveWitnessStandbyAllowance(7_200_000_000L);//1VS
     }
 
     try {
@@ -917,14 +917,14 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
   }
 
-  public void saveWitness127PayPerBlock(long pay) {
-    logger.debug("WITNESS_127_PAY_PER_BLOCK:" + pay);
-    this.put(WITNESS_127_PAY_PER_BLOCK,
+  public void saveWitness100PayPerBlock(long pay) {
+    logger.debug("WITNESS_100_PAY_PER_BLOCK:" + pay);
+    this.put(WITNESS_100_PAY_PER_BLOCK,
         new BytesCapsule(ByteArray.fromLong(pay)));
   }
 
-  public long getWitness127PayPerBlock() {
-    return Optional.ofNullable(getUnchecked(WITNESS_127_PAY_PER_BLOCK))
+  public long getWitness100PayPerBlock() {
+    return Optional.ofNullable(getUnchecked(WITNESS_100_PAY_PER_BLOCK))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElse(16000000L);

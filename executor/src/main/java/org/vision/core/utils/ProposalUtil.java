@@ -245,7 +245,7 @@ public class ProposalUtil {
         }
         break;
       }
-      case WITNESS_127_PAY_PER_BLOCK: {
+      case WITNESS_100_PAY_PER_BLOCK: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
@@ -470,7 +470,7 @@ public class ProposalUtil {
     // SHIELDED_TRANSACTION_FEE(28), // 10 VS, [0, 10000] VS
     ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER(29), // 1000, [1, 10000]
     ALLOW_CHANGE_DELEGATION(30), // 1, {0, 1}
-    WITNESS_127_PAY_PER_BLOCK(31), // 160 VS, [0, 100000000000] VS
+    WITNESS_100_PAY_PER_BLOCK(31), // 160 VS, [0, 100000000000] VS
     ALLOW_VVM_SOLIDITY_059(32), // 1, {0, 1}
     ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO(33), // 10, [1, 1000]
     // SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE(34), // 1 VS, [0, 10000] VS

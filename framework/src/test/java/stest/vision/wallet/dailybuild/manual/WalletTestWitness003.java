@@ -41,7 +41,7 @@ public class WalletTestWitness003 {
 
   private static final byte[] INVAILD_ADDRESS = Base58
       .decodeFromBase58Check("27cu1ozb4mX3m2afY68FSAqn3HmMp815d48");
-  private static final Long costForCreateWitness = 9999000000L;
+  private static final Long costForCreateWitness = 2000000000L;
   private static final String tooLongUrl = "qagwqaswqaswqaswqaswqaswqaswqaswqaswqaswqaswqas"
       + "wqaswqasw1qazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazx"
       + "swedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedcvqazxswedc"

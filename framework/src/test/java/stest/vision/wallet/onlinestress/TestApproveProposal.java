@@ -131,7 +131,7 @@ public class TestApproveProposal {
     //Set the default map
     HashMap<String, Long> defaultCommitteeMap = new HashMap<String, Long>();
     defaultCommitteeMap.put("MAINTENANCE_TIME_INTERVAL", 300000L);
-    defaultCommitteeMap.put("ACCOUNT_UPGRADE_COST", 9999000000L);
+    defaultCommitteeMap.put("ACCOUNT_UPGRADE_COST", 2000000000L);
     defaultCommitteeMap.put("CREATE_ACCOUNT_FEE", 100000L);
     defaultCommitteeMap.put("TRANSACTION_FEE", 10L);
     defaultCommitteeMap.put("ASSET_ISSUE_FEE", 1024000000L);

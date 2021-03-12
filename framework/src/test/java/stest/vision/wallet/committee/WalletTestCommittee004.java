@@ -178,7 +178,7 @@ public class WalletTestCommittee004 {
     //Set the default map
     HashMap<String, Long> defaultCommitteeMap = new HashMap<String, Long>();
     defaultCommitteeMap.put("MAINTENANCE_TIME_INTERVAL", 300000L);
-    defaultCommitteeMap.put("ACCOUNT_UPGRADE_COST", 9999000000L);
+    defaultCommitteeMap.put("ACCOUNT_UPGRADE_COST", 2000000000L);
     defaultCommitteeMap.put("CREATE_ACCOUNT_FEE", 100000L);
     defaultCommitteeMap.put("TRANSACTION_FEE", 10L);
     defaultCommitteeMap.put("ASSET_ISSUE_FEE", 1024000000L);
@@ -197,7 +197,7 @@ public class WalletTestCommittee004 {
     }
     Assert.assertTrue(getChainParameters.get().getChainParameterCount() >= 10);
     Assert.assertTrue(getChainParameters.get()
-        .getChainParameter(1).getValue() == 9999000000L);
+        .getChainParameter(1).getValue() == 2000000000L);
     Assert.assertTrue(getChainParameters.get().getChainParameter(4)
         .getValue() == 1024000000L);
     Assert.assertTrue(getChainParameters.get().getChainParameter(7).getValue() == 0);
