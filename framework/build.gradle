@@ -83,7 +83,7 @@ dependencies {
     compile group: 'org.pf4j', name: 'pf4j', version: '2.5.0'
 
     compile group: 'org.zeromq', name: 'jeromq', version: '0.5.0'
-    compile 'com.github.vision-consensus:zksnark-java-sdk:release-1.0.0'
+    compile 'com.github.vision-consensus:zksnark-java-sdk:release-1.0.1'
     compile project(":chainstorage")
     compile project(":vprotocol")
     compile project(":executor")
