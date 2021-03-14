@@ -6,8 +6,6 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public interface EthereumCompatible {
     @Value
