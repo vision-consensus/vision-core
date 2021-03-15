@@ -62,6 +62,7 @@ public interface EthereumCompatible {
         public String timestamp; //: QUANTITY - the unix timestamp for when the block was collated.
         public Object[] transactions; //: Array - Array of transaction objects, or 32 Bytes transaction hashes depending on the last given parameter.
         public String[] uncles; //: Array - Array of uncle hashes.
+        public String mixHash;
 
         @Override
         public String toString() {
