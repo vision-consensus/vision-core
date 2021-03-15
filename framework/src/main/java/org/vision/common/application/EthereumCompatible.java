@@ -89,6 +89,7 @@ public interface EthereumCompatible {
         }
     }
 
+    String eth_chainId();
     String web3_clientVersion();
     String web3_sha3(String data) throws Exception;
     String net_version();

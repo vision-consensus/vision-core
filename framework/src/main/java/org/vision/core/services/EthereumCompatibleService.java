@@ -6,6 +6,11 @@ import org.vision.common.application.EthereumCompatible;
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
     @Override
+    public String eth_chainId() {
+        return "0x42";
+    }
+
+    @Override
     public String web3_clientVersion() {
         return null;
     }
@@ -17,7 +22,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String net_version() {
-        return null;
+        return "1.0.1";
     }
 
     @Override
@@ -72,7 +77,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_getBalance(String address, String block) throws Exception {
-        return null;
+        return "0x10";
     }
 
     @Override
