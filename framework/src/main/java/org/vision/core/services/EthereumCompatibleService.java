@@ -1,10 +1,24 @@
 package org.vision.core.services;
 
+import com.google.protobuf.ByteString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.application.EthereumCompatible;
+import org.vision.common.utils.ByteArray;
+import org.vision.core.Wallet;
+import org.vision.protos.Protocol;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
+
+    @Autowired
+    private Wallet wallet;
+
     @Override
     public String eth_chainId() {
         return "0x42";
@@ -72,12 +86,16 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_blockNumber() {
-        return "0x2d6c28";
+        Protocol.Block reply = wallet.getNowBlock();
+        return "0x" + Long.toHexString(reply.getBlockHeader().getRawData().getNumber()).toLowerCase();
     }
 
     @Override
     public String eth_getBalance(String address, String block) throws Exception {
-        return "0x10000000000";
+        Protocol.Account.Builder build = Protocol.Account.newBuilder();
+        build.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address.replace("0x", "46").toLowerCase())));
+        Protocol.Account reply = wallet.getAccount(build.build());
+        return "0x" + new BigInteger(reply.getBalance() + "").multiply(new BigInteger("1000000000000")).toString(16);
     }
 
     @Override
@@ -150,6 +168,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         return null;
     }
 
+    private final AtomicLong counter = new AtomicLong();
     @Override
     public BlockResult eth_getBlockByNumber(String bnOrId, Boolean fullTransactionObjects) throws Exception {
         BlockResult blockResult = new BlockResult();
@@ -162,7 +181,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.miner = "0x0ed0d1f46391e08f0ceab98fc3700e5d9c1c7b19";
         blockResult.mixHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
         blockResult.nonce = "0x0000000000000000";
-        blockResult.number = "0x2d6c2e";
+        //blockResult.number = "0x2d6c2e";
+        blockResult.number = "0x" + Long.toHexString(counter.incrementAndGet()).toLowerCase();
         blockResult.parentHash = "0xa540368c3f57b1d43f5691928023e52abaf9cbe2267cf0abbec7263717aeb28c";
         blockResult.receiptsRoot = "0x5f695898d27a2e25c2ae05c436be37a38bc3f8993386bf409f0ce40d6292298c";
         blockResult.sha3Uncles = "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347";
