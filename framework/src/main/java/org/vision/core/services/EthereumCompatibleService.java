@@ -1,17 +1,26 @@
 package org.vision.core.services;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.vision.api.GrpcAPI;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.utils.ByteArray;
 import org.vision.core.Wallet;
+import org.vision.core.capsule.TransactionCapsule;
+import org.vision.core.exception.ContractValidateException;
+import org.vision.core.services.http.JsonFormat;
+import org.vision.core.services.http.Util;
 import org.vision.protos.Protocol;
+import org.vision.protos.contract.SmartContractOuterClass;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
@@ -155,7 +164,39 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_call(CallArguments args, String bnOrId) throws Exception {
-        return null;
+        SmartContractOuterClass.TriggerSmartContract.Builder build = SmartContractOuterClass.TriggerSmartContract.newBuilder();
+        GrpcAPI.TransactionExtention.Builder trxExtBuilder = GrpcAPI.TransactionExtention.newBuilder();
+        GrpcAPI.Return.Builder retBuilder = GrpcAPI.Return.newBuilder();
+        try {
+            build.setData(ByteString.copyFrom(ByteArray.fromHexString(args.data)));
+            build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.to.replace("0x", "46").toLowerCase())));
+            build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString("460000000000000000000000000000000000000000")));
+            TransactionCapsule trxCap = wallet
+                    .createTransactionCapsule(build.build(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);
+            Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
+            Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
+            rawBuilder.setFeeLimit(0);
+            txBuilder.setRawData(rawBuilder);
+            Protocol.Transaction trx = wallet
+                    .triggerConstantContract(build.build(), new TransactionCapsule(txBuilder.build()),
+                            trxExtBuilder,
+                            retBuilder);
+            trxExtBuilder.setTransaction(trx);
+            retBuilder.setResult(true).setCode(GrpcAPI.Return.response_code.SUCCESS);
+        } catch (ContractValidateException e) {
+            retBuilder.setResult(false).setCode(GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR)
+                    .setMessage(ByteString.copyFromUtf8(e.getMessage()));
+        } catch (Exception e) {
+            String errString = null;
+            if (e.getMessage() != null) {
+                errString = e.getMessage().replaceAll("[\"]", "\'");
+            }
+            retBuilder.setResult(false).setCode(GrpcAPI.Return.response_code.OTHER_ERROR)
+                    .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + errString));
+        }
+        trxExtBuilder.setResult(retBuilder);
+        String ret = Util.printTransactionExtention(trxExtBuilder.build(), false);
+        return ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
     }
 
     @Override
