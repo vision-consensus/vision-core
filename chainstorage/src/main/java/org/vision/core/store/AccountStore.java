@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.JsonFormat;
+import org.vision.common.utils.Producer;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
@@ -74,6 +76,9 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
           accountTraceStore.recordBalanceWithBlock(key, blockId.getNum(), item.getBalance());
         }
       }
+    }
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      Producer.getInstance().send("ACCOUNT", JsonFormat.printToString(item.getInstance()));
     }
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);

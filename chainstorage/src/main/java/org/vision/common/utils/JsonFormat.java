@@ -30,13 +30,17 @@ package org.vision.common.utils;
 */
 
 import com.alibaba.fastjson.JSON;
-import com.google.protobuf.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import org.apache.commons.lang3.StringUtils;
-
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
+import com.google.protobuf.UnknownFieldSet;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
@@ -46,8 +50,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.Commons;
+import org.vision.common.utils.StringUtil;
+import org.vision.protos.contract.BalanceContract;
 
 /**
  * Provide ascii text parsing and formatting support for proto2 instances. The implementation
@@ -70,6 +81,13 @@ public class JsonFormat {
       = "Writing to a StringBuilder threw an IOException (should never happen).";
   private static final String EXPECTED_STRING = "Expected string.";
   private static final String MISSING_END_QUOTE = "String missing ending quote.";
+  public static final boolean ALWAYS_OUTPUT_DEFAULT_VALUE_FIELDS = true;
+  public static final Set<Class<? extends Message>> MESSAGES = ImmutableSet.of(
+      BalanceContract.AccountBalanceResponse.class,
+      BalanceContract.BlockBalanceTrace.class,
+      BalanceContract.TransactionBalanceTrace.Operation.class,
+      BalanceContract.TransactionBalanceTrace.class
+  );
 
   /**
    * Outputs a textual representation of the Protocol Message supplied into the parameter output.
@@ -97,7 +115,26 @@ public class JsonFormat {
 
   protected static void print(Message message, JsonGenerator generator, boolean selfType)
       throws IOException {
-    for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = message.getAllFields().entrySet()
+    Map<FieldDescriptor, Object> fieldsToPrint = new TreeMap<>(message.getAllFields());
+    if (ALWAYS_OUTPUT_DEFAULT_VALUE_FIELDS && MESSAGES.contains(message.getClass())) {
+      for (FieldDescriptor field : message.getDescriptorForType().getFields()) {
+        if (field.isOptional()) {
+          if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE
+              && !message.hasField(field)) {
+            continue;
+          }
+          Descriptors.OneofDescriptor oneof = field.getContainingOneof();
+          if (oneof != null && !message.hasField(field)) {
+            continue;
+          }
+        }
+        if (!fieldsToPrint.containsKey(field)) {
+          fieldsToPrint.put(field, message.getField(field));
+        }
+      }
+    }
+    //for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = message.getAllFields().entrySet()
+    for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = fieldsToPrint.entrySet()
         .iterator(); iter.hasNext(); ) {
       Map.Entry<FieldDescriptor, Object> field = iter.next();
       printField(field.getKey(), field.getValue(), generator, selfType);
