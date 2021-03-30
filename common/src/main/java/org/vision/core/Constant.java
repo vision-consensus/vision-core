@@ -273,4 +273,6 @@ public class Constant {
   public static final String METRICS_REPORT_INTERVAL = "node.metrics.influxdb.metricsReportInterval";
   public static final String HISTORY_BALANCE_LOOKUP = "storage.balance.history.lookup";
   public static final String LOCAL_HOST = "127.0.0.1";
+  public static final String KAFKA_SENDER_ENABLE = "kafka.enable";
+  public static final String KAFKA_BOOTSTRAP_SERVERS_CONFIG = "kafka.bootstrap.servers";
 }

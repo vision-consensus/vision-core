@@ -740,7 +740,8 @@ public class Args extends CommonParameter {
                     && config.getBoolean(Constant.NODE_OPEN_HISTORY_QUERY_WHEN_LITEFN));
     PARAMETER.historyBalanceLookup = config.hasPath(Constant.HISTORY_BALANCE_LOOKUP) && config
         .getBoolean(Constant.HISTORY_BALANCE_LOOKUP);
-
+    PARAMETER.setKafkaEnable(config.hasPath(Constant.KAFKA_SENDER_ENABLE) && config.getBoolean(Constant.KAFKA_SENDER_ENABLE));
+    PARAMETER.kafkaBootStrapServers = config.hasPath(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) ? config.getString(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) : "";
     logConfig();
   }
 
