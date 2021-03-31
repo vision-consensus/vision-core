@@ -115,27 +115,8 @@ public class JsonFormat {
 
   protected static void print(Message message, JsonGenerator generator, boolean selfType)
       throws IOException {
-    Map<FieldDescriptor, Object> fieldsToPrint = new TreeMap<>(message.getAllFields());
-    if (ALWAYS_OUTPUT_DEFAULT_VALUE_FIELDS && MESSAGES.contains(message.getClass())) {
-      for (FieldDescriptor field : message.getDescriptorForType().getFields()) {
-        if (field.isOptional()) {
-          if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE
-              && !message.hasField(field)) {
-            continue;
-          }
-          Descriptors.OneofDescriptor oneof = field.getContainingOneof();
-          if (oneof != null && !message.hasField(field)) {
-            continue;
-          }
-        }
-        if (!fieldsToPrint.containsKey(field)) {
-          fieldsToPrint.put(field, message.getField(field));
-        }
-      }
-    }
-    //for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = message.getAllFields().entrySet()
-    for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = fieldsToPrint.entrySet()
-        .iterator(); iter.hasNext(); ) {
+    for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = message.getAllFields().entrySet()
+            .iterator(); iter.hasNext(); ) {
       Map.Entry<FieldDescriptor, Object> field = iter.next();
       printField(field.getKey(), field.getValue(), generator, selfType);
       if (iter.hasNext()) {
