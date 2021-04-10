@@ -30,9 +30,6 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
 
   @Override
   public void put(byte[] key, ContractCapsule item){
-    if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("CONTRACT", JsonFormat.printToString(item.generateWrapper()));
-    }
     super.put(key, item);
   }
 
