@@ -159,6 +159,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_sendRawTransaction(String rawData) throws Exception {
+//        TransactionCapsule.EthTrx trx = new TransactionCapsule.EthTrx(hexToByteArray(rawData));
+//        trx.rlpParse();
+//        setOwnerAddress(trx.getSender())
+//        broadcast
         return null;
     }
 

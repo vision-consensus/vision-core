@@ -53,6 +53,7 @@ message SmartContract {
   int64 origin_entropy_limit = 8;
   bytes code_hash = 9;
   bytes trx_hash = 10;
+
 }
 
 message CreateSmartContract {
@@ -69,6 +70,8 @@ message TriggerSmartContract {
   bytes data = 4;
   int64 call_token_value = 5;
   int64 token_id = 6;
+  int64 type = 7; //if type=eth validate eth sign else validate tron sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 8; // eth's RLP rawData
 }
 
 message ClearABIContract {
