@@ -600,11 +600,47 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   }
 
   /**
-   * validate eth signature validateEthSignature
+   * validate eth signature validateEthSignature TriggerSmartContract
    */
   public boolean validateEthSignature(AccountStore accountStore,
                                       DynamicPropertiesStore dynamicPropertiesStore,
                                       TriggerSmartContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (this.transaction.getSignatureCount() <= 0
+              || this.transaction.getRawData().getContractCount() <= 0) {
+        throw new ValidateSignatureException("miss sig or contract");
+      }
+      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+              .getTotalSignNum()) {
+        throw new ValidateSignatureException("too many signatures");
+      }
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  /**
+   * validate eth signature validateEthSignature TransferContract
+   */
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      TransferContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
       if (this.transaction.getSignatureCount() <= 0
@@ -1219,6 +1255,19 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (contract.getType() == ContractType.TriggerSmartContract) {
         try {
           TriggerSmartContract c = contract.getParameter().unpack(TriggerSmartContract.class);
+          if(c.getType()==1){
+            v = 1;
+            validateEthSignature(accountStore, dynamicPropertiesStore, c);
+          }
+        } catch (InvalidProtocolBufferException e) {
+          e.printStackTrace();
+          throw new RuntimeException("proto unpack error");
+        }
+      }
+
+      if (contract.getType() == ContractType.TransferContract) {
+        try {
+          TransferContract c = contract.getParameter().unpack(TransferContract.class);
           if(c.getType()==1){
             v = 1;
             validateEthSignature(accountStore, dynamicPropertiesStore, c);
