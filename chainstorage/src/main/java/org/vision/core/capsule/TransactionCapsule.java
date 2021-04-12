@@ -87,6 +87,7 @@ import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
+import org.vision.protos.contract.SmartContractOuterClass;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
@@ -622,6 +623,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
       t.rlpParse();
       try {
+        TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -658,6 +664,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
       t.rlpParse();
       try {
+        TransferContract contractFromParse = t.rlpParseToTransferContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -978,10 +989,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       return signature;
     }
 
-//    public byte[] getContractAddress() {
-//      if (!isContractCreation()) return null;
-//      return HashUtil.calcNewAddr(this.getSender(), this.getNonce());
-//    }
+    public byte[] getContractAddress() {
+      if (!isContractCreation()) return null;
+      return Hash.sha3omit12(this.getSender());
+    }
 
     public boolean isContractCreation() {
       rlpParse();
@@ -1193,6 +1204,34 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               null,
               chainId);
     }
+
+    public synchronized TriggerSmartContract rlpParseToTriggerSmartContract() {
+      if (!parsed)
+        rlpParse();
+      TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+      build.setContractAddress(ByteString.copyFrom(this.getContractAddress()));
+      build.setCallValue(ByteUtil.byteArrayToLong(this.value));
+      build.setData(ByteString.copyFrom(this.data));
+      build.setCallTokenValue(0);
+      build.setTokenId(0);
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
+    public synchronized TransferContract rlpParseToTransferContract() {
+      if (!parsed)
+        rlpParse();
+      TransferContract.Builder build = TransferContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+      build.setAmount(ByteUtil.byteArrayToLong(this.value));
+      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
 
 //    public static final MemSizeEstimator<EthTrx> MemEstimator = tx ->
 //            ByteArrayEstimator.estimateSize(tx.hash) +
