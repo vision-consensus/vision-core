@@ -989,10 +989,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       return signature;
     }
 
-    public byte[] getContractAddress() {
-      if (!isContractCreation()) return null;
-      return Hash.sha3omit12(this.getSender());
-    }
+//    public byte[] getContractAddress() {
+//      if (!isContractCreation()) return null;
+//      return Hash.sha3omit12(this.getSender());
+//    }
 
     public boolean isContractCreation() {
       rlpParse();
@@ -1210,7 +1210,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
-      build.setContractAddress(ByteString.copyFrom(this.getContractAddress()));
+      build.setContractAddress(ByteString.copyFrom(this.receiveAddress));
       build.setCallValue(ByteUtil.byteArrayToLong(this.value));
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
