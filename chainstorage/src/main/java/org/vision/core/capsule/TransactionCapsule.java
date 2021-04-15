@@ -60,6 +60,7 @@ import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.ReflectUtils;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.core.Constant;
 import org.vision.core.actuator.TransactionFactory;
 import org.vision.core.db.TransactionContext;
 import org.vision.core.db.TransactionTrace;
@@ -608,14 +609,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TriggerSmartContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
-      if (this.transaction.getSignatureCount() <= 0
-              || this.transaction.getRawData().getContractCount() <= 0) {
-        throw new ValidateSignatureException("miss sig or contract");
-      }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
-      }
+//      if (this.transaction.getSignatureCount() <= 0
+//              || this.transaction.getRawData().getContractCount() <= 0) {
+//        throw new ValidateSignatureException("miss sig or contract");
+//      }
+//      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+//              .getTotalSignNum()) {
+//        throw new ValidateSignatureException("too many signatures");
+//      }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
       }
@@ -624,10 +625,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
-        if(!contractFromParse.equals(contract)){
-          isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
-        }
+//        if(!contractFromParse.equals(contract)){
+//          isVerified = false;
+//          throw new ValidateSignatureException("eth sig error");
+//        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -649,14 +650,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TransferContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
-      if (this.transaction.getSignatureCount() <= 0
-              || this.transaction.getRawData().getContractCount() <= 0) {
-        throw new ValidateSignatureException("miss sig or contract");
-      }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
-      }
+//      if (this.transaction.getSignatureCount() <= 0
+//              || this.transaction.getRawData().getContractCount() <= 0) {
+//        throw new ValidateSignatureException("miss sig or contract");
+//      }
+//      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+//              .getTotalSignNum()) {
+//        throw new ValidateSignatureException("too many signatures");
+//      }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
       }
@@ -665,10 +666,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         TransferContract contractFromParse = t.rlpParseToTransferContract();
-        if(!contractFromParse.equals(contract)){
-          isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
-        }
+//        if(!contractFromParse.equals(contract)){
+//          isVerified = false;
+//          throw new ValidateSignatureException("eth sig error");
+//        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -1209,8 +1210,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (!parsed)
         rlpParse();
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
-      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
-      build.setContractAddress(ByteString.copyFrom(this.receiveAddress));
+//      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.sendAddress).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+//      build.setContractAddress(ByteString.copyFrom(this.receiveAddress));
+      build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.receiveAddress))));
       build.setCallValue(ByteUtil.byteArrayToLong(this.value));
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
@@ -1224,9 +1227,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (!parsed)
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
-      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+//      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.sendAddress).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setAmount(ByteUtil.byteArrayToLong(this.value));
-      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
+//      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
+      build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.receiveAddress))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();

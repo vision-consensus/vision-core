@@ -1,9 +1,11 @@
 package org.vision.common.application;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
+import org.vision.protos.Protocol;
 
 import java.util.Arrays;
 
@@ -90,6 +92,74 @@ public interface EthereumCompatible {
         }
     }
 
+    class LogFilterElement {
+        public String logIndex;
+        public String transactionIndex;
+        public String transactionHash;
+        public String blockHash;
+        public String blockNumber;
+        public String address;
+        public String data;
+        public String[] topics;
+
+//        public LogFilterElement(LogInfo logInfo, Block b, Integer txIndex, Transaction tx, int logIdx) {
+//            logIndex = toJsonHex(logIdx);
+//            blockNumber = b == null ? null : toJsonHex(b.getNumber());
+//            blockHash = b == null ? null : toJsonHex(b.getHash());
+//            transactionIndex = b == null ? null : toJsonHex(txIndex);
+//            transactionHash = toJsonHex(tx.getHash());
+//            address = toJsonHex(tx.getReceiveAddress());
+//            data = toJsonHex(logInfo.getData());
+//            topics = new String[logInfo.getTopics().size()];
+//            for (int i = 0; i < topics.length; i++) {
+//                topics[i] = toJsonHex(logInfo.getTopics().get(i).getData());
+//            }
+//        }
+
+        @Override
+        public String toString() {
+            return "LogFilterElement{" +
+                    "logIndex='" + logIndex + '\'' +
+                    ", blockNumber='" + blockNumber + '\'' +
+                    ", blockHash='" + blockHash + '\'' +
+                    ", transactionHash='" + transactionHash + '\'' +
+                    ", transactionIndex='" + transactionIndex + '\'' +
+                    ", address='" + address + '\'' +
+                    ", data='" + data + '\'' +
+                    ", topics=" + Arrays.toString(topics) +
+                    '}';
+        }
+    }
+
+    class TransactionResultDTO {
+
+    }
+
+    class TransactionReceiptDTO{
+        public String transactionHash;          // hash of the transaction.
+        public String transactionIndex;         // integer of the transactions index position in the block.
+        public String blockHash;                // hash of the block where this transaction was in.
+        public String blockNumber;              // block number where this transaction was in.
+        public String from;                     // 20 Bytes - address of the sender.
+        public String to;                       // 20 Bytes - address of the receiver. null when its a contract creation transaction.
+        public String cumulativeGasUsed;        // The total amount of gas used when this transaction was executed in the block.
+        public String gasUsed;                  // The amount of gas used by this specific transaction alone.
+        public String contractAddress;          // The contract address created, if the transaction was a contract creation, otherwise  null .
+        public LogFilterElement[] logs;         // Array of log objects, which this transaction generated.
+        public String logsBloom;                       // 256 Bytes - Bloom filter for light clients to quickly retrieve related logs.
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public String root;  // 32 bytes of post-transaction stateroot (pre Byzantium)
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public String status;  //  either 1 (success) or 0 (failure) (post Byzantium)
+
+        public TransactionReceiptDTO(){
+
+        }
+        public TransactionReceiptDTO(Protocol.Block block, Protocol.TransactionInfo transactionInfo){
+
+        }
+    }
+
     String eth_chainId();
     String web3_clientVersion();
     String web3_sha3(String data) throws Exception;
@@ -123,4 +193,9 @@ public interface EthereumCompatible {
     String eth_estimateGas(CallArguments args) throws Exception;
     BlockResult eth_getBlockByHash(String blockHash, Boolean fullTransactionObjects) throws Exception;
     BlockResult eth_getBlockByNumber(String bnOrId, Boolean fullTransactionObjects) throws Exception;
+
+    TransactionResultDTO eth_getTransactionByHash(String transactionHash) throws Exception;
+    TransactionResultDTO eth_getTransactionByBlockHashAndIndex(String blockHash, String index) throws Exception;
+    TransactionResultDTO eth_getTransactionByBlockNumberAndIndex(String bnOrId, String index) throws Exception;
+    TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception;
 }
