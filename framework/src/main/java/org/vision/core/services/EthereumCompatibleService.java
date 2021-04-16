@@ -187,7 +187,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
                 rawBuilder.setFeeLimit(feeLimit);
                 txBuilder.setRawData(rawBuilder);
-                txBuilder.setSignature(0, ByteString.copyFrom(ethTrx.getEncodedRaw()));
+                txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
                 trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
                         retBuilder);
             } else if (2 == accountType) {
