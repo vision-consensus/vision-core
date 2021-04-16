@@ -315,7 +315,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           }
           break;
         }
-        // todo add other contract
+        case TriggerSmartContract: {
+          TriggerSmartContract triggerSmartContract = contractParameter.unpack(TriggerSmartContract.class);
+          if (!triggerSmartContract.getOwnerAddress().isEmpty()){
+            owner = triggerSmartContract.getOwnerAddress();
+          } else{
+            return new byte[0];
+          }
+          break;
+        }
         default: {
           Class<? extends GeneratedMessageV3> clazz = TransactionFactory
               .getContract(contract.getType());
@@ -609,14 +617,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TriggerSmartContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
-//      if (this.transaction.getSignatureCount() <= 0
-//              || this.transaction.getRawData().getContractCount() <= 0) {
-//        throw new ValidateSignatureException("miss sig or contract");
-//      }
-//      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-//              .getTotalSignNum()) {
-//        throw new ValidateSignatureException("too many signatures");
-//      }
+      if (this.transaction.getSignatureCount() <= 0
+              || this.transaction.getRawData().getContractCount() <= 0) {
+        throw new ValidateSignatureException("miss sig or contract");
+      }
+      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+              .getTotalSignNum()) {
+        throw new ValidateSignatureException("too many signatures");
+      }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
       }
@@ -625,10 +633,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
-//        if(!contractFromParse.equals(contract)){
-//          isVerified = false;
-//          throw new ValidateSignatureException("eth sig error");
-//        }
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -650,14 +658,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TransferContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
-//      if (this.transaction.getSignatureCount() <= 0
-//              || this.transaction.getRawData().getContractCount() <= 0) {
-//        throw new ValidateSignatureException("miss sig or contract");
-//      }
-//      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-//              .getTotalSignNum()) {
-//        throw new ValidateSignatureException("too many signatures");
-//      }
+      if (this.transaction.getSignatureCount() <= 0
+              || this.transaction.getRawData().getContractCount() <= 0) {
+        throw new ValidateSignatureException("miss sig or contract");
+      }
+      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+              .getTotalSignNum()) {
+        throw new ValidateSignatureException("too many signatures");
+      }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
       }
@@ -666,10 +674,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         TransferContract contractFromParse = t.rlpParseToTransferContract();
-//        if(!contractFromParse.equals(contract)){
-//          isVerified = false;
-//          throw new ValidateSignatureException("eth sig error");
-//        }
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
           throw new ValidateSignatureException("sig error");
@@ -1297,15 +1305,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     if (contract.getType() != ContractType.ShieldedTransferContract) {
       int v = 0;
       if (contract.getType() == ContractType.TriggerSmartContract) {
-        try {
-          TriggerSmartContract c = contract.getParameter().unpack(TriggerSmartContract.class);
-          if(c.getType()==1){
-            v = 1;
-            validateEthSignature(accountStore, dynamicPropertiesStore, c);
-          }
-        } catch (InvalidProtocolBufferException e) {
-          e.printStackTrace();
-          throw new RuntimeException("proto unpack error");
+        TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
+        if (c == null) {
+          throw new ValidateSignatureException("get trigger smart contract error");
+        }
+        if(c.getType()==1){
+          v = 1;
+          validateEthSignature(accountStore, dynamicPropertiesStore, c);
         }
       }
 
