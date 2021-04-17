@@ -29,6 +29,7 @@ import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Internal;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -1234,7 +1235,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(BigInteger.valueOf(ByteUtil.byteArrayToLong(this.value)).divide(BigInteger.valueOf(1000000000000L)).longValue());
+      build.setAmount(new BigInteger(this.value).divide(new BigInteger("1000000000000")).longValue());
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
