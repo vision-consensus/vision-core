@@ -16,6 +16,7 @@ import org.vision.core.Wallet;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionInfoCapsule;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.services.http.JsonFormat;
 import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
@@ -190,14 +191,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
                 trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
                         retBuilder);
-            } else if (2 == accountType) {
+            } else if (0 == accountType) {
                 trx = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract)
                         .getInstance();
             } else {
                 return null;
             }
             GrpcAPI.Return result = wallet.broadcastTransaction(trx);
-            System.out.println(result.toString());
             transactionCapsule = new TransactionCapsule(trx);
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
@@ -210,8 +210,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
             }
             return errString;
         }
-        //return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
-        return null;
+        return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
+        //return null;
     }
 
     @Override
@@ -305,13 +305,21 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception {
-//        Protocol.Transaction transaction = wallet.getTransactionById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
-//        TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
-//        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
-//        Protocol.Block block = wallet.getBlockById(ByteString.copyFrom(ByteArray.fromHexString(new Long(transactionCapsule.getBlockNum()).toString())));
-//        TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO(block, transactionInfo);
+        Protocol.Transaction transaction = wallet.getTransactionById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
+        TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
+        String transStr = JsonFormat.printToString(transaction, false);
+        System.out.println(transStr);
+        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
+        String transInfoStr = JsonFormat.printToString(transactionInfo, false);
+        System.out.println(transInfoStr);
+        //Protocol.Block block = wallet.getBlockById(ByteString.copyFrom(ByteArray.fromHexString(new Long(transactionCapsule.getBlockNum()).toString())));
+        //TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO(block, transactionInfo);
         TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
-        transactionReceiptDTO.blockNumber = "0x1111";
+        //Protocol.Block reply = wallet.getNowBlock();
+        //transactionReceiptDTO.transactionHash = transactionCapsule.get
+        transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
+        transactionReceiptDTO.status = "1";
+        transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
         return transactionReceiptDTO;
     }
 }
