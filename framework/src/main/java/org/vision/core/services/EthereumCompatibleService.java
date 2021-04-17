@@ -301,18 +301,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception {
-        Protocol.Transaction transaction = wallet.getTransactionById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
-        TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
-        String transStr = JsonFormat.printToString(transaction, false);
-        System.out.println(transStr);
         Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
-        String transInfoStr = JsonFormat.printToString(transactionInfo, false);
-        System.out.println(transInfoStr);
-        //Protocol.Block block = wallet.getBlockById(ByteString.copyFrom(ByteArray.fromHexString(new Long(transactionCapsule.getBlockNum()).toString())));
-        //TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO(block, transactionInfo);
+        if(null == transactionInfo)
+            return new TransactionReceiptDTO();
         TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
-        //Protocol.Block reply = wallet.getNowBlock();
-        //transactionReceiptDTO.transactionHash = transactionCapsule.get
         transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
         transactionReceiptDTO.status = "1";
         transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
