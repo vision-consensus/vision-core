@@ -1237,7 +1237,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       TransferContract.Builder build = TransferContract.newBuilder();
 //      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(ByteUtil.byteArrayToLong(this.value));
+      build.setAmount(ByteUtil.byteArrayToLong(this.value) / 1000000000000L );
 //      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
