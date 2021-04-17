@@ -1219,9 +1219,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
 //      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
-      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.sendAddress).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
 //      build.setContractAddress(ByteString.copyFrom(this.receiveAddress));
-      build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.receiveAddress))));
+      build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setCallValue(ByteUtil.byteArrayToLong(this.value));
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
@@ -1236,10 +1236,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
 //      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
-      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.sendAddress).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setAmount(ByteUtil.byteArrayToLong(this.value));
 //      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
-      build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.receiveAddress))));
+      build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();

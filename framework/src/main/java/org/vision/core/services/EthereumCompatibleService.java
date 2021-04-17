@@ -198,11 +198,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
             }
             GrpcAPI.Return result = wallet.broadcastTransaction(trx);
             System.out.println(result.toString());
-//            transactionCapsule = new TransactionCapsule(trx);
-//            if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
-//                logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
-//                return null;
-//            }
+            transactionCapsule = new TransactionCapsule(trx);
+            if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
+                logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
+                return null;
+            }
         } catch (Exception e) {
             String errString = null;
             if (e.getMessage() != null) {
@@ -211,7 +211,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             return errString;
         }
         //return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
-        return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(ethTrx.getHash());
+        return null;
     }
 
     @Override
