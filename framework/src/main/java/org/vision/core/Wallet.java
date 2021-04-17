@@ -2526,6 +2526,28 @@ public class Wallet {
   }
 
   /**
+   *
+   * @param address
+   * @return -1-none 0-account 1-contract
+   */
+  public int getAccountType(byte[] address) {
+    AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(address);
+    if (accountCapsule == null) {
+      logger.error(
+              "Get contract failed, the account does not exist or the account "
+                      + "does not have a code hash!");
+      return -1;
+    }
+
+    ContractCapsule contractCapsule = chainBaseManager.getContractStore()
+            .get(address);
+    if (Objects.nonNull(contractCapsule)) {
+      return 1;
+    }
+    return 0;
+  }
+
+  /**
    * Add a wrapper for smart contract.
    * Current additional information including runtime code for a smart contract.
    * @param bytesMessage the contract address message
