@@ -1218,9 +1218,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (!parsed)
         rlpParse();
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
-//      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-//      build.setContractAddress(ByteString.copyFrom(this.receiveAddress));
       build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setCallValue(ByteUtil.byteArrayToLong(this.value));
       build.setData(ByteString.copyFrom(this.data));
@@ -1235,30 +1233,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (!parsed)
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
-//      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(ByteUtil.byteArrayToLong(this.value) / 1000000000000L );
-//      build.setToAddress(ByteString.copyFrom(this.receiveAddress));
+      build.setAmount(BigInteger.valueOf(ByteUtil.byteArrayToLong(this.value)).divide(BigInteger.valueOf(1000000000000L)).longValue());
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();
     }
-
-
-//    public static final MemSizeEstimator<EthTrx> MemEstimator = tx ->
-//            ByteArrayEstimator.estimateSize(tx.hash) +
-//                    ByteArrayEstimator.estimateSize(tx.nonce) +
-//                    ByteArrayEstimator.estimateSize(tx.value) +
-//                    ByteArrayEstimator.estimateSize(tx.gasPrice) +
-//                    ByteArrayEstimator.estimateSize(tx.gasLimit) +
-//                    ByteArrayEstimator.estimateSize(tx.data) +
-//                    ByteArrayEstimator.estimateSize(tx.sendAddress) +
-//                    ByteArrayEstimator.estimateSize(tx.rlpEncoded) +
-//                    ByteArrayEstimator.estimateSize(tx.rawHash) +
-//                    (tx.chainId != null ? 24 : 0) +
-//                    (tx.signature != null ? 208 : 0) + // approximate size of signature
-//                    16; // Object header + ref
   }
 
 

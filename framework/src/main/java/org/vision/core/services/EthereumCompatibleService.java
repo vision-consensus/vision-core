@@ -171,7 +171,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
     public String eth_sendRawTransaction(String rawData) throws Exception {
         TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(ByteArray.fromHexString(rawData));
         ethTrx.rlpParse();
-        ECKey.ECDSASignature ecdsaSignature = ethTrx.getSignature();
         GrpcAPI.TransactionExtention.Builder trxExtBuilder = GrpcAPI.TransactionExtention.newBuilder();
         GrpcAPI.Return.Builder retBuilder = GrpcAPI.Return.newBuilder();
         Protocol.Transaction trx = null;
@@ -191,11 +190,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
                 trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
                         retBuilder);
-            } else if (0 == accountType) {
-                trx = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract)
-                        .getInstance();
             } else {
-                return null;
+                TransactionCapsule transactionCapsule1 = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract);
+                trx = transactionCapsule1.getInstance().toBuilder().addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray())).build();
             }
             GrpcAPI.Return result = wallet.broadcastTransaction(trx);
             transactionCapsule = new TransactionCapsule(trx);
@@ -211,7 +208,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
             return errString;
         }
         return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
-        //return null;
     }
 
     @Override
