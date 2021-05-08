@@ -3,6 +3,7 @@ package org.vision.core.services;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.rocksdb.Transaction;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
@@ -10,17 +11,25 @@ import org.vision.common.application.EthereumCompatible;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.StringUtil;
+import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
+import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionInfoCapsule;
+import org.vision.core.db.BlockIndexStore;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.exception.ItemNotFoundException;
 import org.vision.core.services.http.JsonFormat;
+import org.vision.core.services.http.Util;
 import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -29,6 +38,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Autowired
     private Wallet wallet;
+
+    @Autowired
+    private ChainBaseManager chainBaseManager;
 
     @Override
     public String eth_chainId() {
@@ -258,8 +270,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     private final AtomicLong counter = new AtomicLong();
 
-    @Override
-    public BlockResult eth_getBlockByNumber(String bnOrId, Boolean fullTransactionObjects) throws Exception {
+    public BlockResult eth_getBlockByNumberOld(String bnOrId, Boolean fullTransactionObjects) throws Exception {
         BlockResult blockResult = new BlockResult();
         blockResult.difficulty = "0x2";
         blockResult.extraData = "0xd883010003846765746888676f312e31332e34856c696e75780000000000000049116d665d92e4581c19cd8a67a316739ec2faa4d3e8d3fc518ad6c9e02dc51154bcd4ffbf3156d9d8265500c6bc775ff05b5a54650397fdd057f1d9cb98f6a501";
@@ -282,6 +293,55 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.transactionsRoot = "0x5aca89320d43c0d547a4cbd545ee942a23131e3be1f440ba12603c99428d2f80";
         blockResult.uncles = new String[0];
         return blockResult;
+    }
+
+    @Override
+    public BlockResult eth_getBlockByNumber(String bnOrId, Boolean fullTransactionObjects) throws Exception {
+        BlockResult blockResult = new BlockResult();
+
+        // transfer bnOrId type from string to long
+        long num = Long.parseLong(bnOrId, 16);
+        Protocol.Block reply = wallet.getBlockByNum(num);
+
+        transferBlock2Ether(blockResult, reply);
+
+        return blockResult;
+    }
+
+    private void transferBlock2Ether(BlockResult blockResult, Protocol.Block reply) throws ItemNotFoundException {
+        Protocol.BlockHeader visionBlockHeader = reply.getBlockHeader();
+
+        Protocol.BlockHeader blockHeader = reply.getBlockHeader();
+        org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
+
+        // blockResult.difficulty = "0x2";
+        // blockResult.extraData = "0xd883010003846765746888676f312e31332e34856c696e75780000000000000049116d665d92e4581c19cd8a67a316739ec2faa4d3e8d3fc518ad6c9e02dc51154bcd4ffbf3156d9d8265500c6bc775ff05b5a54650397fdd057f1d9cb98f6a501";
+        // blockResult.gasLimit = "0x1ca35b8";
+        // blockResult.gasUsed = "0x1ca0e7f";
+        BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
+        BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
+        blockResult.hash = "0x" + toHexString(blockId.getByteString().toByteArray());
+        // blockResult.hash = blockHeader.getWitnessSignature();
+        blockResult.logsBloom = "0x00000000000000000200800000000000000000000000000000000000000000000000004000004000000000000000000000000000001008000000000000000000000000000000000000000020000000000000000000000000000008000000000000000080000000000000000000000000000002000000000000000020000000100000000000000000000000000000200000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000020000000000004000000000000000000001000000000000000000000000000000000000000000000000001000000000000000000000000000000000000";
+        blockResult.miner = "0x0ed0d1f46391e08f0ceab98fc3700e5d9c1c7b19";
+        blockResult.mixHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        blockResult.nonce = "0x0000000000000000";
+        //blockResult.number = "0x2d6c2e";
+        blockResult.number = "0x" + Long.toHexString(rawData.getNumber()); // block height
+        blockResult.parentHash = "0x" + toHexString(rawData.getParentHash().toByteArray()); // father block hash
+        blockResult.receiptsRoot = "0x5f695898d27a2e25c2ae05c436be37a38bc3f8993386bf409f0ce40d6292298c";
+        blockResult.sha3Uncles = "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347";
+        blockResult.stateRoot = "0x" + toHexString(rawData.getAccountStateRoot().toByteArray());
+        blockResult.timestamp = Long.toHexString(rawData.getTimestamp());
+        blockResult.totalDifficulty = "0x5abd10";
+        List<Protocol.Transaction> transactionList = reply.getTransactionsList();
+        blockResult.transactions = new Object[0];
+        blockResult.transactionsRoot = toHexString(rawData.getTxTrieRoot().toByteArray());
+        blockResult.uncles = new String[0];
+    }
+
+    private String toHexString(byte[] data) {
+        return data == null ? "" : Hex.toHexString(data);
     }
 
     @Override
