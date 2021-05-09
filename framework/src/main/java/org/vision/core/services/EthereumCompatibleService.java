@@ -2,6 +2,7 @@ package org.vision.core.services;
 
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.rocksdb.Transaction;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.vision.core.Wallet;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionInfoCapsule;
+import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
@@ -29,6 +31,7 @@ import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -44,7 +47,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_chainId() {
-        return "0x42";
+        CommonParameter parameter = Args.getInstance();
+        return "0x" + StringUtil.stringToHexString(String.valueOf(parameter.nodeP2pVersion));
+        // return "0x42";
     }
 
     @Override
@@ -335,7 +340,18 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.timestamp = Long.toHexString(rawData.getTimestamp());
         blockResult.totalDifficulty = "0x5abd10";
         List<Protocol.Transaction> transactionList = reply.getTransactionsList();
-        blockResult.transactions = new Object[0];
+        List<String> transHashList = new ArrayList<>();
+        if (null != transactionList && transactionList.size() > 0) {
+            for (Protocol.Transaction trx : transactionList) {
+                // eth_getBlockByHash actually get block by txId for vision-core
+                String txID = ByteArray.toHexString(Sha256Hash
+                        .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
+                                trx.getRawData().toByteArray()));
+                String hash = "0x" + txID;
+                transHashList.add(hash);
+            }
+        }
+        blockResult.transactions = transHashList.toArray();
         blockResult.transactionsRoot = toHexString(rawData.getTxTrieRoot().toByteArray());
         blockResult.uncles = new String[0];
     }
@@ -343,6 +359,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     private String toHexString(byte[] data) {
         return data == null ? "" : Hex.toHexString(data);
     }
+
 
     @Override
     public TransactionResultDTO eth_getTransactionByHash(String transactionHash) throws Exception {
