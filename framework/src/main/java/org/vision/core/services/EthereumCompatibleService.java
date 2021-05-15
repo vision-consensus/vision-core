@@ -205,7 +205,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (1 == accountType) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
-                long feeLimit = 200000;
+                long feeLimit = 100000000;
                 TransactionCapsule trxCap = wallet
                         .createTransactionCapsule(ethTrx.rlpParseToTriggerSmartContract(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);
                 Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
