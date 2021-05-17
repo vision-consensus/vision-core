@@ -909,7 +909,7 @@ public class Manager {
       ReceiptCheckErrException, VMIllegalException, ZksnarkException {
     long start = System.currentTimeMillis();
     try (PendingManager pm = new PendingManager(this)) {
-
+      logger.info("pushBlock block1:"+block);
       if (!block.generatedByMyself) {
         if (!block.validateSignature(chainBaseManager.getDynamicPropertiesStore(),
             chainBaseManager.getAccountStore())) {
@@ -938,6 +938,7 @@ public class Manager {
       BlockCapsule newBlock;
       try {
         newBlock = this.khaosDb.push(block);
+        logger.info("pushBlock block2:"+newBlock);
       } catch (UnLinkedBlockException e) {
         logger.error(
             "latestBlockHeaderHash:{}, latestBlockHeaderNumber:{}, latestSolidifiedBlockNum:{}",
