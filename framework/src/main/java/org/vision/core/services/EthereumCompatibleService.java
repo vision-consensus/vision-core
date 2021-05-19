@@ -57,7 +57,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_chainId() {
         CommonParameter parameter = Args.getInstance();
-        return "0x" + Integer.parseInt(String.valueOf(parameter.nodeP2pVersion), 16);
+        return "0x" + Integer.toHexString(parameter.nodeP2pVersion);
         // return "0x42";
     }
 
@@ -327,7 +327,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         BlockResult blockResult = new BlockResult();
 
         // transfer bnOrId type from string to long
-        long num = Long.parseLong(bnOrId, 16);
+        long num = Long.parseLong(getHexNo0x(bnOrId), 16);
         Protocol.Block reply = wallet.getBlockByNum(num);
 
         transferBlock2Ether(blockResult, reply, fullTransactionObjects);
