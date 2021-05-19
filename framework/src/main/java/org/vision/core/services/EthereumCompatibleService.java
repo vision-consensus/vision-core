@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static javafx.scene.input.KeyCode.L;
+
 @Slf4j
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
@@ -111,7 +113,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_gasPrice() {
-        return null;
+        // feeLimit = 100000000vdt = 21000 * 160Gwei
+        return "0x" + Long.toHexString(8);
     }
 
     @Override
@@ -205,7 +208,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (1 == accountType) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
-                long feeLimit = 100000000;
+                long gasPrice = Long.parseLong(
+                        toHexString(ethTrx.getGasPrice()), 16
+                );
+                long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
+                // long feeLimit = 100000000;
+                logger.info("gasPrice={},gasLimit={}", gasPrice, gasLimit);
+                long feeLimit = gasPrice * gasLimit * 2;
                 TransactionCapsule trxCap = wallet
                         .createTransactionCapsule(ethTrx.rlpParseToTriggerSmartContract(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);
                 Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
@@ -490,13 +499,71 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception {
-        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length()))));
-        if(null == transactionInfo)
-            return new TransactionReceiptDTO();
         TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
-        transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
-        transactionReceiptDTO.status = "1";
-        transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+
+        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
+        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
+
+        if(null != transactionInfo) {
+            transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
+            transactionReceiptDTO.status = "0x1";
+            transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+        }
+
+        Protocol.Transaction transaction = wallet.getTransactionById(transactionId);
+        if (null != transaction) {
+            Protocol.Transaction.raw rawData = transaction.getRawData();
+            transactionReceiptDTO.blockHash = "0x" + toHexString(rawData.getRefBlockHash().toByteArray());
+            // transactionReceiptDTO.cumulativeGasUsed = "0x41145";
+            // transactionReceiptDTO.gasUsed = "0x5208";
+            // transactionReceiptDTO.logs = null;
+            // transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            transactionReceiptDTO.transactionHash = transactionHash;
+            // transactionReceiptDTO.transactionIndex = "0x2";
+            boolean selfType = false;
+            rawData.getContractList().stream().forEach(contract -> {
+                try {
+                    JSONObject contractJson = null;
+                    Any contractParameter = contract.getParameter();
+                    switch (contract.getType()) {
+                        case CreateSmartContract:
+                            SmartContractOuterClass.CreateSmartContract deployContract = contractParameter
+                                    .unpack(SmartContractOuterClass.CreateSmartContract.class);
+                            contractJson = JSONObject
+                                    .parseObject(JsonFormat.printToString(deployContract, selfType));
+                            byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
+                            byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
+                            transactionReceiptDTO.from = "0x" + ByteArray.toHexString(ownerAddress);
+                            transactionReceiptDTO.to = "0x" + contractJson.getString("account_address");
+                            transactionReceiptDTO.contractAddress =  "0x" + ByteArray.toHexString(contractAddress);
+                            break;
+                        default:
+                            Class clazz = TransactionFactory.getContract(contract.getType());
+                            if (clazz != null) {
+                                contractJson = JSONObject
+                                        .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
+                            }
+                            transactionReceiptDTO.from = "0x" + contractJson.getString("owner_address");
+                            transactionReceiptDTO.to = "0x" + contractJson.getString("account_address");
+                            break;
+                    }
+
+                /*JSONObject parameter = new JSONObject();
+                parameter.put(VALUE, contractJson);
+                parameter.put("type_url", contract.getParameterOrBuilder().getTypeUrl());
+                JSONObject jsonContract = new JSONObject();
+                jsonContract.put(PARAMETER, parameter);
+                jsonContract.put("type", contract.getType());
+                if (contract.getPermissionId() > 0) {
+                    jsonContract.put(PERMISSION_ID, contract.getPermissionId());
+                }
+                contracts.add(jsonContract);*/
+                } catch (InvalidProtocolBufferException e) {
+                    logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
+                }
+            });
+        }
+
         return transactionReceiptDTO;
     }
 
