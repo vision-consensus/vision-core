@@ -57,7 +57,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_chainId() {
         CommonParameter parameter = Args.getInstance();
-        return "0x" + StringUtil.stringToHexString(String.valueOf(parameter.nodeP2pVersion));
+        return "0x" + Integer.parseInt(String.valueOf(parameter.nodeP2pVersion), 16);
         // return "0x42";
     }
 
