@@ -504,11 +504,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
         ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
         Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
 
-        if(null != transactionInfo) {
-            transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
-            transactionReceiptDTO.status = "0x1";
-            transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+        if (null == transactionInfo) {
+            return null;
         }
+        transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
+        transactionReceiptDTO.status = "0x1";
+        transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
 
         Protocol.Transaction transaction = wallet.getTransactionById(transactionId);
         if (null != transaction) {
@@ -562,6 +563,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                     logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
                 }
             });
+        } else {
+            transactionReceiptDTO.status = "0x0";
         }
 
         return transactionReceiptDTO;
