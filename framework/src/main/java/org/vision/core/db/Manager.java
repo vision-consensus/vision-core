@@ -909,7 +909,6 @@ public class Manager {
       ReceiptCheckErrException, VMIllegalException, ZksnarkException {
     long start = System.currentTimeMillis();
     try (PendingManager pm = new PendingManager(this)) {
-
       if (!block.generatedByMyself) {
         if (!block.validateSignature(chainBaseManager.getDynamicPropertiesStore(),
             chainBaseManager.getAccountStore())) {
