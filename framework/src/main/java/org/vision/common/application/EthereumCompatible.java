@@ -132,7 +132,26 @@ public interface EthereumCompatible {
     }
 
     class TransactionResultDTO {
-
+        public String blockHash;
+        public String blockNumber;
+        public String chainId;
+        public String condition;
+        public String creates;
+        public String from;
+        public String gas;
+        public String gasPrice;
+        public String hash;
+        public String input;
+        public String nonce;
+        public String publicKey;
+        public String r;
+        public String raw;
+        public String s;
+        public String standardV;
+        public String to;
+        public String transactionIndex;
+        public String v;
+        public String value;
     }
 
     class TransactionReceiptDTO{
