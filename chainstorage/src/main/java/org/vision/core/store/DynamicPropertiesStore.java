@@ -273,7 +273,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessPayPerBlock(100000L);//0.1VS
+      this.saveWitnessPayPerBlock(105000L);//0.105000VS
     }
 
     try {
