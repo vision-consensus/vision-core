@@ -15,9 +15,6 @@
 
 package org.vision.core.capsule;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -29,6 +26,9 @@ import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Slf4j(topic = "capsule")
 public class ContractCapsule implements ProtoCapsule<SmartContract> {
@@ -66,6 +66,16 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
       Any any = trx.getRawData().getContract(0).getParameter();
       TriggerSmartContract contractTriggerContract = any.unpack(TriggerSmartContract.class);
       return contractTriggerContract;
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static CreateSmartContract getCreateSmartContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      CreateSmartContract createSmartContract = any.unpack(CreateSmartContract.class);
+      return createSmartContract;
     } catch (InvalidProtocolBufferException e) {
       return null;
     }
