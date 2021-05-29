@@ -1284,18 +1284,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               .setCallValue(0) // transfer to contract
               .setConsumeUserResourcePercent(80)
               .setOriginEntropyLimit(20);
-      if (!ArrayUtils.isEmpty(this.sendAddress)) {
-        smartBuilder.setOriginAddress(ByteString.copyFrom(this.sendAddress));
-      }
-      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
-      // test sign
-      build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
 
-      if (!ArrayUtils.isEmpty(this.data)) {
-        smartBuilder.setBytecode(ByteString.copyFrom(this.data));
-      }
+      smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      // build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+
+      smartBuilder.setBytecode(ByteString.copyFrom(this.data));
       build.setNewContract(smartBuilder);
-
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
 
