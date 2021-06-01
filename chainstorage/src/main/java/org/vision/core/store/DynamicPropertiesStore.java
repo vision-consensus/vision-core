@@ -2162,6 +2162,25 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElseThrow(
             () -> new IllegalArgumentException("not found ALLOW_BLACKHOLE_OPTIMIZATION"));
   }
+
+    public void addTotalBonusWeight(long amount) {
+      long totalBonusWeight = getTotalBonusWeight();
+      totalBonusWeight += amount;
+      saveTotalBonusWeight(totalBonusWeight);
+    }
+
+  private void saveTotalBonusWeight(long totalBonusWeight) {
+    this.put(DynamicResourceProperties.TOTAL_BONUS_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalBonusWeight)));
+  }
+
+  private long getTotalBonusWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_BONUS_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
@@ -2189,6 +2208,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO =
         "ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"
             .getBytes();
+    private static final byte[] TOTAL_BONUS_WEIGHT = "TOTAL_BONUS_WEIGHT".getBytes();
+
   }
 
 }

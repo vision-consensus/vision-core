@@ -98,6 +98,13 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
+      case BONUS:
+        long newFrozenBalanceForBonus =
+                frozenBalance + accountCapsule.getAccountResource()
+                        .getFrozenBalanceForBonus().getFrozenBalance();
+        accountCapsule.setFrozenForBonus(newFrozenBalanceForBonus, expireTime);
+        dynamicStore.addTotalBonusWeight(frozenBalance / VS_PRECISION);
+        break;
       default:
         logger.debug("Resource Code Error.");
     }
@@ -184,6 +191,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
       case PHOTON:
         break;
       case ENTROPY:
+        break;
+      case BONUS:
         break;
       default:
         throw new ContractValidateException(
