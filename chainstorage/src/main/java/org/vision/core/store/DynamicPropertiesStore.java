@@ -927,7 +927,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(WITNESS_100_PAY_PER_BLOCK))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(16000000L);
+        .orElse(1500000L);
   }
 
   public void saveWitnessStandbyAllowance(long allowance) {
