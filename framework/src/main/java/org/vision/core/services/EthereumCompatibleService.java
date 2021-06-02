@@ -279,8 +279,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
             Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
             rawBuilder.setFeeLimit(0);
             txBuilder.setRawData(rawBuilder);
-            Protocol.Transaction trx = wallet
+            /*Protocol.Transaction trx = wallet
                     .triggerConstantContract(build.build(), new TransactionCapsule(txBuilder.build()),
+                            trxExtBuilder,
+                            retBuilder);*/
+            Protocol.Transaction trx = wallet
+                    .triggerContract(build.build(), new TransactionCapsule(txBuilder.build()),
                             trxExtBuilder,
                             retBuilder);
             trxExtBuilder.setTransaction(trx);
@@ -357,7 +361,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     private void transferBlock2Ether(BlockResult blockResult, Protocol.Block reply,
                                      Boolean fullTransactionObjects) throws ItemNotFoundException {
-        Protocol.BlockHeader visionBlockHeader = reply.getBlockHeader();
 
         Protocol.BlockHeader blockHeader = reply.getBlockHeader();
         org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
@@ -527,22 +530,33 @@ public class EthereumCompatibleService implements EthereumCompatible {
         if (null != transactionInfo) {
             transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
             transactionReceiptDTO.status = "0x1";
-            transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+            // transactionReceiptDTO.root = "0x2b5ca80d30787fcc6c1c5bc221f3f0a08fd676480c5803b5c472a83acfcb0345";
+            transactionReceiptDTO.gasUsed = "0x" + Long.toHexString(transactionInfo.getFee());
+
+            transactionReceiptDTO.transactionIndex = "0x2";
+
+            Protocol.Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
+            Protocol.BlockHeader blockHeader = block.getBlockHeader();
+            org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
+            BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
+            BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
+            transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
+            transactionReceiptDTO.root = toHexString(rawData.getTxTrieRoot().toByteArray());
         } else {
             transactionReceiptDTO.status = "0x0";
+            transactionReceiptDTO.root = null;
         }
 
 
         Protocol.Transaction transaction = wallet.getTransactionById(transactionId);
         if (null != transaction) {
             Protocol.Transaction.raw rawData = transaction.getRawData();
-            transactionReceiptDTO.blockHash = "0x" + toHexString(rawData.getRefBlockHash().toByteArray());
-            // transactionReceiptDTO.cumulativeGasUsed = "0x41145";
+            transactionReceiptDTO.cumulativeGasUsed = "0x41145";
             // transactionReceiptDTO.gasUsed = "0x5208";
-            // transactionReceiptDTO.logs = null;
-            // transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            transactionReceiptDTO.logs = null;
+            transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             transactionReceiptDTO.transactionHash = transactionHash;
-            // transactionReceiptDTO.transactionIndex = "0x2";
+
             boolean selfType = false;
             rawData.getContractList().stream().forEach(contract -> {
                 try {
@@ -556,9 +570,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                     .parseObject(JsonFormat.printToString(deployContract, selfType));
                             byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
                             byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                            transactionReceiptDTO.from = "0x" + ByteArray.toHexString(ownerAddress);
-                            transactionReceiptDTO.to = "0x" + contractJson.getString("account_address");
-                            transactionReceiptDTO.contractAddress =  "0x" + ByteArray.toHexString(contractAddress);
+                            transactionReceiptDTO.from = "0x" + getAddrNo46(ByteArray.toHexString(ownerAddress));
+                            transactionReceiptDTO.contractAddress =  "0x" + getAddrNo46(ByteArray.toHexString(contractAddress));
                             break;
                         default:
                             Class clazz = TransactionFactory.getContract(contract.getType());
@@ -566,21 +579,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                 contractJson = JSONObject
                                         .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
                             }
-                            transactionReceiptDTO.from = "0x" + contractJson.getString("owner_address");
-                            transactionReceiptDTO.to = "0x" + contractJson.getString("account_address");
+                            transactionReceiptDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
+                            transactionReceiptDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
                             break;
                     }
 
-                /*JSONObject parameter = new JSONObject();
-                parameter.put(VALUE, contractJson);
-                parameter.put("type_url", contract.getParameterOrBuilder().getTypeUrl());
-                JSONObject jsonContract = new JSONObject();
-                jsonContract.put(PARAMETER, parameter);
-                jsonContract.put("type", contract.getType());
-                if (contract.getPermissionId() > 0) {
-                    jsonContract.put(PERMISSION_ID, contract.getPermissionId());
-                }
-                contracts.add(jsonContract);*/
                 } catch (InvalidProtocolBufferException e) {
                     logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
                 }
@@ -588,6 +591,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
         } 
 
         return transactionReceiptDTO;
+    }
+
+    private String getAddrNo46(String addr) {
+        return StringUtils.isNotBlank(addr) && addr.startsWith("46") ? addr.substring(2) : addr;
+        // return addr;
     }
 
     private String toHexString(byte[] data) {

@@ -63,6 +63,7 @@ import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
+import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
@@ -1279,18 +1280,19 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       CreateSmartContract.Builder build = CreateSmartContract.newBuilder();
 
       SmartContract.Builder smartBuilder = SmartContract.newBuilder();
+      ABI.Builder abiBuilder = ABI.newBuilder();
       smartBuilder
-              // .setAbi(abiBuilder)
+              .setAbi(abiBuilder)
+              .setBytecode(ByteString.copyFrom(this.data))
               .setCallValue(0) // transfer to contract
               .setConsumeUserResourcePercent(80)
               .setOriginEntropyLimit(20);
-
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      // build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
 
-      smartBuilder.setBytecode(ByteString.copyFrom(this.data));
       build.setNewContract(smartBuilder);
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      build.setCallTokenValue(0l); // default is 0l,this can drop
+      build.setTokenId(0l); // default is 0l,this can drop
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
 
