@@ -205,6 +205,9 @@ message Account {
     // the frozen balance for bonus
     Frozen frozen_balance_for_bonus = 9;
 
+    // the frozen balance for mortgage
+    Frozen frozen_balance_for_mortgage = 10;
+
   }
   AccountResource account_resource = 26;
   bytes codeHash = 30;
