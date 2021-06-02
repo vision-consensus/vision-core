@@ -34,6 +34,8 @@ import com.google.common.collect.Range;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.ProtocolStringList;
+
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -3709,6 +3711,24 @@ public class Wallet {
     if (accountIdentifier.getAddress().isEmpty()) {
       throw new IllegalArgumentException("account_identifier address is null");
     }
+  }
+
+
+  /**
+   * Get voting pledge rate
+   */
+  public double votingPledgeRate() {
+    long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
+    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
+    long totalEntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
+    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
+    long totalBonusWeight = chainBaseManager.getDynamicPropertiesStore().getTotalBonusWeight();
+    BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
+    long voteSum = chainBaseManager.getMortgageService().getVoteSum();
+    BigDecimal bigVoteSum = new BigDecimal(voteSum);
+    //long totalAssets = consensusDelegate.getDelegationStore().getTotalAssets();
+    //BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
+    return 1;
   }
 }
 

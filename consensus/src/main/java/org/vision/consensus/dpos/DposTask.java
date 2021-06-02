@@ -115,7 +115,7 @@ public class DposTask {
               .getInstance().isECKeyCryptoEngine(), raw.toByteArray())),
           ByteArray.toHexString(raw.getParentHash().toByteArray()));
     }
-
+    //consensusDelegate.getDelegationStore().addTotalAssets();
     return State.OK;
   }
 

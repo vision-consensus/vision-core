@@ -49,6 +49,26 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
+  public void addTotalAssets(long assets, byte[] address, long value) {
+    byte[] key = buildTotalAssetsKey(assets, address);
+    BytesCapsule bytesCapsule = get(key);
+    if (bytesCapsule == null) {
+      put(key, new BytesCapsule(ByteArray.fromLong(value)));
+    } else {
+      put(key, new BytesCapsule(ByteArray
+              .fromLong(ByteArray.toLong(bytesCapsule.getData()) + value)));
+    }
+  }
+
+  public long getTotalAssets(long assets, byte[] address) {
+    BytesCapsule bytesCapsule = get(buildTotalAssetsKey(assets, address));
+    if (bytesCapsule == null) {
+      return 0L;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
   public void setBeginCycle(byte[] address, long number) {
     put(address, new BytesCapsule(ByteArray.fromLong(number)));
   }
@@ -120,6 +140,10 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
 
   private byte[] buildRewardKey(long cycle, byte[] address) {
     return (cycle + "-" + Hex.toHexString(address) + "-reward").getBytes();
+  }
+
+  private byte[] buildTotalAssetsKey(long assets, byte[] address) {
+    return (assets + "-" + Hex.toHexString(address) + "-assets").getBytes();
   }
 
   private byte[] buildAccountVoteKey(long cycle, byte[] address) {

@@ -232,4 +232,20 @@ public class MortgageService {
     list.sort(Comparator.comparingLong((ByteString b) -> getWitnessByAddress(b).getVoteCount())
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
   }
+
+  public long getVoteSum() {
+    List<ByteString> witnessAddressList = new ArrayList<>();
+    for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
+      witnessAddressList.add(witnessCapsule.getAddress());
+    }
+    sortWitness(witnessAddressList);
+    if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
+      witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
+    }
+    long voteSum = 0;
+    for (ByteString b : witnessAddressList) {
+      voteSum += getWitnessByAddress(b).getVoteCount();
+    }
+    return voteSum;
+  }
 }
