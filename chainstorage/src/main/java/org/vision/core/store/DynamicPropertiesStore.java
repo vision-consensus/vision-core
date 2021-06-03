@@ -292,7 +292,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAccountUpgradeCost();
     } catch (IllegalArgumentException e) {
-      this.saveAccountUpgradeCost(9_999_000_000L);
+      this.saveAccountUpgradeCost(2_000_000_000L); // burn vs 9_999_000_000L --> 2_000_000_000L
     }
 
     try {
@@ -341,6 +341,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getTotalEntropyWeight();
     } catch (IllegalArgumentException e) {
       this.saveTotalEntropyWeight(0L);
+    }
+
+    try {
+      this.getTotalMortgageWeight();
+    } catch (IllegalArgumentException e) {
+      this.saveTotalMortgageWeight(0L);
     }
 
     try {
@@ -1044,7 +1050,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_MORTGAGE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(0L);
+            .orElseThrow(
+            () -> new IllegalArgumentException("not found TOTAL_MORTGAGE_WEIGHT"));
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
