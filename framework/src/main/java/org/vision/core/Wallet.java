@@ -3722,8 +3722,8 @@ public class Wallet {
     BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
     long totalEntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
     BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
-    long totalBonusWeight = chainBaseManager.getDynamicPropertiesStore().getTotalBonusWeight();
-    BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
+    long totalMortgageWeight = chainBaseManager.getDynamicPropertiesStore().getTotalMortgageWeight();
+    BigDecimal bigTotalMortgageWeight = new BigDecimal(totalMortgageWeight);
     long voteSum = chainBaseManager.getMortgageService().getVoteSum();
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     //long totalAssets = consensusDelegate.getDelegationStore().getTotalAssets();
