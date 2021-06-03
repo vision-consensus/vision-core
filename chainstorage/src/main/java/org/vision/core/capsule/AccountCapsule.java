@@ -19,23 +19,20 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.protos.Protocol.Account;
+import org.vision.protos.Protocol.*;
 import org.vision.protos.Protocol.Account.AccountResource;
 import org.vision.protos.Protocol.Account.Builder;
 import org.vision.protos.Protocol.Account.Frozen;
-import org.vision.protos.Protocol.AccountType;
-import org.vision.protos.Protocol.Key;
-import org.vision.protos.Protocol.Permission;
 import org.vision.protos.Protocol.Permission.PermissionType;
-import org.vision.protos.Protocol.Vote;
 import org.vision.protos.contract.AccountContract.AccountCreateContract;
 import org.vision.protos.contract.AccountContract.AccountUpdateContract;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j(topic = "capsule")
 public class AccountCapsule implements ProtoCapsule<Account>, Comparable<AccountCapsule> {
@@ -1023,4 +1020,23 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
             .setAccountResource(newAccountResource)
             .build();
   }
+
+  public void setFrozenForMortgage(long newFrozenBalanceForMortgage, long time) {
+    Frozen newFrozenForMortgage = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForMortgage)
+            .setExpireTime(time)
+            .build();
+
+    AccountResource newAccountResource = getAccountResource().toBuilder()
+            .setFrozenBalanceForMortgage(newFrozenForMortgage).build();
+
+    this.account = this.account.toBuilder()
+            .setAccountResource(newAccountResource)
+            .build();
+  }
+
+  public long getMortgageFrozenBalance() {
+    return this.account.getAccountResource().getFrozenBalanceForMortgage().getFrozenBalance();
+  }
+
 }

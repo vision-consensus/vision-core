@@ -1,10 +1,6 @@
 package org.vision.core.store;
 
 import com.google.protobuf.ByteString;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -18,6 +14,10 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Slf4j(topic = "DB")
 @Component
@@ -1035,6 +1035,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
   }
 
+  public void saveTotalMortgageWeight(long totalMortgageWeight) {
+    this.put(DynamicResourceProperties.TOTAL_MORTGAGE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalMortgageWeight)));
+  }
+
+  public long getTotalMortgageWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_MORTGAGE_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
     this.put(DynamicResourceProperties.TOTAL_PHOTON_LIMIT,
         new BytesCapsule(ByteArray.fromLong(totalPhotonLimit)));
@@ -2006,6 +2018,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     saveTotalEntropyWeight(totalEntropyWeight);
   }
 
+  //The unit is vs
+  public void addTotalMortgageWeight(long amount) {
+    long totalMortgageWeight = getTotalMortgageWeight();
+    totalMortgageWeight += amount;
+    saveTotalMortgageWeight(totalMortgageWeight);
+  }
+
   public void addTotalCreateAccountCost(long fee) {
     long newValue = getTotalCreateAccountCost() + fee;
     saveTotalCreateAccountFee(newValue);
@@ -2202,6 +2221,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ENTROPY_WEIGHT = "TOTAL_ENTROPY_WEIGHT".getBytes();
     private static final byte[] TOTAL_ENTROPY_LIMIT = "TOTAL_ENTROPY_LIMIT".getBytes();
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
+
+    private static final byte[] TOTAL_MORTGAGE_WEIGHT = "TOTAL_MORTGAGE_WEIGHT".getBytes();
+
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();
