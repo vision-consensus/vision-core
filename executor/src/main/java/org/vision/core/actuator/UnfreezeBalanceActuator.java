@@ -197,6 +197,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
+        case BONUS:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForBonus()
+                  .getFrozenBalance();
+          AccountResource newBonus = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForBonus().build();
+          accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+                  .setBalance(oldBalance + unfreezeBalance)
+                  .setAccountResource(newBonus).build());
+          break;
         default:
           //this should never happen
           break;
@@ -212,6 +221,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case ENTROPY:
         dynamicStore
             .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
+        break;
+      case BONUS:
+        dynamicStore.addTotalBonusWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -394,6 +406,16 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           }
           if (frozenBalanceForEntropy.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
+          }
+          break;
+        case BONUS:
+          Frozen frozenBalanceForBonus = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForBonus();
+          if (frozenBalanceForBonus.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(Bonus)");
+          }
+          if (frozenBalanceForBonus.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(Bonus).");
           }
 
           break;
