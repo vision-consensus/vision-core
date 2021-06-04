@@ -65,6 +65,8 @@ public class Parameter {
     public static final int BLOCK_VERSION = 20;
     public static final long FROZEN_PERIOD = 86_400_000L;
     public static final long VS_PRECISION = 1000_000L;
+    public static final long MORTGAGE_VS_THRESHOLD = 5000*1000_000L;
+    public static final int MIN_MORTGAGE_VOTE_PROPORTION = 75; // 7.5%
   }
 
   public class NodeConstant {

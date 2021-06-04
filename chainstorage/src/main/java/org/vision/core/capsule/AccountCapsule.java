@@ -34,6 +34,8 @@ import org.vision.protos.contract.AccountContract.AccountUpdateContract;
 import java.util.List;
 import java.util.Map;
 
+import static org.vision.core.config.Parameter.ChainConstant.MORTGAGE_VS_THRESHOLD;
+
 @Slf4j(topic = "capsule")
 public class AccountCapsule implements ProtoCapsule<Account>, Comparable<AccountCapsule> {
 
@@ -1037,6 +1039,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
   public long getMortgageFrozenBalance() {
     return this.account.getAccountResource().getFrozenBalanceForMortgage().getFrozenBalance();
+  }
+
+  // check: whether the mortgage balance is greater than MORTGAGE_VS_THRESHOLD
+  public boolean checkMortgageFrozenBalance(){
+    if (getMortgageFrozenBalance() >= MORTGAGE_VS_THRESHOLD){
+      return true;
+    }
+    return false;
   }
 
 }
