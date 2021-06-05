@@ -3,6 +3,7 @@ package org.vision.consensus.dpos;
 import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 
 import com.google.protobuf.ByteString;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -16,7 +17,10 @@ import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.consensus.base.State;
 import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.service.MortgageService;
 import org.vision.protos.Protocol.BlockHeader;
+
+import java.math.BigDecimal;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -33,6 +37,10 @@ public class DposTask {
 
   @Setter
   private DposService dposService;
+
+  @Getter
+  @Autowired
+  private MortgageService mortgageService;
 
   private Thread produceThread;
 
@@ -114,8 +122,21 @@ public class DposTask {
           new Sha256Hash(raw.getNumber(), Sha256Hash.of(CommonParameter
               .getInstance().isECKeyCryptoEngine(), raw.toByteArray())),
           ByteArray.toHexString(raw.getParentHash().toByteArray()));
+      if ((raw.getNumber()-300000) % 864000 == 0) {
+        long amount = 0;
+        if (raw.getNumber()==300000) {
+          amount = new Double(300000 * 1.65).longValue();
+          consensusDelegate.getDynamicPropertiesStore().addTotalAssets(amount);
+        } else {
+          double expansionRate = consensusDelegate.getDynamicPropertiesStore().getExpansionRate();
+          BigDecimal bigExpansionRate = new BigDecimal(expansionRate);
+          amount = (((((bigExpansionRate.divide(new BigDecimal(12))).divide(new BigDecimal(100)))
+                  .add(new BigDecimal(1))).multiply(new BigDecimal(1.5)))
+                  .add(new BigDecimal(0.15))).multiply(new BigDecimal(864000)).longValue();
+          consensusDelegate.getDynamicPropertiesStore().addTotalAssets(amount);
+        }
+      }
     }
-    //consensusDelegate.getDelegationStore().addTotalAssets();
     return State.OK;
   }
 

@@ -14,7 +14,9 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
+import org.vision.core.service.MortgageService;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -156,6 +158,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
   private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
+
+  @Autowired
+  private MortgageService mortgageService;
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -347,6 +352,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getTotalMortgageWeight();
     } catch (IllegalArgumentException e) {
       this.saveTotalMortgageWeight(0L);
+    }
+
+    try {
+      this.getTotalAssets();
+    } catch (IllegalArgumentException e) {
+      this.saveTotalAssets(0L);
     }
 
     try {
@@ -1052,6 +1063,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElseThrow(
             () -> new IllegalArgumentException("not found TOTAL_MORTGAGE_WEIGHT"));
+  }
+
+  public void saveTotalAssets(long totalAssets) {
+    this.put(DynamicResourceProperties.TOTAL_ASSETS,
+            new BytesCapsule(ByteArray.fromLong(totalAssets)));
+  }
+
+  public long getTotalAssets() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ASSETS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found TOTAL_ASSETS"));
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2032,6 +2056,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     saveTotalMortgageWeight(totalMortgageWeight);
   }
 
+  public void addTotalAssets(long amount) {
+    long totalAssets = getTotalAssets();
+    totalAssets += amount;
+    saveTotalAssets(totalAssets);
+  }
+
   public void addTotalCreateAccountCost(long fee) {
     long newValue = getTotalCreateAccountCost() + fee;
     saveTotalCreateAccountFee(newValue);
@@ -2207,6 +2237,38 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  /**
+   * Get voting pledge rate
+   */
+  public int getVotingPledgeRate() {
+    long totalPhotonWeight = this.getTotalPhotonWeight();
+    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
+    long totalEntropyWeight = this.getTotalEntropyWeight();
+    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
+    long totalMortgageWeight = this.getTotalMortgageWeight();
+    BigDecimal bigTotalMortgageWeight = new BigDecimal(totalMortgageWeight);
+    long voteSum = mortgageService.getVoteSum();
+    BigDecimal bigVoteSum = new BigDecimal(voteSum);
+    long totalAssets = this.getTotalAssets();
+    BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
+    BigDecimal pledgeAmount= bigTotalMortgageWeight.add(bigVoteSum);
+    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
+    return pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).intValue();
+  }
+
+  /**
+   * get Expansion Rate
+   */
+  public double getExpansionRate() {
+    int votingPledgeRate = getVotingPledgeRate();
+    if (67 <= votingPledgeRate) {
+      return 6.89;
+    } else {
+      return 23.22;
+    }
+  }
+
+
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
@@ -2230,6 +2292,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
 
     private static final byte[] TOTAL_MORTGAGE_WEIGHT = "TOTAL_MORTGAGE_WEIGHT".getBytes();
+    private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
 
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
