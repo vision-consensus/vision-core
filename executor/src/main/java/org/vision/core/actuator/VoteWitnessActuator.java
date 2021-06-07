@@ -168,9 +168,22 @@ public class VoteWitnessActuator extends AbstractActuator {
     voteContract.getVotesList().forEach(vote -> {
       logger.debug("countVoteAccount, address[{}]",
           ByteArray.toHexString(vote.getVoteAddress().toByteArray()));
+      // get freeze and compute a new votes
+      long interval1 = LongMath.checkedMultiply(1000, VS_PRECISION);
+      long interval2 = LongMath.checkedMultiply(10000, VS_PRECISION);
+      long interval3 = LongMath.checkedMultiply(100000, VS_PRECISION);
+      long visionPower = accountCapsule.getVisionPower();
+      long voteCount = vote.getVoteCount();
+      if (visionPower >= interval3) {
+        voteCount = (long) (voteCount * 1.16);
+      } else if (visionPower >= interval2) {
+        voteCount = (long) (voteCount * 1.13);
+      } else if (visionPower >= interval1) {
+        voteCount = (long) (voteCount * 1.08);
+      }
+      votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount);
+      accountCapsule.addVotes(vote.getVoteAddress(), voteCount);
 
-      votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount());
-      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
     });
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
