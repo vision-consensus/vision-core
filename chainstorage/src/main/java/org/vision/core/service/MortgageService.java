@@ -248,4 +248,9 @@ public class MortgageService {
     }
     return voteSum;
   }
+
+  private void setExpansionRate() {
+
+  }
+
 }
