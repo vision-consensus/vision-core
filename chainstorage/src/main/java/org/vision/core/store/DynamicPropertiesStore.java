@@ -2268,6 +2268,14 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
   }
 
+  public long getLiquidMintPayPerBlock() {
+    return 0L;
+  }
+
+  public boolean supportLiquidMintBonus() {
+    return true;
+  }
+
 
   private static class DynamicResourceProperties {
 

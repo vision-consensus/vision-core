@@ -1411,6 +1411,10 @@ public class Manager {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlock());
       mortgageService.payStandbyWitness();
+      //liquid mint
+      if(chainBaseManager.getDynamicPropertiesStore().supportLiquidMintBonus()){
+        mortgageService.payLiquidMintReward(chainBaseManager.getDynamicPropertiesStore().getLiquidMintPayPerBlock());
+      }
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
                 .floorDiv(chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),

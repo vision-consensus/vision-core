@@ -92,6 +92,11 @@ public class MortgageService {
     adjustAllowance(witnessAddress, brokerageAmount);
   }
 
+  public void payLiquidMintReward(long value) {
+    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    delegationStore.addLiquidMintReward(cycle, value);
+  }
+
   public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
@@ -187,6 +192,7 @@ public class MortgageService {
       if (totalVote == DelegationStore.REMARK || totalVote == 0) {
         continue;
       }
+
       long userVote = vote.getVoteCount();
       double voteRate = (double) userVote / totalVote;
       reward += voteRate * totalReward;
@@ -194,7 +200,19 @@ public class MortgageService {
           Hex.toHexString(accountCapsule.getAddress().toByteArray()), Hex.toHexString(srAddress),
           userVote, totalVote, totalReward, reward);
     }
+    //with liquid mint reward
+    reward += computeLiquidMintReward(cycle, accountCapsule);
     return reward;
+  }
+
+  private long computeLiquidMintReward(long cycle, AccountCapsule accountCapsule) {
+    long totalFreeze = delegationStore.getTotalFreezeBalanceForBonus(cycle);
+    if(totalFreeze==0L){
+      return 0;
+    }
+    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForBonus().getFrozenBalance();
+    long totalReward = delegationStore.getLiquidMintReward(cycle);
+    return totalReward * accountFreeze / totalFreeze;
   }
 
   public WitnessCapsule getWitnessByAddress(ByteString address) {
@@ -248,4 +266,6 @@ public class MortgageService {
     }
     return voteSum;
   }
+
+
 }

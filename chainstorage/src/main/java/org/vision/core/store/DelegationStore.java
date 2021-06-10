@@ -49,6 +49,26 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
+  public void addLiquidMintReward(long cycle, long value) {
+    byte[] key = buildLiquidMintRewordKey(cycle);
+    BytesCapsule bytesCapsule = get(key);
+    if (bytesCapsule == null) {
+      put(key, new BytesCapsule(ByteArray.fromLong(value)));
+    } else {
+      put(key, new BytesCapsule(ByteArray
+              .fromLong(ByteArray.toLong(bytesCapsule.getData()) + value)));
+    }
+  }
+
+  public long getLiquidMintReward(long cycle) {
+    BytesCapsule bytesCapsule = get(buildLiquidMintRewordKey(cycle));
+    if (bytesCapsule == null) {
+      return 0L;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
   public void setBeginCycle(byte[] address, long number) {
     put(address, new BytesCapsule(ByteArray.fromLong(number)));
   }
@@ -93,6 +113,19 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
+  public void setTotalFreezeBalanceForBonus(long cycle, long balance) {
+    put(buildLiquidMintFreezeBalanceKey(cycle), new BytesCapsule(ByteArray.fromLong(balance)));
+  }
+
+  public long getTotalFreezeBalanceForBonus(long cycle) {
+    BytesCapsule bytesCapsule = get(buildLiquidMintFreezeBalanceKey(cycle));
+    if (bytesCapsule == null) {
+      return 0L;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
   public void setBrokerage(long cycle, byte[] address, int brokerage) {
     put(buildBrokerageKey(cycle, address), new BytesCapsule(ByteArray.fromInt(brokerage)));
   }
@@ -134,4 +167,11 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     return (cycle + "-" + Hex.toHexString(address) + "-brokerage").getBytes();
   }
 
+  private byte[] buildLiquidMintRewordKey(long cycle) {
+    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-liquid-mint-reward").getBytes();
+  }
+
+  private byte[] buildLiquidMintFreezeBalanceKey(long cycle) {
+    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-liquid-mint-freeze-balance").getBytes();
+  }
 }
