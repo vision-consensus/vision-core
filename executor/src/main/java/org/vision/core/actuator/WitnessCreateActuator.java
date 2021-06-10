@@ -1,9 +1,7 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.DecodeUtil;
@@ -21,6 +19,10 @@ import org.vision.core.utils.TransactionUtil;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
+
+import java.util.Objects;
+
+import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
 
 @Slf4j(topic = "actuator")
 public class WitnessCreateActuator extends AbstractActuator {
@@ -144,7 +146,8 @@ public class WitnessCreateActuator extends AbstractActuator {
     if (dynamicStore.supportBlackHoleOptimization()) {
       dynamicStore.burnVs(cost);
     } else {
-      Commons.adjustBalance(accountStore, accountStore.getSingularity(), +cost);
+//      Commons.adjustBalance(accountStore, accountStore.getSingularity(), +cost);
+      Commons.adjustBalance(accountStore, accountStore.getAvalon(), +cost);
     }
     dynamicStore.addTotalCreateWitnessCost(cost);
   }

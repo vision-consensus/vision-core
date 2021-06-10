@@ -122,7 +122,10 @@ public class DposTask {
           new Sha256Hash(raw.getNumber(), Sha256Hash.of(CommonParameter
               .getInstance().isECKeyCryptoEngine(), raw.toByteArray())),
           ByteArray.toHexString(raw.getParentHash().toByteArray()));
-      if ((raw.getNumber()-300000) % 864000 == 0) {
+      long witnessPayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitnessPayPerBlock();
+      long witness100PayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitness100PayPerBlock();
+      consensusDelegate.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock);
+      /*if ((raw.getNumber()-300000) % 864000 == 0) {
         long amount = 0;
         if (raw.getNumber()==300000) {
           amount = new Double(300000 * 1.65).longValue();
@@ -135,7 +138,7 @@ public class DposTask {
                   .add(new BigDecimal(0.15))).multiply(new BigDecimal(864000)).longValue();
           consensusDelegate.getDynamicPropertiesStore().addTotalAssets(amount);
         }
-      }
+      }*/
     }
     return State.OK;
   }

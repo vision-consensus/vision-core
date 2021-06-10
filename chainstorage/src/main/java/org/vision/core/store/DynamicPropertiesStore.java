@@ -16,7 +16,6 @@ import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.service.MortgageService;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -158,9 +157,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
   private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
-
-  @Autowired
-  private MortgageService mortgageService;
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -1076,6 +1072,32 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found TOTAL_ASSETS"));
+  }
+
+  public void savePledgeRate(long pledgeRate) {
+    this.put(DynamicResourceProperties.PLEDGE_RATE,
+            new BytesCapsule(ByteArray.fromLong(pledgeRate)));
+  }
+
+  public long getPledgeRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PLEDGE_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found PLEDGE_RATE"));
+  }
+
+  public void saveExpansionRate(long expansionRate) {
+    this.put(DynamicResourceProperties.EXPANSION_RATE,
+            new BytesCapsule(ByteArray.fromLong(expansionRate)));
+  }
+
+  public long getExpansionRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.EXPANSION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found EXPANSION_RATE"));
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2240,7 +2262,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   /**
    * Get voting pledge rate
    */
-  public int getVotingPledgeRate() {
+  /*public int getVotingPledgeRate() {
     long totalPhotonWeight = this.getTotalPhotonWeight();
     BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
     long totalEntropyWeight = this.getTotalEntropyWeight();
@@ -2254,11 +2276,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     BigDecimal pledgeAmount= bigTotalMortgageWeight.add(bigVoteSum);
     BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
     return pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).intValue();
-  }
+  }*/
 
   /**
    * get Expansion Rate
-   */
+   *//*
   public double getExpansionRate() {
     int votingPledgeRate = getVotingPledgeRate();
     if (67 <= votingPledgeRate) {
@@ -2266,7 +2288,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     } else {
       return 23.22;
     }
-  }
+  }*/
 
   public long getLiquidMintPayPerBlock() {
     return 0L;
@@ -2301,6 +2323,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
     private static final byte[] TOTAL_MORTGAGE_WEIGHT = "TOTAL_MORTGAGE_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
+    private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
+    private static final byte[] EXPANSION_RATE = "EXPANSION_RATE".getBytes();
 
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
