@@ -199,7 +199,19 @@ public class MortgageService {
           Hex.toHexString(accountCapsule.getAddress().toByteArray()), Hex.toHexString(srAddress),
           userVote, totalVote, totalReward, reward);
     }
+    //with liquid mint reward
+    reward += computeLiquidMintReward(cycle, accountCapsule);
     return reward;
+  }
+
+  private long computeLiquidMintReward(long cycle, AccountCapsule accountCapsule) {
+    long totalFreeze = delegationStore.getTotalFreezeBalanceForBonus(cycle);
+    if(totalFreeze==0L){
+      return 0;
+    }
+    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForBonus().getFrozenBalance();
+    long totalReward = delegationStore.getLiquidMintReward(cycle);
+    return totalReward * accountFreeze / totalFreeze;
   }
 
   public WitnessCapsule getWitnessByAddress(ByteString address) {
