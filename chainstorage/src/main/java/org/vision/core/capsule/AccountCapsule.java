@@ -420,6 +420,15 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .build();
   }
 
+  /**
+   * set votes.
+   */
+  public void addVotes(ByteString voteAddress, long voteAdd, long voteAddFirst) {
+    this.account = this.account.toBuilder()
+            .addVotes(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteAdd).setVoteCountFirst(voteAddFirst).build())
+            .build();
+  }
+
   public void clearAssetV2() {
     this.account = this.account.toBuilder()
         .clearAssetV2()

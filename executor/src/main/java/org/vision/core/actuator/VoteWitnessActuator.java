@@ -1,16 +1,8 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
-
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.Iterator;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
@@ -28,6 +20,13 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
+
+import java.util.Iterator;
+import java.util.Objects;
+
+import static org.vision.core.actuator.ActuatorConstant.*;
+import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
@@ -181,8 +180,8 @@ public class VoteWitnessActuator extends AbstractActuator {
       } else if (visionPower >= interval1) {
         voteCount = (long) (voteCount * 1.08);
       }
-      votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount);
-      accountCapsule.addVotes(vote.getVoteAddress(), voteCount);
+      votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());
+      accountCapsule.addVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());
 
     });
 

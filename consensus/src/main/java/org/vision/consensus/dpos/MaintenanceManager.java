@@ -1,14 +1,7 @@
 package org.vision.consensus.dpos;
 
-import static org.vision.common.utils.WalletUtil.getAddressStringList;
-
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +18,14 @@ import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static org.vision.common.utils.WalletUtil.getAddressStringList;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -110,7 +111,14 @@ public class MaintenanceManager {
           logger.warn("Witness account is null. address is {}", Hex.toHexString(witnessAddress));
           return;
         }
-        witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
+
+        long voteCounts = witnessCapsule.getVoteCount() + voteCount;
+        long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - 5000)/0.065);
+        if (voteCounts > maxVoteCounts) {
+          voteCounts = maxVoteCounts;
+        }
+        witnessCapsule.setVoteCount(voteCounts);
+        // witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
         consensusDelegate.saveWitness(witnessCapsule);
         logger.info("address is {} , countVote is {}", witnessCapsule.createReadableString(),
             witnessCapsule.getVoteCount());
