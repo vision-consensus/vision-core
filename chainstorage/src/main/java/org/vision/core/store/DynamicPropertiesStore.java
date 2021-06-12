@@ -363,6 +363,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
+      this.getPledgeRate();
+    } catch (IllegalArgumentException e) {
+      this.savePledgeRate(0L);
+    }
+
+    try {
+        this.getExpansionRate();
+    } catch (IllegalArgumentException e) {
+          this.saveExpansionRate(0L);
+    }
+
+    try {
       this.getAllowAdaptiveEntropy();
     } catch (IllegalArgumentException e) {
       this.saveAllowAdaptiveEntropy(CommonParameter.getInstance()
