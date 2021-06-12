@@ -15,10 +15,12 @@ import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +44,9 @@ public class MaintenanceManager {
 
   @Setter
   private PbftManager pbftManager;
+
+  @Autowired
+  private MortgageService mortgageService;
 
   @Getter
   private final List<ByteString> beforeWitness = new ArrayList<>();
@@ -160,6 +165,7 @@ public class MaintenanceManager {
         delegationStore.setTotalFreezeBalanceForBonus(nextCycle-1, consensusDelegate.getDynamicPropertiesStore().getTotalBonusWeight());
       });
     }
+    calculationCyclePledgeRate();
   }
 
   private Map<ByteString, Long> countVote(VotesStore votesStore) {
@@ -204,6 +210,25 @@ public class MaintenanceManager {
       consensusDelegate.saveWitness(witnessCapsule);
     });
     consensusDelegate.saveRemoveThePowerOfTheGr(-1);
+  }
+
+  private void calculationCyclePledgeRate() {
+    DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long totalPhotonWeight = dynamicPropertiesStore.getTotalPhotonWeight();
+    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
+    long totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
+    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
+    long totalMortgageWeight = dynamicPropertiesStore.getTotalMortgageWeight();
+    BigDecimal bigTotalMortgageWeight = new BigDecimal(totalMortgageWeight);
+    long voteSum = mortgageService.getVoteSum();
+    BigDecimal bigVoteSum = new BigDecimal(voteSum);
+    long totalAssets = dynamicPropertiesStore.getTotalAssets();
+    BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
+    BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalMortgageWeight);
+    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
+    long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
+    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
 }

@@ -49,6 +49,26 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
+  public void addCyclePledgeRate(long cycle, long value) {
+    byte[] key = buildCyclePledgeRateKey(cycle);
+    BytesCapsule bytesCapsule = get(key);
+    if (bytesCapsule == null) {
+      put(key, new BytesCapsule(ByteArray.fromLong(value)));
+    } else {
+      put(key, new BytesCapsule(ByteArray
+              .fromLong(ByteArray.toLong(bytesCapsule.getData()) + value)));
+    }
+  }
+
+  public long getCyclePledgeRate(long cycle) {
+    BytesCapsule bytesCapsule = get(buildCyclePledgeRateKey(cycle));
+    if (bytesCapsule == null) {
+      return 0L;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
   public void addLiquidMintReward(long cycle, long value) {
     byte[] key = buildLiquidMintRewordKey(cycle);
     BytesCapsule bytesCapsule = get(key);
@@ -153,6 +173,10 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
 
   private byte[] buildRewardKey(long cycle, byte[] address) {
     return (cycle + "-" + Hex.toHexString(address) + "-reward").getBytes();
+  }
+
+  private byte[] buildCyclePledgeRateKey(long cycle) {
+    return (cycle + "-cyclePledgeRate").getBytes();
   }
 
   private byte[] buildAccountVoteKey(long cycle, byte[] address) {

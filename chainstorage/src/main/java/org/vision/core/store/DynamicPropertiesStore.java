@@ -2260,25 +2260,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   /**
-   * Get voting pledge rate
-   */
-  /*public int getVotingPledgeRate() {
-    long totalPhotonWeight = this.getTotalPhotonWeight();
-    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
-    long totalEntropyWeight = this.getTotalEntropyWeight();
-    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
-    long totalMortgageWeight = this.getTotalMortgageWeight();
-    BigDecimal bigTotalMortgageWeight = new BigDecimal(totalMortgageWeight);
-    long voteSum = mortgageService.getVoteSum();
-    BigDecimal bigVoteSum = new BigDecimal(voteSum);
-    long totalAssets = this.getTotalAssets();
-    BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
-    BigDecimal pledgeAmount= bigTotalMortgageWeight.add(bigVoteSum);
-    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
-    return pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).intValue();
-  }*/
-
-  /**
    * get Expansion Rate
    *//*
   public double getExpansionRate() {
