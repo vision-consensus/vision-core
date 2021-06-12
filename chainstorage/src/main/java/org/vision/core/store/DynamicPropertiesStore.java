@@ -164,6 +164,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] VOTE_FREEZE_PERCENT_SECOND = "VOTE_FREEZE_PERCENT_SECOND".getBytes();
   private static final byte[] VOTE_FREEZE_PERCENT_THREE = "VOTE_FREEZE_PERCENT_THREE".getBytes();
 
+  private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
+  private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
+
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
     super(dbName);
@@ -780,6 +783,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getVoteFreezePercentThree();
     } catch (IllegalArgumentException e) {
       this.saveVoteFreezePercentThree(CommonParameter.getInstance().getVoteFreezePercentThree());
+    }
+
+    try {
+      this.getSrFreezeLowest();
+    } catch (IllegalArgumentException e) {
+      this.saveSrFreezeLowest(CommonParameter.getInstance().getSrFreezeLowest());
+    }
+    try {
+      this.getSrFreezeLowestPercent();
+    } catch (IllegalArgumentException e) {
+      this.saveSrFreezeLowestPercent(CommonParameter.getInstance().getSrFreezeLowestPercent());
     }
 
   }
@@ -2380,6 +2394,28 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_THREE"));
+  }
+
+  public void saveSrFreezeLowest(long value) {
+    this.put(SR_FREEZE_LOWEST, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getSrFreezeLowest() {
+    return Optional.ofNullable(getUnchecked(SR_FREEZE_LOWEST))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST"));
+  }
+
+  public void saveSrFreezeLowestPercent(long value) {
+    this.put(SR_FREEZE_LOWEST_PERCENT, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getSrFreezeLowestPercent() {
+    return Optional.ofNullable(getUnchecked(SR_FREEZE_LOWEST_PERCENT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
   }
 
 

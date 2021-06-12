@@ -32,6 +32,7 @@ import static org.vision.common.utils.WalletUtil.getAddressStringList;
 @Slf4j(topic = "consensus")
 @Component
 public class MaintenanceManager {
+  private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
 
   @Autowired
   private ConsensusDelegate consensusDelegate;
@@ -117,8 +118,10 @@ public class MaintenanceManager {
           return;
         }
 
+        DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
         long voteCounts = witnessCapsule.getVoteCount() + voteCount;
-        long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - 5000)/0.065);
+        long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
+                /(dynamicPropertiesStore.getSrFreezeLowestPercent() / SR_FREEZE_LOWEST_PRECISION));
         if (voteCounts > maxVoteCounts) {
           voteCounts = maxVoteCounts;
         }

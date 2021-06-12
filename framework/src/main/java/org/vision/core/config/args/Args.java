@@ -184,6 +184,9 @@ public class Args extends CommonParameter {
     PARAMETER.voteFreezePercentFirst = 108;
     PARAMETER.voteFreezePercentSecond = 113;
     PARAMETER.voteFreezePercentThree = 116;
+
+    PARAMETER.srFreezeLowest = 5000;
+    PARAMETER.srFreezeLowestPercent = 65;
   }
 
   /**
