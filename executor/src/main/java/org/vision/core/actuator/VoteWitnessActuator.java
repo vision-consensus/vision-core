@@ -14,6 +14,7 @@ import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
 import org.vision.core.store.WitnessStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
@@ -31,6 +32,7 @@ import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
 
+  private static final long VOTE_PERCENT_PRECISION = 100L;
 
   public VoteWitnessActuator() {
     super(ContractType.VoteWitnessContract, VoteWitnessContract.class);
@@ -168,17 +170,18 @@ public class VoteWitnessActuator extends AbstractActuator {
       logger.debug("countVoteAccount, address[{}]",
           ByteArray.toHexString(vote.getVoteAddress().toByteArray()));
       // get freeze and compute a new votes
-      long interval1 = LongMath.checkedMultiply(1000, VS_PRECISION);
-      long interval2 = LongMath.checkedMultiply(10000, VS_PRECISION);
-      long interval3 = LongMath.checkedMultiply(100000, VS_PRECISION);
+      DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+      long interval1 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageFirst(), VS_PRECISION);
+      long interval2 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageSecond(), VS_PRECISION);
+      long interval3 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageThree(), VS_PRECISION);
       long visionPower = accountCapsule.getVisionPower();
       long voteCount = vote.getVoteCount();
       if (visionPower >= interval3) {
-        voteCount = (long) (voteCount * 1.16);
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentThree()/VOTE_PERCENT_PRECISION));
       } else if (visionPower >= interval2) {
-        voteCount = (long) (voteCount * 1.13);
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentSecond()/VOTE_PERCENT_PRECISION));
       } else if (visionPower >= interval1) {
-        voteCount = (long) (voteCount * 1.08);
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentFirst()/VOTE_PERCENT_PRECISION));
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());
       accountCapsule.addVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());

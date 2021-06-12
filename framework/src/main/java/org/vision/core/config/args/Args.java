@@ -1,33 +1,10 @@
 package org.vision.core.config.args;
 
-import static java.lang.Math.max;
-import static java.lang.System.exit;
-import static org.vision.core.Constant.ADD_PRE_FIX_BYTE_MAINNET;
-import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCE_TIMEOUT_PERCENT;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-
 import com.beust.jcommander.JCommander;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.netty.NettyServerBuilder;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,11 +27,7 @@ import org.vision.common.overlay.discover.node.Node;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.parameter.RateLimiterInitialization;
 import org.vision.common.setting.RocksDbSettings;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Commons;
-import org.vision.common.utils.FileUtil;
-import org.vision.common.utils.LocalWitnesses;
-import org.vision.common.utils.PropUtil;
+import org.vision.common.utils.*;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
 import org.vision.core.config.Configuration;
@@ -65,6 +38,25 @@ import org.vision.core.store.AccountStore;
 import org.vision.keystore.Credentials;
 import org.vision.keystore.WalletUtils;
 import org.vision.program.Version;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
+import static java.lang.System.exit;
+import static org.vision.core.Constant.ADD_PRE_FIX_BYTE_MAINNET;
+import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCE_TIMEOUT_PERCENT;
+import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
 
 @Slf4j(topic = "app")
 @NoArgsConstructor
@@ -185,6 +177,13 @@ public class Args extends CommonParameter {
     PARAMETER.allowVvmStake = 0;
     PARAMETER.allowVvmAssetIssue = 0;
     PARAMETER.historyBalanceLookup = false;
+
+    PARAMETER.voteFreezeStageFirst = 1000;
+    PARAMETER.voteFreezeStageSecond = 10000;
+    PARAMETER.voteFreezeStageThree = 100000;
+    PARAMETER.voteFreezePercentFirst = 108;
+    PARAMETER.voteFreezePercentSecond = 113;
+    PARAMETER.voteFreezePercentThree = 116;
   }
 
   /**

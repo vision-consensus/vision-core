@@ -14,7 +14,6 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
-import org.vision.core.service.MortgageService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -157,6 +156,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
   private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
+
+  private static final byte[] VOTE_FREEZE_STAGE_FIRST = "VOTE_FREEZE_STAGE_FIRST".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_SECOND = "VOTE_FREEZE_STAGE_SECOND".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_THREE = "VOTE_FREEZE_STAGE_THREE".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_FIRST = "VOTE_FREEZE_PERCENT_FIRST".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_SECOND = "VOTE_FREEZE_PERCENT_SECOND".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_THREE = "VOTE_FREEZE_PERCENT_THREE".getBytes();
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -743,6 +749,37 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getAllowBlackHoleOptimization();
     } catch (IllegalArgumentException e) {
       this.saveAllowBlackHoleOptimization(CommonParameter.getInstance().getAllowBlackHoleOptimization());
+    }
+
+    try {
+      this.getVoteFreezeStageFirst();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageFirst(CommonParameter.getInstance().getVoteFreezeStageFirst());
+    }
+    try {
+      this.getVoteFreezeStageSecond();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageSecond(CommonParameter.getInstance().getVoteFreezeStageSecond());
+    }
+    try {
+      this.getVoteFreezeStageThree();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageThree(CommonParameter.getInstance().getVoteFreezeStageThree());
+    }
+    try {
+      this.getVoteFreezePercentFirst();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentFirst(CommonParameter.getInstance().getVoteFreezePercentFirst());
+    }
+    try {
+      this.getVoteFreezePercentSecond();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentSecond(CommonParameter.getInstance().getVoteFreezePercentSecond());
+    }
+    try {
+      this.getVoteFreezePercentThree();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentThree(CommonParameter.getInstance().getVoteFreezePercentThree());
     }
 
   }
@@ -2277,6 +2314,72 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public boolean supportLiquidMintBonus() {
     return true;
+  }
+
+  public void saveVoteFreezeStageFirst(long value) {
+    this.put(VOTE_FREEZE_STAGE_FIRST, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageFirst() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_FIRST))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_FIRST"));
+  }
+
+  public void saveVoteFreezeStageSecond(long value) {
+    this.put(VOTE_FREEZE_STAGE_SECOND, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageSecond() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_SECOND))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_SECOND"));
+  }
+
+  public void saveVoteFreezeStageThree(long value) {
+    this.put(VOTE_FREEZE_STAGE_THREE, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageThree() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_THREE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_THREE"));
+  }
+
+  public void saveVoteFreezePercentFirst(long value) {
+    this.put(VOTE_FREEZE_PERCENT_FIRST, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezePercentFirst() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_FIRST))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_FIRST"));
+  }
+
+  public void saveVoteFreezePercentSecond(long value) {
+    this.put(VOTE_FREEZE_PERCENT_SECOND, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezePercentSecond() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_SECOND))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_SECOND"));
+  }
+
+  public void saveVoteFreezePercentThree(long value) {
+    this.put(VOTE_FREEZE_PERCENT_THREE, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezePercentThree() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_THREE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_THREE"));
   }
 
 
