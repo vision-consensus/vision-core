@@ -27,8 +27,8 @@ message Vote {
   bytes vote_address = 1;
   // the vote num to this super rep.
   int64 vote_count = 2;
-  // the first vote num to this super rep.
-  int64 vote_count_first = 3;
+  // the weight vote num to this super rep.
+  int64 vote_count_weight = 3;
 }
 
 // Proposal
@@ -264,6 +264,10 @@ message Witness {
   int64 latestBlockNum = 7;
   int64 latestSlotNum = 8;
   bool isJobs = 9;
+  //the weight of vote count
+  int64 voteCountWeight = 10;
+  //the threshold of mortgage
+  int64 voteCountThreshold = 11;
 }
 
 // Vote Change
