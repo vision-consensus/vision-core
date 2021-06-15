@@ -34,6 +34,14 @@ import static org.vision.common.utils.WalletUtil.getAddressStringList;
 public class MaintenanceManager {
   private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
 
+  private static final double HIGH_EXPANSION_RATE = 23.22;
+
+  private static final double LOW_EXPANSION_RATE = 6.89;
+
+  private static final long PLEDGE_RATE_THRESHOLD = 67L;
+
+  private static final long FIRST_ECONOMIC_CYCLE = 42L;
+
   @Autowired
   private ConsensusDelegate consensusDelegate;
 
@@ -169,6 +177,13 @@ public class MaintenanceManager {
       });
     }
     calculationCyclePledgeRate();
+    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long economicCycle = dynamicPropertiesStore.getEconomicCycle();
+    if (FIRST_ECONOMIC_CYCLE == cycle) {
+      //saveExpansionRate();
+    } else if ((cycle - FIRST_ECONOMIC_CYCLE) % economicCycle == 0) {
+      //saveExpansionRate();
+    }
   }
 
   private Map<ByteString, Long> countVote(VotesStore votesStore) {
@@ -228,10 +243,20 @@ public class MaintenanceManager {
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
+    long totalBonusWeight = dynamicPropertiesStore.getTotalBonusWeight();
+    BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalMortgageWeight);
-    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
+    BigDecimal assets= bigTotalAssets.add(bigTotalBonusWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
+  }
+
+  public void saveExpansionRate(long pledgeRate) {
+    if (PLEDGE_RATE_THRESHOLD <= pledgeRate) {
+      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+    } else {
+      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+    }
   }
 
 }
