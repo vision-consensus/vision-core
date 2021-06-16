@@ -63,6 +63,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] WITNESS_100_PAY_PER_BLOCK = "WITNESS_100_PAY_PER_BLOCK".getBytes();
 
+  private static final byte[] ECONOMIC_CYCLE = "ECONOMIC_CYCLE".getBytes();
+
   private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
   private static final byte[] ENTROPY_FEE = "ENTROPY_FEE".getBytes();
   private static final byte[] MAX_CPU_TIME_OF_ONE_TX = "MAX_CPU_TIME_OF_ONE_TX".getBytes();
@@ -374,7 +376,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
         this.getExpansionRate();
     } catch (IllegalArgumentException e) {
-          this.saveExpansionRate(0L);
+        this.saveExpansionRate(20L);
     }
 
     try {
@@ -1006,6 +1008,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(1500000L);
   }
 
+  public void saveEconomicCycle(long pay) {
+    logger.debug("ECONOMIC_CYCLE:" + pay);
+    this.put(ECONOMIC_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(pay)));
+  }
+
+  public long getEconomicCycle() {
+    return Optional.ofNullable(getUnchecked(ECONOMIC_CYCLE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(120L);
+  }
+
   public void saveWitnessStandbyAllowance(long allowance) {
     logger.debug("WITNESS_STANDBY_ALLOWANCE:" + allowance);
     this.put(WITNESS_STANDBY_ALLOWANCE,
@@ -1159,8 +1174,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.EXPANSION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found EXPANSION_RATE"));
+            .orElse(20L);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2321,18 +2335,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElse(0L);
   }
-
-  /**
-   * get Expansion Rate
-   *//*
-  public double getExpansionRate() {
-    int votingPledgeRate = getVotingPledgeRate();
-    if (67 <= votingPledgeRate) {
-      return 6.89;
-    } else {
-      return 23.22;
-    }
-  }*/
 
   public long getLiquidMintPayPerBlock() {
     return 0L;

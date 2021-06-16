@@ -125,20 +125,6 @@ public class DposTask {
       long witnessPayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitnessPayPerBlock();
       long witness100PayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitness100PayPerBlock();
       consensusDelegate.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock);
-      /*if ((raw.getNumber()-300000) % 864000 == 0) {
-        long amount = 0;
-        if (raw.getNumber()==300000) {
-          amount = new Double(300000 * 1.65).longValue();
-          consensusDelegate.getDynamicPropertiesStore().addTotalAssets(amount);
-        } else {
-          double expansionRate = consensusDelegate.getDynamicPropertiesStore().getExpansionRate();
-          BigDecimal bigExpansionRate = new BigDecimal(expansionRate);
-          amount = (((((bigExpansionRate.divide(new BigDecimal(12))).divide(new BigDecimal(100)))
-                  .add(new BigDecimal(1))).multiply(new BigDecimal(1.5)))
-                  .add(new BigDecimal(0.15))).multiply(new BigDecimal(864000)).longValue();
-          consensusDelegate.getDynamicPropertiesStore().addTotalAssets(amount);
-        }
-      }*/
     }
     return State.OK;
   }

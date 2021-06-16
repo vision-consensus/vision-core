@@ -51,13 +51,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
 
   public void addCyclePledgeRate(long cycle, long value) {
     byte[] key = buildCyclePledgeRateKey(cycle);
-    BytesCapsule bytesCapsule = get(key);
-    if (bytesCapsule == null) {
-      put(key, new BytesCapsule(ByteArray.fromLong(value)));
-    } else {
-      put(key, new BytesCapsule(ByteArray
-              .fromLong(ByteArray.toLong(bytesCapsule.getData()) + value)));
-    }
+    put(key, new BytesCapsule(ByteArray.fromLong(value)));
   }
 
   public long getCyclePledgeRate(long cycle) {

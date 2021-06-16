@@ -1,15 +1,6 @@
 package org.vision.consensus.dpos;
 
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
-
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +17,12 @@ import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
+import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -172,7 +169,11 @@ public class DposService implements ConsensusInterface {
 
   public void updateWitness(List<ByteString> list) {
     list.sort(Comparator.comparingLong((ByteString b) ->
-        consensusDelegate.getWitness(b.toByteArray()).getVoteCount())
+    {
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(b.toByteArray());
+      return witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
+              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight();
+    })
         .reversed()
         .thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
 

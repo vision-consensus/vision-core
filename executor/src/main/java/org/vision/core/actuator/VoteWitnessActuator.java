@@ -183,8 +183,8 @@ public class VoteWitnessActuator extends AbstractActuator {
       } else if (visionPower >= interval1) {
         voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentFirst()/VOTE_PERCENT_PRECISION));
       }
-      votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());
-      accountCapsule.addVotes(vote.getVoteAddress(), voteCount, vote.getVoteCount());
+      votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
+      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
 
     });
 

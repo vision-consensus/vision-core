@@ -19,6 +19,7 @@ import org.vision.core.service.MortgageService;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
+import org.vision.protos.Protocol;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,6 +34,14 @@ import static org.vision.common.utils.WalletUtil.getAddressStringList;
 @Component
 public class MaintenanceManager {
   private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
+
+  private static final double HIGH_EXPANSION_RATE = 23.22;
+
+  private static final double LOW_EXPANSION_RATE = 6.89;
+
+  private static final long PLEDGE_RATE_THRESHOLD = 67L;
+
+  private static final long FIRST_ECONOMIC_CYCLE = 42L;
 
   @Autowired
   private ConsensusDelegate consensusDelegate;
@@ -97,15 +106,15 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
-    Map<ByteString, Long> countWitness = countVote(votesStore);
+    Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
       List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
 
       List<ByteString> newWitnessAddressList = new ArrayList<>();
       consensusDelegate.getAllWitnesses()
-          .forEach(witnessCapsule -> newWitnessAddressList.add(witnessCapsule.getAddress()));
+              .forEach(witnessCapsule -> newWitnessAddressList.add(witnessCapsule.getAddress()));
 
-      countWitness.forEach((address, voteCount) -> {
+      countWitness.forEach((address, voteBuilder) -> {
         byte[] witnessAddress = address.toByteArray();
         WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witnessAddress);
         if (witnessCapsule == null) {
@@ -119,17 +128,16 @@ public class MaintenanceManager {
         }
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long voteCounts = witnessCapsule.getVoteCount() + voteCount;
         long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
                 /(dynamicPropertiesStore.getSrFreezeLowestPercent() / SR_FREEZE_LOWEST_PRECISION));
-        if (voteCounts > maxVoteCounts) {
-          voteCounts = maxVoteCounts;
-        }
-        witnessCapsule.setVoteCount(voteCounts);
+
+        witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
+        witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
+        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
         // witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
         consensusDelegate.saveWitness(witnessCapsule);
         logger.info("address is {} , countVote is {}", witnessCapsule.createReadableString(),
-            witnessCapsule.getVoteCount());
+                witnessCapsule.getVoteCount());
       });
 
       dposService.updateWitness(newWitnessAddressList);
@@ -151,8 +159,8 @@ public class MaintenanceManager {
       }
 
       logger.info("Update witness success. \nbefore: {} \nafter: {}",
-          getAddressStringList(currentWits),
-          getAddressStringList(newWits));
+              getAddressStringList(currentWits),
+              getAddressStringList(newWits));
     }
 
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
@@ -169,9 +177,63 @@ public class MaintenanceManager {
       });
     }
     calculationCyclePledgeRate();
+    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long economicCycle = dynamicPropertiesStore.getEconomicCycle();
+    if (FIRST_ECONOMIC_CYCLE == cycle) {
+      //saveExpansionRate();
+    } else if ((cycle - FIRST_ECONOMIC_CYCLE) % economicCycle == 0) {
+      //saveExpansionRate();
+    }
   }
 
-  private Map<ByteString, Long> countVote(VotesStore votesStore) {
+  private Map<ByteString, Protocol.Vote.Builder> countVote(VotesStore votesStore) {
+    final Map<ByteString, Protocol.Vote.Builder> countWitness = Maps.newHashMap();
+    Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
+    long sizeCount = 0;
+    while (dbIterator.hasNext()) {
+      Entry<byte[], VotesCapsule> next = dbIterator.next();
+      VotesCapsule votes = next.getValue();
+      votes.getOldVotes().forEach(vote -> {
+        ByteString voteAddress = vote.getVoteAddress();
+        long voteCount = vote.getVoteCount();
+        long voteCountWeight = vote.getVoteCountWeight();
+        if (countWitness.containsKey(voteAddress)) {
+          Protocol.Vote.Builder voteValue = countWitness.get(voteAddress);
+          voteValue.setVoteCount(voteValue.getVoteCount() - voteCount);
+          voteValue.setVoteCountWeight(voteValue.getVoteCountWeight() - voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        } else {
+          Protocol.Vote.Builder voteValue = Protocol.Vote.newBuilder();
+          voteValue.setVoteCount(-voteCount);
+          voteValue.setVoteCountWeight(-voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        }
+      });
+      votes.getNewVotes().forEach(vote -> {
+        ByteString voteAddress = vote.getVoteAddress();
+        long voteCountWeight = vote.getVoteCountWeight();
+        long voteCount = vote.getVoteCount();
+        if (countWitness.containsKey(voteAddress)) {
+
+          Protocol.Vote.Builder voteValue = countWitness.get(voteAddress);
+          voteValue.setVoteCount(voteValue.getVoteCount() + voteCount);
+          voteValue.setVoteCountWeight(voteValue.getVoteCountWeight() + voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        } else {
+          Protocol.Vote.Builder voteValue = Protocol.Vote.newBuilder();
+          voteValue.setVoteCount(voteCount);
+          voteValue.setVoteCountWeight(voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        }
+      });
+      sizeCount++;
+      votesStore.delete(next.getKey());
+    }
+    logger.info("There is {} new votes in this epoch", sizeCount);
+    return countWitness;
+  }
+
+  private Map<ByteString, Long> countVoteOld(VotesStore votesStore) {
     final Map<ByteString, Long> countWitness = Maps.newHashMap();
     Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
     long sizeCount = 0;
@@ -189,11 +251,11 @@ public class MaintenanceManager {
       });
       votes.getNewVotes().forEach(vote -> {
         ByteString voteAddress = vote.getVoteAddress();
-        long voteCount = vote.getVoteCount();
+        long voteCountWeight = vote.getVoteCountWeight();
         if (countWitness.containsKey(voteAddress)) {
-          countWitness.put(voteAddress, countWitness.get(voteAddress) + voteCount);
+          countWitness.put(voteAddress, countWitness.get(voteAddress) + voteCountWeight);
         } else {
-          countWitness.put(voteAddress, voteCount);
+          countWitness.put(voteAddress, voteCountWeight);
         }
       });
       sizeCount++;
@@ -228,10 +290,20 @@ public class MaintenanceManager {
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
+    long totalBonusWeight = dynamicPropertiesStore.getTotalBonusWeight();
+    BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalMortgageWeight);
-    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
+    BigDecimal assets= bigTotalAssets.add(bigTotalBonusWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
+  }
+
+  public void saveExpansionRate(long pledgeRate) {
+    if (PLEDGE_RATE_THRESHOLD <= pledgeRate) {
+      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+    } else {
+      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+    }
   }
 
 }
