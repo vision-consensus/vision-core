@@ -35,9 +35,9 @@ import static org.vision.common.utils.WalletUtil.getAddressStringList;
 public class MaintenanceManager {
   private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
 
-  private static final double HIGH_EXPANSION_RATE = 23.22;
+  private static final long HIGH_EXPANSION_RATE = 2322L;
 
-  private static final double LOW_EXPANSION_RATE = 6.89;
+  private static final long LOW_EXPANSION_RATE = 689L;
 
   private static final long PLEDGE_RATE_THRESHOLD = 67L;
 
@@ -180,9 +180,16 @@ public class MaintenanceManager {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long economicCycle = dynamicPropertiesStore.getEconomicCycle();
     if (FIRST_ECONOMIC_CYCLE == cycle) {
-      //saveExpansionRate();
+      long beginCycle = 1;
+      long endCycle = cycle;
+      long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMIC_CYCLE);
+      saveExpansionRate(pledgeRate);
     } else if ((cycle - FIRST_ECONOMIC_CYCLE) % economicCycle == 0) {
-      //saveExpansionRate();
+      long economicCycleNumber = (cycle - FIRST_ECONOMIC_CYCLE) / economicCycle;
+      long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMIC_CYCLE + 1;
+      long endCycle = cycle;
+      long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
+      saveExpansionRate(pledgeRate);
     }
   }
 
@@ -300,10 +307,21 @@ public class MaintenanceManager {
 
   public void saveExpansionRate(long pledgeRate) {
     if (PLEDGE_RATE_THRESHOLD <= pledgeRate) {
-      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
     } else {
-      //consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(HIGH_EXPANSION_RATE);
     }
+  }
+
+  public long savePledgeRate(long beginCycle, long endCycle, long economicCycle) {
+    long totalPledgeRate = 0L;
+    for (long i = beginCycle; i <= endCycle; i++) {
+      long cyclePledgeRate = consensusDelegate.getDelegationStore().getCyclePledgeRate(i);
+      totalPledgeRate += cyclePledgeRate;
+    }
+    long pledgeRate = totalPledgeRate / economicCycle;
+    consensusDelegate.getDynamicPropertiesStore().savePledgeRate(pledgeRate);
+    return pledgeRate;
   }
 
 }
