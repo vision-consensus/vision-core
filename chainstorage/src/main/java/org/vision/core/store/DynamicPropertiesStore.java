@@ -376,7 +376,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
         this.getExpansionRate();
     } catch (IllegalArgumentException e) {
-        this.saveExpansionRate(20L);
+        this.saveExpansionRate(1100L);
+    }
+
+    try {
+      this.getInitialReservedAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveInitialReservedAmount(100000000L);
     }
 
     try {
@@ -1174,7 +1180,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.EXPANSION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(20L);
+            .orElse(1100L);
+  }
+
+  public void saveInitialReservedAmount(long expansionRate) {
+    this.put(DynamicResourceProperties.INITIAL_RESERVED_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(expansionRate)));
+  }
+
+  public long getInitialReservedAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.INITIAL_RESERVED_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(100000000L);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2459,7 +2477,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] EXPANSION_RATE = "EXPANSION_RATE".getBytes();
-
+    private static final byte[] INITIAL_RESERVED_AMOUNT = "INITIAL_RESERVED_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();

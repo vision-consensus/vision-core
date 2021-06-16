@@ -16,6 +16,7 @@ import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.service.MortgageService;
+import org.vision.core.store.AccountStore;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
@@ -57,6 +58,9 @@ public class MaintenanceManager {
 
   @Autowired
   private MortgageService mortgageService;
+
+  @Autowired
+  private AccountStore accountStore;
 
   @Getter
   private final List<ByteString> beforeWitness = new ArrayList<>();
@@ -300,12 +304,19 @@ public class MaintenanceManager {
     long totalBonusWeight = dynamicPropertiesStore.getTotalBonusWeight();
     BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalMortgageWeight);
-    BigDecimal assets= bigTotalAssets.add(bigTotalBonusWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum);
+    long initialReservedAmount = dynamicPropertiesStore.getInitialReservedAmount();
+    BigDecimal bigInitialReservedAmount = new BigDecimal(initialReservedAmount);
+    long galaxyBalance = accountStore.getGalaxy().getBalance();
+    BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
+    long singularityBalance = accountStore.getSingularity().getBalance();
+    BigDecimal bigSingularityBalance = new BigDecimal(singularityBalance);
+    BigDecimal assets= bigTotalAssets.add(bigTotalBonusWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
+            .add(bigInitialReservedAmount).subtract(bigGalaxyBalance).subtract(bigSingularityBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
-  public void saveExpansionRate(long pledgeRate) {
+  private void saveExpansionRate(long pledgeRate) {
     if (PLEDGE_RATE_THRESHOLD <= pledgeRate) {
       consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
     } else {
@@ -313,13 +324,15 @@ public class MaintenanceManager {
     }
   }
 
-  public long savePledgeRate(long beginCycle, long endCycle, long economicCycle) {
+  private long savePledgeRate(long beginCycle, long endCycle, long economicCycle) {
     long totalPledgeRate = 0L;
     for (long i = beginCycle; i <= endCycle; i++) {
       long cyclePledgeRate = consensusDelegate.getDelegationStore().getCyclePledgeRate(i);
       totalPledgeRate += cyclePledgeRate;
     }
-    long pledgeRate = totalPledgeRate / economicCycle;
+    BigDecimal bigTotalPledgeRate = new BigDecimal(totalPledgeRate);
+    BigDecimal bigEconomicCycle = new BigDecimal(economicCycle);
+    long pledgeRate = bigTotalPledgeRate.divide(bigEconomicCycle,0,BigDecimal.ROUND_HALF_UP).longValue();
     consensusDelegate.getDynamicPropertiesStore().savePledgeRate(pledgeRate);
     return pledgeRate;
   }
