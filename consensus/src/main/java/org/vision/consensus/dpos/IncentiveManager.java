@@ -27,7 +27,7 @@ public class IncentiveManager {
     }
     long voteSum = 0;
     for (ByteString witness : witnesses) {
-      voteSum += consensusDelegate.getWitness(witness.toByteArray()).getVoteCount();
+      voteSum += consensusDelegate.getWitness(witness.toByteArray()).getVoteCount();//voteCountWeight
     }
     if (voteSum <= 0) {
       return;

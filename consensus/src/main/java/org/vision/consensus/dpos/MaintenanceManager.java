@@ -165,7 +165,7 @@ public class MaintenanceManager {
             delegationStore.getBrokerage(witness.createDbKey()));
         delegationStore.setWitnessVote(nextCycle, witness.createDbKey(), witness.getVoteCount());
         //liquid mint total freeze
-        delegationStore.setTotalFreezeBalanceForBonus(nextCycle-1, consensusDelegate.getDynamicPropertiesStore().getTotalBonusWeight());
+        delegationStore.setTotalFreezeBalanceForBonus(nextCycle, consensusDelegate.getDynamicPropertiesStore().getTotalBonusWeight());
       });
     }
     calculationCyclePledgeRate();
