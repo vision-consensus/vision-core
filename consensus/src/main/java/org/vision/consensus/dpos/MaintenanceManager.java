@@ -19,6 +19,7 @@ import org.vision.core.service.MortgageService;
 import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
+import org.vision.protos.Protocol;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -105,15 +106,15 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
-    Map<ByteString, Long> countWitness = countVote(votesStore);
+    Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
       List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
 
       List<ByteString> newWitnessAddressList = new ArrayList<>();
       consensusDelegate.getAllWitnesses()
-          .forEach(witnessCapsule -> newWitnessAddressList.add(witnessCapsule.getAddress()));
+              .forEach(witnessCapsule -> newWitnessAddressList.add(witnessCapsule.getAddress()));
 
-      countWitness.forEach((address, voteCount) -> {
+      countWitness.forEach((address, voteBuilder) -> {
         byte[] witnessAddress = address.toByteArray();
         WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witnessAddress);
         if (witnessCapsule == null) {
@@ -127,17 +128,16 @@ public class MaintenanceManager {
         }
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long voteCounts = witnessCapsule.getVoteCount() + voteCount;
         long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
                 /(dynamicPropertiesStore.getSrFreezeLowestPercent() / SR_FREEZE_LOWEST_PRECISION));
-        if (voteCounts > maxVoteCounts) {
-          voteCounts = maxVoteCounts;
-        }
-        witnessCapsule.setVoteCount(voteCounts);
+
+        witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
+        witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
+        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
         // witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
         consensusDelegate.saveWitness(witnessCapsule);
         logger.info("address is {} , countVote is {}", witnessCapsule.createReadableString(),
-            witnessCapsule.getVoteCount());
+                witnessCapsule.getVoteCount());
       });
 
       dposService.updateWitness(newWitnessAddressList);
@@ -159,8 +159,8 @@ public class MaintenanceManager {
       }
 
       logger.info("Update witness success. \nbefore: {} \nafter: {}",
-          getAddressStringList(currentWits),
-          getAddressStringList(newWits));
+              getAddressStringList(currentWits),
+              getAddressStringList(newWits));
     }
 
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
@@ -186,7 +186,54 @@ public class MaintenanceManager {
     }
   }
 
-  private Map<ByteString, Long> countVote(VotesStore votesStore) {
+  private Map<ByteString, Protocol.Vote.Builder> countVote(VotesStore votesStore) {
+    final Map<ByteString, Protocol.Vote.Builder> countWitness = Maps.newHashMap();
+    Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
+    long sizeCount = 0;
+    while (dbIterator.hasNext()) {
+      Entry<byte[], VotesCapsule> next = dbIterator.next();
+      VotesCapsule votes = next.getValue();
+      votes.getOldVotes().forEach(vote -> {
+        ByteString voteAddress = vote.getVoteAddress();
+        long voteCount = vote.getVoteCount();
+        long voteCountWeight = vote.getVoteCountWeight();
+        if (countWitness.containsKey(voteAddress)) {
+          Protocol.Vote.Builder voteValue = countWitness.get(voteAddress);
+          voteValue.setVoteCount(voteValue.getVoteCount() - voteCount);
+          voteValue.setVoteCountWeight(voteValue.getVoteCountWeight() - voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        } else {
+          Protocol.Vote.Builder voteValue = Protocol.Vote.newBuilder();
+          voteValue.setVoteCount(-voteCount);
+          voteValue.setVoteCountWeight(-voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        }
+      });
+      votes.getNewVotes().forEach(vote -> {
+        ByteString voteAddress = vote.getVoteAddress();
+        long voteCountWeight = vote.getVoteCountWeight();
+        long voteCount = vote.getVoteCount();
+        if (countWitness.containsKey(voteAddress)) {
+
+          Protocol.Vote.Builder voteValue = countWitness.get(voteAddress);
+          voteValue.setVoteCount(voteValue.getVoteCount() + voteCount);
+          voteValue.setVoteCountWeight(voteValue.getVoteCountWeight() + voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        } else {
+          Protocol.Vote.Builder voteValue = Protocol.Vote.newBuilder();
+          voteValue.setVoteCount(voteCount);
+          voteValue.setVoteCountWeight(voteCountWeight);
+          countWitness.put(voteAddress, voteValue);
+        }
+      });
+      sizeCount++;
+      votesStore.delete(next.getKey());
+    }
+    logger.info("There is {} new votes in this epoch", sizeCount);
+    return countWitness;
+  }
+
+  private Map<ByteString, Long> countVoteOld(VotesStore votesStore) {
     final Map<ByteString, Long> countWitness = Maps.newHashMap();
     Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
     long sizeCount = 0;
@@ -204,11 +251,11 @@ public class MaintenanceManager {
       });
       votes.getNewVotes().forEach(vote -> {
         ByteString voteAddress = vote.getVoteAddress();
-        long voteCount = vote.getVoteCount();
+        long voteCountWeight = vote.getVoteCountWeight();
         if (countWitness.containsKey(voteAddress)) {
-          countWitness.put(voteAddress, countWitness.get(voteAddress) + voteCount);
+          countWitness.put(voteAddress, countWitness.get(voteAddress) + voteCountWeight);
         } else {
-          countWitness.put(voteAddress, voteCount);
+          countWitness.put(voteAddress, voteCountWeight);
         }
       });
       sizeCount++;

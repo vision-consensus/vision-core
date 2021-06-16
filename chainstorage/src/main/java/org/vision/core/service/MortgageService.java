@@ -1,9 +1,6 @@
 package org.vision.core.service;
 
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +17,10 @@ import org.vision.core.store.DelegationStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.WitnessStore;
 import org.vision.protos.Protocol.Vote;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j(topic = "mortgage")
 @Component
@@ -246,7 +247,11 @@ public class MortgageService {
   }
 
   private void sortWitness(List<ByteString> list) {
-    list.sort(Comparator.comparingLong((ByteString b) -> getWitnessByAddress(b).getVoteCount())
+    list.sort(Comparator.comparingLong((ByteString b) -> {
+      WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+      return witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
+              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight();
+    })
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
   }
 
