@@ -348,11 +348,17 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public BlockResult eth_getBlockByNumber(String bnOrId, Boolean fullTransactionObjects) throws Exception {
+        logger.info("bnOrId={}", bnOrId);
         BlockResult blockResult = new BlockResult();
-
-        // transfer bnOrId type from string to long
-        long num = Long.parseLong(getHexNo0x(bnOrId), 16);
-        Protocol.Block reply = wallet.getBlockByNum(num);
+        Protocol.Block reply = null;
+        if ("latest".equals(bnOrId)) {
+            reply = wallet.getNowBlock();
+        } else {
+            // transfer bnOrId type from string to long
+            long num = Long.parseLong(getHexNo0x(bnOrId), 16);
+            // long num = bnOrId;
+            reply = wallet.getBlockByNum(num);
+        }
 
         transferBlock2Ether(blockResult, reply, fullTransactionObjects);
 
@@ -361,14 +367,17 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     private void transferBlock2Ether(BlockResult blockResult, Protocol.Block reply,
                                      Boolean fullTransactionObjects) throws ItemNotFoundException {
+        Protocol.BlockHeader visionBlockHeader = reply.getBlockHeader();
 
         Protocol.BlockHeader blockHeader = reply.getBlockHeader();
-        org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
+        Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
 
         // blockResult.difficulty = "0x2";
-        // blockResult.extraData = "0xd883010003846765746888676f312e31332e34856c696e75780000000000000049116d665d92e4581c19cd8a67a316739ec2faa4d3e8d3fc518ad6c9e02dc51154bcd4ffbf3156d9d8265500c6bc775ff05b5a54650397fdd057f1d9cb98f6a501";
-        // blockResult.gasLimit = "0x1ca35b8";
-        // blockResult.gasUsed = "0x1ca0e7f";
+        blockResult.difficulty = "0x20000";
+        //blockResult.extraData = "0xd883010003846765746888676f312e31332e34856c696e75780000000000000049116d665d92e4581c19cd8a67a316739ec2faa4d3e8d3fc518ad6c9e02dc51154bcd4ffbf3156d9d8265500c6bc775ff05b5a54650397fdd057f1d9cb98f6a501";
+        blockResult.extraData = "0xd5830105048650617269747986312e31352e31826c69";
+        blockResult.gasLimit = "0x1ca35b8";
+        blockResult.gasUsed = "0x1ca0e7f";
         BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
         BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
         blockResult.hash = "0x" + toHexString(blockId.getByteString().toByteArray());
@@ -382,8 +391,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.parentHash = "0x" + toHexString(rawData.getParentHash().toByteArray()); // father block hash
         blockResult.receiptsRoot = "0x5f695898d27a2e25c2ae05c436be37a38bc3f8993386bf409f0ce40d6292298c";
         blockResult.sha3Uncles = "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347";
-        blockResult.stateRoot = "0x" + toHexString(rawData.getAccountStateRoot().toByteArray());
-        blockResult.timestamp = Long.toHexString(rawData.getTimestamp());
+        //blockResult.stateRoot = "0x" + toHexString(rawData.getAccountStateRoot().toByteArray());
+        blockResult.stateRoot = "0x8740447201cb72ea26aa8a0e5b846d334163355ad3c892a151786f2c3115a131";
+        blockResult.timestamp = "0x" + Long.toHexString(rawData.getTimestamp());
         blockResult.totalDifficulty = "0x5abd10";
         List<Protocol.Transaction> transactionList = reply.getTransactionsList();
         List<String> transHashList = new ArrayList<>();
@@ -411,8 +421,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
             blockResult.transactions = transHashList.toArray();
         }
 
-        blockResult.transactionsRoot = toHexString(rawData.getTxTrieRoot().toByteArray());
-        blockResult.uncles = new String[0];
+        blockResult.transactionsRoot = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
+        // blockResult.uncles = new String[]{"0x8740447201cb72ea26aa8a0e5b846d334163355ad3c892a151786f2c3115a131"};
+        blockResult.uncles = null;
     }
 
 
