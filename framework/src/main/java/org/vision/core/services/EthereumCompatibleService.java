@@ -423,7 +423,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
         blockResult.transactionsRoot = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
         // blockResult.uncles = new String[]{"0x8740447201cb72ea26aa8a0e5b846d334163355ad3c892a151786f2c3115a131"};
-        blockResult.uncles = null;
+        blockResult.uncles = new String[]{};
     }
 
 
