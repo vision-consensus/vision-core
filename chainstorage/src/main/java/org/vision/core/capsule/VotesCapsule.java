@@ -97,6 +97,14 @@ public class VotesCapsule implements ProtoCapsule<Votes> {
             .build();
   }
 
+  public void addOldVotes(ByteString voteAddress, long voteCount, long voteCountWeight) {
+    this.votes = this.votes.toBuilder()
+            .addOldVotes(Vote.newBuilder().setVoteAddress(voteAddress)
+                    .setVoteCount(voteCount)
+                    .setVoteCountWeight(voteCountWeight).build())
+            .build();
+  }
+
   public byte[] createDbKey() {
     return getAddress().toByteArray();
   }
