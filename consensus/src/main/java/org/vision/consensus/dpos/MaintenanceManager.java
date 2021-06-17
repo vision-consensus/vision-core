@@ -175,7 +175,7 @@ public class MaintenanceManager {
       consensusDelegate.getAllWitnesses().forEach(witness -> {
         delegationStore.setBrokerage(nextCycle, witness.createDbKey(),
             delegationStore.getBrokerage(witness.createDbKey()));
-        delegationStore.setWitnessVote(nextCycle, witness.createDbKey(), witness.getVoteCount());
+        delegationStore.setWitnessVote(nextCycle, witness.createDbKey(), witness.getVoteCountWeight());
         //liquid mint total freeze
         delegationStore.setTotalFreezeBalanceForBonus(nextCycle, consensusDelegate.getDynamicPropertiesStore().getTotalBonusWeight());
       });

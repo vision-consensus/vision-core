@@ -91,7 +91,7 @@ public class ContractService {
       if (totalVote == DelegationStore.REMARK || totalVote == 0) {
         continue;
       }
-      long userVote = vote.getVoteCount();
+      long userVote = vote.getVoteCountWeight();
       double voteRate = (double) userVote / totalVote;
       reward += voteRate * totalReward;
       logger.debug("computeReward {} {} {} {},{},{},{}", cycle,
