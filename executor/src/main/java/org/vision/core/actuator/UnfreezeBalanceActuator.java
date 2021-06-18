@@ -186,14 +186,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
-        case MORTGAGE:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForMortgage()
+        case SPECIALIZED_MINT:
+          if (!accountCapsule.checkFrozenTimeForSpecializedMintLimit()){
+            throw new ContractExeException("");
+          }
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpecializedMint()
                   .getFrozenBalance();
-          AccountResource newMortgage = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForMortgage().build();
+          AccountResource newSpecializedMint = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSpecializedMint().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newMortgage).build());
+                  .setAccountResource(newSpecializedMint).build());
           break;
         case BONUS:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForBonus()
@@ -223,9 +226,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case BONUS:
         dynamicStore.addTotalBonusWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case MORTGAGE:
+      case SPECIALIZED_MINT:
         dynamicStore
-                .addTotalMortgageWeight(-unfreezeBalance / VS_PRECISION);
+                .addTotalSpecializedMintWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -410,15 +413,19 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
           break;
-        case MORTGAGE:
-          Frozen frozenBalanceForMortgage = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForMortgage();
-          if (frozenBalanceForMortgage.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(Mortgage)");
+        case SPECIALIZED_MINT:
+          if (!accountCapsule.checkFrozenTimeForSpecializedMintLimit()){
+            throw new ContractValidateException("It's not time to unfreeze(SpecializedMint).");
           }
-          if (frozenBalanceForMortgage.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(Mortgage).");
+
+          Frozen frozenBalanceForSpecializedMint = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSpecializedMint();
+          if (frozenBalanceForSpecializedMint.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SpecializedMint)");
           }
+//          if (frozenBalanceForSpecializedMint.getExpireTime() > now) {
+//            throw new ContractValidateException("It's not time to unfreeze(SpecializedMint).");
+//          }
           break;
         case BONUS:
           Frozen frozenBalanceForBonus = accountCapsule.getAccountResource()

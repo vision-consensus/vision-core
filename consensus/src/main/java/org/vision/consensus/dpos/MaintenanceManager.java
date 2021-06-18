@@ -132,7 +132,7 @@ public class MaintenanceManager {
         }
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long maxVoteCounts = (long) ((account.getMortgageFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
+        long maxVoteCounts = (long) ((account.getSpecializedMintFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
                 /(dynamicPropertiesStore.getSrFreezeLowestPercent() / SR_FREEZE_LOWEST_PRECISION));
 
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
@@ -295,15 +295,15 @@ public class MaintenanceManager {
     BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
     long totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
     BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
-    long totalMortgageWeight = dynamicPropertiesStore.getTotalMortgageWeight();
-    BigDecimal bigTotalMortgageWeight = new BigDecimal(totalMortgageWeight);
+    long totalSpecializedMintWeight = dynamicPropertiesStore.getTotalSpecializedMintWeight();
+    BigDecimal bigTotalSpecializedMintWeight = new BigDecimal(totalSpecializedMintWeight);
     long voteSum = mortgageService.getVoteSum();
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
     long totalBonusWeight = dynamicPropertiesStore.getTotalBonusWeight();
     BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
-    BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalMortgageWeight);
+    BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSpecializedMintWeight);
     long initialReservedAmount = dynamicPropertiesStore.getInitialReservedAmount();
     BigDecimal bigInitialReservedAmount = new BigDecimal(initialReservedAmount);
     long galaxyBalance = accountStore.getGalaxy().getBalance();

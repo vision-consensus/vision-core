@@ -356,9 +356,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getTotalMortgageWeight();
+      this.getTotalSpecializedMintWeight();
     } catch (IllegalArgumentException e) {
-      this.saveTotalMortgageWeight(0L);
+      this.saveTotalSpecializedMintWeight(0L);
     }
 
     try {
@@ -1132,17 +1132,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
   }
 
-  public void saveTotalMortgageWeight(long totalMortgageWeight) {
-    this.put(DynamicResourceProperties.TOTAL_MORTGAGE_WEIGHT,
-            new BytesCapsule(ByteArray.fromLong(totalMortgageWeight)));
+  public void saveTotalSpecializedMintWeight(long totalSpecializedMintWeight) {
+    this.put(DynamicResourceProperties.TOTAL_SPECIALIZED_MINT_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalSpecializedMintWeight)));
   }
 
-  public long getTotalMortgageWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_MORTGAGE_WEIGHT))
+  public long getTotalSpecializedMintWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPECIALIZED_MINT_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_MORTGAGE_WEIGHT"));
+            () -> new IllegalArgumentException("not found TOTAL_SPECIALIZED_MINT_WEIGHT"));
   }
 
   public void saveTotalAssets(long totalAssets) {
@@ -2167,10 +2167,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   //The unit is vs
-  public void addTotalMortgageWeight(long amount) {
-    long totalMortgageWeight = getTotalMortgageWeight();
-    totalMortgageWeight += amount;
-    saveTotalMortgageWeight(totalMortgageWeight);
+  public void addTotalSpecializedMintWeight(long amount) {
+    long totalSpecializedMintWeight = getTotalSpecializedMintWeight();
+    totalSpecializedMintWeight += amount;
+    saveTotalSpecializedMintWeight(totalSpecializedMintWeight);
   }
 
   public void addTotalAssets(long amount) {
@@ -2473,7 +2473,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ENTROPY_LIMIT = "TOTAL_ENTROPY_LIMIT".getBytes();
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
 
-    private static final byte[] TOTAL_MORTGAGE_WEIGHT = "TOTAL_MORTGAGE_WEIGHT".getBytes();
+    private static final byte[] TOTAL_SPECIALIZED_MINT_WEIGHT = "TOTAL_SPECIALIZED_MINT_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] EXPANSION_RATE = "EXPANSION_RATE".getBytes();

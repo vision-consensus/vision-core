@@ -99,14 +99,14 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
-      case MORTGAGE:
-        long newFrozenBalanceForMortgage =
+      case SPECIALIZED_MINT:
+        long newFrozenBalanceForSpecializedMint =
                 frozenBalance + accountCapsule.getAccountResource()
-                        .getFrozenBalanceForMortgage()
+                        .getFrozenBalanceForSpecializedMint()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForMortgage(newFrozenBalanceForMortgage, expireTime);
+        accountCapsule.setFrozenForSpecializedMint(newFrozenBalanceForSpecializedMint, expireTime);
         dynamicStore
-                .addTotalMortgageWeight(frozenBalance / VS_PRECISION);
+                .addTotalSpecializedMintWeight(frozenBalance / VS_PRECISION);
         break;
       case BONUS:
         long newFrozenBalanceForBonus =
@@ -202,7 +202,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case ENTROPY:
         break;
-      case MORTGAGE:
+      case SPECIALIZED_MINT:
         break;
       case BONUS:
         break;

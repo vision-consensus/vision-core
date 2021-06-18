@@ -34,7 +34,8 @@ import org.vision.protos.contract.AccountContract.AccountUpdateContract;
 import java.util.List;
 import java.util.Map;
 
-import static org.vision.core.config.Parameter.ChainConstant.MORTGAGE_VS_THRESHOLD;
+import static org.vision.core.config.Parameter.ChainConstant.SPECIALIZED_MINT_VS_THRESHOLD;
+import static org.vision.core.config.Parameter.ChainConstant.UN_FREEZE_SPECIALIZED_MINT_LIMIT;
 
 @Slf4j(topic = "capsule")
 public class AccountCapsule implements ProtoCapsule<Account>, Comparable<AccountCapsule> {
@@ -1032,27 +1033,45 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
             .build();
   }
 
-  public void setFrozenForMortgage(long newFrozenBalanceForMortgage, long time) {
-    Frozen newFrozenForMortgage = Frozen.newBuilder()
-            .setFrozenBalance(newFrozenBalanceForMortgage)
+  public long getFrozenTimeForSpecializedMint() {
+    return this.account.getAccountResource().getFrozenTimeForSpecializedMint();
+  }
+
+  public boolean checkFrozenTimeForSpecializedMintLimit(){
+    long currentTime = System.currentTimeMillis();
+    long interval_time = currentTime - getFrozenTimeForSpecializedMint();
+
+    if (interval_time / 1000 / 60 / 60 / 24 > UN_FREEZE_SPECIALIZED_MINT_LIMIT){
+      return true;
+    }
+
+    return false;
+  }
+
+  public void setFrozenForSpecializedMint(long newFrozenBalanceForSpecializedMint, long time) {
+    Frozen newFrozenForSpecializedMint = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForSpecializedMint)
             .setExpireTime(time)
             .build();
 
+    long currentTime = System.currentTimeMillis();
     AccountResource newAccountResource = getAccountResource().toBuilder()
-            .setFrozenBalanceForMortgage(newFrozenForMortgage).build();
+            .setFrozenBalanceForSpecializedMint(newFrozenForSpecializedMint)
+            .setFrozenTimeForSpecializedMint(currentTime)
+            .build();
 
     this.account = this.account.toBuilder()
             .setAccountResource(newAccountResource)
             .build();
   }
 
-  public long getMortgageFrozenBalance() {
-    return this.account.getAccountResource().getFrozenBalanceForMortgage().getFrozenBalance();
+  public long getSpecializedMintFrozenBalance() {
+    return this.account.getAccountResource().getFrozenBalanceForSpecializedMint().getFrozenBalance();
   }
 
-  // check: whether the mortgage balance is greater than MORTGAGE_VS_THRESHOLD
-  public boolean checkMortgageFrozenBalance(){
-    if (getMortgageFrozenBalance() >= MORTGAGE_VS_THRESHOLD){
+  // check: whether the specialized_mint balance is greater than SPECIALIZED_MINT_VS_THRESHOLD
+  public boolean checkSpecializedMintFrozenBalance(){
+    if (getSpecializedMintFrozenBalance() >= SPECIALIZED_MINT_VS_THRESHOLD){
       return true;
     }
     return false;

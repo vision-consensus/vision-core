@@ -207,8 +207,9 @@ message Account {
     // the frozen balance for bonus
     Frozen frozen_balance_for_bonus = 9;
 
-    // the frozen balance for mortgage
-    Frozen frozen_balance_for_mortgage = 10;
+    // the frozen balance for specialized_mint
+    Frozen frozen_balance_for_specialized_mint = 10;
+    int64 frozen_time_for_specialized_mint = 11;
 
   }
   AccountResource account_resource = 26;
@@ -266,7 +267,7 @@ message Witness {
   bool isJobs = 9;
   //the weight of vote count
   int64 voteCountWeight = 10;
-  //the threshold of mortgage
+  //the threshold of specialized_mint
   int64 voteCountThreshold = 11;
 }
 
