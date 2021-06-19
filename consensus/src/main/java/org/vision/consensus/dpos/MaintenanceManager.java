@@ -40,7 +40,7 @@ public class MaintenanceManager {
 
   private static final long LOW_EXPANSION_RATE = 689L;
 
-  private static final long PLEDGE_RATE_THRESHOLD = 67L;
+  private static final long PLEDGE_RATE_THRESHOLD = 60L;
 
   private static final long FIRST_ECONOMIC_CYCLE = 42L;
 
