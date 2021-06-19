@@ -93,9 +93,9 @@ public class MortgageService {
     adjustAllowance(witnessAddress, brokerageAmount);
   }
 
-  public void payLiquidMintReward(long value) {
+  public void paySpreadMintReward(long value) {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    delegationStore.addLiquidMintReward(cycle, value);
+    delegationStore.addSpreadMintReward(cycle, value);
   }
 
   public void withdrawReward(byte[] address) {
@@ -200,18 +200,18 @@ public class MortgageService {
           Hex.toHexString(accountCapsule.getAddress().toByteArray()), Hex.toHexString(srAddress),
           userVote, totalVote, totalReward, reward);
     }
-    //with liquid mint reward
-    reward += computeLiquidMintReward(cycle, accountCapsule);
+    //with spread mint reward
+    reward += computeSpreadMintReward(cycle, accountCapsule);
     return reward;
   }
 
-  private long computeLiquidMintReward(long cycle, AccountCapsule accountCapsule) {
-    long totalFreeze = delegationStore.getTotalFreezeBalanceForBonus(cycle);
+  private long computeSpreadMintReward(long cycle, AccountCapsule accountCapsule) {
+    long totalFreeze = delegationStore.getTotalFreezeBalanceForSpreadMint(cycle);
     if(totalFreeze==0L){
       return 0;
     }
-    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForBonus().getFrozenBalance();
-    long totalReward = delegationStore.getLiquidMintReward(cycle);
+    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    long totalReward = delegationStore.getSpreadMintReward(cycle);
     return totalReward * accountFreeze / totalFreeze;
   }
 

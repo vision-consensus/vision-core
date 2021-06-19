@@ -204,8 +204,8 @@ message Account {
     int64 storage_usage = 7;
     int64 latest_exchange_storage_time = 8;
 
-    // the frozen balance for bonus
-    Frozen frozen_balance_for_bonus = 9;
+    // the frozen balance for spread_mint
+    Frozen frozen_balance_for_spread = 9;
 
     // the frozen balance for specialized_mint
     Frozen frozen_balance_for_specialized_mint = 10;

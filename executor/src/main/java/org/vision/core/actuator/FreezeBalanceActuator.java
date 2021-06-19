@@ -108,12 +108,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
                 .addTotalSpecializedMintWeight(frozenBalance / VS_PRECISION);
         break;
-      case BONUS:
-        long newFrozenBalanceForBonus =
+      case SPREAD:
+        long newFrozenBalanceForSpreadMint =
                 frozenBalance + accountCapsule.getAccountResource()
-                        .getFrozenBalanceForBonus().getFrozenBalance();
-        accountCapsule.setFrozenForBonus(newFrozenBalanceForBonus, expireTime);
-        dynamicStore.addTotalBonusWeight(frozenBalance / VS_PRECISION);
+                        .getFrozenBalanceForSpread().getFrozenBalance();
+        accountCapsule.setFrozenForSpread(newFrozenBalanceForSpreadMint, expireTime);
+        dynamicStore.addTotalSpreadMintWeight(frozenBalance / VS_PRECISION);
         break;
       default:
         logger.debug("Resource Code Error.");
@@ -204,7 +204,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case SPECIALIZED_MINT:
         break;
-      case BONUS:
+      case SPREAD:
         break;
       default:
         throw new ContractValidateException(

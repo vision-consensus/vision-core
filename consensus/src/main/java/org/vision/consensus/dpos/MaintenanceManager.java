@@ -176,8 +176,8 @@ public class MaintenanceManager {
         delegationStore.setBrokerage(nextCycle, witness.createDbKey(),
             delegationStore.getBrokerage(witness.createDbKey()));
         delegationStore.setWitnessVote(nextCycle, witness.createDbKey(), witness.getVoteCountWeight());
-        //liquid mint total freeze
-        delegationStore.setTotalFreezeBalanceForBonus(nextCycle, consensusDelegate.getDynamicPropertiesStore().getTotalBonusWeight());
+        //spread mint total freeze
+        delegationStore.setTotalFreezeBalanceForSpreadMint(nextCycle, consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       });
     }
     calculationCyclePledgeRate();
@@ -301,8 +301,8 @@ public class MaintenanceManager {
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
-    long totalBonusWeight = dynamicPropertiesStore.getTotalBonusWeight();
-    BigDecimal bigTotalBonusWeight = new BigDecimal(totalBonusWeight);
+    long totalSpreadMintWeight = dynamicPropertiesStore.getTotalSpreadMintWeight();
+    BigDecimal bigTotalSpreadMintWeight = new BigDecimal(totalSpreadMintWeight);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSpecializedMintWeight);
     long initialReservedAmount = dynamicPropertiesStore.getInitialReservedAmount();
     BigDecimal bigInitialReservedAmount = new BigDecimal(initialReservedAmount);
@@ -310,7 +310,7 @@ public class MaintenanceManager {
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
     long singularityBalance = accountStore.getSingularity().getBalance();
     BigDecimal bigSingularityBalance = new BigDecimal(singularityBalance);
-    BigDecimal assets= bigTotalAssets.add(bigTotalBonusWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
+    BigDecimal assets= bigTotalAssets.add(bigTotalSpreadMintWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
             .add(bigInitialReservedAmount).subtract(bigGalaxyBalance).subtract(bigSingularityBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);

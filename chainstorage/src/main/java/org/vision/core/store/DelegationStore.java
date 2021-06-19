@@ -63,8 +63,8 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
-  public void addLiquidMintReward(long cycle, long value) {
-    byte[] key = buildLiquidMintRewordKey(cycle);
+  public void addSpreadMintReward(long cycle, long value) {
+    byte[] key = buildSpreadMintRewordKey(cycle);
     BytesCapsule bytesCapsule = get(key);
     if (bytesCapsule == null) {
       put(key, new BytesCapsule(ByteArray.fromLong(value)));
@@ -74,8 +74,8 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
-  public long getLiquidMintReward(long cycle) {
-    BytesCapsule bytesCapsule = get(buildLiquidMintRewordKey(cycle));
+  public long getSpreadMintReward(long cycle) {
+    BytesCapsule bytesCapsule = get(buildSpreadMintRewordKey(cycle));
     if (bytesCapsule == null) {
       return 0L;
     } else {
@@ -127,12 +127,12 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
-  public void setTotalFreezeBalanceForBonus(long cycle, long balance) {
-    put(buildLiquidMintFreezeBalanceKey(cycle), new BytesCapsule(ByteArray.fromLong(balance)));
+  public void setTotalFreezeBalanceForSpreadMint(long cycle, long balance) {
+    put(buildSpreadMintFreezeBalanceKey(cycle), new BytesCapsule(ByteArray.fromLong(balance)));
   }
 
-  public long getTotalFreezeBalanceForBonus(long cycle) {
-    BytesCapsule bytesCapsule = get(buildLiquidMintFreezeBalanceKey(cycle));
+  public long getTotalFreezeBalanceForSpreadMint(long cycle) {
+    BytesCapsule bytesCapsule = get(buildSpreadMintFreezeBalanceKey(cycle));
     if (bytesCapsule == null) {
       return 0L;
     } else {
@@ -185,11 +185,11 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     return (cycle + "-" + Hex.toHexString(address) + "-brokerage").getBytes();
   }
 
-  private byte[] buildLiquidMintRewordKey(long cycle) {
-    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-liquid-mint-reward").getBytes();
+  private byte[] buildSpreadMintRewordKey(long cycle) {
+    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-spread-mint-reward").getBytes();
   }
 
-  private byte[] buildLiquidMintFreezeBalanceKey(long cycle) {
-    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-liquid-mint-freeze-balance").getBytes();
+  private byte[] buildSpreadMintFreezeBalanceKey(long cycle) {
+    return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-spread-mint-freeze-balance").getBytes();
   }
 }

@@ -198,14 +198,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   .setBalance(oldBalance + unfreezeBalance)
                   .setAccountResource(newSpecializedMint).build());
           break;
-        case BONUS:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForBonus()
+        case SPREAD:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
                   .getFrozenBalance();
-          AccountResource newBonus = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForBonus().build();
+          AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSpread().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newBonus).build());
+                  .setAccountResource(newSpread).build());
           break;
         default:
           //this should never happen
@@ -223,8 +223,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case BONUS:
-        dynamicStore.addTotalBonusWeight(-unfreezeBalance / VS_PRECISION);
+      case SPREAD:
+        dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
         break;
       case SPECIALIZED_MINT:
         dynamicStore
@@ -427,14 +427,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 //            throw new ContractValidateException("It's not time to unfreeze(SpecializedMint).");
 //          }
           break;
-        case BONUS:
-          Frozen frozenBalanceForBonus = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForBonus();
-          if (frozenBalanceForBonus.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(Bonus)");
+        case SPREAD:
+          Frozen frozenBalanceForSpread = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSpread();
+          if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
-          if (frozenBalanceForBonus.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(Bonus).");
+          if (frozenBalanceForSpread.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
           }
 
           break;

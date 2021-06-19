@@ -2336,29 +2336,29 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found ALLOW_BLACKHOLE_OPTIMIZATION"));
   }
 
-  public void addTotalBonusWeight(long amount) {
-      long totalBonusWeight = getTotalBonusWeight();
-      totalBonusWeight += amount;
-      saveTotalBonusWeight(totalBonusWeight);
+  public void addTotalSpreadMintWeight(long amount) {
+      long totalSpreadMintWeight = getTotalSpreadMintWeight();
+      totalSpreadMintWeight += amount;
+      saveTotalSpreadMintWeight(totalSpreadMintWeight);
     }
 
-  public void saveTotalBonusWeight(long totalBonusWeight) {
-    this.put(DynamicResourceProperties.TOTAL_BONUS_WEIGHT,
-            new BytesCapsule(ByteArray.fromLong(totalBonusWeight)));
+  public void saveTotalSpreadMintWeight(long totalSpreadMintWeight) {
+    this.put(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalSpreadMintWeight)));
   }
 
-  public long getTotalBonusWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_BONUS_WEIGHT))
+  public long getTotalSpreadMintWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(0L);
   }
 
-  public long getLiquidMintPayPerBlock() {
+  public long getSpreadMintPayPerBlock() {
     return 0L;
   }
 
-  public boolean supportLiquidMintBonus() {
+  public boolean supportSpreadMint() {
     return true;
   }
 
@@ -2484,7 +2484,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO =
         "ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"
             .getBytes();
-    private static final byte[] TOTAL_BONUS_WEIGHT = "TOTAL_BONUS_WEIGHT".getBytes();
+    private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
 
   }
 

@@ -1019,14 +1019,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = builder.build();
   }
 
-  public void setFrozenForBonus(long newFrozenBalanceForBonus, long time) {
-    Frozen newFrozenForBonus = Frozen.newBuilder()
-            .setFrozenBalance(newFrozenBalanceForBonus)
+  public void setFrozenForSpread(long newFrozenBalanceForSpread, long time) {
+    Frozen newFrozenForSpread = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForSpread)
             .setExpireTime(time)
             .build();
 
     AccountResource newAccountResource = getAccountResource().toBuilder()
-            .setFrozenBalanceForBonus(newFrozenForBonus).build();
+            .setFrozenBalanceForSpread(newFrozenForSpread).build();
 
     this.account = this.account.toBuilder()
             .setAccountResource(newAccountResource)
