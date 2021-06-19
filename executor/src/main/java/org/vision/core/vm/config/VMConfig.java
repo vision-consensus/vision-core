@@ -29,26 +29,26 @@ public class VMConfig {
 
 //  public static final int MAX_FEE_LIMIT = 1_000_000_000; //1000 VS
 
-  private static boolean vmTraceCompressed = true;
+  private static boolean vmTraceCompressed = false;
 
   @Setter
-  private static boolean vmTrace = true;
+  private static boolean vmTrace = false;
 
-  private static boolean ALLOW_VVM_TRANSFER_VRC10 = true;
+  private static boolean ALLOW_VVM_TRANSFER_VRC10 = false;
 
-  private static boolean ALLOW_VVM_CONSTANTINOPLE = true;
+  private static boolean ALLOW_VVM_CONSTANTINOPLE = false;
 
-  private static boolean ALLOW_MULTI_SIGN = true;
+  private static boolean ALLOW_MULTI_SIGN = false;
 
-  private static boolean ALLOW_VVM_SOLIDITY_059 = true;
+  private static boolean ALLOW_VVM_SOLIDITY_059 = false;
 
-  private static boolean ALLOW_SHIELDED_VRC20_TRANSACTION = true;
+  private static boolean ALLOW_SHIELDED_VRC20_TRANSACTION = false;
 
-  private static boolean ALLOW_VVM_ISTANBUL = true;
+  private static boolean ALLOW_VVM_ISTANBUL = false;
 
-  private static boolean ALLOW_VVM_STAKE = true;
+  private static boolean ALLOW_VVM_STAKE = false;
 
-  private static boolean ALLOW_VVM_ASSET_ISSUE = true;
+  private static boolean ALLOW_VVM_ASSET_ISSUE = false;
 
   private VMConfig() {
   }
