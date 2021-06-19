@@ -186,17 +186,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
-        case SPECIALIZED_MINT:
-          if (!accountCapsule.checkFrozenTimeForSpecializedMintLimit()){
-            throw new ContractExeException("");
-          }
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpecializedMint()
+        case SRGUARANTEE:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSrguarantee()
                   .getFrozenBalance();
-          AccountResource newSpecializedMint = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForSpecializedMint().build();
+          AccountResource newSRGuarantee = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSrguarantee().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newSpecializedMint).build());
+                  .setAccountResource(newSRGuarantee).build());
           break;
         case SPREAD:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
@@ -226,9 +223,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case SPREAD:
         dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case SPECIALIZED_MINT:
+      case SRGUARANTEE:
         dynamicStore
-                .addTotalSpecializedMintWeight(-unfreezeBalance / VS_PRECISION);
+                .addTotalSRGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -413,19 +410,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
           break;
-        case SPECIALIZED_MINT:
-          if (!accountCapsule.checkFrozenTimeForSpecializedMintLimit()){
-            throw new ContractValidateException("It's not time to unfreeze(SpecializedMint).");
+        case SRGUARANTEE:
+          Frozen frozenBalanceForSRGuarantee = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSrguarantee();
+          if (frozenBalanceForSRGuarantee.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SRGuarantee)");
           }
-
-          Frozen frozenBalanceForSpecializedMint = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForSpecializedMint();
-          if (frozenBalanceForSpecializedMint.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(SpecializedMint)");
+          if (frozenBalanceForSRGuarantee.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(SRGuarantee).");
           }
-//          if (frozenBalanceForSpecializedMint.getExpireTime() > now) {
-//            throw new ContractValidateException("It's not time to unfreeze(SpecializedMint).");
-//          }
           break;
         case SPREAD:
           Frozen frozenBalanceForSpread = accountCapsule.getAccountResource()

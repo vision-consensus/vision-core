@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "actuator")
 public class FreezeBalanceActuator extends AbstractActuator {
@@ -99,14 +98,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
-      case SPECIALIZED_MINT:
-        long newFrozenBalanceForSpecializedMint =
+      case SRGUARANTEE:
+        long srGuaranteeExpireTime = now + UN_FREEZE_SSRGUARANTEE_LIMIT * FROZEN_PERIOD;
+        long newFrozenBalanceForSRGuarantee =
                 frozenBalance + accountCapsule.getAccountResource()
-                        .getFrozenBalanceForSpecializedMint()
+                        .getFrozenBalanceForSrguarantee()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForSpecializedMint(newFrozenBalanceForSpecializedMint, expireTime);
+        accountCapsule.setFrozenForSRGuarantee(newFrozenBalanceForSRGuarantee, srGuaranteeExpireTime);
         dynamicStore
-                .addTotalSpecializedMintWeight(frozenBalance / VS_PRECISION);
+                .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
         long newFrozenBalanceForSpreadMint =
@@ -202,7 +202,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case ENTROPY:
         break;
-      case SPECIALIZED_MINT:
+      case SRGUARANTEE:
         break;
       case SPREAD:
         break;
