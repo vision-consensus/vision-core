@@ -169,6 +169,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
   private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
 
+  private static final byte[] SPREAD_MINT_REWARD = "SPREAD_MINT_REWARD".getBytes();
+
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
     super(dbName);
@@ -814,6 +816,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getSrFreezeLowestPercent();
     } catch (IllegalArgumentException e) {
       this.saveSrFreezeLowestPercent(CommonParameter.getInstance().getSrFreezeLowestPercent());
+    }
+    try {
+      this.getSpreadMintReward();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintReward(45000L);
     }
 
   }
@@ -2448,6 +2455,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
+  }
+
+  public void saveSpreadMintReward(long value) {
+    this.put(SPREAD_MINT_REWARD, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getSpreadMintReward() {
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_REWARD))
+              .map(BytesCapsule::getData)
+              .map(ByteArray::toLong)
+              .orElse(45000L);
   }
 
 

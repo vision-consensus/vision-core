@@ -1,11 +1,12 @@
 package org.vision.core.consensus;
 
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.capsule.ProposalCapsule;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.db.Manager;
 import org.vision.core.utils.ProposalUtil;
+
+import java.util.Map;
 
 /**
  * Notice:
@@ -240,6 +241,10 @@ public class ProposalService extends ProposalUtil {
         }
         case ALLOW_BLACKHOLE_OPTIMIZATION: {
           manager.getDynamicPropertiesStore().saveAllowBlackHoleOptimization(entry.getValue());
+          break;
+        }
+        case SPREAD_MINT_REWARD: {
+          manager.getDynamicPropertiesStore().saveSpreadMintReward(entry.getValue());
           break;
         }
         default:

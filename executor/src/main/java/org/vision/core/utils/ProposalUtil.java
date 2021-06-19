@@ -433,6 +433,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case SPREAD_MINT_REWARD: {
+        if (value < 0 || value > 100_000_000L) {
+          throw new ContractValidateException(
+              "Bad SPREAD_MINT_REWARD parameter value, valid range is [0,100_000_000L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -485,7 +492,8 @@ public class ProposalUtil {
     MARKET_CANCEL_FEE(46), // 0 [0,10_000_000_000]
     MAX_FEE_LIMIT(47), // [0, 10_000_000_000]
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
-    ALLOW_BLACKHOLE_OPTIMIZATION(49);// 0,1
+    ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
+    SPREAD_MINT_REWARD(50);// [0,100_000_000]
 
     private long code;
 
