@@ -171,6 +171,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] SPREAD_MINT_REWARD = "SPREAD_MINT_REWARD".getBytes();
 
+  private static final byte[] ECONOMY_CYCLE_RATE = "ECONOMY_CYCLE_RATE".getBytes();
+
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
     super(dbName);
@@ -774,6 +776,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getAllowBlackHoleOptimization();
     } catch (IllegalArgumentException e) {
       this.saveAllowBlackHoleOptimization(CommonParameter.getInstance().getAllowBlackHoleOptimization());
+    }
+
+    try {
+      this.getEconomyCycleRate();
+    } catch (IllegalArgumentException e) {
+      this.saveBlockEntropyUsage(120L);
     }
 
     try {
@@ -1980,6 +1988,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException(msg));
   }
 
+
   public boolean supportShieldedTransaction() {
     return getAllowShieldedTransaction() == 1L;
   }
@@ -2467,6 +2476,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
               .map(ByteArray::toLong)
               .orElse(45000L);
   }
+
+  public void saveEconomyCycleRate(long value) {
+    this.put(ECONOMY_CYCLE_RATE,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getEconomyCycleRate() {
+    return Optional.ofNullable(getUnchecked(ECONOMY_CYCLE_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(120L);
+  }
+
 
 
   private static class DynamicResourceProperties {

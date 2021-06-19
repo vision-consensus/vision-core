@@ -433,6 +433,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case ECONOMY_CYCLE_RATE: {
+        if (value < 1 || value > 500) {
+          throw new ContractValidateException(
+                  "Bad chain parameter value, ECONOMY_CYCLE_RATE's valid range is [1,500]");
+        }
+        break;
+      }
       case SPREAD_MINT_REWARD: {
         if (value < 0 || value > 100_000_000L) {
           throw new ContractValidateException(
@@ -493,7 +500,8 @@ public class ProposalUtil {
     MAX_FEE_LIMIT(47), // [0, 10_000_000_000]
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
     ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
-    SPREAD_MINT_REWARD(50);// [0,100_000_000]
+    SPREAD_MINT_REWARD(50),// [0,100_000_000]
+    ECONOMY_CYCLE_RATE(51); // [1,500]
 
     private long code;
 
