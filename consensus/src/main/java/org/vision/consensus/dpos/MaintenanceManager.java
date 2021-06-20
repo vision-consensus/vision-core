@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 
 import static org.vision.common.utils.WalletUtil.getAddressStringList;
 import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -285,11 +286,11 @@ public class MaintenanceManager {
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long totalPhotonWeight = dynamicPropertiesStore.getTotalPhotonWeight();
-    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight);
+    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight).multiply(new BigDecimal(VS_PRECISION));
     long totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
-    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight);
+    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight).multiply(new BigDecimal(VS_PRECISION));
     long totalSRGuaranteeWeight = dynamicPropertiesStore.getTotalSRGuaranteeWeight();
-    BigDecimal bigTotalSRGuaranteeWeight = new BigDecimal(totalSRGuaranteeWeight);
+    BigDecimal bigTotalSRGuaranteeWeight = new BigDecimal(totalSRGuaranteeWeight).multiply(new BigDecimal(VS_PRECISION));
     long voteSum = mortgageService.getVoteSum();
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();

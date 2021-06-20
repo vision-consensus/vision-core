@@ -15,6 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -402,13 +403,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getGalaxyInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveGalaxyInitialAmount(100000000L);
+      this.saveGalaxyInitialAmount(100000000 * VS_PRECISION);
     }
 
     try {
       this.getAvalonInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveAvalonInitialAmount(800000000L);
+      this.saveAvalonInitialAmount(800000000 * VS_PRECISION);
     }
 
     try {
