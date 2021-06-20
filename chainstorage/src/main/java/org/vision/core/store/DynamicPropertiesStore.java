@@ -403,13 +403,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getGalaxyInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveGalaxyInitialAmount(100000000 * VS_PRECISION);
+      this.saveGalaxyInitialAmount(800000000 * VS_PRECISION);
     }
 
     try {
       this.getAvalonInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveAvalonInitialAmount(800000000 * VS_PRECISION);
+      this.saveAvalonInitialAmount(100000000 * VS_PRECISION);
     }
 
     try {
@@ -804,7 +804,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getEconomyCycleRate();
     } catch (IllegalArgumentException e) {
-      this.saveBlockEntropyUsage(120L);
+      this.saveEconomyCycleRate(120L);
     }
 
     try {

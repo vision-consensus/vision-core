@@ -188,6 +188,7 @@ public class MaintenanceManager {
       long endCycle = cycle;
       long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
       saveExpansionRate(pledgeRate);
+      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 1200 + 1));
     }
   }
 
