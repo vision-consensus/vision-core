@@ -1407,6 +1407,7 @@ public class Manager {
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
             .getRawData().getWitnessAddress().toByteArray());
+    long spreadMintPayPerBlock = 0L;
     if (getDynamicPropertiesStore().allowChangeDelegation()) {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlock());
@@ -1414,6 +1415,7 @@ public class Manager {
       //spread mint
       if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
         mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
+        spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
       }
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
@@ -1441,6 +1443,9 @@ public class Manager {
                         - transactionFeeReward);
       }
 
+      long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
+      long witness100PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
+      chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
       getAccountStore().put(account.createDbKey(), account);
     }
   }

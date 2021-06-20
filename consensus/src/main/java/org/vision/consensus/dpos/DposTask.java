@@ -122,9 +122,6 @@ public class DposTask {
           new Sha256Hash(raw.getNumber(), Sha256Hash.of(CommonParameter
               .getInstance().isECKeyCryptoEngine(), raw.toByteArray())),
           ByteArray.toHexString(raw.getParentHash().toByteArray()));
-      long witnessPayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitnessPayPerBlock();
-      long witness100PayPerBlock = consensusDelegate.getDynamicPropertiesStore().getWitness100PayPerBlock();
-      consensusDelegate.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock);
     }
     return State.OK;
   }
