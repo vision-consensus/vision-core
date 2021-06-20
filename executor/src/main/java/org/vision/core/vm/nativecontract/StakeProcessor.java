@@ -25,7 +25,6 @@ import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "Processor")
 public class StakeProcessor {
-  private static final long VOTE_PERCENT_PRECISION = 100L;
 
   public void process(StakeParam stakeParam, Repository repository)
       throws ContractValidateException, ContractExeException {

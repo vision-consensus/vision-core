@@ -440,10 +440,10 @@ public class ProposalUtil {
         }
         break;
       }
-      case SPREAD_MINT_REWARD: {
+      case SPREAD_MINT_PAY_PER_BLOCK: {
         if (value < 0 || value > 100_000_000L) {
           throw new ContractValidateException(
-              "Bad SPREAD_MINT_REWARD parameter value, valid range is [0,100_000_000L]");
+              "Bad SPREAD_MINT_PAY_PER_BLOCK parameter value, valid range is [0,100_000_000L]");
         }
         break;
       }
@@ -500,7 +500,7 @@ public class ProposalUtil {
     MAX_FEE_LIMIT(47), // [0, 10_000_000_000]
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
     ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
-    SPREAD_MINT_REWARD(50),// [0,100_000_000]
+    SPREAD_MINT_PAY_PER_BLOCK(50),// [0,100_000_000]
     ECONOMY_CYCLE_RATE(51); // [1,500]
 
     private long code;

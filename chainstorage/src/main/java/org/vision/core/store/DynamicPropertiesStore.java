@@ -168,7 +168,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
   private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
 
-  private static final byte[] SPREAD_MINT_REWARD = "SPREAD_MINT_REWARD".getBytes();
+  private static final byte[] SPREAD_MINT_PAY_PER_BLOCK = "SPREAD_MINT_PAY_PER_BLOCK".getBytes();
 
   private static final byte[] ECONOMY_CYCLE_RATE = "ECONOMY_CYCLE_RATE".getBytes();
 
@@ -294,7 +294,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessStandbyAllowance();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessStandbyAllowance(7_200_000_000L);//1VS
+      this.saveWitnessStandbyAllowance(7_200_000_000L);//1VS TODO there is a problem to fix
     }
 
     try {
@@ -848,12 +848,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     } catch (IllegalArgumentException e) {
       this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
     }
-    try {
-      this.getSpreadMintReward();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadMintReward(45000L);
-    }
 
+    try {
+      this.getSpreadMintPayPerBlock();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintPayPerBlock(256000L);//0.256vs
+    }
   }
 
   public String intArrayToString(int[] a) {
@@ -2427,7 +2427,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public long getSpreadMintPayPerBlock() {
-    return 256000L;
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_PAY_PER_BLOCK))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(256000L);
   }
 
   public boolean supportSpreadMint() {
@@ -2522,15 +2525,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
   }
 
-  public void saveSpreadMintReward(long value) {
-    this.put(SPREAD_MINT_REWARD, new BytesCapsule(ByteArray.fromLong(value)));
-  }
-
-  public long getSpreadMintReward() {
-    return Optional.ofNullable(getUnchecked(SPREAD_MINT_REWARD))
-              .map(BytesCapsule::getData)
-              .map(ByteArray::toLong)
-              .orElse(45000L);
+  public void saveSpreadMintPayPerBlock(long value) {
+    this.put(SPREAD_MINT_PAY_PER_BLOCK, new BytesCapsule(ByteArray.fromLong(value)));
   }
 
   public void saveEconomyCycleRate(long value) {

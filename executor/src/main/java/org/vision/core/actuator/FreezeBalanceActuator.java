@@ -99,7 +99,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
       case SRGUARANTEE:
-        long srGuaranteeExpireTime = now + UN_FREEZE_SSRGUARANTEE_LIMIT * FROZEN_PERIOD;
+        long srGuaranteeExpireTime = now + UN_FREEZE_SRGUARANTEE_LIMIT;
         long newFrozenBalanceForSRGuarantee =
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForSrguarantee()

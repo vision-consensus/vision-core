@@ -247,8 +247,8 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveEconomyCycleRate(entry.getValue());
           break;
         }
-        case SPREAD_MINT_REWARD: {
-          manager.getDynamicPropertiesStore().saveSpreadMintReward(entry.getValue());
+        case SPREAD_MINT_PAY_PER_BLOCK: {
+          manager.getDynamicPropertiesStore().saveSpreadMintPayPerBlock(entry.getValue());
           break;
         }
         default:
