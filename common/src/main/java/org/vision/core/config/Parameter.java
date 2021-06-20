@@ -67,6 +67,7 @@ public class Parameter {
     public static final long VS_PRECISION = 1000_000L;
 //    public static final long SRGUARANTEE_VS_THRESHOLD = 5000*1000_000L;
     public static final int UN_FREEZE_SSRGUARANTEE_LIMIT = 23;
+    public static final int FIRST_ECONOMY_CYCLE_RATE = 42;
   }
 
   public class NodeConstant {

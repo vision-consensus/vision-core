@@ -63,8 +63,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] WITNESS_100_PAY_PER_BLOCK = "WITNESS_100_PAY_PER_BLOCK".getBytes();
 
-  private static final byte[] ECONOMIC_CYCLE = "ECONOMIC_CYCLE".getBytes();
-
   private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
   private static final byte[] ENTROPY_FEE = "ENTROPY_FEE".getBytes();
   private static final byte[] MAX_CPU_TIME_OF_ONE_TX = "MAX_CPU_TIME_OF_ONE_TX".getBytes();
@@ -380,13 +378,37 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
         this.getExpansionRate();
     } catch (IllegalArgumentException e) {
-        this.saveExpansionRate(1100L);
+        this.saveExpansionRate(0L);
     }
 
     try {
-      this.getInitialReservedAmount();
+      this.getPledgeRateThreshold();
     } catch (IllegalArgumentException e) {
-      this.saveInitialReservedAmount(100000000L);
+      this.savePledgeRateThreshold(60L);
+    }
+
+    try {
+      this.getLowExpansionRate();
+    } catch (IllegalArgumentException e) {
+      this.saveLowExpansionRate(689L);
+    }
+
+    try {
+      this.getHighExpansionRate();
+    } catch (IllegalArgumentException e) {
+      this.saveHighExpansionRate(2322L);
+    }
+
+    try {
+      this.getGalaxyInitialAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveGalaxyInitialAmount(100000000L);
+    }
+
+    try {
+      this.getAvalonInitialAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveAvalonInitialAmount(800000000L);
     }
 
     try {
@@ -1029,19 +1051,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(1500000L);
   }
 
-  public void saveEconomicCycle(long pay) {
-    logger.debug("ECONOMIC_CYCLE:" + pay);
-    this.put(ECONOMIC_CYCLE,
-            new BytesCapsule(ByteArray.fromLong(pay)));
-  }
-
-  public long getEconomicCycle() {
-    return Optional.ofNullable(getUnchecked(ECONOMIC_CYCLE))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(120L);
-  }
-
   public void saveWitnessStandbyAllowance(long allowance) {
     logger.debug("WITNESS_STANDBY_ALLOWANCE:" + allowance);
     this.put(WITNESS_STANDBY_ALLOWANCE,
@@ -1169,8 +1178,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ASSETS))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found TOTAL_ASSETS"));
+            .orElse(0L);
   }
 
   public void savePledgeRate(long pledgeRate) {
@@ -1182,8 +1190,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PLEDGE_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found PLEDGE_RATE"));
+            .orElse(0L);
   }
 
   public void saveExpansionRate(long expansionRate) {
@@ -1195,19 +1202,67 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.EXPANSION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(1100L);
+            .orElse(0L);
   }
 
-  public void saveInitialReservedAmount(long expansionRate) {
-    this.put(DynamicResourceProperties.INITIAL_RESERVED_AMOUNT,
-            new BytesCapsule(ByteArray.fromLong(expansionRate)));
+  public void savePledgeRateThreshold(long pledgeRateThreshold) {
+    this.put(DynamicResourceProperties.PLEDGE_RATE_THRESHOLD,
+            new BytesCapsule(ByteArray.fromLong(pledgeRateThreshold)));
   }
 
-  public long getInitialReservedAmount() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.INITIAL_RESERVED_AMOUNT))
+  public long getPledgeRateThreshold() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PLEDGE_RATE_THRESHOLD))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(60L);
+  }
+
+  public void saveLowExpansionRate(long lowExpansionRate) {
+    this.put(DynamicResourceProperties.LOW_EXPANSION_RATE,
+            new BytesCapsule(ByteArray.fromLong(lowExpansionRate)));
+  }
+
+  public long getLowExpansionRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LOW_EXPANSION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(689L);
+  }
+
+  public void saveHighExpansionRate(long highExpansionRate) {
+    this.put(DynamicResourceProperties.HIGH_EXPANSION_RATE,
+            new BytesCapsule(ByteArray.fromLong(highExpansionRate)));
+  }
+
+  public long getHighExpansionRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.HIGH_EXPANSION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(2322L);
+  }
+
+  public void saveGalaxyInitialAmount(long galaxyInitialAmount) {
+    this.put(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(galaxyInitialAmount)));
+  }
+
+  public long getGalaxyInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(100000000L);
+  }
+
+  public void saveAvalonInitialAmount(long avalonInitialAmount) {
+    this.put(DynamicResourceProperties.AVALON_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(avalonInitialAmount)));
+  }
+
+  public long getAvalonInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.AVALON_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(800000000L);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2517,7 +2572,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] EXPANSION_RATE = "EXPANSION_RATE".getBytes();
-    private static final byte[] INITIAL_RESERVED_AMOUNT = "INITIAL_RESERVED_AMOUNT".getBytes();
+    private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
+    private static final byte[] LOW_EXPANSION_RATE = "LOW_EXPANSION_RATE".getBytes();
+    private static final byte[] HIGH_EXPANSION_RATE = "HIGH_EXPANSION_RATE".getBytes();
+    private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
+    private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();
