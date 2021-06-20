@@ -249,8 +249,7 @@ public class MortgageService {
   private void sortWitness(List<ByteString> list) {
     list.sort(Comparator.comparingLong((ByteString b) -> {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
-      return witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
-              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight();
+      return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     })
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
   }
