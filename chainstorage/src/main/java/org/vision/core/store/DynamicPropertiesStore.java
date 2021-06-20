@@ -288,7 +288,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessPayPerBlock(105000L);//0.105000VS
+      this.saveWitnessPayPerBlock(144000L);//0.144000VS
     }
 
     try {
@@ -1049,7 +1049,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(WITNESS_100_PAY_PER_BLOCK))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(1500000L);
+        .orElse(1200000L);
   }
 
   public void saveWitnessStandbyAllowance(long allowance) {
@@ -2427,7 +2427,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public long getSpreadMintPayPerBlock() {
-    return 0L;
+    return 256000L;
   }
 
   public boolean supportSpreadMint() {
