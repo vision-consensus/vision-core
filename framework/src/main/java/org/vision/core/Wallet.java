@@ -944,7 +944,7 @@ public class Wallet {
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getWitness100PayPerBlock")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getPledgeRate()/ 1200 + 1))
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock())
         .build());
 
     builder.addChainParameter(
@@ -996,7 +996,7 @@ public class Wallet {
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSpreadMintReward")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintReward())
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
             .build());
 
     return builder.build();
