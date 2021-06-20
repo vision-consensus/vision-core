@@ -277,6 +277,7 @@ public class MaintenanceManager {
     dposService.getGenesisBlock().getWitnesses().forEach(witness -> {
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
       witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() - witness.getVoteCount());
+      witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() - witness.getVoteCount());
       consensusDelegate.saveWitness(witnessCapsule);
     });
     consensusDelegate.saveRemoveThePowerOfTheGr(-1);
