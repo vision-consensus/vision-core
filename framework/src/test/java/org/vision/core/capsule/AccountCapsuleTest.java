@@ -1,16 +1,8 @@
 package org.vision.core.capsule;
 
 import com.google.protobuf.ByteString;
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.vision.common.application.VisionApplicationContext;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.FileUtil;
 import org.vision.core.Constant;
@@ -18,12 +10,17 @@ import org.vision.core.Wallet;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.Manager;
-import org.vision.common.application.VisionApplicationContext;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Key;
 import org.vision.protos.Protocol.Permission;
 import org.vision.protos.Protocol.Vote;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @Ignore
 public class AccountCapsuleTest {
@@ -95,7 +92,7 @@ public class AccountCapsuleTest {
     //test addVote and getVotesList function
     ByteString voteAddress = ByteString.copyFrom(AccountCapsuleTest.randomBytes(32));
     long voteAdd = 10L;
-    accountCapsuleTest.addVotes(voteAddress, voteAdd);
+    accountCapsuleTest.addVotes(voteAddress, voteAdd, 0);
     List<Vote> votesList = accountCapsuleTest.getVotesList();
     for (Vote vote :
         votesList) {
