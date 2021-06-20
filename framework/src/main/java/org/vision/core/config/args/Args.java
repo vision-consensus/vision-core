@@ -178,15 +178,6 @@ public class Args extends CommonParameter {
     PARAMETER.allowVvmAssetIssue = 0;
     PARAMETER.historyBalanceLookup = false;
 
-    PARAMETER.voteFreezeStageFirst = 1000;
-    PARAMETER.voteFreezeStageSecond = 10000;
-    PARAMETER.voteFreezeStageThree = 100000;
-    PARAMETER.voteFreezePercentFirst = 108;
-    PARAMETER.voteFreezePercentSecond = 113;
-    PARAMETER.voteFreezePercentThree = 116;
-
-    PARAMETER.srFreezeLowest = 5000;
-    PARAMETER.srFreezeLowestPercent = 65;
   }
 
   /**

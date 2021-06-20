@@ -30,8 +30,7 @@ public class IncentiveManager {
     long voteSum = 0;
     for (ByteString witness : witnesses) {
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.toByteArray());
-      voteSum += (witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
-              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight());
+      voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     }
     if (voteSum <= 0) {
       return;
@@ -40,8 +39,7 @@ public class IncentiveManager {
     for (ByteString witness : witnesses) {
       byte[] address = witness.toByteArray();
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(address);
-      long voteCountWeight = (witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
-              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight());
+      long voteCountWeight = Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
       long pay = (long) (voteCountWeight * ((double) totalPay
               / voteSum));
       AccountCapsule accountCapsule = consensusDelegate.getAccount(address);

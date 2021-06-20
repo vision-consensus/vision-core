@@ -463,37 +463,7 @@ public class CommonParameter {
   @Setter
   public String kafkaBootStrapServers;
 
-  @Getter
-  @Setter
-  public long voteFreezeStageFirst;
 
-  @Getter
-  @Setter
-  public long voteFreezeStageSecond;
-
-  @Getter
-  @Setter
-  public long voteFreezeStageThree;
-
-  @Getter
-  @Setter
-  public long voteFreezePercentFirst;
-
-  @Getter
-  @Setter
-  public long voteFreezePercentSecond;
-
-  @Getter
-  @Setter
-  public long voteFreezePercentThree;
-
-  @Getter
-  @Setter
-  public long srFreezeLowest;
-
-  @Getter
-  @Setter
-  public long srFreezeLowestPercent;
 
   private static double calcMaxTimeRatio() {
     //return max(2.0, min(5.0, 5 * 4.0 / max(Runtime.getRuntime().availableProcessors(), 1)));

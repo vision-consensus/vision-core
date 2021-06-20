@@ -1,7 +1,5 @@
 package org.vision.consensus.dpos;
 
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
-
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
@@ -17,6 +15,7 @@ import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+import org.vision.core.config.Parameter;
 import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DelegationStore;
@@ -32,11 +31,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.vision.common.utils.WalletUtil.getAddressStringList;
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
 
 @Slf4j(topic = "consensus")
 @Component
 public class MaintenanceManager {
-  private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
 
   @Autowired
   private ConsensusDelegate consensusDelegate;
@@ -127,7 +126,7 @@ public class MaintenanceManager {
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
         long maxVoteCounts = (long) ((account.getSRGuaranteeFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
-                /(dynamicPropertiesStore.getSrFreezeLowestPercent() / SR_FREEZE_LOWEST_PRECISION));
+                /(dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
 
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());

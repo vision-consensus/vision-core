@@ -171,8 +171,7 @@ public class DposService implements ConsensusInterface {
     list.sort(Comparator.comparingLong((ByteString b) ->
     {
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(b.toByteArray());
-      return witnessCapsule.getVoteCountWeight() > witnessCapsule.getVoteCountThreshold() ?
-              witnessCapsule.getVoteCountThreshold() : witnessCapsule.getVoteCountWeight();
+      return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     })
         .reversed()
         .thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));

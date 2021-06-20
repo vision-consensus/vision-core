@@ -68,6 +68,20 @@ public class Parameter {
 //    public static final long SRGUARANTEE_VS_THRESHOLD = 5000*1000_000L;
     public static final int UN_FREEZE_SSRGUARANTEE_LIMIT = 23;
     public static final int FIRST_ECONOMY_CYCLE_RATE = 42;
+
+
+
+    public static final long VOTE_FREEZE_STAGE_LEVEL1 = 1000;
+    public static final long VOTE_FREEZE_STAGE_LEVEL2 = 10000;
+    public static final long VOTE_FREEZE_STAGE_LEVEL3 = 100000;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL1 = 108;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL2 = 113;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
+
+    public static final long SR_FREEZE_LOWEST = 5000 * 1000_000l;
+    public static final int SR_FREEZE_LOWEST_PERCENT = 65;
+    public static final int VOTE_PERCENT_PRECISION = 100;
+    public static final int SR_FREEZE_LOWEST_PRECISION = 1000;
   }
 
   public class NodeConstant {

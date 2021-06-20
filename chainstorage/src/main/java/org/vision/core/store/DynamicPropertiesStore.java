@@ -157,12 +157,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
 
-  private static final byte[] VOTE_FREEZE_STAGE_FIRST = "VOTE_FREEZE_STAGE_FIRST".getBytes();
-  private static final byte[] VOTE_FREEZE_STAGE_SECOND = "VOTE_FREEZE_STAGE_SECOND".getBytes();
-  private static final byte[] VOTE_FREEZE_STAGE_THREE = "VOTE_FREEZE_STAGE_THREE".getBytes();
-  private static final byte[] VOTE_FREEZE_PERCENT_FIRST = "VOTE_FREEZE_PERCENT_FIRST".getBytes();
-  private static final byte[] VOTE_FREEZE_PERCENT_SECOND = "VOTE_FREEZE_PERCENT_SECOND".getBytes();
-  private static final byte[] VOTE_FREEZE_PERCENT_THREE = "VOTE_FREEZE_PERCENT_THREE".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL1 = "VOTE_FREEZE_STAGE_LEVEL1".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL2 = "VOTE_FREEZE_STAGE_LEVEL2".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL3 = "VOTE_FREEZE_STAGE_LEVEL3".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL1 = "VOTE_FREEZE_PERCENT_LEVEL1".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL2 = "VOTE_FREEZE_PERCENT_LEVEL2".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL3 = "VOTE_FREEZE_PERCENT_LEVEL3".getBytes();
 
   private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
   private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
@@ -807,45 +807,45 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getVoteFreezeStageFirst();
+      this.getVoteFreezeStageLevel1();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezeStageFirst(CommonParameter.getInstance().getVoteFreezeStageFirst());
+      this.saveVoteFreezeStageLevel1(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL1);
     }
     try {
-      this.getVoteFreezeStageSecond();
+      this.getVoteFreezeStageLevel2();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezeStageSecond(CommonParameter.getInstance().getVoteFreezeStageSecond());
+      this.saveVoteFreezeStageLevel2(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL2);
     }
     try {
-      this.getVoteFreezeStageThree();
+      this.getVoteFreezeStageLevel3();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezeStageThree(CommonParameter.getInstance().getVoteFreezeStageThree());
+      this.saveVoteFreezeStageLevel3(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL3);
     }
     try {
-      this.getVoteFreezePercentFirst();
+      this.getVoteFreezePercentLevel1();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezePercentFirst(CommonParameter.getInstance().getVoteFreezePercentFirst());
+      this.saveVoteFreezePercentLevel1(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL1);
     }
     try {
-      this.getVoteFreezePercentSecond();
+      this.getVoteFreezePercentLevel2();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezePercentSecond(CommonParameter.getInstance().getVoteFreezePercentSecond());
+      this.saveVoteFreezePercentLevel2(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL2);
     }
     try {
-      this.getVoteFreezePercentThree();
+      this.getVoteFreezePercentLevel3();
     } catch (IllegalArgumentException e) {
-      this.saveVoteFreezePercentThree(CommonParameter.getInstance().getVoteFreezePercentThree());
+      this.saveVoteFreezePercentLevel3(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL3);
     }
 
     try {
       this.getSrFreezeLowest();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowest(CommonParameter.getInstance().getSrFreezeLowest());
+      this.saveSrFreezeLowest(Parameter.ChainConstant.SR_FREEZE_LOWEST);
     }
     try {
       this.getSrFreezeLowestPercent();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowestPercent(CommonParameter.getInstance().getSrFreezeLowestPercent());
+      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
     }
     try {
       this.getSpreadMintReward();
@@ -2433,68 +2433,68 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return true;
   }
 
-  public void saveVoteFreezeStageFirst(long value) {
-    this.put(VOTE_FREEZE_STAGE_FIRST, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezeStageLevel1(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL1, new BytesCapsule(ByteArray.fromLong(value)));
   }
-  public long getVoteFreezeStageFirst() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_FIRST))
+  public long getVoteFreezeStageLevel1() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL1))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_FIRST"));
   }
 
-  public void saveVoteFreezeStageSecond(long value) {
-    this.put(VOTE_FREEZE_STAGE_SECOND, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezeStageLevel2(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL2, new BytesCapsule(ByteArray.fromLong(value)));
   }
-  public long getVoteFreezeStageSecond() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_SECOND))
+  public long getVoteFreezeStageLevel2() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL2))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_SECOND"));
   }
 
-  public void saveVoteFreezeStageThree(long value) {
-    this.put(VOTE_FREEZE_STAGE_THREE, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezeStageLevel3(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL3, new BytesCapsule(ByteArray.fromLong(value)));
   }
-  public long getVoteFreezeStageThree() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_THREE))
+  public long getVoteFreezeStageLevel3() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL3))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_THREE"));
   }
 
-  public void saveVoteFreezePercentFirst(long value) {
-    this.put(VOTE_FREEZE_PERCENT_FIRST, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezePercentLevel1(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL1, new BytesCapsule(ByteArray.fromInt(value)));
   }
-  public long getVoteFreezePercentFirst() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_FIRST))
+  public int getVoteFreezePercentLevel1() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL1))
             .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
+            .map(ByteArray::toInt)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_FIRST"));
   }
 
-  public void saveVoteFreezePercentSecond(long value) {
-    this.put(VOTE_FREEZE_PERCENT_SECOND, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezePercentLevel2(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL2, new BytesCapsule(ByteArray.fromInt(value)));
   }
-  public long getVoteFreezePercentSecond() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_SECOND))
+  public int getVoteFreezePercentLevel2() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL2))
             .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
+            .map(ByteArray::toInt)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_SECOND"));
   }
 
-  public void saveVoteFreezePercentThree(long value) {
-    this.put(VOTE_FREEZE_PERCENT_THREE, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveVoteFreezePercentLevel3(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL3, new BytesCapsule(ByteArray.fromInt(value)));
   }
-  public long getVoteFreezePercentThree() {
-    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_THREE))
+  public int getVoteFreezePercentLevel3() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL3))
             .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
+            .map(ByteArray::toInt)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_THREE"));
   }
@@ -2510,13 +2510,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST"));
   }
 
-  public void saveSrFreezeLowestPercent(long value) {
-    this.put(SR_FREEZE_LOWEST_PERCENT, new BytesCapsule(ByteArray.fromLong(value)));
+  public void saveSrFreezeLowestPercent(int value) {
+    this.put(SR_FREEZE_LOWEST_PERCENT, new BytesCapsule(ByteArray.fromInt(value)));
   }
-  public long getSrFreezeLowestPercent() {
+  public int getSrFreezeLowestPercent() {
     return Optional.ofNullable(getUnchecked(SR_FREEZE_LOWEST_PERCENT))
             .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
+            .map(ByteArray::toInt)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
   }
