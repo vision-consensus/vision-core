@@ -1,5 +1,7 @@
 package org.vision.consensus.dpos;
 
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
+
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
@@ -35,14 +37,6 @@ import static org.vision.common.utils.WalletUtil.getAddressStringList;
 @Component
 public class MaintenanceManager {
   private static final long SR_FREEZE_LOWEST_PRECISION = 1000L;
-
-  private static final long HIGH_EXPANSION_RATE = 2322L;
-
-  private static final long LOW_EXPANSION_RATE = 689L;
-
-  private static final long PLEDGE_RATE_THRESHOLD = 60L;
-
-  private static final long FIRST_ECONOMIC_CYCLE = 42L;
 
   @Autowired
   private ConsensusDelegate consensusDelegate;
@@ -182,15 +176,15 @@ public class MaintenanceManager {
     }
     calculationCyclePledgeRate();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long economicCycle = dynamicPropertiesStore.getEconomicCycle();
-    if (FIRST_ECONOMIC_CYCLE == cycle) {
+    long economicCycle = dynamicPropertiesStore.getEconomyCycleRate();
+    if (FIRST_ECONOMY_CYCLE_RATE == cycle) {
       long beginCycle = 1;
       long endCycle = cycle;
-      long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMIC_CYCLE);
+      long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMY_CYCLE_RATE);
       saveExpansionRate(pledgeRate);
-    } else if ((cycle - FIRST_ECONOMIC_CYCLE) % economicCycle == 0) {
-      long economicCycleNumber = (cycle - FIRST_ECONOMIC_CYCLE) / economicCycle;
-      long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMIC_CYCLE + 1;
+    } else if ((cycle - FIRST_ECONOMY_CYCLE_RATE) % economicCycle == 0) {
+      long economicCycleNumber = (cycle - FIRST_ECONOMY_CYCLE_RATE) / economicCycle;
+      long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMY_CYCLE_RATE + 1;
       long endCycle = cycle;
       long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
       saveExpansionRate(pledgeRate);
@@ -301,26 +295,27 @@ public class MaintenanceManager {
     BigDecimal bigVoteSum = new BigDecimal(voteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
-    long totalSpreadMintWeight = dynamicPropertiesStore.getTotalSpreadMintWeight();
-    BigDecimal bigTotalSpreadMintWeight = new BigDecimal(totalSpreadMintWeight);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
-    long initialReservedAmount = dynamicPropertiesStore.getInitialReservedAmount();
-    BigDecimal bigInitialReservedAmount = new BigDecimal(initialReservedAmount);
+    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
+    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
+    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
+    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
-    long singularityBalance = accountStore.getSingularity().getBalance();
-    BigDecimal bigSingularityBalance = new BigDecimal(singularityBalance);
-    BigDecimal assets= bigTotalAssets.add(bigTotalSpreadMintWeight).subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
-            .add(bigInitialReservedAmount).subtract(bigGalaxyBalance).subtract(bigSingularityBalance);
+    long avalonBalance = accountStore.getAvalon().getBalance();
+    BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
+    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
+            .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
   private void saveExpansionRate(long pledgeRate) {
-    if (PLEDGE_RATE_THRESHOLD <= pledgeRate) {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(LOW_EXPANSION_RATE);
+    DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+    if (dynamicPropertiesStore.getPledgeRateThreshold() <= pledgeRate) {
+      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getLowExpansionRate());
     } else {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(HIGH_EXPANSION_RATE);
+      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getHighExpansionRate());
     }
   }
 
