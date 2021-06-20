@@ -3,7 +3,6 @@ package org.vision.consensus.dpos;
 import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 
 import com.google.protobuf.ByteString;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -17,10 +16,7 @@ import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.consensus.base.State;
 import org.vision.core.capsule.BlockCapsule;
-import org.vision.core.service.MortgageService;
 import org.vision.protos.Protocol.BlockHeader;
-
-import java.math.BigDecimal;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -37,10 +33,6 @@ public class DposTask {
 
   @Setter
   private DposService dposService;
-
-  @Getter
-  @Autowired
-  private MortgageService mortgageService;
 
   private Thread produceThread;
 
