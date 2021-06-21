@@ -995,7 +995,7 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycleRate())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadMintReward")
+            .setKey("getSpreadMintPayPerBlock")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
             .build());
 
