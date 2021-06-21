@@ -2,11 +2,12 @@ package org.vision.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.protos.Protocol.Vote;
 import org.vision.protos.Protocol.Votes;
+
+import java.util.List;
 
 @Slf4j(topic = "capsule")
 public class VotesCapsule implements ProtoCapsule<Votes> {
@@ -84,9 +85,23 @@ public class VotesCapsule implements ProtoCapsule<Votes> {
         .build();
   }
 
+  public void addNewVotes(ByteString voteAddress, long voteCount, long voteCountWeight) {
+    this.votes = this.votes.toBuilder()
+            .addNewVotes(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteCount).setVoteCountWeight(voteCountWeight).build())
+            .build();
+  }
+
   public void addOldVotes(ByteString voteAddress, long voteCount) {
     this.votes = this.votes.toBuilder()
             .addOldVotes(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteCount).build())
+            .build();
+  }
+
+  public void addOldVotes(ByteString voteAddress, long voteCount, long voteCountWeight) {
+    this.votes = this.votes.toBuilder()
+            .addOldVotes(Vote.newBuilder().setVoteAddress(voteAddress)
+                    .setVoteCount(voteCount)
+                    .setVoteCountWeight(voteCountWeight).build())
             .build();
   }
 

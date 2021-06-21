@@ -27,6 +27,8 @@ message Vote {
   bytes vote_address = 1;
   // the vote num to this super rep.
   int64 vote_count = 2;
+  // the weight vote num to this super rep.
+  int64 vote_count_weight = 3;
 }
 
 // Proposal
@@ -202,6 +204,12 @@ message Account {
     int64 storage_usage = 7;
     int64 latest_exchange_storage_time = 8;
 
+    // the frozen balance for spread_mint
+    Frozen frozen_balance_for_spread = 9;
+
+    // the frozen balance for SRGuarantee
+    Frozen frozen_balance_for_srguarantee = 10;
+
   }
   AccountResource account_resource = 26;
   bytes codeHash = 30;
@@ -256,6 +264,10 @@ message Witness {
   int64 latestBlockNum = 7;
   int64 latestSlotNum = 8;
   bool isJobs = 9;
+  //the weight of vote count
+  int64 voteCountWeight = 10;
+  //the threshold of SRGuarantee
+  int64 voteCountThreshold = 11;
 }
 
 // Vote Change
