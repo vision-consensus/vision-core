@@ -15,31 +15,8 @@
 
 package org.vision.core.capsule;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
-import static org.vision.common.utils.StringUtil.encode58Check;
-import static org.vision.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
-import static org.vision.common.utils.WalletUtil.checkPermissionOperations;
-
 import com.google.common.primitives.Bytes;
-import com.google.protobuf.Any;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.Internal;
-import com.google.protobuf.InvalidProtocolBufferException;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.google.protobuf.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -65,12 +42,7 @@ import org.vision.core.Constant;
 import org.vision.core.actuator.TransactionFactory;
 import org.vision.core.db.TransactionContext;
 import org.vision.core.db.TransactionTrace;
-import org.vision.core.exception.BadItemException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.P2pException;
-import org.vision.core.exception.PermissionException;
-import org.vision.core.exception.SignatureFormatException;
-import org.vision.core.exception.ValidateSignatureException;
+import org.vision.core.exception.*;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.Key;
@@ -89,12 +61,30 @@ import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
-import org.vision.protos.contract.SmartContractOuterClass;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
+import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
+import static org.vision.common.utils.StringUtil.encode58Check;
+import static org.vision.common.utils.WalletUtil.checkPermissionOperations;
+import static org.vision.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
 
 @Slf4j(topic = "capsule")
 public class TransactionCapsule implements ProtoCapsule<Transaction> {
@@ -634,6 +624,47 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  /**
+   * validate eth signature validateEthSignature CreateSmartContract
+   */
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      CreateSmartContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (this.transaction.getSignatureCount() <= 0
+              || this.transaction.getRawData().getContractCount() <= 0) {
+        throw new ValidateSignatureException("miss sig or contract");
+      }
+      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
+              .getTotalSignNum()) {
+        throw new ValidateSignatureException("too many signatures");
+      }
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        CreateSmartContract contractFromParse = t.rlpParseToDeployContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
           throw new ValidateSignatureException("eth sig error");
@@ -1241,6 +1272,30 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();
     }
+
+    public synchronized CreateSmartContract rlpParseToDeployContract() {
+      if (!parsed)
+        rlpParse();
+      CreateSmartContract.Builder build = CreateSmartContract.newBuilder();
+
+      SmartContract.Builder smartBuilder = SmartContract.newBuilder();
+      smartBuilder
+              // .setAbi(abiBuilder)
+              .setCallValue(0) // transfer to contract
+              .setConsumeUserResourcePercent(80)
+              .setOriginEntropyLimit(20);
+
+      smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      // build.setOwnerAddress(ByteString.copyFrom(this.sendAddress));
+
+      smartBuilder.setBytecode(ByteString.copyFrom(this.data));
+      build.setNewContract(smartBuilder);
+      build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+
+      return build.build();
+    }
   }
 
 
@@ -1309,6 +1364,18 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           throw new RuntimeException("proto unpack error");
         }
       }
+
+      if (contract.getType() == ContractType.CreateSmartContract) {
+        CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
+        if (c == null) {
+          throw new ValidateSignatureException("get create smart contract error");
+        }
+        if(c.getType()==1){
+          v = 1;
+          validateEthSignature(accountStore, dynamicPropertiesStore, c);
+        }
+      }
+
       if (v==0){
         validatePubSignature(accountStore, dynamicPropertiesStore);
       }
