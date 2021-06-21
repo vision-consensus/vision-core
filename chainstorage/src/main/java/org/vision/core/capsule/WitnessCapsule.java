@@ -1,12 +1,12 @@
 package org.vision.core.capsule;
 
-import static org.vision.common.crypto.Hash.computeAddress;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.protos.Protocol.Witness;
+
+import static org.vision.common.crypto.Hash.computeAddress;
 
 @Slf4j(topic = "capsule")
 public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<WitnessCapsule> {
@@ -91,6 +91,22 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 
   public void setVoteCount(final long voteCount) {
     this.witness = this.witness.toBuilder().setVoteCount(voteCount).build();
+  }
+
+  public long getVoteCountWeight() {
+    return this.witness.getVoteCountWeight();
+  }
+
+  public void setVoteCountWeight(final long voteCountWeight) {
+    this.witness = this.witness.toBuilder().setVoteCountWeight(voteCountWeight).build();
+  }
+
+  public long getVoteCountThreshold() {
+    return this.witness.getVoteCountThreshold();
+  }
+
+  public void setVoteCountThreshold(final long voteCountThreshold) {
+    this.witness = this.witness.toBuilder().setVoteCountThreshold(voteCountThreshold).build();
   }
 
   public long getTotalProduced() {

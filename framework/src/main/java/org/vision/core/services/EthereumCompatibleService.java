@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -194,45 +195,73 @@ public class EthereumCompatibleService implements EthereumCompatible {
         Protocol.Transaction trx = null;
         TransactionCapsule transactionCapsule = null;
         try {
+            byte[] receiveAddressStr = ethTrx.getReceiveAddress();
+            boolean isDeployContract = (null == receiveAddressStr || receiveAddressStr.length == 0);
+            if (isDeployContract) {
+                String data = ByteArray.toHexString(ethTrx.getData());
+                if (StringUtils.isBlank(data)) {
+                    throw new IllegalArgumentException("no data!");
+                }
+            }
             byte[] receiveAddress = ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(ethTrx.getReceiveAddress()));
             int accountType = wallet.getAccountType(receiveAddress);
-            if (1 == accountType) { //
+            logger.info("accountType={}", accountType);
+            if (1 == accountType || isDeployContract) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
                 long gasPrice = Long.parseLong(
                         toHexString(ethTrx.getGasPrice()), 16
                 );
                 long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
-                // long feeLimit = 100000000;
                 logger.info("gasPrice={},gasLimit={}", gasPrice, gasLimit);
                 long feeLimit = gasPrice * gasLimit * 2;
+                Message message = null;
+                Protocol.Transaction.Contract.ContractType contractType = null;
+                if (isDeployContract) {
+                    message = ethTrx.rlpParseToDeployContract();
+                    contractType = Protocol.Transaction.Contract.ContractType.CreateSmartContract;
+                } else {
+                    message = ethTrx.rlpParseToTriggerSmartContract();
+                    contractType = Protocol.Transaction.Contract.ContractType.TriggerSmartContract;
+                }
                 TransactionCapsule trxCap = wallet
-                        .createTransactionCapsule(ethTrx.rlpParseToTriggerSmartContract(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);
+                        .createTransactionCapsule(message, contractType);
                 Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
                 Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
                 rawBuilder.setFeeLimit(feeLimit);
+                logger.info("rawData={}", rawBuilder);
                 txBuilder.setRawData(rawBuilder);
                 txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
-                trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
-                        retBuilder);
+                if (isDeployContract) {
+                    trx = txBuilder.build();
+                } else {
+                    trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
+                            retBuilder);
+                }
+
             } else {
                 TransactionCapsule transactionCapsule1 = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract);
                 trx = transactionCapsule1.getInstance().toBuilder().addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray())).build();
             }
+
             GrpcAPI.Return result = wallet.broadcastTransaction(trx);
             transactionCapsule = new TransactionCapsule(trx);
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
-                return null;
+                String errMsg = result.getMessage().toString();
+                return "broadcast trx failed:" + errMsg;
             }
         } catch (Exception e) {
+            logger.error("sendRawTransaction error", e);
             String errString = null;
             if (e.getMessage() != null) {
                 errString = e.getMessage().replaceAll("[\"]", "\'");
             }
             return errString;
         }
-        return Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
+        String trxHash = Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
+        logger.info("trxHash={}", trxHash);
+        return trxHash;
     }
 
     @Override
@@ -495,12 +524,14 @@ public class EthereumCompatibleService implements EthereumCompatible {
         ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
         Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
 
-        if (null == transactionInfo) {
-            return null;
+        if (null != transactionInfo) {
+            transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
+            transactionReceiptDTO.status = "0x1";
+            transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+        } else {
+            transactionReceiptDTO.status = "0x0";
         }
-        transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
-        transactionReceiptDTO.status = "0x1";
-        transactionReceiptDTO.gasUsed = Long.toHexString(transactionInfo.getFee());
+
 
         Protocol.Transaction transaction = wallet.getTransactionById(transactionId);
         if (null != transaction) {
@@ -554,9 +585,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
                     logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
                 }
             });
-        } else {
-            transactionReceiptDTO.status = "0x0";
-        }
+        } 
 
         return transactionReceiptDTO;
     }

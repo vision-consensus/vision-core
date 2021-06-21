@@ -23,13 +23,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongycastle.util.encoders.Hex;
+import org.vision.common.crypto.Hash;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.InternalTransaction;
 import org.vision.common.runtime.ProgramResult;
+import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.core.capsule.*;
+import org.vision.core.config.Parameter;
 import org.vision.core.db.TransactionTrace;
+import org.vision.core.exception.ContractExeException;
+import org.vision.core.exception.ContractValidateException;
+import org.vision.core.exception.VisionException;
 import org.vision.core.utils.TransactionUtil;
 import org.vision.core.vm.*;
+import org.vision.core.vm.config.VMConfig;
 import org.vision.core.vm.nativecontract.*;
 import org.vision.core.vm.nativecontract.param.*;
 import org.vision.core.vm.program.invoke.ProgramInvoke;
@@ -39,14 +47,6 @@ import org.vision.core.vm.program.listener.CompositeProgramListener;
 import org.vision.core.vm.program.listener.ProgramListenerAware;
 import org.vision.core.vm.program.listener.ProgramStorageChangeListener;
 import org.vision.core.vm.repository.Repository;
-import org.vision.common.crypto.Hash;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.runtime.vm.DataWord;
-import org.vision.core.config.Parameter;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.VisionException;
-import org.vision.core.vm.config.VMConfig;
 import org.vision.core.vm.trace.ProgramTrace;
 import org.vision.core.vm.trace.ProgramTraceListener;
 import org.vision.core.vm.utils.MUtil;
@@ -63,7 +63,6 @@ import static java.lang.StrictMath.min;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ArrayUtils.*;
 import static org.vision.common.utils.ByteUtil.stripLeadingZeroes;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 /**
  * @author Roman Mandeleil
@@ -658,11 +657,13 @@ public class Program {
             if (zeroOldVotesIndex.containsKey(vote.getVoteAddress())) {
               int index = zeroOldVotesIndex.get(vote.getVoteAddress());
               long newOldVoteCount = vote.getVoteCount() + zeroVotesCapsule.getOldVotes().get(index).getVoteCount();
+              long newOldVoteCountWeight = vote.getVoteCountWeight() + zeroVotesCapsule.getOldVotes().get(index).getVoteCountWeight();
               zeroVotesCapsule.setOldVote(index, Protocol.Vote.newBuilder()
                       .setVoteAddress(vote.getVoteAddress())
-                      .setVoteCount(newOldVoteCount).build());
+                      .setVoteCount(newOldVoteCount)
+                      .setVoteCountWeight(newOldVoteCountWeight).build());
             } else {
-              zeroVotesCapsule.addOldVotes(vote.getVoteAddress(), vote.getVoteCount());
+              zeroVotesCapsule.addOldVotes(vote.getVoteAddress(), vote.getVoteCount(), vote.getVoteCountWeight());
             }
           }
         }

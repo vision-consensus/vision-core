@@ -1,14 +1,7 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.vision.common.parameter.CommonParameter;
@@ -28,6 +21,13 @@ import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "actuator")
 public class FreezeBalanceActuator extends AbstractActuator {
@@ -97,6 +97,23 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        break;
+      case SRGUARANTEE:
+        long srGuaranteeExpireTime = now + UN_FREEZE_SRGUARANTEE_LIMIT;
+        long newFrozenBalanceForSRGuarantee =
+                frozenBalance + accountCapsule.getAccountResource()
+                        .getFrozenBalanceForSrguarantee()
+                        .getFrozenBalance();
+        accountCapsule.setFrozenForSRGuarantee(newFrozenBalanceForSRGuarantee, srGuaranteeExpireTime);
+        dynamicStore
+                .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
+        break;
+      case SPREAD:
+        long newFrozenBalanceForSpreadMint =
+                frozenBalance + accountCapsule.getAccountResource()
+                        .getFrozenBalanceForSpread().getFrozenBalance();
+        accountCapsule.setFrozenForSpread(newFrozenBalanceForSpreadMint, expireTime);
+        dynamicStore.addTotalSpreadMintWeight(frozenBalance / VS_PRECISION);
         break;
       default:
         logger.debug("Resource Code Error.");
@@ -184,6 +201,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
       case PHOTON:
         break;
       case ENTROPY:
+        break;
+      case SRGUARANTEE:
+        break;
+      case SPREAD:
         break;
       default:
         throw new ContractValidateException(

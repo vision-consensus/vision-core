@@ -433,6 +433,20 @@ public class ProposalUtil {
         }
         break;
       }
+      case ECONOMY_CYCLE_RATE: {
+        if (value < 1 || value > 500) {
+          throw new ContractValidateException(
+                  "Bad chain parameter value, ECONOMY_CYCLE_RATE's valid range is [1,500]");
+        }
+        break;
+      }
+      case SPREAD_MINT_PAY_PER_BLOCK: {
+        if (value < 0 || value > 100_000_000L) {
+          throw new ContractValidateException(
+              "Bad SPREAD_MINT_PAY_PER_BLOCK parameter value, valid range is [0,100_000_000L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -444,7 +458,7 @@ public class ProposalUtil {
     CREATE_ACCOUNT_FEE(2), // 0.1 VS, [0, 100000000000] VS
     TRANSACTION_FEE(3), // 10 Vdt/Byte, [0, 100000000000] VS
     ASSET_ISSUE_FEE(4), // 1024 VS, [0, 100000000000] VS
-    WITNESS_PAY_PER_BLOCK(5), // 16 VS, [0, 100000000000] VS
+    WITNESS_PAY_PER_BLOCK(5), // 0.105 VS, [0, 100000000000] VS
     WITNESS_STANDBY_ALLOWANCE(6), // 115200 VS, [0, 100000000000] VS
     CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT(7), // 0 VS, [0, 100000000000] VS
     CREATE_NEW_ACCOUNT_PHOTON_RATE(8), // 1 Bandwith/Byte, [0, 100000000000000000] Bandwith/Byte
@@ -470,7 +484,7 @@ public class ProposalUtil {
     // SHIELDED_TRANSACTION_FEE(28), // 10 VS, [0, 10000] VS
     ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER(29), // 1000, [1, 10000]
     ALLOW_CHANGE_DELEGATION(30), // 1, {0, 1}
-    WITNESS_100_PAY_PER_BLOCK(31), // 160 VS, [0, 100000000000] VS
+    WITNESS_100_PAY_PER_BLOCK(31), // 1.5 VS * frozenRate, [0, 100000000000] VS
     ALLOW_VVM_SOLIDITY_059(32), // 1, {0, 1}
     ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO(33), // 10, [1, 1000]
     // SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE(34), // 1 VS, [0, 10000] VS
@@ -485,7 +499,9 @@ public class ProposalUtil {
     MARKET_CANCEL_FEE(46), // 0 [0,10_000_000_000]
     MAX_FEE_LIMIT(47), // [0, 10_000_000_000]
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
-    ALLOW_BLACKHOLE_OPTIMIZATION(49);// 0,1
+    ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
+    SPREAD_MINT_PAY_PER_BLOCK(50),// [0,100_000_000]
+    ECONOMY_CYCLE_RATE(51); // [1,500]
 
     private long code;
 
