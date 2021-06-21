@@ -1,11 +1,5 @@
 package org.vision.core.services.http;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.EnumSet;
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.ConnectionLimit;
@@ -16,14 +10,21 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.vision.core.services.filter.HttpInterceptor;
-import org.vision.core.services.filter.LiteFnQueryHttpFilter;
 import org.vision.common.application.Service;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.zksnark.JLibrustzcash;
 import org.vision.common.zksnark.LibrustzcashParam.InitZksnarkParams;
 import org.vision.core.config.args.Args;
 import org.vision.core.exception.ZksnarkException;
+import org.vision.core.services.filter.HttpInterceptor;
+import org.vision.core.services.filter.LiteFnQueryHttpFilter;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.EnumSet;
 
 
 @Component
@@ -276,6 +277,9 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private LiteFnQueryHttpFilter liteFnQueryHttpFilter;
 
+  @Autowired
+  private EthereumCompatibleServlet ethereumCompatible;
+
   private static String getParamsFile(String fileName) {
     InputStream in = Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("params" + File.separator + fileName);
@@ -514,6 +518,8 @@ public class FullNodeHttpApiService implements Service {
       context.addServlet(new ServletHolder(getBlockBalanceServlet),
           "/wallet/getblockbalance");
       context.addServlet(new ServletHolder(getBurnVsServlet), "/wallet/getburnvs");
+
+      context.addServlet(new ServletHolder(ethereumCompatible), "/ethereum/compatible");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

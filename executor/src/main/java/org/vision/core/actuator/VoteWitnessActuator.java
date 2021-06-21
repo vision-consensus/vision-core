@@ -1,16 +1,8 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
-
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.Iterator;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
@@ -18,10 +10,12 @@ import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.VotesCapsule;
+import org.vision.core.config.Parameter;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountStore;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.VotesStore;
 import org.vision.core.store.WitnessStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
@@ -29,9 +23,15 @@ import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
+import java.util.Iterator;
+import java.util.Objects;
+
+import static org.vision.core.actuator.ActuatorConstant.*;
+import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
-
 
   public VoteWitnessActuator() {
     super(ContractType.VoteWitnessContract, VoteWitnessContract.class);
@@ -168,9 +168,23 @@ public class VoteWitnessActuator extends AbstractActuator {
     voteContract.getVotesList().forEach(vote -> {
       logger.debug("countVoteAccount, address[{}]",
           ByteArray.toHexString(vote.getVoteAddress().toByteArray()));
+      // get freeze and compute a new votes
+      DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+      long interval1 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel1(), VS_PRECISION);
+      long interval2 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel2(), VS_PRECISION);
+      long interval3 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel3(), VS_PRECISION);
+      long visionPower = accountCapsule.getVisionPower();
+      long voteCount = vote.getVoteCount();
+      if (visionPower >= interval3) {
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel3()/ Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      } else if (visionPower >= interval2) {
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel2()/Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      } else if (visionPower >= interval1) {
+        voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel1()/Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      }
+      votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
+      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
 
-      votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount());
-      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
     });
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
