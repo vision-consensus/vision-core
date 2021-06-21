@@ -991,6 +991,10 @@ public class Wallet {
         .setValue(dbManager.getDynamicPropertiesStore().getAllowBlackHoleOptimization())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getEconomyCycleRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycleRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSpreadMintReward")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintReward())
             .build());
