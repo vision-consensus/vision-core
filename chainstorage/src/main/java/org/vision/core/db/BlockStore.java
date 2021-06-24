@@ -19,11 +19,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.JsonFormat;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.Util;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.exception.BadItemException;
@@ -35,6 +41,17 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
   @Autowired
   private BlockStore(@Value("block") String dbName) {
     super(dbName);
+  }
+
+  @Autowired
+  public void put(byte[] blockId, BlockCapsule capsule){
+    super.put(blockId, capsule);
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
+      obj.put("transactionCount", capsule.getTransactions().size());
+      obj.put("blockSize", capsule.getInstance().toByteArray().length);
+      Producer.getInstance().send("BLOCK", obj.toJSONString());
+    }
   }
 
   public List<BlockCapsule> getLimitNumber(long startNumber, long limit) {

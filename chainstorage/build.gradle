@@ -48,6 +48,9 @@ dependencies {
     compile project(":common")
     compile project(":crypto")
     compile 'org.reflections:reflections:0.9.11'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'org.eclipse.jetty:jetty-server:9.4.11.v20180605'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.11.v20180605'
 }
 
 
