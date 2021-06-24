@@ -50,6 +50,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
       obj.put("blockSize", capsule.getInstance().toByteArray().length);
+      obj.put("ifSolidity", false);
       Producer.getInstance().send("BLOCK", obj.toJSONString());
     }
   }
