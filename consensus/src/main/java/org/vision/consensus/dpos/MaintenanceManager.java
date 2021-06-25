@@ -127,8 +127,7 @@ public class MaintenanceManager {
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
         long maxVoteCounts = (long) ((account.getSRGuaranteeFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
-                /(dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
-
+                /(Double.parseDouble(dynamicPropertiesStore.getSrFreezeLowestPercent()+"") / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
         witnessCapsule.setVoteCountThreshold(maxVoteCounts);
