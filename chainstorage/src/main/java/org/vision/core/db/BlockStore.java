@@ -43,7 +43,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
     super(dbName);
   }
 
-  @Autowired
+  @Override
   public void put(byte[] blockId, BlockCapsule capsule){
     super.put(blockId, capsule);
     if(CommonParameter.PARAMETER.isKafkaEnable()){
