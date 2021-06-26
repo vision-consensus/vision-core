@@ -279,12 +279,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
             Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
             rawBuilder.setFeeLimit(0);
             txBuilder.setRawData(rawBuilder);
-            /*Protocol.Transaction trx = wallet
-                    .triggerConstantContract(build.build(), new TransactionCapsule(txBuilder.build()),
-                            trxExtBuilder,
-                            retBuilder);*/
             Protocol.Transaction trx = wallet
-                    .triggerContract(build.build(), new TransactionCapsule(txBuilder.build()),
+                    .triggerConstantContract(build.build(), new TransactionCapsule(txBuilder.build()),
                             trxExtBuilder,
                             retBuilder);
             trxExtBuilder.setTransaction(trx);
