@@ -185,6 +185,7 @@ public class MaintenanceManager {
       long endCycle = cycle;
       long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMY_CYCLE_RATE);
       saveExpansionRate(pledgeRate);
+      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 1200 + 1));
     } else if ((cycle - FIRST_ECONOMY_CYCLE_RATE) % economicCycle == 0) {
       long economicCycleNumber = (cycle - FIRST_ECONOMY_CYCLE_RATE) / economicCycle;
       long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMY_CYCLE_RATE + 1;
