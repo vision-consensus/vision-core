@@ -233,6 +233,13 @@ message DelegatedResource {
   int64 expire_time_for_entropy = 6;
 }
 
+message SpreadRelationShip {
+  bytes owner = 1;
+  bytes parent = 2;
+  int64 frozen_balance_for_spread = 3;
+  int64 expire_time_for_spread = 4;
+}
+
 message authority {
   AccountId account = 1;
   bytes permission_name = 2;
