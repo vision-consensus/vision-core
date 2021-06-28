@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,9 @@ import org.vision.common.utils.Sha256Hash;
 import org.vision.common.utils.Util;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.BlockCapsule.BlockId;
+import org.vision.core.capsule.TransactionRetCapsule;
 import org.vision.core.exception.BadItemException;
+import org.vision.protos.Protocol;
 
 @Slf4j(topic = "DB")
 @Component
@@ -51,6 +54,18 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("transactionCount", capsule.getTransactions().size());
       obj.put("blockSize", capsule.getInstance().toByteArray().length);
       obj.put("ifSolidity", false);
+      long originEntropyUsage = 0L;
+      long entropyUsageTotal = 0L;
+      long photonUsage = 0L;
+      if (capsule.getTransactions().size() != 0) {
+        originEntropyUsage = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("origin_entropy_usage")).sum();
+        entropyUsageTotal = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("entropy_usage_total")).sum();
+        photonUsage = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("photon_usage")).sum();
+      }
+      obj.put("originEntropyUsage", originEntropyUsage);
+      obj.put("entropyUsageTotal", entropyUsageTotal);
+      obj.put("photonUsage", photonUsage);
+      //String witness = obj.getJSONObject("block_header").getJSONObject("raw_data").getString("witness_address");
       Producer.getInstance().send("BLOCK", obj.toJSONString());
     }
   }
