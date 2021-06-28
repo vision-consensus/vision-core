@@ -31,6 +31,15 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
   @Override
   public void put(byte[] key, ContractCapsule item){
     super.put(key, item);
+    if (CommonParameter.PARAMETER.isKafkaEnable()) {
+      try {
+        JSONObject jsonObject = JSONObject
+                .parseObject(JsonFormat.printToString(item.generateWrapper(), true));
+        Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
+      }catch (Exception e) {
+        logger.error("contract-error:" + e.getMessage());
+      }
+    }
   }
 
   /**

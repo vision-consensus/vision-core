@@ -1,5 +1,6 @@
 package org.vision.common.storage;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import java.util.HashMap;
@@ -7,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.Strings;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.crypto.Hash;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.vm.DataWord;
+import org.vision.common.utils.*;
 import org.vision.core.db.BlockStore;
 import org.vision.core.db.Manager;
 import org.vision.core.db.TransactionStore;
@@ -19,11 +22,6 @@ import org.vision.core.vm.program.Storage;
 import org.vision.core.vm.repository.Key;
 import org.vision.core.vm.repository.Type;
 import org.vision.core.vm.repository.Value;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.ByteUtil;
-import org.vision.common.utils.Commons;
-import org.vision.common.utils.StorageUtils;
-import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.AssetIssueCapsule;
 import org.vision.core.capsule.BlockCapsule;
@@ -391,6 +389,12 @@ public class DepositImpl implements Deposit {
       storageCache.put(addressKey, storage);
     }
     storage.put(key, value);
+    if (CommonParameter.PARAMETER.isKafkaEnable()) {
+      JSONObject json = new JSONObject();
+      json.put(key.toHexString(), value.toHexString());
+      json.put("address", ByteArray.toHexString(address));
+      Producer.getInstance().send("STORAGE", json.toJSONString());
+    }
   }
 
   @Override
