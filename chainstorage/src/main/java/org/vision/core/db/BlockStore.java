@@ -58,9 +58,21 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       long entropyUsageTotal = 0L;
       long photonUsage = 0L;
       if (capsule.getTransactions().size() != 0) {
-        originEntropyUsage = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("origin_entropy_usage")).sum();
-        entropyUsageTotal = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("entropy_usage_total")).sum();
-        photonUsage = capsule.getResult().getInstance().getTransactioninfoList().stream().map(item -> JSONObject.parseObject(JsonFormat.printToString(item, true))).filter(tmp -> tmp.containsKey("receipt")).mapToLong(tmp -> tmp.getJSONObject("receipt").getLong("photon_usage")).sum();
+        for(Protocol.TransactionInfo trxInfo : capsule.getResult().getInstance().getTransactioninfoList()){
+          JSONObject tmp = JSONObject.parseObject(JsonFormat.printToString(trxInfo, true));
+          if(tmp.containsKey("receipt")){
+            JSONObject receipt = tmp.getJSONObject("receipt");
+            if(receipt.containsKey("origin_entropy_usage")){
+              originEntropyUsage += receipt.getLong("origin_entropy_usage");
+            }
+            if(receipt.containsKey("entropy_usage_total")){
+              entropyUsageTotal += receipt.getLong("entropy_usage_total");
+            }
+            if(receipt.containsKey("photon_usage")){
+              photonUsage += receipt.getLong("photon_usage");
+            }
+          }
+        }
       }
       obj.put("originEntropyUsage", originEntropyUsage);
       obj.put("entropyUsageTotal", entropyUsageTotal);
