@@ -78,6 +78,7 @@ public class Parameter {
     public static final int VOTE_FREEZE_PERCENT_LEVEL2 = 113;
     public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
 
+
     public static final long SR_FREEZE_LOWEST = 5000 * 1000_000L;
     public static final int SR_FREEZE_LOWEST_PERCENT = 65;
     public static final int VOTE_PERCENT_PRECISION = 100;

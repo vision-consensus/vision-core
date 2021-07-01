@@ -126,9 +126,12 @@ public class MaintenanceManager {
         }
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long maxVoteCounts = (long) ((account.getSRGuaranteeFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
-                /(Double.parseDouble(dynamicPropertiesStore.getSrFreezeLowestPercent()+"") / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
-
+        long maxVoteCounts = 0;
+        long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
+        if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+            maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
+                    /(Double.parseDouble(dynamicPropertiesStore.getSrFreezeLowestPercent()+"") / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+        }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
         witnessCapsule.setVoteCountThreshold(maxVoteCounts);
@@ -182,13 +185,14 @@ public class MaintenanceManager {
       long endCycle = cycle;
       long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMY_CYCLE_RATE);
       saveExpansionRate(pledgeRate);
+      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 120000 + 1));
     } else if ((cycle - FIRST_ECONOMY_CYCLE_RATE) % economicCycle == 0) {
       long economicCycleNumber = (cycle - FIRST_ECONOMY_CYCLE_RATE) / economicCycle;
       long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMY_CYCLE_RATE + 1;
       long endCycle = cycle;
       long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
       saveExpansionRate(pledgeRate);
-      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 1200 + 1));
+      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 120000 + 1));
     }
   }
 
