@@ -29,6 +29,7 @@ public interface EthereumCompatible {
         public String value;
         public String data; // compiledCode
         public String nonce;
+        public long timestamp;
 
         @Override
         public String toString() {
