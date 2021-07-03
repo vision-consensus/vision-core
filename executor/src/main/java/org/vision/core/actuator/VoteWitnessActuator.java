@@ -1,12 +1,14 @@
 package org.vision.core.actuator;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.StringUtil;
+import org.spongycastle.util.encoders.Hex;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.*;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.VotesCapsule;
@@ -23,7 +25,9 @@ import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
+import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.*;
@@ -189,6 +193,34 @@ public class VoteWitnessActuator extends AbstractActuator {
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     votesStore.put(ownerAddress, votesCapsule);
+    logger.info("isKafaEnable={}", CommonParameter.PARAMETER.isKafkaEnable());
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      try {
+        JSONObject itemJsonObject = new JSONObject();
+        List<org.vision.protos.Protocol.Vote> voteList = accountCapsule.getVotesList();
+        JSONArray voteArray = new JSONArray();
+        if (null != voteList && voteList.size() > 0) {
+          for (org.vision.protos.Protocol.Vote vote : voteList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("voteAddress", Hex.toHexString(vote.getVoteAddress().toByteArray()));
+            jsonObject.put("voteCount", vote.getVoteCount());
+            voteArray.add(jsonObject);
+          }
+        }
+
+        String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
+        logger.info("send votewitness to kafka accountId={}", address);
+        itemJsonObject.put("accountId", address);
+        itemJsonObject.put("votesList", voteArray.toString());
+        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        String jsonStr = itemJsonObject.toJSONString();
+        logger.info("send VOTEWITNESS start");
+        Producer.getInstance().send("VOTEWITNESS", jsonStr);
+      } catch (Exception e) {
+        logger.error("send VOTEWITNESS fail", e);
+      }
+
+    }
   }
 
   @Override

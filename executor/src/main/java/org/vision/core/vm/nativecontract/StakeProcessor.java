@@ -1,10 +1,15 @@
 package org.vision.core.vm.nativecontract;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.actuator.ActuatorConstant;
 import org.vision.core.capsule.AccountCapsule;
@@ -18,6 +23,9 @@ import org.vision.core.store.WitnessStore;
 import org.vision.core.vm.nativecontract.param.StakeParam;
 import org.vision.core.vm.repository.Repository;
 import org.vision.protos.Protocol;
+
+import java.util.Calendar;
+import java.util.List;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
@@ -194,5 +202,31 @@ public class StakeProcessor {
 
     repository.putAccountValue(accountCapsule.createDbKey(), accountCapsule);
     repository.updateVotesCapsule(ownerAddress, votesCapsule);
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      try {
+        JSONObject itemJsonObject = new JSONObject();
+        List<Protocol.Vote> voteList = accountCapsule.getVotesList();
+        JSONArray voteArray = new JSONArray();
+        if (null != voteList && voteList.size() > 0) {
+          for (org.vision.protos.Protocol.Vote voteTmp : voteList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("voteAddress", Hex.toHexString(voteTmp.getVoteAddress().toByteArray()));
+            jsonObject.put("voteCount", voteTmp.getVoteCount());
+            voteArray.add(jsonObject);
+          }
+        }
+
+        String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
+        logger.info("send votewitness to kafka accountId={}", address);
+        itemJsonObject.put("accountId", address);
+        itemJsonObject.put("votesList", voteArray.toString());
+        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        String jsonStr = itemJsonObject.toJSONString();
+        logger.info("send VOTEWITNESS start");
+        Producer.getInstance().send("VOTEWITNESS", jsonStr);
+      } catch (Exception e) {
+        logger.error("send VOTEWITNESS fail", e);
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 package org.vision.core.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.WitnessCapsule;
@@ -18,7 +21,9 @@ import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.core.store.WitnessStore;
 import org.vision.protos.Protocol.Vote;
 
+import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
@@ -244,6 +249,18 @@ public class MortgageService {
     }
     account.setAllowance(allowance + amount);
     accountStore.put(account.createDbKey(), account);
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      try {
+        JSONObject itemJsonObject = new JSONObject();
+        itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
+        itemJsonObject.put("allowance", account.getAllowance());
+        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        String jsonStr = itemJsonObject.toJSONString();
+        Producer.getInstance().send("PAYREWARD", jsonStr);
+      } catch (Exception e) {
+        logger.error("send PAYREWARD fail", e);
+      }
+    }
   }
 
   private void sortWitness(List<ByteString> list) {
