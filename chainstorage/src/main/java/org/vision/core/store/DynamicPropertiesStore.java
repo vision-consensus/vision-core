@@ -15,6 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 import java.util.Arrays;
 import java.util.Optional;
@@ -377,9 +378,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-        this.getExpansionRate();
+        this.getInflationRate();
     } catch (IllegalArgumentException e) {
-        this.saveExpansionRate(0L);
+        this.saveInflationRate(0L);
     }
 
     try {
@@ -389,15 +390,15 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getLowExpansionRate();
+      this.getLowInflationRate();
     } catch (IllegalArgumentException e) {
-      this.saveLowExpansionRate(689L);
+      this.saveLowInflationRate(689L);
     }
 
     try {
-      this.getHighExpansionRate();
+      this.getHighInflationRate();
     } catch (IllegalArgumentException e) {
-      this.saveHighExpansionRate(2322L);
+      this.saveHighInflationRate(2322L);
     }
 
     try {
@@ -410,6 +411,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getAvalonInitialAmount();
     } catch (IllegalArgumentException e) {
       this.saveAvalonInitialAmount(100000000 * VS_PRECISION);
+    }
+
+    try {
+      this.getLatestEconomyEndCycle();
+    } catch (IllegalArgumentException e) {
+      this.saveLatestEconomyEndCycle(FIRST_ECONOMY_CYCLE_RATE);
     }
 
     try {
@@ -1194,13 +1201,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
-  public void saveExpansionRate(long expansionRate) {
-    this.put(DynamicResourceProperties.EXPANSION_RATE,
-            new BytesCapsule(ByteArray.fromLong(expansionRate)));
+  public void saveInflationRate(long inflationRate) {
+    this.put(DynamicResourceProperties.INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(inflationRate)));
   }
 
-  public long getExpansionRate() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.EXPANSION_RATE))
+  public long getInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.INFLATION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(0L);
@@ -1218,25 +1225,25 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(60L);
   }
 
-  public void saveLowExpansionRate(long lowExpansionRate) {
-    this.put(DynamicResourceProperties.LOW_EXPANSION_RATE,
-            new BytesCapsule(ByteArray.fromLong(lowExpansionRate)));
+  public void saveLowInflationRate(long lowInflationRate) {
+    this.put(DynamicResourceProperties.LOW_INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(lowInflationRate)));
   }
 
-  public long getLowExpansionRate() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LOW_EXPANSION_RATE))
+  public long getLowInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LOW_INFLATION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(689L);
   }
 
-  public void saveHighExpansionRate(long highExpansionRate) {
-    this.put(DynamicResourceProperties.HIGH_EXPANSION_RATE,
-            new BytesCapsule(ByteArray.fromLong(highExpansionRate)));
+  public void saveHighInflationRate(long highInflationRate) {
+    this.put(DynamicResourceProperties.HIGH_INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(highInflationRate)));
   }
 
-  public long getHighExpansionRate() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.HIGH_EXPANSION_RATE))
+  public long getHighInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.HIGH_INFLATION_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(2322L);
@@ -1251,7 +1258,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(100000000L);
+            .orElse(800000000 * VS_PRECISION);
   }
 
   public void saveAvalonInitialAmount(long avalonInitialAmount) {
@@ -1263,7 +1270,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.AVALON_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(800000000L);
+            .orElse(100000000 * VS_PRECISION);
+  }
+
+  public void saveLatestEconomyEndCycle(long latestEconomyEndCycle) {
+    this.put(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(latestEconomyEndCycle)));
+  }
+
+  public long getLatestEconomyEndCycle() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(FIRST_ECONOMY_CYCLE_RATE);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2568,11 +2587,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_SRGUARANTEE_WEIGHT = "TOTAL_SRGUARANTEE_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
-    private static final byte[] EXPANSION_RATE = "EXPANSION_RATE".getBytes();
+    private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
-    private static final byte[] LOW_EXPANSION_RATE = "LOW_EXPANSION_RATE".getBytes();
-    private static final byte[] HIGH_EXPANSION_RATE = "HIGH_EXPANSION_RATE".getBytes();
+    private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
+    private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
+    private static final byte[] LATEST_ECONOMY_END_CYCLE = "AVALON_INITIAL_AMOUNT".getBytes();
     private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"

@@ -180,19 +180,16 @@ public class MaintenanceManager {
     calculationCyclePledgeRate();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long economicCycle = dynamicPropertiesStore.getEconomyCycleRate();
-    if (FIRST_ECONOMY_CYCLE_RATE == cycle) {
-      long beginCycle = 1;
-      long endCycle = cycle;
-      long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMY_CYCLE_RATE);
-      saveExpansionRate(pledgeRate);
-      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 120000 + 1));
-    } else if ((cycle - FIRST_ECONOMY_CYCLE_RATE) % economicCycle == 0) {
-      long economicCycleNumber = (cycle - FIRST_ECONOMY_CYCLE_RATE) / economicCycle;
-      long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMY_CYCLE_RATE + 1;
-      long endCycle = cycle;
-      long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
-      saveExpansionRate(pledgeRate);
-      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 120000 + 1));
+    long latestEconomyEndCycle = dynamicPropertiesStore.getLatestEconomyEndCycle();
+    if (latestEconomyEndCycle == cycle) {
+      long pledgeRate = savePledgeRate(1, cycle, latestEconomyEndCycle);
+      saveInflationRate(pledgeRate);
+    } else if ((cycle - latestEconomyEndCycle) % economicCycle == 0) {
+      long economicCycleNumber = (cycle - latestEconomyEndCycle) / economicCycle;
+      long beginCycle = (economicCycleNumber - 1) * economicCycle + latestEconomyEndCycle + 1;
+      long pledgeRate = savePledgeRate(beginCycle, cycle, economicCycle);
+      saveInflationRate(pledgeRate);
+      dynamicPropertiesStore.saveLatestEconomyEndCycle(cycle);
     }
   }
 
@@ -316,12 +313,12 @@ public class MaintenanceManager {
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
-  private void saveExpansionRate(long pledgeRate) {
+  private void saveInflationRate(long pledgeRate) {
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
     if (dynamicPropertiesStore.getPledgeRateThreshold() <= pledgeRate) {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getLowExpansionRate());
+      consensusDelegate.getDynamicPropertiesStore().saveInflationRate(dynamicPropertiesStore.getLowInflationRate());
     } else {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getHighExpansionRate());
+      consensusDelegate.getDynamicPropertiesStore().saveInflationRate(dynamicPropertiesStore.getHighInflationRate());
     }
   }
 
