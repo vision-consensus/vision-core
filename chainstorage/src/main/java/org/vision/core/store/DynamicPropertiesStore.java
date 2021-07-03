@@ -15,10 +15,11 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "DB")
 @Component
@@ -171,6 +172,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] SPREAD_MINT_PAY_PER_BLOCK = "SPREAD_MINT_PAY_PER_BLOCK".getBytes();
 
   private static final byte[] ECONOMY_CYCLE_RATE = "ECONOMY_CYCLE_RATE".getBytes();
+
+  private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
+  private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -853,6 +857,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getSpreadMintPayPerBlock();
     } catch (IllegalArgumentException e) {
       this.saveSpreadMintPayPerBlock(256000L);//0.256vs
+    }
+
+    try {
+      this.getSpreadMintLevel();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintLevel(3);
+    }
+
+    try {
+      this.getSpreadMintLevelProp();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintLevelProp("80,10,8,2");
     }
   }
 
@@ -2435,6 +2451,31 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public boolean supportSpreadMint() {
     return true;
+  }
+
+  public void saveSpreadMintLevel(int value) {
+    this.put(SPREAD_MINT_LEVEL, new BytesCapsule(ByteArray.fromInt(value)));
+  }
+
+  public int getSpreadMintLevel() {
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toInt)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SPREAD_MINT_LEVEL"));
+  }
+
+  public void saveSpreadMintLevelProp(String value) {
+    this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromHexString(value)));
+  }
+
+  public String getSpreadMintLevelProp() {
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL_PROP))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toHexString)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
+//    return "80,10,8,2";
   }
 
   public void saveVoteFreezeStageLevel1(long value) {

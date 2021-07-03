@@ -1,9 +1,6 @@
 package org.vision.core;
 
-import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
-
 import com.google.protobuf.ByteString;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,49 +14,17 @@ import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.utils.BlockUtil;
-import org.vision.core.db.BlockIndexStore;
-import org.vision.core.db.BlockStore;
-import org.vision.core.db.CommonDataBase;
-import org.vision.core.db.CommonStore;
-import org.vision.core.db.KhaosDatabase;
-import org.vision.core.db.PbftSignDataStore;
-import org.vision.core.db.RecentBlockStore;
-import org.vision.core.db.TransactionStore;
+import org.vision.core.db.*;
 import org.vision.core.db2.core.IVisionChainBase;
 import org.vision.core.exception.BadItemException;
 import org.vision.core.exception.HeaderNotFound;
 import org.vision.core.exception.ItemNotFoundException;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountIdIndexStore;
-import org.vision.core.store.AccountIndexStore;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.AccountTraceStore;
-import org.vision.core.store.AssetIssueStore;
-import org.vision.core.store.AssetIssueV2Store;
-import org.vision.core.store.BalanceTraceStore;
-import org.vision.core.store.CodeStore;
-import org.vision.core.store.ContractStore;
-import org.vision.core.store.DelegatedResourceAccountIndexStore;
-import org.vision.core.store.DelegatedResourceStore;
-import org.vision.core.store.DelegationStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.ExchangeStore;
-import org.vision.core.store.ExchangeV2Store;
-import org.vision.core.store.IncrementalMerkleTreeStore;
-import org.vision.core.store.MarketAccountStore;
-import org.vision.core.store.MarketOrderStore;
-import org.vision.core.store.MarketPairPriceToOrderStore;
-import org.vision.core.store.MarketPairToPriceStore;
-import org.vision.core.store.NullifierStore;
-import org.vision.core.store.ProposalStore;
-import org.vision.core.store.StorageRowStore;
-import org.vision.core.store.TransactionHistoryStore;
-import org.vision.core.store.TransactionRetStore;
-import org.vision.core.store.TreeBlockIndexStore;
-import org.vision.core.store.VotesStore;
-import org.vision.core.store.WitnessScheduleStore;
-import org.vision.core.store.WitnessStore;
-import org.vision.core.store.ZKProofStore;
+import org.vision.core.store.*;
+
+import java.util.List;
+
+import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 
 @Slf4j(topic = "DB")
 @Component
@@ -132,6 +97,9 @@ public class ChainBaseManager {
   @Autowired
   @Getter
   private DelegatedResourceAccountIndexStore delegatedResourceAccountIndexStore;
+  @Autowired
+  @Getter
+  private SpreadRelationShipStore spreadRelationShipStore;
   @Autowired
   @Getter
   private StorageRowStore storageRowStore;
@@ -237,6 +205,7 @@ public class ChainBaseManager {
     closeOneStore(votesStore);
     closeOneStore(delegatedResourceStore);
     closeOneStore(delegatedResourceAccountIndexStore);
+    closeOneStore(spreadRelationShipStore);
     closeOneStore(assetIssueV2Store);
     closeOneStore(exchangeV2Store);
     closeOneStore(nullifierStore);

@@ -7,16 +7,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.vision.core.capsule.DelegatedResourceCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
+import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DelegatedResourceAccountIndexStore;
-import org.vision.core.store.DelegatedResourceStore;
-import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -66,6 +60,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long expireTime = now + duration;
     byte[] ownerAddress = freezeBalanceContract.getOwnerAddress().toByteArray();
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
+    byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
 
     switch (freezeBalanceContract.getResource()) {
       case PHOTON:
@@ -109,10 +104,14 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
+        if (!ArrayUtils.isEmpty(parentAddress)){
+          spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
+        }
         long newFrozenBalanceForSpreadMint =
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForSpread().getFrozenBalance();
         accountCapsule.setFrozenForSpread(newFrozenBalanceForSpreadMint, expireTime);
+
         dynamicStore.addTotalSpreadMintWeight(frozenBalance / VS_PRECISION);
         break;
       default:
@@ -204,11 +203,27 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case SRGUARANTEE:
         break;
-      case SPREAD:
+      case SPREAD: // check the parentAddress is a valid account
+        byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
+        if (ArrayUtils.isEmpty(parentAddress)){
+          throw new ContractValidateException("parentAddress can not be empty");
+        }else{
+          if (!DecodeUtil.addressValid(parentAddress)) {
+            throw new ContractValidateException("Invalid parentAddress");
+          }
+
+          AccountCapsule parentCapsule = accountStore.get(parentAddress);
+          if (parentCapsule == null) {
+            String readableParentAddress = StringUtil.createReadableString(parentAddress);
+            throw new ContractValidateException(
+                    ActuatorConstant.ACCOUNT_EXCEPTION_STR
+                            + readableParentAddress + NOT_EXIST_STR);
+          }
+        }
         break;
       default:
         throw new ContractValidateException(
-            "ResourceCode error,valid ResourceCode[PHOTON、ENTROPY]");
+            "ResourceCode error,valid ResourceCode[PHOTON、ENTROPY、SRGUARANTEE、SPREAD]");
     }
 
     //todo：need version control and config for delegating resource
@@ -326,4 +341,21 @@ public class FreezeBalanceActuator extends AbstractActuator {
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);
   }
 
+  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime){
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    byte[] key = ownerAddress; //SpreadRelationShipCapsule.createDbKey(ownerAddress, parentAddress);
+
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
+            .get(key);
+
+    if (spreadRelationShipCapsule != null) {
+        spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime);
+    } else {
+      spreadRelationShipCapsule = new SpreadRelationShipCapsule(
+              ByteString.copyFrom(ownerAddress),
+              ByteString.copyFrom(parentAddress));
+      spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime);
+    }
+    spreadRelationShipStore.put(key, spreadRelationShipCapsule);
+  }
 }

@@ -1054,4 +1054,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     }
     return balance;
   }
+
+  public long getSpreadFrozenBalance() {
+    long balance = 0L;
+    try {
+      balance = this.account.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    }catch (Exception e){
+      logger.debug(e.getMessage());
+    }
+    return balance;
+  }
 }
