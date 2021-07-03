@@ -79,6 +79,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         itemJsonObject.put("allowance", allowance);
         itemJsonObject.put("balance", oldBalance + allowance);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        itemJsonObject.put("latestWithdrawTime", now);
         String jsonStr = itemJsonObject.toJSONString();
         Producer.getInstance().send("WITHDRAWBALANCE", jsonStr);
       } catch (Exception e) {
