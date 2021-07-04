@@ -67,7 +67,7 @@ public class Parameter {
     public static final long VS_PRECISION = 1000_000L;
 //    public static final long SRGUARANTEE_VS_THRESHOLD = 5000*1000_000L;
     public static final long UN_FREEZE_SRGUARANTEE_LIMIT = 23 * FROZEN_PERIOD;
-    public static final int FIRST_ECONOMY_CYCLE_RATE = 42;
+    public static final long FIRST_ECONOMY_CYCLE_RATE = 42L;
 
 
 
@@ -77,6 +77,7 @@ public class Parameter {
     public static final int VOTE_FREEZE_PERCENT_LEVEL1 = 108;
     public static final int VOTE_FREEZE_PERCENT_LEVEL2 = 113;
     public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
+
 
     public static final long SR_FREEZE_LOWEST = 5000 * 1000_000L;
     public static final int SR_FREEZE_LOWEST_PERCENT = 65;
