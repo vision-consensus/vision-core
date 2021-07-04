@@ -133,6 +133,8 @@ public class Manager {
   @Autowired
   private Consensus consensus;
   @Autowired
+  private AccountStore accountStore;
+  @Autowired
   @Getter
   private ChainBaseManager chainBaseManager;
   // transactions cache
@@ -1336,6 +1338,12 @@ public class Manager {
   }
 
   private void payReward(BlockCapsule block) {
+    if (1 == block.getNum()) {
+      long avalonBalance = accountStore.getAvalon().getBalance();
+      long galaxyBalance = accountStore.getGalaxy().getBalance();
+      chainBaseManager.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
+      chainBaseManager.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+    }
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
             .getRawData().getWitnessAddress().toByteArray());
@@ -1374,12 +1382,11 @@ public class Manager {
                 chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool()
                         - transactionFeeReward);
       }
-
-      long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-      long witness100PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
-      chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
       getAccountStore().put(account.createDbKey(), account);
     }
+    long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
+    long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
   }
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {

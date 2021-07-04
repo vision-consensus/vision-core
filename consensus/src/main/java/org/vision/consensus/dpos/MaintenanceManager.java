@@ -126,8 +126,13 @@ public class MaintenanceManager {
         }
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long maxVoteCounts = (long) ((account.getSRGuaranteeFrozenBalance() - dynamicPropertiesStore.getSrFreezeLowest())
-                /(Double.parseDouble(dynamicPropertiesStore.getSrFreezeLowestPercent()+"") / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+        long maxVoteCounts = 0;
+        long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
+        if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+            maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
+                    /(dynamicPropertiesStore.getSrFreezeLowestPercent() * 1.0 / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+          maxVoteCounts /= VS_PRECISION;
+        }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
         witnessCapsule.setVoteCountThreshold(maxVoteCounts);
@@ -176,18 +181,17 @@ public class MaintenanceManager {
     calculationCyclePledgeRate();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long economicCycle = dynamicPropertiesStore.getEconomyCycleRate();
-    if (FIRST_ECONOMY_CYCLE_RATE == cycle) {
-      long beginCycle = 1;
-      long endCycle = cycle;
-      long pledgeRate = savePledgeRate(beginCycle, endCycle, FIRST_ECONOMY_CYCLE_RATE);
-      saveExpansionRate(pledgeRate);
-    } else if ((cycle - FIRST_ECONOMY_CYCLE_RATE) % economicCycle == 0) {
-      long economicCycleNumber = (cycle - FIRST_ECONOMY_CYCLE_RATE) / economicCycle;
-      long beginCycle = (economicCycleNumber - 1) * economicCycle + FIRST_ECONOMY_CYCLE_RATE + 1;
-      long endCycle = cycle;
-      long pledgeRate = savePledgeRate(beginCycle, endCycle, economicCycle);
-      saveExpansionRate(pledgeRate);
-      dynamicPropertiesStore.saveWitness100PayPerBlock(dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getExpansionRate() / 1200 + 1));
+    long latestEconomyEndCycle = dynamicPropertiesStore.getLatestEconomyEndCycle();
+    long effectEconomicCycle = dynamicPropertiesStore.getEffectEconomyCycleRate();
+    if (latestEconomyEndCycle == cycle) {
+      long pledgeRate = savePledgeRate(1, cycle, latestEconomyEndCycle);
+      saveInflationRate(pledgeRate);
+      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
+    } else if ((cycle - latestEconomyEndCycle) % effectEconomicCycle == 0) {
+      long pledgeRate = savePledgeRate(latestEconomyEndCycle + 1, cycle, effectEconomicCycle);
+      saveInflationRate(pledgeRate);
+      dynamicPropertiesStore.saveLatestEconomyEndCycle(cycle);
+      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
     }
   }
 
@@ -297,26 +301,34 @@ public class MaintenanceManager {
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
-    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
-    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
-    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
-    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
+    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
+    if (0 == galaxyInitialAmount) {
+      dynamicPropertiesStore.saveGalaxyInitialAmount(galaxyBalance);
+      galaxyInitialAmount = galaxyBalance;
+    }
+    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
     long avalonBalance = accountStore.getAvalon().getBalance();
     BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
+    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
+    if (0 == avalonInitialAmount) {
+      dynamicPropertiesStore.saveAvalonInitialAmount(avalonBalance);
+      avalonInitialAmount = avalonBalance;
+    }
+    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
     BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
-  private void saveExpansionRate(long pledgeRate) {
+  private void saveInflationRate(long pledgeRate) {
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
     if (dynamicPropertiesStore.getPledgeRateThreshold() <= pledgeRate) {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getLowExpansionRate());
+      consensusDelegate.getDynamicPropertiesStore().saveInflationRate(dynamicPropertiesStore.getLowInflationRate());
     } else {
-      consensusDelegate.getDynamicPropertiesStore().saveExpansionRate(dynamicPropertiesStore.getHighExpansionRate());
+      consensusDelegate.getDynamicPropertiesStore().saveInflationRate(dynamicPropertiesStore.getHighInflationRate());
     }
   }
 

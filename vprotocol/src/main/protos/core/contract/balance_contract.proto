@@ -14,6 +14,7 @@ message FreezeBalanceContract {
 
   ResourceCode resource = 10;
   bytes receiver_address = 15;
+  bytes parent_address = 16;
 }
 
 
