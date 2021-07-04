@@ -16,7 +16,6 @@ import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
 import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -407,13 +406,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getGalaxyInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveGalaxyInitialAmount(800000000 * VS_PRECISION);
+      this.saveGalaxyInitialAmount(0L);
     }
 
     try {
       this.getAvalonInitialAmount();
     } catch (IllegalArgumentException e) {
-      this.saveAvalonInitialAmount(100000000 * VS_PRECISION);
+      this.saveAvalonInitialAmount(0L);
     }
 
     try {
@@ -1279,7 +1278,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(800000000 * VS_PRECISION);
+            .orElse(0L);
   }
 
   public void saveAvalonInitialAmount(long avalonInitialAmount) {
@@ -1291,7 +1290,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.AVALON_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(100000000 * VS_PRECISION);
+            .orElse(0L);
   }
 
   public void saveLatestEconomyEndCycle(long latestEconomyEndCycle) {

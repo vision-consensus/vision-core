@@ -301,14 +301,22 @@ public class MaintenanceManager {
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
-    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
-    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
-    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
-    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
+    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
+    if (0 == galaxyInitialAmount) {
+      dynamicPropertiesStore.saveGalaxyInitialAmount(galaxyBalance);
+      galaxyInitialAmount = galaxyBalance;
+    }
+    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
     long avalonBalance = accountStore.getAvalon().getBalance();
     BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
+    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
+    if (0 == avalonInitialAmount) {
+      dynamicPropertiesStore.saveAvalonInitialAmount(avalonBalance);
+      avalonInitialAmount = avalonBalance;
+    }
+    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
     BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();

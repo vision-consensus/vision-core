@@ -131,6 +131,8 @@ public class Manager {
   @Autowired
   private Consensus consensus;
   @Autowired
+  private AccountStore accountStore;
+  @Autowired
   @Getter
   private ChainBaseManager chainBaseManager;
   // transactions cache
@@ -1346,6 +1348,12 @@ public class Manager {
   }
 
   private void payReward(BlockCapsule block) {
+    if (1 == block.getNum()) {
+      long avalonBalance = accountStore.getAvalon().getBalance();
+      long galaxyBalance = accountStore.getGalaxy().getBalance();
+      chainBaseManager.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
+      chainBaseManager.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+    }
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
             .getRawData().getWitnessAddress().toByteArray());
