@@ -1,18 +1,19 @@
 package org.vision.core.capsule;
 
-import static org.vision.common.utils.WalletUtil.getAddressStringList;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.protos.Protocol.Proposal;
 import org.vision.protos.Protocol.Proposal.State;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.vision.common.utils.WalletUtil.getAddressStringList;
+import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
 
 @Slf4j(topic = "capsule")
 public class ProposalCapsule implements ProtoCapsule<Proposal> {
@@ -70,6 +71,16 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
     this.proposal = this.proposal.toBuilder()
         .putAllParameters(parameters)
         .build();
+  }
+
+  public Map<Long, String> getStringParameters() {
+    return this.proposal.getStringParametersMap();
+  }
+
+  public void setStringParameters(Map<Long, String> stringParameters) {
+    this.proposal = this.proposal.toBuilder()
+            .putAllStringParameters(stringParameters)
+            .build();
   }
 
   public long getExpirationTime() {
