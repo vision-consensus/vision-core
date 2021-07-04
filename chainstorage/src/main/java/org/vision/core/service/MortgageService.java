@@ -9,13 +9,11 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.BalanceInsufficientException;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DelegationStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.WitnessStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Vote;
 
 import java.util.ArrayList;
@@ -32,6 +30,10 @@ public class MortgageService {
   @Setter
   @Getter
   private DelegationStore delegationStore;
+
+  @Setter
+  @Getter
+  private SpreadRelationShipStore spreadRelationShipStore;
 
   @Setter
   private DynamicPropertiesStore dynamicPropertiesStore;
@@ -212,7 +214,45 @@ public class MortgageService {
     }
     long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
-    return totalReward * accountFreeze / totalFreeze;
+    long spreadReward = totalReward * accountFreeze / totalFreeze;
+
+    if (dynamicPropertiesStore.supportSpreadMint()){
+      String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
+
+      String[] levelProps = spreadLevelProp.split(",");
+      int[] props = new int[levelProps.length];
+      int sumProps = 0;
+      for(int i = 0; i < levelProps.length; i++)
+      {
+        props[i] = Integer.parseInt(levelProps[i]);
+        sumProps += props[i];
+      }
+
+      if (sumProps != 100){
+        logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
+        return spreadReward;
+      }
+
+      AccountCapsule parentCapsule = accountCapsule;
+      for (int i = 1; i < props.length; i++) {
+        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+        if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
+          break;
+        }
+        adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze)));
+      }
+
+      return (long)(spreadReward * (props[0] / 100.0));
+    }
+
+    return spreadReward;
+  }
+
+  public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
+    long parentAccountFreeze = parentCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    double minSpreadMintProp = parentAccountFreeze * 1.0 / accountFreeze;
+    return minSpreadMintProp < 1 ? minSpreadMintProp : 1.0;
   }
 
   public WitnessCapsule getWitnessByAddress(ByteString address) {
