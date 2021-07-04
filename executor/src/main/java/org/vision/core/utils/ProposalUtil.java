@@ -447,6 +447,40 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_SPREAD_MINT_LEVEL_PROP: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_SPREAD_MINT_LEVEL_PROP] is only allowed to be 1 or 0");
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  public static void validatorString(DynamicPropertiesStore dynamicPropertiesStore,
+                               ForkController forkController,
+                               long code, String value)
+          throws ContractValidateException {
+    ProposalType proposalType = ProposalType.getEnum(code);
+    switch (proposalType) {
+      case SPREAD_MINT_LEVEL_PROP: {
+        String[] levelProps = value.split(",");
+        int[] props = new int[levelProps.length];
+        int sumProps = 0;
+        for(int i = 0; i < levelProps.length; i++)
+        {
+          props[i] = Integer.parseInt(levelProps[i]);
+          sumProps += props[i];
+        }
+
+        if (sumProps != 100){
+          throw new ContractValidateException(
+                  "This value[SPREAD_MINT_LEVEL_PROP] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -501,7 +535,9 @@ public class ProposalUtil {
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
     ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
     SPREAD_MINT_PAY_PER_BLOCK(50),// [0,100_000_000]
-    ECONOMY_CYCLE_RATE(51); // [1,500]
+    ECONOMY_CYCLE_RATE(51), // [1,500]
+    ALLOW_SPREAD_MINT_LEVEL_PROP(52),// 0,1
+    SPREAD_MINT_LEVEL_PROP(53);// "80,10,8,2"
 
     private long code;
 
