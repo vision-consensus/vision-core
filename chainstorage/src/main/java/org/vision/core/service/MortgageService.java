@@ -60,7 +60,7 @@ public class MortgageService {
     }
 
     long voteSum = 0;
-    long totalPay = dynamicPropertiesStore.getWitness100PayPerBlock();
+    long totalPay = dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getInflationRate() / 120000 + 1);
     for (ByteString b : witnessAddressList) {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
       voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());

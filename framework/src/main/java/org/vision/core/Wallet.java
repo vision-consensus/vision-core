@@ -944,7 +944,7 @@ public class Wallet {
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getWitness100PayPerBlock")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock())
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() / 120000 + 1))
         .build());
 
     builder.addChainParameter(
