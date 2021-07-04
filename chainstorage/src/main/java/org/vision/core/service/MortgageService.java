@@ -62,12 +62,14 @@ public class MortgageService {
     long voteSum = 0;
     long totalPay = dynamicPropertiesStore.getWitness100PayPerBlock() * (dynamicPropertiesStore.getInflationRate() / 120000 + 1);
     for (ByteString b : witnessAddressList) {
-      voteSum += getWitnessByAddress(b).getVoteCount();
+      WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+      voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     }
     if (voteSum > 0) {
       for (ByteString b : witnessAddressList) {
         double eachVotePay = (double) totalPay / voteSum;
-        long pay = (long) (getWitnessByAddress(b).getVoteCount() * eachVotePay);
+        WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+        long pay = (long) (Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold()) * eachVotePay);
         logger.debug("pay {} stand reward {}", Hex.toHexString(b.toByteArray()), pay);
         payReward(b.toByteArray(), pay);
       }
