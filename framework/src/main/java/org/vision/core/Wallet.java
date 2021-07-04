@@ -998,6 +998,14 @@ public class Wallet {
             .setKey("getSpreadMintPayPerBlock")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowSpreadMintLevelProp")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintLevelProp())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintLevelProp")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getSpreadMintLevelProp())
+            .build());
 
     return builder.build();
   }
