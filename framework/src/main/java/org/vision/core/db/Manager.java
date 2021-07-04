@@ -1384,10 +1384,6 @@ public class Manager {
                 chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool()
                         - transactionFeeReward);
       }
-
-      long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-      long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
-      chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
       getAccountStore().put(account.createDbKey(), account);
       if(CommonParameter.PARAMETER.isKafkaEnable()){
         try {
@@ -1402,6 +1398,9 @@ public class Manager {
         }
       }
     }
+    long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
+    long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
   }
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {
