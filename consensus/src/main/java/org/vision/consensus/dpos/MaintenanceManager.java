@@ -181,15 +181,16 @@ public class MaintenanceManager {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long economicCycle = dynamicPropertiesStore.getEconomyCycleRate();
     long latestEconomyEndCycle = dynamicPropertiesStore.getLatestEconomyEndCycle();
+    long effectEconomicCycle = dynamicPropertiesStore.getEffectEconomyCycleRate();
     if (latestEconomyEndCycle == cycle) {
       long pledgeRate = savePledgeRate(1, cycle, latestEconomyEndCycle);
       saveInflationRate(pledgeRate);
-    } else if ((cycle - latestEconomyEndCycle) % economicCycle == 0) {
-      long economicCycleNumber = (cycle - latestEconomyEndCycle) / economicCycle;
-      long beginCycle = (economicCycleNumber - 1) * economicCycle + latestEconomyEndCycle + 1;
-      long pledgeRate = savePledgeRate(beginCycle, cycle, economicCycle);
+      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
+    } else if ((cycle - latestEconomyEndCycle) % effectEconomicCycle == 0) {
+      long pledgeRate = savePledgeRate(latestEconomyEndCycle + 1, cycle, effectEconomicCycle);
       saveInflationRate(pledgeRate);
       dynamicPropertiesStore.saveLatestEconomyEndCycle(cycle);
+      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
     }
   }
 

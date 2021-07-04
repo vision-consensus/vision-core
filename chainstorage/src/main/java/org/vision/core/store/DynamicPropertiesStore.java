@@ -173,6 +173,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] ECONOMY_CYCLE_RATE = "ECONOMY_CYCLE_RATE".getBytes();
 
+  private static final byte[] EFFECT_ECONOMY_CYCLE_RATE = "EFFECT_ECONOMY_CYCLE_RATE".getBytes();
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
     super(dbName);
@@ -812,6 +813,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getEconomyCycleRate();
     } catch (IllegalArgumentException e) {
       this.saveEconomyCycleRate(120L);
+    }
+
+    try {
+      this.getEffectEconomyCycleRate();
+    } catch (IllegalArgumentException e) {
+      this.saveEffectEconomyCycleRate(120L);
     }
 
     try {
@@ -2560,6 +2567,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(120L);
   }
 
+  public void saveEffectEconomyCycleRate(long effectEconomyCycleRate) {
+    this.put(EFFECT_ECONOMY_CYCLE_RATE,
+            new BytesCapsule(ByteArray.fromLong(effectEconomyCycleRate)));
+  }
+
+  public long getEffectEconomyCycleRate() {
+    return Optional.ofNullable(getUnchecked(EFFECT_ECONOMY_CYCLE_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(120L);
+  }
 
 
   private static class DynamicResourceProperties {
