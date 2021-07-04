@@ -19,6 +19,7 @@ public class ProposalService extends ProposalUtil {
 
   public static boolean process(Manager manager, ProposalCapsule proposalCapsule) {
     Map<Long, Long> map = proposalCapsule.getInstance().getParametersMap();
+    Map<Long, String> mapString = proposalCapsule.getInstance().getStringParametersMap();
     boolean find = true;
     for (Map.Entry<Long, Long> entry : map.entrySet()) {
       ProposalType proposalType = ProposalType.getEnumOrNull(entry.getKey());
@@ -251,11 +252,29 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSpreadMintPayPerBlock(entry.getValue());
           break;
         }
+        case ALLOW_SPREAD_MINT_LEVEL_PROP: {
+          manager.getDynamicPropertiesStore().saveAllowSpreadMintLevelProp(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
       }
     }
+
+    for (Map.Entry<Long, String> entry : mapString.entrySet()) {
+      ProposalType proposalType = ProposalType.getEnumOrNull(entry.getKey());
+      if (proposalType == null) {
+        find = false;
+        continue;
+      }
+      if (proposalType == ProposalType.SPREAD_MINT_LEVEL_PROP) {
+        manager.getDynamicPropertiesStore().saveSpreadMintLevelProp(entry.getValue());
+      } else {
+        find = false;
+      }
+    }
+
     return find;
   }
 

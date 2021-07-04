@@ -174,6 +174,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] EFFECT_ECONOMY_CYCLE_RATE = "EFFECT_ECONOMY_CYCLE_RATE".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
+  private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -874,6 +875,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getSpreadMintLevel();
     } catch (IllegalArgumentException e) {
       this.saveSpreadMintLevel(3);
+    }
+
+    try {
+      this.getAllowSpreadMintLevelProp();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowSpreadMintLevelProp(1L);
     }
 
     try {
@@ -2489,16 +2496,28 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void saveSpreadMintLevelProp(String value) {
-    this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromHexString(value)));
+    this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
   }
 
   public String getSpreadMintLevelProp() {
     return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL_PROP))
             .map(BytesCapsule::getData)
-            .map(ByteArray::toHexString)
+            .map(ByteArray::toStr)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
 //    return "80,10,8,2";
+  }
+
+  public void saveAllowSpreadMintLevelProp(long value) {
+    this.put(ALLOW_SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowSpreadMintLevelProp() {
+    return Optional.ofNullable(getUnchecked(ALLOW_SPREAD_MINT_LEVEL_PROP))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found ALLOW_SPREAD_MINT_LEVEL_PROP"));
   }
 
   public void saveVoteFreezeStageLevel1(long value) {
