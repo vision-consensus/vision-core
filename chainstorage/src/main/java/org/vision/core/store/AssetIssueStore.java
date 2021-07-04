@@ -1,17 +1,21 @@
 package org.vision.core.store;
 
-import static org.vision.common.utils.Commons.ASSET_ISSUE_COUNT_LIMIT_MAX;
-
 import com.google.common.collect.Streams;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.JsonFormat;
+import org.vision.common.utils.Producer;
 import org.vision.core.capsule.AssetIssueCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
+
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import static org.vision.common.utils.Commons.ASSET_ISSUE_COUNT_LIMIT_MAX;
 
 @Slf4j(topic = "DB")
 @Component
@@ -26,6 +30,15 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
   @Override
   public AssetIssueCapsule get(byte[] key) {
     return super.getUnchecked(key);
+  }
+
+  @Override
+  public void put(byte[] key, AssetIssueCapsule item) {
+    super.put(key, item);
+
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      Producer.getInstance().send("ASSETISSUE", JsonFormat.printToString(item.getInstance()));
+    }
   }
 
   /**

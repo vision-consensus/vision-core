@@ -1,5 +1,6 @@
 package org.vision.core.db;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -28,10 +29,7 @@ import org.vision.common.logsfilter.trigger.Trigger;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.RuntimeImpl;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Pair;
-import org.vision.common.utils.SessionOptional;
-import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.*;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.consensus.Consensus;
 import org.vision.consensus.base.Param.Miner;
@@ -714,6 +712,19 @@ public class Manager {
     if (block.getTransactions().size() != 0) {
       chainBaseManager.getTransactionRetStore()
           .put(ByteArray.fromLong(block.getNum()), block.getResult());
+
+      if(CommonParameter.PARAMETER.isKafkaEnable()){
+        for (TransactionCapsule item: block.getTransactions()) {
+          JSONObject jsonTransaction = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+          String txID = ByteArray.toHexString(Sha256Hash
+                  .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
+                          item.getInstance().getRawData().toByteArray()));
+          Integer txLength = item.getInstance().toByteArray().length;
+          jsonTransaction.put("txID", txID);
+          jsonTransaction.put("txLength", txLength);
+          Producer.getInstance().send("TRANSACTION", jsonTransaction.toJSONString());
+        }
+      }
     }
 
     updateFork(block);
@@ -1378,6 +1389,18 @@ public class Manager {
       long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
       chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
       getAccountStore().put(account.createDbKey(), account);
+      if(CommonParameter.PARAMETER.isKafkaEnable()){
+        try {
+          JSONObject itemJsonObject = new JSONObject();
+          itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
+          itemJsonObject.put("allowance",account.getAllowance());
+          itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+          String jsonStr = itemJsonObject.toJSONString();
+          Producer.getInstance().send("PAYREWARD", jsonStr);
+        } catch (Exception e) {
+          logger.error("send PAYREWARD fail", e);
+        }
+      }
     }
   }
 

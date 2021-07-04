@@ -4,14 +4,18 @@ import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
@@ -67,6 +71,21 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     ret.setWithdrawAmount(allowance);
     ret.setStatus(fee, code.SUCESS);
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+
+      try {
+        JSONObject itemJsonObject = new JSONObject();
+        itemJsonObject.put("accountId", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
+        itemJsonObject.put("allowance", allowance);
+        itemJsonObject.put("balance", oldBalance + allowance);
+        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        itemJsonObject.put("latestWithdrawTime", now);
+        String jsonStr = itemJsonObject.toJSONString();
+        Producer.getInstance().send("WITHDRAWBALANCE", jsonStr);
+      } catch (Exception e) {
+        logger.error("send WITHDRAWBALANCE fail", e);
+      }
+    }
 
     return true;
   }
