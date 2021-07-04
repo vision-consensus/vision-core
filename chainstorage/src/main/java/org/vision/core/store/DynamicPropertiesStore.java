@@ -298,7 +298,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessStandbyAllowance();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessStandbyAllowance(7_200_000_000L);//1VS TODO there is a problem to fix
+      this.saveWitnessStandbyAllowance(115_200_000_000L);//115200 VS
     }
 
     try {
