@@ -714,19 +714,6 @@ public class Manager {
     if (block.getTransactions().size() != 0) {
       chainBaseManager.getTransactionRetStore()
           .put(ByteArray.fromLong(block.getNum()), block.getResult());
-
-      if(CommonParameter.PARAMETER.isKafkaEnable()){
-        for (TransactionCapsule item: block.getTransactions()) {
-          JSONObject jsonTransaction = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
-          String txID = ByteArray.toHexString(Sha256Hash
-                  .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
-                          item.getInstance().getRawData().toByteArray()));
-          Integer txLength = item.getInstance().toByteArray().length;
-          jsonTransaction.put("txID", txID);
-          jsonTransaction.put("txLength", txLength);
-          Producer.getInstance().send("TRANSACTION", jsonTransaction.toJSONString());
-        }
-      }
     }
 
     updateFork(block);
