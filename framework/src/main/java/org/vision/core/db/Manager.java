@@ -1393,6 +1393,12 @@ public class Manager {
         }
       }
     }
+    long reward = chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
+    reward += chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      reward += chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+    }
+    chainBaseManager.getBlockStore().sendRewardPerBlock(block, reward);
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
     long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
     chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
