@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.JsonFormat;
 import org.vision.common.utils.Producer;
 import org.vision.core.capsule.ContractCapsule;
@@ -33,10 +35,12 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
     super.put(key, item);
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
       try {
+        item.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
         JSONObject jsonObject = JSONObject
                 .parseObject(JsonFormat.printToString(item.generateWrapper(), true));
         Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
-      }catch (Exception e) {
+      } catch (Exception e) {
+        e.printStackTrace();
         logger.error("contract-error:" + e.getMessage());
       }
     }
