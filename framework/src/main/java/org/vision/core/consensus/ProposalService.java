@@ -244,8 +244,8 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowBlackHoleOptimization(entry.getValue());
           break;
         }
-        case ECONOMY_CYCLE_RATE: {
-          manager.getDynamicPropertiesStore().saveEconomyCycleRate(entry.getValue());
+        case ECONOMY_CYCLE: {
+          manager.getDynamicPropertiesStore().saveEconomyCycle(entry.getValue());
           break;
         }
         case SPREAD_MINT_PAY_PER_BLOCK: {

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.vision.common.utils.WalletUtil.getAddressStringList;
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "consensus")
@@ -180,18 +179,18 @@ public class MaintenanceManager {
     }
     calculationCyclePledgeRate();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long economicCycle = dynamicPropertiesStore.getEconomyCycleRate();
+    long economicCycle = dynamicPropertiesStore.getEconomyCycle();
     long latestEconomyEndCycle = dynamicPropertiesStore.getLatestEconomyEndCycle();
-    long effectEconomicCycle = dynamicPropertiesStore.getEffectEconomyCycleRate();
+    long effectEconomicCycle = dynamicPropertiesStore.getEffectEconomyCycle();
     if (latestEconomyEndCycle == cycle) {
       long pledgeRate = savePledgeRate(1, cycle, latestEconomyEndCycle);
       saveInflationRate(pledgeRate);
-      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
+      dynamicPropertiesStore.saveEffectEconomyCycle(economicCycle);
     } else if ((cycle - latestEconomyEndCycle) % effectEconomicCycle == 0) {
       long pledgeRate = savePledgeRate(latestEconomyEndCycle + 1, cycle, effectEconomicCycle);
       saveInflationRate(pledgeRate);
       dynamicPropertiesStore.saveLatestEconomyEndCycle(cycle);
-      dynamicPropertiesStore.saveEffectEconomyCycleRate(economicCycle);
+      dynamicPropertiesStore.saveEffectEconomyCycle(economicCycle);
     }
   }
 

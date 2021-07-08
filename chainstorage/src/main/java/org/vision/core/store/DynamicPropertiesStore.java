@@ -15,7 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE_RATE;
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -170,8 +170,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] SPREAD_MINT_PAY_PER_BLOCK = "SPREAD_MINT_PAY_PER_BLOCK".getBytes();
 
-  private static final byte[] ECONOMY_CYCLE_RATE = "ECONOMY_CYCLE_RATE".getBytes();
-  private static final byte[] EFFECT_ECONOMY_CYCLE_RATE = "EFFECT_ECONOMY_CYCLE_RATE".getBytes();
+  private static final byte[] ECONOMY_CYCLE = "ECONOMY_CYCLE".getBytes();
+  private static final byte[] EFFECT_ECONOMY_CYCLE = "EFFECT_ECONOMY_CYCLE".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
   private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
@@ -419,7 +419,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getLatestEconomyEndCycle();
     } catch (IllegalArgumentException e) {
-      this.saveLatestEconomyEndCycle(FIRST_ECONOMY_CYCLE_RATE);
+      this.saveLatestEconomyEndCycle(FIRST_ECONOMY_CYCLE);
     }
 
     try {
@@ -812,15 +812,15 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getEconomyCycleRate();
+      this.getEconomyCycle();
     } catch (IllegalArgumentException e) {
-      this.saveEconomyCycleRate(120L);
+      this.saveEconomyCycle(120L);
     }
 
     try {
-      this.getEffectEconomyCycleRate();
+      this.getEffectEconomyCycle();
     } catch (IllegalArgumentException e) {
-      this.saveEffectEconomyCycleRate(120L);
+      this.saveEffectEconomyCycle(120L);
     }
 
     try {
@@ -1309,7 +1309,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(FIRST_ECONOMY_CYCLE_RATE);
+            .orElse(FIRST_ECONOMY_CYCLE);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -2612,25 +2612,25 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     this.put(SPREAD_MINT_PAY_PER_BLOCK, new BytesCapsule(ByteArray.fromLong(value)));
   }
 
-  public void saveEconomyCycleRate(long value) {
-    this.put(ECONOMY_CYCLE_RATE,
+  public void saveEconomyCycle(long value) {
+    this.put(ECONOMY_CYCLE,
             new BytesCapsule(ByteArray.fromLong(value)));
   }
 
-  public long getEconomyCycleRate() {
-    return Optional.ofNullable(getUnchecked(ECONOMY_CYCLE_RATE))
+  public long getEconomyCycle() {
+    return Optional.ofNullable(getUnchecked(ECONOMY_CYCLE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(120L);
   }
 
-  public void saveEffectEconomyCycleRate(long effectEconomyCycleRate) {
-    this.put(EFFECT_ECONOMY_CYCLE_RATE,
-            new BytesCapsule(ByteArray.fromLong(effectEconomyCycleRate)));
+  public void saveEffectEconomyCycle(long effectEconomyCycle) {
+    this.put(EFFECT_ECONOMY_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(effectEconomyCycle)));
   }
 
-  public long getEffectEconomyCycleRate() {
-    return Optional.ofNullable(getUnchecked(EFFECT_ECONOMY_CYCLE_RATE))
+  public long getEffectEconomyCycle() {
+    return Optional.ofNullable(getUnchecked(EFFECT_ECONOMY_CYCLE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(120L);
@@ -2667,7 +2667,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
     private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
-    private static final byte[] LATEST_ECONOMY_END_CYCLE = "AVALON_INITIAL_AMOUNT".getBytes();
+    private static final byte[] LATEST_ECONOMY_END_CYCLE = "LATEST_ECONOMY_END_CYCLE".getBytes();
     private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
