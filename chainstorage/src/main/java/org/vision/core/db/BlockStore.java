@@ -46,9 +46,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
     super(dbName);
   }
 
-  @Override
-  public void put(byte[] blockId, BlockCapsule capsule){
-    super.put(blockId, capsule);
+  public void sendBlockMsg(final BlockCapsule capsule, long reward){
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
@@ -77,18 +75,11 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("originEntropyUsage", originEntropyUsage);
       obj.put("entropyUsageTotal", entropyUsageTotal);
       obj.put("photonUsage", photonUsage);
+      obj.put("reward", reward);
       Producer.getInstance().send("BLOCK", obj.toJSONString());
     }
   }
-  public void sendRewardPerBlock(BlockCapsule capsule, long reward){
-    if(CommonParameter.PARAMETER.isKafkaEnable()){
-      JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
-      JSONObject msg = new JSONObject();
-      msg.put("blockID", obj.getString("blockID"));
-      msg.put("reward", reward);
-      Producer.getInstance().send("BLOCK", obj.toJSONString());
-    }
-  }
+
   public List<BlockCapsule> getLimitNumber(long startNumber, long limit) {
     BlockId startBlockId = new BlockId(Sha256Hash.ZERO_HASH, startNumber);
     return revokingDB.getValuesNext(startBlockId.getBytes(), limit).stream()
