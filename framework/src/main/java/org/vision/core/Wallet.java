@@ -1006,6 +1006,14 @@ public class Wallet {
             .setKey("getSpreadMintLevelProp")
             .setStringValue(dbManager.getDynamicPropertiesStore().getSpreadMintLevelProp())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
 
     return builder.build();
   }
