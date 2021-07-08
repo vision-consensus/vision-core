@@ -277,7 +277,7 @@ public class Manager {
     Message.setDynamicPropertiesStore(this.getDynamicPropertiesStore());
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
-            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
+            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(), chainBaseManager.getSpreadRelationShipStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
@@ -1352,11 +1352,7 @@ public class Manager {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlock());
       mortgageService.payStandbyWitness();
-      //spread mint
-      if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-        mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-        spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
-      }
+
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
                 .floorDiv(chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),
@@ -1384,6 +1380,12 @@ public class Manager {
       }
       getAccountStore().put(account.createDbKey(), account);
     }
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
+      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+    }
+
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
     long witness123PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
     chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
