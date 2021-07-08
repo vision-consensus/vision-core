@@ -2480,7 +2480,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public boolean supportSpreadMint() {
-    return true;
+    return getAllowSpreadMintLevelProp() == 1L;
   }
 
   public void saveSpreadMintLevel(int value) {
