@@ -215,15 +215,6 @@ public class BlockCapsule implements ProtoCapsule<Block> {
     return MerkleTree.getInstance().createTree(ids).getRoot().getHash();
   }
 
-  public void setLogsBloom(byte[] logsBloom) {
-    BlockHeader.raw blockHeaderRaw =
-            this.block.getBlockHeader().getRawData().toBuilder()
-                    .setLogsBloom(ByteString.copyFrom(logsBloom)).build();
-
-    this.block = this.block.toBuilder().setBlockHeader(
-            this.block.getBlockHeader().toBuilder().setRawData(blockHeaderRaw)).build();
-  }
-
   public void setMerkleRoot() {
     BlockHeader.raw blockHeaderRaw =
         this.block.getBlockHeader().getRawData().toBuilder()

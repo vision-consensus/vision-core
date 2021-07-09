@@ -20,14 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.vision.common.runtime.InternalTransaction;
 import org.vision.common.runtime.ProgramResult;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.vm.LogInfo;
-import org.vision.common.utils.Bloom;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.ReceiptCapsule;
@@ -114,20 +112,6 @@ public class TransactionUtil {
         }
     );
     builder.addAllLog(logList);
-
-    Bloom bloom = new Bloom();
-    if (null != logList && logList.size() > 0) {
-      for (Log log : logList) {
-        bloom.add(log.getAddress().toByteArray());
-        List<ByteString> topics = log.getTopicsList();
-        if (CollectionUtils.isNotEmpty(topics)) {
-          for (ByteString topic : topics) {
-            bloom.add(topic.toByteArray());
-          }
-        }
-      }
-    }
-    builder.setLogsBloom(ByteString.copyFrom(bloom.getData()));
 
     if (Objects.nonNull(block)) {
       builder.setBlockNumber(block.getInstance().getBlockHeader().getRawData().getNumber());

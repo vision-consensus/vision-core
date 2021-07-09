@@ -1100,7 +1100,7 @@ public class VM {
           byte[] data = program.memoryChunk(memStart.intValueSafe(), memOffset.intValueSafe());
 
           LogInfo logInfo =
-              new LogInfo(address.getLast21Bytes(), topics, data);
+              new LogInfo(address.getLast20Bytes(), topics, data);
 
           if (logger.isDebugEnabled()) {
             hint = logInfo.toString();
