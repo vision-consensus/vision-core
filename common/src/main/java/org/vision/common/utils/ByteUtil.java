@@ -20,6 +20,8 @@ package org.vision.common.utils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedBytes;
+import org.spongycastle.util.encoders.Hex;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -443,6 +445,29 @@ public class ByteUtil {
     byte[] longBytes = ByteArray.fromLong(value);
     byte[] zeroBytes = new byte[24];
     return ByteUtil.merge(zeroBytes, longBytes);
+  }
+
+  public static byte[] setBit(byte[] data, int pos, int val) {
+
+    if ((data.length * 8) - 1 < pos)
+      throw new Error("outside byte array limit, pos: " + pos);
+
+    int posByte = data.length - 1 - (pos) / 8;
+    int posBit = (pos) % 8;
+    byte setter = (byte) (1 << (posBit));
+    byte toBeSet = data[posByte];
+    byte result;
+    if (val == 1)
+      result = (byte) (toBeSet | setter);
+    else
+      result = (byte) (toBeSet & ~setter);
+
+    data[posByte] = result;
+    return data;
+  }
+
+  public static String toHexString(byte[] data) {
+    return data == null ? "" : Hex.toHexString(data);
   }
 
 }
