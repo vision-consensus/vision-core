@@ -105,7 +105,7 @@ public class MortgageService {
     delegationStore.addSpreadMintReward(cycle, value);
   }
 
-  public void withdrawSpreadMintReward(byte[] address) {
+  public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -137,7 +137,7 @@ public class MortgageService {
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
-  public void withdrawReward(byte[] address) {
+  public void withdrawSpreadMintReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
