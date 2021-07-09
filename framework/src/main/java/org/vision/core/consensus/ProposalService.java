@@ -172,7 +172,7 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().addSystemContractAndSetPermission(49);
           break;
         }
-        case WITNESS_100_PAY_PER_BLOCK: {
+        case WITNESS_123_PAY_PER_BLOCK: {
           manager.getDynamicPropertiesStore().saveWitness123PayPerBlock(entry.getValue());
           break;
         }
