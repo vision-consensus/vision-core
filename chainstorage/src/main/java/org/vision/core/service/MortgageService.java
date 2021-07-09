@@ -243,7 +243,7 @@ public class MortgageService {
     for (Vote vote : accountCapsule.getVotesList()) {
       byte[] srAddress = vote.getVoteAddress().toByteArray();
       long totalReward = delegationStore.getReward(cycle, srAddress);
-      long totalVote = delegationStore.getWitnessVote(cycle, srAddress);
+      long totalVote = delegationStore.getWitnessVoteWeight(cycle, srAddress);
       if (totalVote == DelegationStore.REMARK || totalVote == 0) {
         continue;
       }

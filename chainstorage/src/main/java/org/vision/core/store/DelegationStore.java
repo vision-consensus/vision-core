@@ -114,6 +114,21 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     }
   }
 
+  public void setWitnessVoteWeight(long cycle, byte[] address, long value) {
+    put(buildVoteWeightKey(cycle, address), new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getWitnessVoteWeight(long cycle, byte[] address) {
+    BytesCapsule bytesCapsule = get(buildVoteWeightKey(cycle, address));
+    if (bytesCapsule == null) {
+      logger.info("patch voteWeight");
+      return getWitnessVote(cycle, address);
+      // return REMARK;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
   public void setAccountVote(long cycle, byte[] address, AccountCapsule accountCapsule) {
     put(buildAccountVoteKey(cycle, address), new BytesCapsule(accountCapsule.getData()));
   }
@@ -163,6 +178,10 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
 
   private byte[] buildVoteKey(long cycle, byte[] address) {
     return (cycle + "-" + Hex.toHexString(address) + "-vote").getBytes();
+  }
+
+  private byte[] buildVoteWeightKey(long cycle, byte[] address) {
+    return (cycle + "-" + Hex.toHexString(address) + "-voteWeight").getBytes();
   }
 
   private byte[] buildRewardKey(long cycle, byte[] address) {

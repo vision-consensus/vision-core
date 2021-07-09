@@ -28,10 +28,7 @@ import org.vision.common.logsfilter.trigger.Trigger;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.RuntimeImpl;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Pair;
-import org.vision.common.utils.SessionOptional;
-import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.*;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.consensus.Consensus;
 import org.vision.consensus.base.Param.Miner;
@@ -1142,6 +1139,7 @@ public class Manager {
     Set<String> accountSet = new HashSet<>();
     AtomicInteger shieldedTransCounts = new AtomicInteger(0);
     Iterator<TransactionCapsule> iterator = pendingTransactions.iterator();
+    Bloom bloomBlock = new Bloom();
     while (iterator.hasNext() || rePushTransactions.size() > 0) {
       boolean fromPending = false;
       TransactionCapsule trx;
@@ -1191,6 +1189,13 @@ public class Manager {
         blockCapsule.addTransaction(trx);
         if (Objects.nonNull(result)) {
           transactionRetCapsule.addTransactionInfo(result);
+
+          // add logsBloom
+          ByteString logsBloom = result.toBuilder().getLogsBloom();
+          if (null != logsBloom) {
+            bloomBlock.or(new Bloom(logsBloom.toByteArray()));
+          }
+
         }
         if (fromPending) {
           iterator.remove();
@@ -1207,6 +1212,7 @@ public class Manager {
     logger.info("Generate block success, pendingCount: {}, rePushCount: {}, postponedCount: {}",
         pendingTransactions.size(), rePushTransactions.size(), postponedTrxCount);
 
+    blockCapsule.setLogsBloom(bloomBlock.getData());
     blockCapsule.setMerkleRoot();
     blockCapsule.sign(miner.getPrivateKey());
 
