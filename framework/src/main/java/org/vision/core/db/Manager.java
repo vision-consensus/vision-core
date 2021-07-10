@@ -1399,9 +1399,15 @@ public class Manager {
       reward += chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
     }
     chainBaseManager.getBlockStore().sendBlockMsg(block, reward);
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
+      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+    }
+
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-    long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
-    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
+    long witness123PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {

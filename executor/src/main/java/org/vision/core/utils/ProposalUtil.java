@@ -245,7 +245,7 @@ public class ProposalUtil {
         }
         break;
       }
-      case WITNESS_100_PAY_PER_BLOCK: {
+      case WITNESS_123_PAY_PER_BLOCK: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
@@ -433,10 +433,10 @@ public class ProposalUtil {
         }
         break;
       }
-      case ECONOMY_CYCLE_RATE: {
+      case ECONOMY_CYCLE: {
         if (value < 1 || value > 500) {
           throw new ContractValidateException(
-                  "Bad chain parameter value, ECONOMY_CYCLE_RATE's valid range is [1,500]");
+                  "Bad chain parameter value, ECONOMY_CYCLE's valid range is [1,500]");
         }
         break;
       }
@@ -518,7 +518,7 @@ public class ProposalUtil {
     // SHIELDED_TRANSACTION_FEE(28), // 10 VS, [0, 10000] VS
     ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER(29), // 1000, [1, 10000]
     ALLOW_CHANGE_DELEGATION(30), // 1, {0, 1}
-    WITNESS_100_PAY_PER_BLOCK(31), // 1.5 VS * frozenRate, [0, 100000000000] VS
+    WITNESS_123_PAY_PER_BLOCK(31), // 1.5 VS * frozenRate, [0, 100000000000] VS
     ALLOW_VVM_SOLIDITY_059(32), // 1, {0, 1}
     ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO(33), // 10, [1, 1000]
     // SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE(34), // 1 VS, [0, 10000] VS
@@ -535,7 +535,7 @@ public class ProposalUtil {
     ALLOW_TRANSACTION_FEE_POOL(48), // 0, 1
     ALLOW_BLACKHOLE_OPTIMIZATION(49),// 0,1
     SPREAD_MINT_PAY_PER_BLOCK(50),// [0,100_000_000]
-    ECONOMY_CYCLE_RATE(51), // [1,500]
+    ECONOMY_CYCLE(51), // [1,500]
     ALLOW_SPREAD_MINT_LEVEL_PROP(52),// 0,1
     SPREAD_MINT_LEVEL_PROP(53);// "80,10,8,2"
 

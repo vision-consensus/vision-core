@@ -943,8 +943,8 @@ public class Wallet {
         .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-        .setKey("getWitness100PayPerBlock")
-        .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
+        .setKey("getWitness123PayPerBlock")
+        .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
         .build());
 
     builder.addChainParameter(
@@ -991,8 +991,8 @@ public class Wallet {
         .setValue(dbManager.getDynamicPropertiesStore().getAllowBlackHoleOptimization())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getEconomyCycleRate")
-            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycleRate())
+            .setKey("getEconomyCycle")
+            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycle())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSpreadMintPayPerBlock")
@@ -1005,6 +1005,14 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSpreadMintLevelProp")
             .setStringValue(dbManager.getDynamicPropertiesStore().getSpreadMintLevelProp())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
             .build());
 
     return builder.build();
@@ -1141,6 +1149,9 @@ public class Wallet {
     long totalEntropyWeight =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
+    long totalSRGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+    long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
+
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
 
@@ -1157,6 +1168,8 @@ public class Wallet {
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
         .setTotalEntropyLimit(totalEntropyLimit)
         .setTotalEntropyWeight(totalEntropyWeight)
+        .setTotalSRGuaranteeWeight(totalSRGuaranteeWeight)
+        .setTotalSpreadWeight(totalSpreadWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)

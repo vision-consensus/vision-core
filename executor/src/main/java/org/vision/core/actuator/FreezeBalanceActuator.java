@@ -10,6 +10,7 @@ import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
+import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
@@ -107,6 +108,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
         if (!ArrayUtils.isEmpty(parentAddress)){
           spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
         }
+
+        MortgageService mortgageService = chainBaseManager.getMortgageService();
+        mortgageService.withdrawSpreadMintReward(ownerAddress);
+
         long newFrozenBalanceForSpreadMint =
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForSpread().getFrozenBalance();

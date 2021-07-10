@@ -1154,6 +1154,9 @@ message AccountResourceMessage {
 
   int64 storageUsed = 21;
   int64 storageLimit = 22;
+
+  int64 TotalSRGuaranteeWeight = 27;
+  int64 TotalSpreadWeight = 32;
 }
 
 message PaginatedMessage {

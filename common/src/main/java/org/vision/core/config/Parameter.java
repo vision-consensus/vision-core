@@ -67,7 +67,7 @@ public class Parameter {
     public static final long VS_PRECISION = 1000_000L;
 //    public static final long SRGUARANTEE_VS_THRESHOLD = 5000*1000_000L;
     public static final long UN_FREEZE_SRGUARANTEE_LIMIT = 23 * FROZEN_PERIOD;
-    public static final long FIRST_ECONOMY_CYCLE_RATE = 42L;
+    public static final long FIRST_ECONOMY_CYCLE = 42L;
 
 
 
