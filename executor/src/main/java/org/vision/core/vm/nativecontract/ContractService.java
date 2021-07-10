@@ -87,7 +87,7 @@ public class ContractService {
       byte[] srAddress = vote.getVoteAddress().toByteArray();
       long totalReward = repository.getDelegationStore().getReward(cycle,
           srAddress);
-      long totalVote = repository.getDelegationStore().getWitnessVote(cycle, srAddress);
+      long totalVote = repository.getDelegationStore().getWitnessVoteWeight(cycle, srAddress);
       if (totalVote == DelegationStore.REMARK || totalVote == 0) {
         continue;
       }

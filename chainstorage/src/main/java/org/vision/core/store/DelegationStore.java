@@ -64,7 +64,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
   }
 
   public void addSpreadMintReward(long cycle, long value) {
-    byte[] key = buildSpreadMintRewordKey(cycle);
+    byte[] key = buildSpreadMintRewardKey(cycle);
     BytesCapsule bytesCapsule = get(key);
     if (bytesCapsule == null) {
       put(key, new BytesCapsule(ByteArray.fromLong(value)));
@@ -75,7 +75,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
   }
 
   public long getSpreadMintReward(long cycle) {
-    BytesCapsule bytesCapsule = get(buildSpreadMintRewordKey(cycle));
+    BytesCapsule bytesCapsule = get(buildSpreadMintRewardKey(cycle));
     if (bytesCapsule == null) {
       return 0L;
     } else {
@@ -109,6 +109,21 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     BytesCapsule bytesCapsule = get(buildVoteKey(cycle, address));
     if (bytesCapsule == null) {
       return REMARK;
+    } else {
+      return ByteArray.toLong(bytesCapsule.getData());
+    }
+  }
+
+  public void setWitnessVoteWeight(long cycle, byte[] address, long value) {
+    put(buildVoteWeightKey(cycle, address), new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getWitnessVoteWeight(long cycle, byte[] address) {
+    BytesCapsule bytesCapsule = get(buildVoteWeightKey(cycle, address));
+    if (bytesCapsule == null) {
+      logger.info("patch voteWeight");
+      return getWitnessVote(cycle, address);
+      // return REMARK;
     } else {
       return ByteArray.toLong(bytesCapsule.getData());
     }
@@ -165,6 +180,10 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     return (cycle + "-" + Hex.toHexString(address) + "-vote").getBytes();
   }
 
+  private byte[] buildVoteWeightKey(long cycle, byte[] address) {
+    return (cycle + "-" + Hex.toHexString(address) + "-voteWeight").getBytes();
+  }
+
   private byte[] buildRewardKey(long cycle, byte[] address) {
     return (cycle + "-" + Hex.toHexString(address) + "-reward").getBytes();
   }
@@ -185,7 +204,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     return (cycle + "-" + Hex.toHexString(address) + "-brokerage").getBytes();
   }
 
-  private byte[] buildSpreadMintRewordKey(long cycle) {
+  private byte[] buildSpreadMintRewardKey(long cycle) {
     return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-spread-mint-reward").getBytes();
   }
 

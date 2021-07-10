@@ -19,6 +19,7 @@ public class ProposalService extends ProposalUtil {
 
   public static boolean process(Manager manager, ProposalCapsule proposalCapsule) {
     Map<Long, Long> map = proposalCapsule.getInstance().getParametersMap();
+    Map<Long, String> mapString = proposalCapsule.getInstance().getStringParametersMap();
     boolean find = true;
     for (Map.Entry<Long, Long> entry : map.entrySet()) {
       ProposalType proposalType = ProposalType.getEnumOrNull(entry.getKey());
@@ -171,8 +172,8 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().addSystemContractAndSetPermission(49);
           break;
         }
-        case WITNESS_100_PAY_PER_BLOCK: {
-          manager.getDynamicPropertiesStore().saveWitness100PayPerBlock(entry.getValue());
+        case WITNESS_123_PAY_PER_BLOCK: {
+          manager.getDynamicPropertiesStore().saveWitness123PayPerBlock(entry.getValue());
           break;
         }
         //case ALLOW_SHIELDED_TRANSACTION: {
@@ -243,12 +244,16 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowBlackHoleOptimization(entry.getValue());
           break;
         }
-        case ECONOMY_CYCLE_RATE: {
-          manager.getDynamicPropertiesStore().saveEconomyCycleRate(entry.getValue());
+        case ECONOMY_CYCLE: {
+          manager.getDynamicPropertiesStore().saveEconomyCycle(entry.getValue());
           break;
         }
         case SPREAD_MINT_PAY_PER_BLOCK: {
           manager.getDynamicPropertiesStore().saveSpreadMintPayPerBlock(entry.getValue());
+          break;
+        }
+        case ALLOW_SPREAD_MINT_LEVEL_PROP: {
+          manager.getDynamicPropertiesStore().saveAllowSpreadMintLevelProp(entry.getValue());
           break;
         }
         default:
@@ -256,6 +261,20 @@ public class ProposalService extends ProposalUtil {
           break;
       }
     }
+
+    for (Map.Entry<Long, String> entry : mapString.entrySet()) {
+      ProposalType proposalType = ProposalType.getEnumOrNull(entry.getKey());
+      if (proposalType == null) {
+        find = false;
+        continue;
+      }
+      if (proposalType == ProposalType.SPREAD_MINT_LEVEL_PROP) {
+        manager.getDynamicPropertiesStore().saveSpreadMintLevelProp(entry.getValue());
+      } else {
+        find = false;
+      }
+    }
+
     return find;
   }
 
