@@ -275,7 +275,7 @@ public class Manager {
     Message.setDynamicPropertiesStore(this.getDynamicPropertiesStore());
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
-            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
+            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(), chainBaseManager.getSpreadRelationShipStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
@@ -1393,8 +1393,8 @@ public class Manager {
         }
       }
     }
-    long reward = chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
-    reward += chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock();
+    long reward = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock();
+    reward += chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock();
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
       reward += chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
     }
