@@ -28,10 +28,7 @@ import org.vision.common.logsfilter.trigger.Trigger;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.RuntimeImpl;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Pair;
-import org.vision.common.utils.SessionOptional;
-import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.*;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.consensus.Consensus;
 import org.vision.consensus.base.Param.Miner;
@@ -277,7 +274,7 @@ public class Manager {
     Message.setDynamicPropertiesStore(this.getDynamicPropertiesStore());
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
-            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
+            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(), chainBaseManager.getSpreadRelationShipStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
@@ -1352,11 +1349,7 @@ public class Manager {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlock());
       mortgageService.payStandbyWitness();
-      //spread mint
-      if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-        mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-        spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
-      }
+
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
                 .floorDiv(chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),
@@ -1384,9 +1377,15 @@ public class Manager {
       }
       getAccountStore().put(account.createDbKey(), account);
     }
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
+      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+    }
+
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-    long witness100PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
-    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness100PayPerBlock + spreadMintPayPerBlock);
+    long witness123PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {
