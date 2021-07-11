@@ -389,12 +389,6 @@ public class DepositImpl implements Deposit {
       storageCache.put(addressKey, storage);
     }
     storage.put(key, value);
-    if (CommonParameter.PARAMETER.isKafkaEnable()) {
-      JSONObject json = new JSONObject();
-      json.put(key.toHexString(), value.toHexString());
-      json.put("address", ByteArray.toHexString(address));
-      Producer.getInstance().send("STORAGE", json.toJSONString());
-    }
   }
 
   @Override

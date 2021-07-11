@@ -3,6 +3,7 @@ package org.vision.core.vm.repository;
 import static java.lang.Long.max;
 import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import java.util.HashMap;
 import java.util.Optional;
@@ -440,6 +441,13 @@ public class RepositoryImpl implements Repository {
       storageCache.put(addressKey, storage);
     }
     storage.put(key, value);
+    if (CommonParameter.PARAMETER.isKafkaEnable()) {
+      JSONObject json = new JSONObject();
+      json.put(key.toHexString(), value.bigIntValue());
+      json.put("address", StringUtil.encode58Check(address));
+      json.put("hexAddress", ByteArray.toHexString(address));
+      Producer.getInstance().send("STORAGE", json.toJSONString());
+    }
   }
 
   @Override
