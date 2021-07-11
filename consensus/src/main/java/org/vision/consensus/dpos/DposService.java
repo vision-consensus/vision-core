@@ -1,5 +1,6 @@
 package org.vision.consensus.dpos;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.vision.common.args.GenesisBlock;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.Producer;
+import org.vision.common.utils.StringUtil;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.base.BlockHandle;
 import org.vision.consensus.base.ConsensusInterface;
@@ -173,6 +176,11 @@ public class DposService implements ConsensusInterface {
     CommonParameter.getInstance()
         .setOldSolidityBlockNum(consensusDelegate.getLatestSolidifiedBlockNum());
     consensusDelegate.saveLatestSolidifiedBlockNum(newSolidNum);
+    if (CommonParameter.PARAMETER.isKafkaEnable()) {
+      JSONObject json = new JSONObject();
+      json.put("blockNum", newSolidNum);
+      Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
+    }
     logger.info("Update solid block number to {}", newSolidNum);
   }
 
