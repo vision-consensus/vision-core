@@ -189,6 +189,7 @@ import static org.vision.common.utils.Commons.getAssetIssueStoreFinal;
 import static org.vision.common.utils.Commons.getExchangeStoreFinal;
 import static org.vision.common.utils.WalletUtil.isConstant;
 import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
+import static org.vision.core.config.Parameter.ChainConstant.QUERY_SPREAD_MINT_PARENT_LEVEL_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.MARKET_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
@@ -365,6 +366,18 @@ public class Wallet {
 
     List<SpreadRelationShipCapsule> spreadRelationShipCapsuleList = new ArrayList<>();
     spreadRelationShipCapsuleList.add(spreadRelationShipCapsule);
+    level = Math.min(level, QUERY_SPREAD_MINT_PARENT_LEVEL_MAX);
+
+    SpreadRelationShipCapsule capsule = spreadRelationShipCapsule;
+    int i = 1;
+    while (i < level){
+      capsule = spreadRelationShipStore.get(capsule.getParent().toByteArray());
+      if (capsule == null){
+        break;
+      }
+      spreadRelationShipCapsuleList.add(capsule);
+      i++;
+    }
 
     spreadRelationShipCapsuleList
             .forEach(spreadCapsule -> builder.addSpreadRelationShip(spreadCapsule.getInstance()));
