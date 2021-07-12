@@ -72,6 +72,7 @@ import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
+import org.vision.api.GrpcAPI.SpreadRelationShipList;
 import org.vision.common.crypto.Hash;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -97,29 +98,8 @@ import org.vision.consensus.ConsensusDelegate;
 import org.vision.core.actuator.Actuator;
 import org.vision.core.actuator.ActuatorFactory;
 import org.vision.core.actuator.VMActuator;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.AssetIssueCapsule;
-import org.vision.core.capsule.BlockBalanceTraceCapsule;
-import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.*;
 import org.vision.core.capsule.BlockCapsule.BlockId;
-import org.vision.core.capsule.BytesCapsule;
-import org.vision.core.capsule.CodeCapsule;
-import org.vision.core.capsule.ContractCapsule;
-import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.vision.core.capsule.DelegatedResourceCapsule;
-import org.vision.core.capsule.ExchangeCapsule;
-import org.vision.core.capsule.IncrementalMerkleTreeCapsule;
-import org.vision.core.capsule.IncrementalMerkleVoucherCapsule;
-import org.vision.core.capsule.MarketAccountOrderCapsule;
-import org.vision.core.capsule.MarketOrderCapsule;
-import org.vision.core.capsule.MarketOrderIdListCapsule;
-import org.vision.core.capsule.PedersenHashCapsule;
-import org.vision.core.capsule.ProposalCapsule;
-import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.capsule.TransactionInfoCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.TransactionRetCapsule;
-import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.capsule.utils.MarketUtils;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
@@ -147,15 +127,7 @@ import org.vision.core.exception.ZksnarkException;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
 import org.vision.core.net.message.TransactionMessage;
-import org.vision.core.store.AccountIdIndexStore;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.AccountTraceStore;
-import org.vision.core.store.BalanceTraceStore;
-import org.vision.core.store.ContractStore;
-import org.vision.core.store.MarketOrderStore;
-import org.vision.core.store.MarketPairPriceToOrderStore;
-import org.vision.core.store.MarketPairToPriceStore;
-import org.vision.core.store.StoreFactory;
+import org.vision.core.store.*;
 import org.vision.core.utils.TransactionUtil;
 import org.vision.core.zen.ShieldedVRC20ParametersBuilder;
 import org.vision.core.zen.ZenTransactionBuilder;
@@ -184,6 +156,7 @@ import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.TransactionInfo;
+import org.vision.protos.Protocol.SpreadRelationShip;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
@@ -369,6 +342,34 @@ public class Wallet {
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEntropy());
 
     return accountCapsule.getInstance();
+  }
+
+  public SpreadRelationShip getSpreadMintParent(Account account, int level) {
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
+    if (spreadRelationShipCapsule == null) {
+      return null;
+    }
+
+    return spreadRelationShipCapsule.getInstance();
+  }
+
+  public SpreadRelationShipList getSpreadMintParentList(Account account, int level) {
+    SpreadRelationShipList.Builder builder = SpreadRelationShipList.newBuilder();
+
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
+    if (spreadRelationShipCapsule == null) {
+      return null;
+    }
+
+    List<SpreadRelationShipCapsule> spreadRelationShipCapsuleList = new ArrayList<>();
+    spreadRelationShipCapsuleList.add(spreadRelationShipCapsule);
+
+    spreadRelationShipCapsuleList
+            .forEach(spreadCapsule -> builder.addSpreadRelationShip(spreadCapsule.getInstance()));
+
+    return builder.build();
   }
 
   /**
