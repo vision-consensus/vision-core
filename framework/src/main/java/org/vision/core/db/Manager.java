@@ -1298,6 +1298,11 @@ public class Manager {
         }
         accountStateCallBack.preExeTrans();
         TransactionInfo result = processTransaction(transactionCapsule, block);
+
+        if (CommonParameter.PARAMETER.isKafkaEnable()){
+            Producer.getInstance().send("TRANSACTIONINFO", JsonFormat.printToString(result));
+        }
+
         accountStateCallBack.exeTransFinish();
         if (Objects.nonNull(result)) {
           transactionRetCapsule.addTransactionInfo(result);
