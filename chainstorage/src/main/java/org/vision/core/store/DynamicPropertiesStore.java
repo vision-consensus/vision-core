@@ -15,10 +15,11 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 
 @Slf4j(topic = "DB")
 @Component
@@ -2505,7 +2506,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toStr)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
-//    return "80,10,8,2";
   }
 
   public void saveAllowSpreadMintLevelProp(long value) {
