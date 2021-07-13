@@ -297,7 +297,7 @@ public class MaintenanceManager {
     long totalSRGuaranteeWeight = dynamicPropertiesStore.getTotalSRGuaranteeWeight();
     BigDecimal bigTotalSRGuaranteeWeight = new BigDecimal(totalSRGuaranteeWeight).multiply(new BigDecimal(VS_PRECISION));
     long voteSum = mortgageService.getVoteSum();
-    BigDecimal bigVoteSum = new BigDecimal(voteSum);
+    BigDecimal bigVoteSum = new BigDecimal(voteSum).multiply(new BigDecimal(VS_PRECISION));
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
@@ -317,9 +317,15 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-    BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
+    //BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
+    BigDecimal assets= bigTotalAssets.add(bigVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
+    if (0 > cyclePledgeRate) {
+      cyclePledgeRate = 0;
+    } else if (100 < cyclePledgeRate) {
+      cyclePledgeRate = 100;
+    }
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
   }
 
