@@ -19,6 +19,7 @@ public class Constant {
   public static final String ADD_PRE_FIX_STRING_MAINNET = "46";
   public static final byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0xa0;   //a0 + address
   public static final String ADD_PRE_FIX_STRING_TESTNET = "a0";
+  public static final String ETH_PRE_FIX_STRING_MAINNET = "0x";
 
   // config for transaction
   public static final long TRANSACTION_MAX_BYTE_SIZE = 500 * 1_024L;

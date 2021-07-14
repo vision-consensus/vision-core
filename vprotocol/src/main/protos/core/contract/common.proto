@@ -8,4 +8,6 @@ option java_package = "org.vision.protos.contract"; //Specify the name of the pa
 enum ResourceCode {
   PHOTON = 0x00;
   ENTROPY = 0x01;
+  SRGUARANTEE = 0x02;
+  SPREAD = 0x03;
 }

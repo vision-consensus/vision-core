@@ -19,23 +19,20 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.protos.Protocol.Account;
+import org.vision.protos.Protocol.*;
 import org.vision.protos.Protocol.Account.AccountResource;
 import org.vision.protos.Protocol.Account.Builder;
 import org.vision.protos.Protocol.Account.Frozen;
-import org.vision.protos.Protocol.AccountType;
-import org.vision.protos.Protocol.Key;
-import org.vision.protos.Protocol.Permission;
 import org.vision.protos.Protocol.Permission.PermissionType;
-import org.vision.protos.Protocol.Vote;
 import org.vision.protos.contract.AccountContract.AccountCreateContract;
 import org.vision.protos.contract.AccountContract.AccountUpdateContract;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j(topic = "capsule")
 public class AccountCapsule implements ProtoCapsule<Account>, Comparable<AccountCapsule> {
@@ -419,6 +416,15 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = this.account.toBuilder()
         .addVotes(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteAdd).build())
         .build();
+  }
+
+  /**
+   * set votes.
+   */
+  public void addVotes(ByteString voteAddress, long voteCount, long voteCountWeight) {
+    this.account = this.account.toBuilder()
+            .addVotes(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteCount).setVoteCountWeight(voteCountWeight).build())
+            .build();
   }
 
   public void clearAssetV2() {
@@ -1010,4 +1016,52 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = builder.build();
   }
 
+  public void setFrozenForSpread(long newFrozenBalanceForSpread, long time) {
+    Frozen newFrozenForSpread = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForSpread)
+            .setExpireTime(time)
+            .build();
+
+    AccountResource newAccountResource = getAccountResource().toBuilder()
+            .setFrozenBalanceForSpread(newFrozenForSpread).build();
+
+    this.account = this.account.toBuilder()
+            .setAccountResource(newAccountResource)
+            .build();
+  }
+
+  public void setFrozenForSRGuarantee(long newFrozenBalanceForSRGuarantee, long time) {
+    Frozen newFrozenForSRGuarantee = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForSRGuarantee)
+            .setExpireTime(time)
+            .build();
+
+    AccountResource newAccountResource = getAccountResource().toBuilder()
+            .setFrozenBalanceForSrguarantee(newFrozenForSRGuarantee)
+            .build();
+
+    this.account = this.account.toBuilder()
+            .setAccountResource(newAccountResource)
+            .build();
+  }
+
+  public long getSRGuaranteeFrozenBalance() {
+    long balance = 0L;
+    try {
+      balance = this.account.getAccountResource().getFrozenBalanceForSrguarantee().getFrozenBalance();
+    }catch (Exception e){
+      logger.debug(e.getMessage());
+    }
+    return balance;
+  }
+
+  public long getSpreadFrozenBalance() {
+    long balance = 0L;
+    try {
+      balance = this.account.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    }catch (Exception e){
+      logger.debug(e.getMessage());
+    }
+    return balance;
+  }
 }

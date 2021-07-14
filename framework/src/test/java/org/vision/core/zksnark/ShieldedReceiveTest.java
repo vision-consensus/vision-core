@@ -2201,7 +2201,6 @@ public class ShieldedReceiveTest extends BlockGenerate {
     TransactionCapsule transactionCapsule = wallet.createTransactionCapsuleWithoutValidate(
         builder.getContractBuilder().build(), ContractType.ShieldedTransferContract);
     //replace with interface
-    //System.out.println(JsonFormat.printToString(transactionCapsule.getInstance()));
     BytesMessage transactionHash = wallet
         .getShieldTransactionHash(transactionCapsule.getInstance());
 

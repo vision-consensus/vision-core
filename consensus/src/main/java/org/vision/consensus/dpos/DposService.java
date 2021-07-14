@@ -1,15 +1,6 @@
 package org.vision.consensus.dpos;
 
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
-
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +17,13 @@ import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
+import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -144,10 +142,18 @@ public class DposService implements ConsensusInterface {
   }
 
   private void updateSolidBlock() {
-    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
-        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
-        .sorted()
-        .collect(Collectors.toList());
+//    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
+//        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
+//        .sorted()
+//        .collect(Collectors.toList());
+    List<Long> numbers = new ArrayList<>();
+    for (ByteString item : consensusDelegate.getActiveWitnesses()) {
+      WitnessCapsule witness = consensusDelegate.getWitness(item.toByteArray());
+      if (witness.getLatestBlockNum() > 0) {
+        numbers.add(witness.getLatestBlockNum());
+      }
+    }
+    Collections.sort(numbers);
     StringBuilder numsb = new StringBuilder();
     numbers.forEach(n-> numsb.append(String.valueOf(n)).append(", "));
     StringBuilder addsb = new StringBuilder();
@@ -172,7 +178,10 @@ public class DposService implements ConsensusInterface {
 
   public void updateWitness(List<ByteString> list) {
     list.sort(Comparator.comparingLong((ByteString b) ->
-        consensusDelegate.getWitness(b.toByteArray()).getVoteCount())
+    {
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(b.toByteArray());
+      return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
+    })
         .reversed()
         .thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
 

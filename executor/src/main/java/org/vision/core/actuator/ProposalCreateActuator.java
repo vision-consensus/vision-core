@@ -1,12 +1,7 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.Map;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
@@ -19,6 +14,13 @@ import org.vision.core.utils.ProposalUtil;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.ProposalContract.ProposalCreateContract;
+
+import java.util.Map;
+import java.util.Objects;
+
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
 
 @Slf4j(topic = "actuator")
 public class ProposalCreateActuator extends AbstractActuator {
@@ -44,6 +46,7 @@ public class ProposalCreateActuator extends AbstractActuator {
           new ProposalCapsule(proposalCreateContract.getOwnerAddress(), id);
 
       proposalCapsule.setParameters(proposalCreateContract.getParametersMap());
+      proposalCapsule.setStringParameters(proposalCreateContract.getStringParametersMap());
 
       long now = chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();
       long maintenanceTimeInterval = chainBaseManager.getDynamicPropertiesStore()
@@ -107,12 +110,16 @@ public class ProposalCreateActuator extends AbstractActuator {
           WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
-    if (contract.getParametersMap().size() == 0) {
-      throw new ContractValidateException("This proposal has no parameter.");
-    }
-
-    for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
-      validateValue(entry);
+    if (contract.getParametersMap().size() != 0) {
+      for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
+        validateValue(entry);
+      }
+    } else if (contract.getStringParametersMap().size() != 0) {
+      for (Map.Entry<Long, String> entry : contract.getStringParametersMap().entrySet()) {
+        validateStringValue(entry);
+      }
+    } else {
+      throw new ContractValidateException("This proposal has no parameter or string parameter.");
     }
 
     return true;
@@ -122,6 +129,12 @@ public class ProposalCreateActuator extends AbstractActuator {
     ProposalUtil
         .validator(chainBaseManager.getDynamicPropertiesStore(), forkController, entry.getKey(),
             entry.getValue());
+  }
+
+  private void validateStringValue(Map.Entry<Long, String> entry) throws ContractValidateException {
+    ProposalUtil
+            .validatorString(chainBaseManager.getDynamicPropertiesStore(), forkController, entry.getKey(),
+                    entry.getValue());
   }
 
   @Override

@@ -115,7 +115,6 @@ public class DposTask {
               .getInstance().isECKeyCryptoEngine(), raw.toByteArray())),
           ByteArray.toHexString(raw.getParentHash().toByteArray()));
     }
-
     return State.OK;
   }
 

@@ -1,9 +1,6 @@
 package org.vision.core.service;
 
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,14 +9,18 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.BalanceInsufficientException;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DelegationStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.WitnessStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Vote;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "mortgage")
 @Component
@@ -33,17 +34,22 @@ public class MortgageService {
   private DelegationStore delegationStore;
 
   @Setter
+  @Getter
+  private SpreadRelationShipStore spreadRelationShipStore;
+
+  @Setter
   private DynamicPropertiesStore dynamicPropertiesStore;
 
   @Setter
   private AccountStore accountStore;
 
   public void initStore(WitnessStore witnessStore, DelegationStore delegationStore,
-      DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore) {
+      DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore, SpreadRelationShipStore spreadRelationShipStore) {
     this.witnessStore = witnessStore;
     this.delegationStore = delegationStore;
     this.dynamicPropertiesStore = dynamicPropertiesStore;
     this.accountStore = accountStore;
+    this.spreadRelationShipStore = spreadRelationShipStore;
   }
 
   public void payStandbyWitness() {
@@ -57,14 +63,16 @@ public class MortgageService {
     }
 
     long voteSum = 0;
-    long totalPay = dynamicPropertiesStore.getWitness100PayPerBlock();
+    long totalPay = (long) (dynamicPropertiesStore.getWitness123PayPerBlock() * (dynamicPropertiesStore.getInflationRate() * 1.0 / 120000 + 1));
     for (ByteString b : witnessAddressList) {
-      voteSum += getWitnessByAddress(b).getVoteCount();
+      WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+      voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     }
     if (voteSum > 0) {
       for (ByteString b : witnessAddressList) {
         double eachVotePay = (double) totalPay / voteSum;
-        long pay = (long) (getWitnessByAddress(b).getVoteCount() * eachVotePay);
+        WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+        long pay = (long) (Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold()) * eachVotePay);
         logger.debug("pay {} stand reward {}", Hex.toHexString(b.toByteArray()), pay);
         payReward(b.toByteArray(), pay);
       }
@@ -92,7 +100,44 @@ public class MortgageService {
     adjustAllowance(witnessAddress, brokerageAmount);
   }
 
+  public void paySpreadMintReward(long value) {
+    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    delegationStore.addSpreadMintReward(cycle, value);
+  }
+
   public void withdrawReward(byte[] address) {
+    if (!dynamicPropertiesStore.allowChangeDelegation()) {
+      return;
+    }
+    AccountCapsule accountCapsule = accountStore.get(address);
+    long beginCycle = delegationStore.getBeginCycle(address);
+    long endCycle = delegationStore.getEndCycle(address);
+    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long reward = 0;
+    if (beginCycle > currentCycle || accountCapsule == null) {
+      return;
+    }
+
+    //withdraw the latest cycle reward
+    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+      beginCycle += 1;
+    }
+    endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      long spreadReward =0;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
+      }
+      adjustAllowance(address, spreadReward);
+    }
+
+    logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
+            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+        beginCycle, endCycle, accountCapsule.getVotesList());
+  }
+
+  public void withdrawSpreadMintReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -123,6 +168,15 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      long spreadReward =0;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
+      }
+      adjustAllowance(address, spreadReward);
+    }
+
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       delegationStore.setBeginCycle(address, endCycle + 1);
       return;
@@ -137,15 +191,14 @@ public class MortgageService {
     delegationStore.setEndCycle(address, endCycle + 1);
     delegationStore.setAccountVote(endCycle, address, accountCapsule);
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
-        beginCycle, endCycle, accountCapsule.getVotesList());
+                    + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+            beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
   public long queryReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return 0;
     }
-
     AccountCapsule accountCapsule = accountStore.get(address);
     long beginCycle = delegationStore.getBeginCycle(address);
     long endCycle = delegationStore.getEndCycle(address);
@@ -167,6 +220,13 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        reward += computeSpreadMintReward(cycle, accountCapsule, false);
+      }
+    }
+
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       return reward + accountCapsule.getAllowance();
     }
@@ -183,11 +243,11 @@ public class MortgageService {
     for (Vote vote : accountCapsule.getVotesList()) {
       byte[] srAddress = vote.getVoteAddress().toByteArray();
       long totalReward = delegationStore.getReward(cycle, srAddress);
-      long totalVote = delegationStore.getWitnessVote(cycle, srAddress);
+      long totalVote = delegationStore.getWitnessVoteWeight(cycle, srAddress);
       if (totalVote == DelegationStore.REMARK || totalVote == 0) {
         continue;
       }
-      long userVote = vote.getVoteCount();
+      long userVote = vote.getVoteCountWeight();
       double voteRate = (double) userVote / totalVote;
       reward += voteRate * totalReward;
       logger.debug("computeReward {} {} {} {},{},{},{}", cycle,
@@ -195,6 +255,64 @@ public class MortgageService {
           userVote, totalVote, totalReward, reward);
     }
     return reward;
+  }
+
+  private long computeSpreadMintReward(long cycle, AccountCapsule accountCapsule, boolean isWithdrawReward) {
+    if (!dynamicPropertiesStore.supportSpreadMint()){
+      return 0;
+    }
+
+    long totalFreeze = delegationStore.getTotalFreezeBalanceForSpreadMint(cycle);
+    if(totalFreeze==0L){
+      return 0;
+    }
+    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    long totalReward = delegationStore.getSpreadMintReward(cycle);
+    long spreadReward = (long)(totalReward * accountFreeze * 1.0 / VS_PRECISION / totalFreeze);
+
+    String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
+    String[] levelProps = spreadLevelProp.split(",");
+    int[] props = new int[levelProps.length];
+    int sumProps = 0;
+    for(int i = 0; i < levelProps.length; i++)
+    {
+      props[i] = Integer.parseInt(levelProps[i]);
+      if (props[i] < 0 || props[i] > 100){
+        break;
+      }
+      sumProps += props[i];
+    }
+
+    if (sumProps != 100){
+      logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
+      return spreadReward;
+    }
+
+    if(!isWithdrawReward){
+      return (long)(spreadReward * (props[0] / 100.0));
+    }
+
+    AccountCapsule parentCapsule = accountCapsule;
+    for (int i = 1; i < props.length; i++) {
+      SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+      if (spreadRelationShipCapsule == null){
+        break;
+      }
+      parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+      if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
+        break;
+      }
+      long spreadResult = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+      adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadResult);
+    }
+
+    return (long)(spreadReward * (props[0] / 100.0));
+  }
+
+  public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
+    long parentAccountFreeze = parentCapsule.getSpreadFrozenBalance();
+    double minSpreadMintProp = parentAccountFreeze * 1.0 / accountFreeze;
+    return minSpreadMintProp < 1 ? minSpreadMintProp : 1.0;
   }
 
   public WitnessCapsule getWitnessByAddress(ByteString address) {
@@ -229,7 +347,26 @@ public class MortgageService {
   }
 
   private void sortWitness(List<ByteString> list) {
-    list.sort(Comparator.comparingLong((ByteString b) -> getWitnessByAddress(b).getVoteCount())
+    list.sort(Comparator.comparingLong((ByteString b) -> {
+      WitnessCapsule witnessCapsule = getWitnessByAddress(b);
+      return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
+    })
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
+  }
+
+  public long getVoteSum() {
+    List<ByteString> witnessAddressList = new ArrayList<>();
+    for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
+      witnessAddressList.add(witnessCapsule.getAddress());
+    }
+    sortWitness(witnessAddressList);
+    if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
+      witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
+    }
+    long voteSum = 0;
+    for (ByteString b : witnessAddressList) {
+      voteSum += getWitnessByAddress(b).getVoteCount();
+    }
+    return voteSum;
   }
 }

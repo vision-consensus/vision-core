@@ -150,22 +150,22 @@ public class AccountVoteWitnessTest {
             ByteString.copyFromUtf8("Vivider"),
             AccountType.Normal);
     // accountVision addVotes
-    accountVision.addVotes(accountMarcus.getAddress(), 100);
-    accountVision.addVotes(accountOlivier.getAddress(), 100);
-    accountVision.addVotes(accountSasaXie.getAddress(), 100);
-    accountVision.addVotes(accountVivider.getAddress(), 100);
+    accountVision.addVotes(accountMarcus.getAddress(), 100, 0);
+    accountVision.addVotes(accountOlivier.getAddress(), 100, 0);
+    accountVision.addVotes(accountSasaXie.getAddress(), 100, 0);
+    accountVision.addVotes(accountVivider.getAddress(), 100, 0);
 
     // accountMarcus addVotes
-    accountMarcus.addVotes(accountVision.getAddress(), 100);
-    accountMarcus.addVotes(accountOlivier.getAddress(), 100);
-    accountMarcus.addVotes(accountSasaXie.getAddress(), 100);
-    accountMarcus.addVotes(ByteString.copyFrom("00000000006".getBytes()), 100);
-    accountMarcus.addVotes(ByteString.copyFrom("00000000007".getBytes()), 100);
+    accountMarcus.addVotes(accountVision.getAddress(), 100, 0);
+    accountMarcus.addVotes(accountOlivier.getAddress(), 100, 0);
+    accountMarcus.addVotes(accountSasaXie.getAddress(), 100, 0);
+    accountMarcus.addVotes(ByteString.copyFrom("00000000006".getBytes()), 100, 0);
+    accountMarcus.addVotes(ByteString.copyFrom("00000000007".getBytes()), 100, 0);
     // accountOlivier addVotes
-    accountOlivier.addVotes(accountVision.getAddress(), 100);
-    accountOlivier.addVotes(accountMarcus.getAddress(), 100);
-    accountOlivier.addVotes(accountSasaXie.getAddress(), 100);
-    accountOlivier.addVotes(accountVivider.getAddress(), 100);
+    accountOlivier.addVotes(accountVision.getAddress(), 100, 0);
+    accountOlivier.addVotes(accountMarcus.getAddress(), 100, 0);
+    accountOlivier.addVotes(accountSasaXie.getAddress(), 100, 0);
+    accountOlivier.addVotes(accountVivider.getAddress(), 100, 0);
     // accountSasaXie addVotes
     // accountVivider addVotes
     accountCapsuleList.add(accountVision);

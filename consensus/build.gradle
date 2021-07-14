@@ -16,7 +16,7 @@ dependencies {
     testImplementation "org.testng:testng:$testNgVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
     compile "com.madgag.spongycastle:core:1.58.0.0"
-    compile 'com.github.vision-consensus:zksnark-java-sdk:release-1.0.0'
+    compile 'com.github.vision-consensus:zksnark-java-sdk:release-1.0.1'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 }
 

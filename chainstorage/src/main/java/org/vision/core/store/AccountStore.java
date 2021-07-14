@@ -17,7 +17,6 @@ import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
 import org.vision.core.db.accountstate.AccountStateCallBackUtils;
-import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace;
 import org.vision.protos.contract.BalanceContract.TransactionBalanceTrace.Operation;
 

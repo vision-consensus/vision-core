@@ -1,14 +1,16 @@
 package org.vision.consensus.dpos;
 
-import static org.vision.core.config.Parameter.ChainConstant.WITNESS_STANDBY_LENGTH;
-
 import com.google.protobuf.ByteString;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.WitnessCapsule;
+
+import java.util.List;
+
+import static org.vision.core.config.Parameter.ChainConstant.WITNESS_STANDBY_LENGTH;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -27,7 +29,8 @@ public class IncentiveManager {
     }
     long voteSum = 0;
     for (ByteString witness : witnesses) {
-      voteSum += consensusDelegate.getWitness(witness.toByteArray()).getVoteCount();
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.toByteArray());
+      voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
     }
     if (voteSum <= 0) {
       return;
@@ -35,8 +38,10 @@ public class IncentiveManager {
     long totalPay = consensusDelegate.getWitnessStandbyAllowance();
     for (ByteString witness : witnesses) {
       byte[] address = witness.toByteArray();
-      long pay = (long) (consensusDelegate.getWitness(address).getVoteCount() * ((double) totalPay
-          / voteSum));
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(address);
+      long voteCountWeight = Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
+      long pay = (long) (voteCountWeight * ((double) totalPay
+              / voteSum));
       AccountCapsule accountCapsule = consensusDelegate.getAccount(address);
       accountCapsule.setAllowance(accountCapsule.getAllowance() + pay);
       consensusDelegate.saveAccount(accountCapsule);

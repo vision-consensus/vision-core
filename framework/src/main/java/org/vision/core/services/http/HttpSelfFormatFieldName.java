@@ -99,9 +99,11 @@ public class HttpSelfFormatFieldName {
     //FreezeBalanceContract
     AddressFieldNameMap.put("protocol.FreezeBalanceContract.owner_address", 1);
     AddressFieldNameMap.put("protocol.FreezeBalanceContract.receiver_address", 1);
+    AddressFieldNameMap.put("protocol.FreezeBalanceContract.parent_address", 1);
     //UnfreezeBalanceContract
     AddressFieldNameMap.put("protocol.UnfreezeBalanceContract.owner_address", 1);
     AddressFieldNameMap.put("protocol.UnfreezeBalanceContract.receiver_address", 1);
+    AddressFieldNameMap.put("protocol.UnfreezeBalanceContract.parent_address", 1);
     //UnfreezeAssetContract
     AddressFieldNameMap.put("protocol.UnfreezeAssetContract.owner_address", 1);
     //WithdrawBalanceContract

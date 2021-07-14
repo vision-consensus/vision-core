@@ -1,13 +1,14 @@
 package org.vision.core.consensus;
 
 import com.google.protobuf.ByteString;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.capsule.ProposalCapsule;
 import org.vision.core.db.Manager;
 import org.vision.protos.Protocol.Proposal.State;
+
+import java.util.List;
 
 @Slf4j(topic = "witness")
 public class ProposalController {
@@ -76,9 +77,9 @@ public class ProposalController {
     if (proposalCapsule.hasMostApprovals(activeWitnesses)) {
       logger.info(
           "Processing proposal,id:{},it has received most approvals, "
-              + "begin to set dynamic parameter:{}, "
+              + "begin to set dynamic parameter:{},{}, "
               + "and set proposal state as APPROVED",
-          proposalCapsule.getID(), proposalCapsule.getParameters());
+          proposalCapsule.getID(), proposalCapsule.getParameters(), proposalCapsule.getStringParameters());
       setDynamicParameters(proposalCapsule);
       proposalCapsule.setState(State.APPROVED);
       manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
