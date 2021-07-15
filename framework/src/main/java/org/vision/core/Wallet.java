@@ -764,7 +764,12 @@ public class Wallet {
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getWitnessStandbyAllowance")
-            .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowance()* (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowance())
+            .build());
+    builder.addChainParameter(
+        Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitnessStandbyAllowanceWeight")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceWeight())
             .build());
     //    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //VDT ,7
     builder.addChainParameter(
@@ -958,7 +963,12 @@ public class Wallet {
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getWitness123PayPerBlock")
-        .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock())
+        .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+        .setKey("getWitness123PayPerBlockWeight")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockWeight())
         .build());
 
     builder.addChainParameter(
