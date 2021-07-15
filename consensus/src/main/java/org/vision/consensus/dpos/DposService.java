@@ -179,6 +179,21 @@ public class DposService implements ConsensusInterface {
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
       JSONObject json = new JSONObject();
       json.put("blockNum", newSolidNum);
+      long totalEntropyWeight = 0L;
+      long totalPhotonWeight = 0L;
+      try {
+        totalEntropyWeight = consensusDelegate.getDynamicPropertiesStore().getTotalEntropyWeight();
+      }catch (Exception e){
+        logger.info("no entropy");
+      }
+      try {
+        totalPhotonWeight = consensusDelegate.getDynamicPropertiesStore().getTotalPhotonWeight();
+      }catch (Exception e){
+        logger.info("no photon");
+      }
+      json.put("totalEntropyWeight", totalEntropyWeight);
+      json.put("totalPhotonWeight", totalPhotonWeight);
+      json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
     }
     logger.info("Update solid block number to {}", newSolidNum);
