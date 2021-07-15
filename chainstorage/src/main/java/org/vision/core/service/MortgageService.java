@@ -282,6 +282,7 @@ public class MortgageService {
       }
       sumProps += props[i];
     }
+    
     if (sumProps != 100){
       logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
       return spreadReward;
