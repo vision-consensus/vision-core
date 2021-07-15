@@ -105,7 +105,7 @@ public class MortgageService {
     delegationStore.addSpreadMintReward(cycle, value);
   }
 
-  public void withdrawReward(byte[] address) {
+  public void withdrawSpreadMintReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -137,7 +137,7 @@ public class MortgageService {
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
-  public void withdrawSpreadMintReward(byte[] address) {
+  public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -282,7 +282,6 @@ public class MortgageService {
       }
       sumProps += props[i];
     }
-
     if (sumProps != 100){
       logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
       return spreadReward;
@@ -291,22 +290,32 @@ public class MortgageService {
     if(!isWithdrawReward){
       return (long)(spreadReward * (props[0] / 100.0));
     }
-
-    AccountCapsule parentCapsule = accountCapsule;
-    for (int i = 1; i < props.length; i++) {
-      SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
-      if (spreadRelationShipCapsule == null){
-        break;
-      }
-      parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-      if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
-        break;
-      }
-      long spreadResult = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
-      adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadResult);
-    }
-
+    computeSpreadMintParentReward(accountCapsule, props, spreadReward, accountFreeze);
     return (long)(spreadReward * (props[0] / 100.0));
+  }
+
+  private void computeSpreadMintParentReward(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountFreeze){
+    try {
+      AccountCapsule parentCapsule = accountCapsule;
+      ArrayList<String> addressList = new ArrayList<>();
+      for (int i = 1; i < props.length; i++) {
+        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+        if (spreadRelationShipCapsule == null){
+          break;
+        }
+
+        addressList.add(spreadRelationShipCapsule.getOwner().toString());
+        if (addressList.contains(spreadRelationShipCapsule.getParent().toString())){ // deal loop parent address
+          break;
+        }
+
+        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+        long spreadAmount = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+        adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
+      }
+    }catch (Exception e){
+      logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
+    }
   }
 
   public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
