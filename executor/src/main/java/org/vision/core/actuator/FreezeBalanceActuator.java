@@ -105,12 +105,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
+        MortgageService mortgageService = chainBaseManager.getMortgageService();
+        mortgageService.withdrawSpreadMintReward(ownerAddress);
+
         if (!ArrayUtils.isEmpty(parentAddress)){
           spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
         }
-
-        MortgageService mortgageService = chainBaseManager.getMortgageService();
-        mortgageService.withdrawSpreadMintReward(ownerAddress);
 
         long newFrozenBalanceForSpreadMint =
                 frozenBalance + accountCapsule.getAccountResource()
