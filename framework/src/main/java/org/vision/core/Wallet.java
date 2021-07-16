@@ -769,7 +769,7 @@ public class Wallet {
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getWitnessStandbyAllowanceWeight")
-            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceWeight())
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceInflation())
             .build());
     //    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //VDT ,7
     builder.addChainParameter(
@@ -968,7 +968,7 @@ public class Wallet {
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getWitness123PayPerBlockWeight")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockWeight())
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation())
         .build());
 
     builder.addChainParameter(

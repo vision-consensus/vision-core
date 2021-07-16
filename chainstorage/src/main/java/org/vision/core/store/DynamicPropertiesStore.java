@@ -1087,7 +1087,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(1200000L);
   }
 
-  public long getWitness123PayPerBlockWeight() {
+  public long getWitness123PayPerBlockInflation() {
     return (long) (getWitness123PayPerBlock() * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
@@ -1105,7 +1105,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
   }
 
-  public long getWitnessStandbyAllowanceWeight() {
+  public long getWitnessStandbyAllowanceInflation() {
     long weight = 0L;
     try{
       weight = getWitnessStandbyAllowance();

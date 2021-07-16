@@ -1384,7 +1384,7 @@ public class Manager {
     }
 
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-    long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockWeight();
+    long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
     chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
 
