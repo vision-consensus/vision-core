@@ -180,7 +180,27 @@ public interface EthereumCompatible {
         }
     }
 
+    class FilterRequest {
+        public String fromBlock;
+        public String toBlock;
+        public Object address;
+        public Object[] topics;
+        public String blockHash;  // EIP-234: makes fromBlock = toBlock = blockHash
+
+        @Override
+        public String toString() {
+            return "FilterRequest{" +
+                    "fromBlock='" + fromBlock + '\'' +
+                    ", toBlock='" + toBlock + '\'' +
+                    ", address=" + address +
+                    ", topics=" + Arrays.toString(topics) +
+                    ", blockHash='" + blockHash + '\'' +
+                    '}';
+        }
+    }
+
     String eth_chainId();
+    Object[] eth_getLogs(FilterRequest filterRequest) throws Exception;
     String web3_clientVersion();
     String web3_sha3(String data) throws Exception;
     String net_version();

@@ -1139,6 +1139,7 @@ public class Manager {
     Set<String> accountSet = new HashSet<>();
     AtomicInteger shieldedTransCounts = new AtomicInteger(0);
     Iterator<TransactionCapsule> iterator = pendingTransactions.iterator();
+    Bloom bloomBlock = new Bloom();
     while (iterator.hasNext() || rePushTransactions.size() > 0) {
       boolean fromPending = false;
       TransactionCapsule trx;
@@ -1188,6 +1189,13 @@ public class Manager {
         blockCapsule.addTransaction(trx);
         if (Objects.nonNull(result)) {
           transactionRetCapsule.addTransactionInfo(result);
+
+          // add logsBloom
+          ByteString logsBloom = result.toBuilder().getLogsBloom();
+          if (null != logsBloom) {
+            bloomBlock.or(new Bloom(logsBloom.toByteArray()));
+          }
+
         }
         if (fromPending) {
           iterator.remove();
@@ -1204,6 +1212,7 @@ public class Manager {
     logger.info("Generate block success, pendingCount: {}, rePushCount: {}, postponedCount: {}",
         pendingTransactions.size(), rePushTransactions.size(), postponedTrxCount);
 
+    blockCapsule.setLogsBloom(bloomBlock.getData());
     blockCapsule.setMerkleRoot();
     blockCapsule.sign(miner.getPrivateKey());
 

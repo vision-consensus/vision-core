@@ -466,6 +466,7 @@ message TransactionInfo {
   bytes orderId = 25;
   repeated MarketOrderDetail orderDetails = 26;
   int64 packingFee = 27;
+  bytes logsBloom = 28;
 
 }
 
@@ -496,6 +497,7 @@ message BlockHeader {
     bytes witness_address = 9;
     int32 version = 10;
     bytes accountStateRoot = 11;
+    bytes logsBloom = 12;
   }
   raw raw_data = 1;
   bytes witness_signature = 2;

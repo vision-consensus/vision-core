@@ -181,6 +181,9 @@ public class DataWord implements Comparable<DataWord> {
   public byte[] getLast20Bytes() {
     return Arrays.copyOfRange(data, 12, data.length);
   }
+  public byte[] getLast21Bytes() {
+    return Arrays.copyOfRange(data, 11, data.length);
+  }
 
   public BigInteger value() {
     return new BigInteger(1, data);

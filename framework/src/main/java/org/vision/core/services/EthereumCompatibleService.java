@@ -1,11 +1,14 @@
 package org.vision.core.services;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +16,7 @@ import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
@@ -31,7 +33,10 @@ import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,7 +44,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
-
+    private static final int LOGS_LIMIT_RET = 1000;
     @Autowired
     private Wallet wallet;
 
@@ -52,6 +57,118 @@ public class EthereumCompatibleService implements EthereumCompatible {
         return "0x" + Integer.toHexString(parameter.nodeP2pVersion);
         // return "0x42";
     }
+
+    @Override
+    public Object[] eth_getLogs(FilterRequest filterRequest) throws Exception {
+        // deal parameters
+        String fromBlock = filterRequest.fromBlock;
+        String toBlock = filterRequest.toBlock;
+        String blockHash = filterRequest.blockHash;
+        long fromBlockNumber;
+        long toBlockNumber;
+        if (StringUtils.isNotBlank(blockHash)) {
+            ByteString blockId = ByteString.copyFrom(ByteArray.fromHexString(blockHash));
+            Protocol.Block reply = wallet.getBlockById(blockId);
+            if (null == reply) {
+                throw new RuntimeException("cannot find block by blockHash");
+            }
+            fromBlockNumber = toBlockNumber = reply.getBlockHeader().getRawData().getNumber();
+        } else {
+            fromBlockNumber = parseBlockNum(fromBlock);
+            toBlockNumber = parseBlockNum(toBlock);
+        }
+
+        // get Bloom by filterRequest
+        Bloom filterBloom = new Bloom();
+
+        String contractAddress = (String) filterRequest.address;
+        if (StringUtils.isNotBlank(contractAddress)) {
+            filterBloom.add(hexTobytes(contractAddress));
+        }
+
+        Object[] topics =  filterRequest.topics;
+        List<String> filterTopicList = new ArrayList<>();
+        int topicSize = null != topics ? topics.length : 0;
+        if (topicSize > 0 && topicSize < 10) {
+            for (Object topic : topics) {
+                filterBloom.add(hexTobytes(topic.toString()));
+                filterTopicList.add(topic.toString());
+            }
+        } else {
+            throw new RuntimeException("the topic size must >0 and < 10");
+        }
+        int newLogNum = 0;
+        int limitRetNum = 1000;
+        JSONArray logsArray = new JSONArray();
+        for (long num = fromBlockNumber; num <= toBlockNumber; num++) {
+            // find block by num
+            Protocol.Block block = wallet.getBlockByNum(num);
+            // find by logsBloom
+            if (null == block) {
+                continue;
+            }
+            // find logs
+            ByteString logsBloom = block.getBlockHeader().getRawData().getLogsBloom();
+            Bloom blockLogsBloom = new Bloom(logsBloom.toByteArray());
+            boolean isMatch = blockLogsBloom.matches(filterBloom);
+            if (!isMatch) {
+                continue;
+            }
+            // get transactions from block
+            GrpcAPI.TransactionInfoList transactionInfoList = wallet.getTransactionInfoByBlockNum(num);
+            List<org.vision.protos.Protocol.TransactionInfo> transactionInfos = transactionInfoList.getTransactionInfoList();
+            if (CollectionUtils.isNotEmpty(transactionInfos)) {
+                int tranSize = transactionInfos.size();
+                for (int transactionIndex = 0; transactionIndex < tranSize; transactionIndex++) {
+                    Protocol.TransactionInfo transactionInfo = transactionInfos.get(transactionIndex);
+
+                    ByteString logsBloomInfo = transactionInfo.getLogsBloom();
+                    Bloom infoLogsBloom = new Bloom(logsBloomInfo.toByteArray());
+                    boolean isMatchInfo = infoLogsBloom.matches(filterBloom);
+                    if (!isMatchInfo) {
+                        continue;
+                    }
+
+                    List<Protocol.TransactionInfo.Log> logs = transactionInfo.getLogList();
+                    if (CollectionUtils.isNotEmpty(logs)) {
+                        for (Protocol.TransactionInfo.Log log : logs) {
+                            if (StringUtils.isNotBlank(contractAddress) && !toHexString(log.getAddress().toByteArray()).equals(contractAddress)) {
+                                continue;
+                            }
+                            List<ByteString> logTopicInBlock = log.getTopicsList();
+                            boolean flag = false;
+                            if (CollectionUtils.isNotEmpty(logTopicInBlock)) {
+                                for (ByteString bs : logTopicInBlock) {
+                                    if (filterTopicList.contains(toHexString(bs.toByteArray()))) {
+                                        flag = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            newLogNum++;
+                            checkLogsLimit(newLogNum);
+                            if (flag) {
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("address", "0x" + Hex.toHexString(log.getAddress().toByteArray()));
+                                List<String> topicList = new ArrayList<>();
+                                for (ByteString bs : logTopicInBlock) {
+                                    topicList.add(toHexString(bs.toByteArray()));
+                                }
+                                jsonObject.put("topics", topicList.toArray());
+                                jsonObject.put("blockNum", "0x" + Long.toHexString(num));
+                                jsonObject.put("transactionHash", "0x" + Hex.toHexString(transactionInfo.getId().toByteArray()));
+                                jsonObject.put("transactionIndex", "0x" + Integer.toHexString(transactionIndex));
+                                logsArray.add(jsonObject);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return logsArray.toArray();
+    }
+
 
     @Override
     public String web3_clientVersion() {
@@ -636,5 +753,33 @@ public class EthereumCompatibleService implements EthereumCompatible {
             return data.substring(2);
         }
         throw new IllegalArgumentException("not hex String");
+    }
+
+    private byte[] hexTobytes(String hex) {
+        if (hex.length() < 1) {
+            return null;
+        } else {
+            byte[] result = new byte[hex.length() / 2];
+            int j = 0;
+            for(int i = 0; i < hex.length(); i+=2) {
+                result[j++] = (byte)Integer.parseInt(hex.substring(i,i+2), 16);
+            }
+            return result;
+        }
+    }
+
+    private boolean checkLogsLimit(int nums) {
+        if (nums > LOGS_LIMIT_RET) {
+            throw new RuntimeException("query returned more than "+ LOGS_LIMIT_RET +" results");
+        }
+        return true;
+    }
+
+    private long parseBlockNum(String blockNum) {
+        if ("latest".equals(blockNum) || "pending".equals(blockNum) || "earliest".equals(blockNum)) {
+            return wallet.getNowBlock().getBlockHeader().getRawData().getNumber();
+        } else {
+            return Long.parseLong(blockNum);
+        }
     }
 }
