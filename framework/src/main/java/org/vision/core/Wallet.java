@@ -760,6 +760,11 @@ public class Wallet {
             .setKey("getWitnessPayPerBlock")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock())
             .build());
+    builder.addChainParameter(
+            Protocol.ChainParameters.ChainParameter.newBuilder()
+                    .setKey("getWitnessPayPerBlockInflation")
+                    .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation())
+                    .build());
     //    WITNESS_STANDBY_ALLOWANCE, //VDT ,6
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1021,6 +1026,10 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSpreadMintPayPerBlock")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintPayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowSpreadMintLevelProp")

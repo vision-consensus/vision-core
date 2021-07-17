@@ -1074,6 +1074,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
   }
 
+  public long getWitnessPayPerBlockInflation() {
+    long weight = getWitnessPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
   public void saveWitness123PayPerBlock(long pay) {
     logger.debug("WITNESS_100_PAY_PER_BLOCK:" + pay);
     this.put(WITNESS_123_PAY_PER_BLOCK,
@@ -2492,6 +2497,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(256000L);
+  }
+
+  public long getSpreadMintPayPerBlockInflation() {
+    long weight = getSpreadMintPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public boolean supportSpreadMint() {
