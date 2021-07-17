@@ -35,7 +35,7 @@ public class IncentiveManager {
     if (voteSum <= 0) {
       return;
     }
-    long totalPay = consensusDelegate.getWitnessStandbyAllowance();
+    long totalPay = consensusDelegate.getWitnessStandbyAllowanceInflation();
     for (ByteString witness : witnesses) {
       byte[] address = witness.toByteArray();
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(address);

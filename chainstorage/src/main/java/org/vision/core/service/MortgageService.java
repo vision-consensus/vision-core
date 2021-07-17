@@ -16,9 +16,7 @@ import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.Vote;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
@@ -63,7 +61,7 @@ public class MortgageService {
     }
 
     long voteSum = 0;
-    long totalPay = (long) (dynamicPropertiesStore.getWitness123PayPerBlock() * (dynamicPropertiesStore.getInflationRate() * 1.0 / 120000 + 1));
+    long totalPay = dynamicPropertiesStore.getWitness123PayPerBlockInflation();
     for (ByteString b : witnessAddressList) {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
       voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
@@ -105,7 +103,7 @@ public class MortgageService {
     delegationStore.addSpreadMintReward(cycle, value);
   }
 
-  public void withdrawReward(byte[] address) {
+  public void withdrawSpreadMintReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -137,7 +135,7 @@ public class MortgageService {
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
-  public void withdrawSpreadMintReward(byte[] address) {
+  public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
@@ -193,6 +191,57 @@ public class MortgageService {
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
                     + "account vote {},", Hex.toHexString(address), reward, currentCycle,
             beginCycle, endCycle, accountCapsule.getVotesList());
+  }
+
+  public Map<String, Long> queryAllReward(byte[] address){
+    Map<String, Long> rewardMap = new HashMap<>();
+    rewardMap.put("reward", 0L);
+    rewardMap.put("spreadReward", 0L);
+    if (!dynamicPropertiesStore.allowChangeDelegation()) {
+      return rewardMap;
+    }
+    AccountCapsule accountCapsule = accountStore.get(address);
+    long beginCycle = delegationStore.getBeginCycle(address);
+    long endCycle = delegationStore.getEndCycle(address);
+    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long reward = 0;
+    if (accountCapsule == null) {
+      return rewardMap;
+    }
+    if (beginCycle > currentCycle) {
+      rewardMap.put("reward", accountCapsule.getAllowance());
+      return rewardMap;
+    }
+    //withdraw the latest cycle reward
+    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+      AccountCapsule account = delegationStore.getAccountVote(beginCycle, address);
+      if (account != null) {
+        reward = computeReward(beginCycle, account);
+      }
+      beginCycle += 1;
+    }
+    //
+    endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      Long spreadReward = 0L;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+      }
+      rewardMap.put("spreadReward", spreadReward);
+    }
+
+    if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
+      rewardMap.put("reward", reward + accountCapsule.getAllowance());
+      return rewardMap;
+    }
+    if (beginCycle < endCycle) {
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        reward += computeReward(cycle, accountCapsule);
+      }
+      rewardMap.put("reward", reward + accountCapsule.getAllowance());
+    }
+    return rewardMap;
   }
 
   public long queryReward(byte[] address) {
@@ -291,22 +340,32 @@ public class MortgageService {
     if(!isWithdrawReward){
       return (long)(spreadReward * (props[0] / 100.0));
     }
-
-    AccountCapsule parentCapsule = accountCapsule;
-    for (int i = 1; i < props.length; i++) {
-      SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
-      if (spreadRelationShipCapsule == null){
-        break;
-      }
-      parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-      if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
-        break;
-      }
-      long spreadResult = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
-      adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadResult);
-    }
-
+    adjustSpreadMintParentAllowance(accountCapsule, props, spreadReward, accountFreeze);
     return (long)(spreadReward * (props[0] / 100.0));
+  }
+
+  private void adjustSpreadMintParentAllowance(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountFreeze){
+    try {
+      AccountCapsule parentCapsule = accountCapsule;
+      ArrayList<String> addressList = new ArrayList<>();
+      for (int i = 1; i < props.length; i++) {
+        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+        if (spreadRelationShipCapsule == null){
+          break;
+        }
+
+        addressList.add(spreadRelationShipCapsule.getOwner().toString());
+        if (addressList.contains(spreadRelationShipCapsule.getParent().toString())){ // deal loop parent address
+          break;
+        }
+
+        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+        long spreadAmount = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+        adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
+      }
+    }catch (Exception e){
+      logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
+    }
   }
 
   public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
