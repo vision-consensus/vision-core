@@ -16,9 +16,7 @@ import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.Vote;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
@@ -195,6 +193,57 @@ public class MortgageService {
             beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
+  public Map<String, Long> queryAllReward(byte[] address){
+    Map<String, Long> rewardMap = new HashMap<>();
+    rewardMap.put("reward", 0L);
+    rewardMap.put("spreadReward", 0L);
+    if (!dynamicPropertiesStore.allowChangeDelegation()) {
+      return rewardMap;
+    }
+    AccountCapsule accountCapsule = accountStore.get(address);
+    long beginCycle = delegationStore.getBeginCycle(address);
+    long endCycle = delegationStore.getEndCycle(address);
+    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long reward = 0;
+    if (accountCapsule == null) {
+      return rewardMap;
+    }
+    if (beginCycle > currentCycle) {
+      rewardMap.put("reward", accountCapsule.getAllowance());
+      return rewardMap;
+    }
+    //withdraw the latest cycle reward
+    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+      AccountCapsule account = delegationStore.getAccountVote(beginCycle, address);
+      if (account != null) {
+        reward = computeReward(beginCycle, account);
+      }
+      beginCycle += 1;
+    }
+    //
+    endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      Long spreadReward = 0L;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+      }
+      rewardMap.put("spreadReward", spreadReward);
+    }
+
+    if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
+      rewardMap.put("reward", reward + accountCapsule.getAllowance());
+      return rewardMap;
+    }
+    if (beginCycle < endCycle) {
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        reward += computeReward(cycle, accountCapsule);
+      }
+      rewardMap.put("reward", reward + accountCapsule.getAllowance());
+    }
+    return rewardMap;
+  }
+
   public long queryReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return 0;
@@ -282,7 +331,7 @@ public class MortgageService {
       }
       sumProps += props[i];
     }
-    
+
     if (sumProps != 100){
       logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
       return spreadReward;
