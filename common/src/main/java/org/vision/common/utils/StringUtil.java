@@ -45,12 +45,6 @@ public class StringUtil {
     return ByteString.copyFrom(ByteArray.fromHexString(hexString));
   }
 
-  /**
-   * 字符串转换为16进制字符串
-   *
-   * @param s
-   * @return
-   */
   public static String stringToHexString(String s) {
     String str = "";
     for (int i = 0; i < s.length(); i++) {
