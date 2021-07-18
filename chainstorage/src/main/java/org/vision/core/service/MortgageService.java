@@ -340,11 +340,11 @@ public class MortgageService {
     if(!isWithdrawReward){
       return (long)(spreadReward * (props[0] / 100.0));
     }
-    computeSpreadMintParentReward(accountCapsule, props, spreadReward, accountFreeze);
+    adjustSpreadMintParentAllowance(accountCapsule, props, spreadReward, accountFreeze);
     return (long)(spreadReward * (props[0] / 100.0));
   }
 
-  private void computeSpreadMintParentReward(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountFreeze){
+  private void adjustSpreadMintParentAllowance(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountFreeze){
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
