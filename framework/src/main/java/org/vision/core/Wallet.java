@@ -1047,6 +1047,10 @@ public class Wallet {
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRateThreshold")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRateThreshold())
+            .build());
 
     return builder.build();
   }
