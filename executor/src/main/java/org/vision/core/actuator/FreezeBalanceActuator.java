@@ -16,6 +16,7 @@ import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+import org.vision.protos.contract.Common;
 
 import java.util.Arrays;
 import java.util.List;
@@ -168,12 +169,28 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
-    if (frozenBalance <= 0) {
-      throw new ContractValidateException("frozenBalance must be positive");
+    if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
+      if (frozenBalance < 0) {
+        throw new ContractValidateException("frozenBalance must be positive");
+      }
+      if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+        throw new ContractValidateException("frozenBalance must be more than 1VS");
+      }
+      if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
+        SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+        if (spreadRelationShipCapsule == null){
+          throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+        }
+      }
+    }else{
+      if (frozenBalance <= 0) {
+        throw new ContractValidateException("frozenBalance must be positive");
+      }
+      if (frozenBalance < VS_PRECISION) {
+        throw new ContractValidateException("frozenBalance must be more than 1VS");
+      }
     }
-    if (frozenBalance < VS_PRECISION) {
-      throw new ContractValidateException("frozenBalance must be more than 1VS");
-    }
+
 
     int frozenCount = accountCapsule.getFrozenCount();
     if (!(frozenCount == 0 || frozenCount == 1)) {
@@ -348,13 +365,21 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
   private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime){
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    byte[] key = ownerAddress; //SpreadRelationShipCapsule.createDbKey(ownerAddress, parentAddress);
+    byte[] key = ownerAddress;
 
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(key);
 
     if (spreadRelationShipCapsule != null) {
+      if (ByteString.copyFrom(parentAddress).toString().equals(spreadRelationShipCapsule.getParent().toString())){
         spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime);
+      }else{ // cover spreadRelationShip parentAddress
+        long frozenBalanceForSpread = spreadRelationShipCapsule.getFrozenBalanceForSpread();
+        spreadRelationShipCapsule = new SpreadRelationShipCapsule(
+                ByteString.copyFrom(ownerAddress),
+                ByteString.copyFrom(parentAddress));
+        spreadRelationShipCapsule.setFrozenBalanceForSpread(frozenBalanceForSpread + balance, expireTime);
+      }
     } else {
       spreadRelationShipCapsule = new SpreadRelationShipCapsule(
               ByteString.copyFrom(ownerAddress),
