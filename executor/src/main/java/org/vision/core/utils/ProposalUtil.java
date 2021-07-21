@@ -472,6 +472,9 @@ public class ProposalUtil {
         for(int i = 0; i < levelProps.length; i++)
         {
           props[i] = Integer.parseInt(levelProps[i]);
+          if (props[i] < 0 || props[i] > 100){
+            break;
+          }
           sumProps += props[i];
         }
 
