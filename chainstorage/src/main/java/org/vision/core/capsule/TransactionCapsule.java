@@ -1285,8 +1285,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               .setAbi(abiBuilder)
               .setBytecode(ByteString.copyFrom(this.data))
               .setCallValue(0) // transfer to contract
-              .setConsumeUserResourcePercent(80)
-              .setOriginEntropyLimit(20);
+              .setConsumeUserResourcePercent(100)
+              .setOriginEntropyLimit(50000);
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
 
       build.setNewContract(smartBuilder);
