@@ -8,7 +8,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,9 @@ import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.*;
+import org.vision.common.utils.Bloom;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.Sha256Hash;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
@@ -33,10 +34,7 @@ import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -61,12 +59,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public Object[] eth_getLogs(FilterRequest filterRequest) throws Exception {
         // deal parameters
-        String fromBlock = filterRequest.fromBlock;
-        String toBlock = filterRequest.toBlock;
-        String blockHash = filterRequest.blockHash;
+        String fromBlock = getHexNo0x(filterRequest.fromBlock);
+        String toBlock = getHexNo0x(filterRequest.toBlock);
+        String blockHash = getHexNo0x(filterRequest.blockHash);
         long fromBlockNumber;
         long toBlockNumber;
         if (StringUtils.isNotBlank(blockHash)) {
+            blockHash = getHexNo0x(blockHash);
             ByteString blockId = ByteString.copyFrom(ByteArray.fromHexString(blockHash));
             Protocol.Block reply = wallet.getBlockById(blockId);
             if (null == reply) {
@@ -81,7 +80,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         // get Bloom by filterRequest
         Bloom filterBloom = new Bloom();
 
-        String contractAddress = (String) filterRequest.address;
+        String contractAddress = getHexNo0x((String) filterRequest.address);
         if (StringUtils.isNotBlank(contractAddress)) {
             filterBloom.add(hexTobytes(contractAddress));
         }
@@ -91,21 +90,21 @@ public class EthereumCompatibleService implements EthereumCompatible {
         int topicSize = null != topics ? topics.length : 0;
         if (topicSize > 0 && topicSize < 10) {
             for (Object topic : topics) {
-                filterBloom.add(hexTobytes(topic.toString()));
-                filterTopicList.add(topic.toString());
+                String topicStr = getHexNo0x(topic.toString());
+                filterBloom.add(hexTobytes(topicStr));
+                filterTopicList.add(topicStr);
             }
         } else {
             throw new RuntimeException("the topic size must >0 and < 10");
         }
         int newLogNum = 0;
-        int limitRetNum = 1000;
         JSONArray logsArray = new JSONArray();
         for (long num = fromBlockNumber; num <= toBlockNumber; num++) {
             // find block by num
             Protocol.Block block = wallet.getBlockByNum(num);
             // find by logsBloom
             if (null == block) {
-                continue;
+                break;
             }
             // find logs
             ByteString logsBloom = block.getBlockHeader().getRawData().getLogsBloom();
@@ -116,7 +115,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             }
             // get transactions from block
             GrpcAPI.TransactionInfoList transactionInfoList = wallet.getTransactionInfoByBlockNum(num);
-            List<org.vision.protos.Protocol.TransactionInfo> transactionInfos = transactionInfoList.getTransactionInfoList();
+            List<Protocol.TransactionInfo> transactionInfos = transactionInfoList.getTransactionInfoList();
             if (CollectionUtils.isNotEmpty(transactionInfos)) {
                 int tranSize = transactionInfos.size();
                 for (int transactionIndex = 0; transactionIndex < tranSize; transactionIndex++) {
@@ -727,7 +726,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
             Protocol.Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
             Protocol.BlockHeader blockHeader = block.getBlockHeader();
-            org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
+            Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
             BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
             BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
             transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
@@ -752,7 +751,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         if (StringUtils.isNotBlank(data) && data.startsWith("0x")) {
             return data.substring(2);
         }
-        throw new IllegalArgumentException("not hex String");
+        return data;
+        // throw new IllegalArgumentException("not hex String");
     }
 
     private byte[] hexTobytes(String hex) {
