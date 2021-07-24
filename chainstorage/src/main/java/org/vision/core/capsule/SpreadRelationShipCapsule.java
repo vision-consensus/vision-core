@@ -48,9 +48,9 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
     return this.spreadRelationShip.getFrozenBalanceForSpread();
   }
 
-  public void setFrozenBalanceForSpread(long entropy, long expireTime) {
+  public void setFrozenBalanceForSpread(long spread, long expireTime) {
     this.spreadRelationShip = this.spreadRelationShip.toBuilder()
-        .setFrozenBalanceForSpread(entropy)
+        .setFrozenBalanceForSpread(spread)
         .setExpireTimeForSpread(expireTime)
         .build();
   }
