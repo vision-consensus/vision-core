@@ -19,7 +19,6 @@ import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
@@ -142,18 +141,10 @@ public class DposService implements ConsensusInterface {
   }
 
   private void updateSolidBlock() {
-//    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
-//        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
-//        .sorted()
-//        .collect(Collectors.toList());
-    List<Long> numbers = new ArrayList<>();
-    for (ByteString item : consensusDelegate.getActiveWitnesses()) {
-      WitnessCapsule witness = consensusDelegate.getWitness(item.toByteArray());
-      if (witness.getLatestBlockNum() > 0) {
-        numbers.add(witness.getLatestBlockNum());
-      }
-    }
-    Collections.sort(numbers);
+    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
+        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
+        .sorted()
+        .collect(Collectors.toList());
     StringBuilder numsb = new StringBuilder();
     numbers.forEach(n-> numsb.append(String.valueOf(n)).append(", "));
     StringBuilder addsb = new StringBuilder();
