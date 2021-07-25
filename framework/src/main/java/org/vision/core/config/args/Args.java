@@ -997,11 +997,13 @@ public class Args extends CommonParameter {
         .getLong(prefix + "targetFileSizeBase") : 64;
     int targetFileSizeMultiplier = config.hasPath(prefix + "targetFileSizeMultiplier") ? config
         .getInt(prefix + "targetFileSizeMultiplier") : 1;
+    boolean enableStatistics = config.hasPath(prefix + "enableStatistics") && config
+            .getBoolean(prefix + "enableStatistics");
 
     PARAMETER.rocksDBCustomSettings = RocksDbSettings
         .initCustomSettings(levelNumber, compactThreads, blocksize, maxBytesForLevelBase,
             maxBytesForLevelMultiplier, level0FileNumCompactionTrigger,
-            targetFileSizeBase, targetFileSizeMultiplier);
+            targetFileSizeBase, targetFileSizeMultiplier, enableStatistics);
     RocksDbSettings.loggingSettings();
   }
 

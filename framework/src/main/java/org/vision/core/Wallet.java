@@ -1047,6 +1047,18 @@ public class Wallet {
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRateThreshold")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRateThreshold())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getLowInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getLowInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getHighInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
+            .build());
 
     return builder.build();
   }
