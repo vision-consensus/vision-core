@@ -108,10 +108,9 @@ public class MortgageService {
       return;
     }
     AccountCapsule accountCapsule = accountStore.get(address);
-    long beginCycle = delegationStore.getBeginCycle(address);
-    long endCycle = delegationStore.getEndCycle(address);
+    long beginCycle = delegationStore.getSpreadMintBeginCycle(address);
+    long endCycle = delegationStore.getSpreadMintEndCycle(address);
     long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long reward = 0;
     if (beginCycle > currentCycle || accountCapsule == null) {
       return;
     }
@@ -122,16 +121,18 @@ public class MortgageService {
     }
     endCycle = currentCycle;
 
+    long spreadReward =0;
     if (beginCycle < endCycle) {
-      long spreadReward =0;
       for (long cycle = beginCycle; cycle < endCycle; cycle++) {
         spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
       }
       adjustAllowance(address, spreadReward);
     }
 
+    delegationStore.setSpreadMintBeginCycle(address, endCycle);
+    delegationStore.setSpreadMintEndCycle(address, endCycle + 1);
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+            + "account vote {},", Hex.toHexString(address), spreadReward, currentCycle,
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
