@@ -1,5 +1,6 @@
 package org.vision.consensus.dpos;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
@@ -192,6 +193,10 @@ public class DposService implements ConsensusInterface {
       json.put("totalPhotonWeight", totalPhotonWeight);
       json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight);
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
+      JSONArray witnesses = new JSONArray();
+      consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
+              .forEach(address -> witnesses.add(StringUtil.encode58Check(address.toByteArray())));
+      json.put("confirm_witnesses", witnesses);
       Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
     }
     logger.info("Update solid block number to {}", newSolidNum);
