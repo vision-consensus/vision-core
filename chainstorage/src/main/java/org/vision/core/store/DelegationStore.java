@@ -102,7 +102,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
   }
 
   public void setSpreadMintBeginCycle(byte[] address, long number) {
-    put(buildSpreadMintStartCycleKey(buildEndCycleKey(address)), new BytesCapsule(ByteArray.fromLong(number)));
+    put(buildSpreadMintStartCycleKey(address), new BytesCapsule(ByteArray.fromLong(number)));
   }
 
   public long getSpreadMintBeginCycle(byte[] address) {

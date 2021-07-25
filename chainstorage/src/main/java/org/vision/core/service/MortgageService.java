@@ -117,6 +117,7 @@ public class MortgageService {
 
     //withdraw the latest cycle reward
     if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+
       beginCycle += 1;
     }
     endCycle = currentCycle;
@@ -140,6 +141,11 @@ public class MortgageService {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
+
+    if(dynamicPropertiesStore.supportSpreadMint()){
+      withdrawSpreadMintReward(address);
+    }
+
     AccountCapsule accountCapsule = accountStore.get(address);
     long beginCycle = delegationStore.getBeginCycle(address);
     long endCycle = delegationStore.getEndCycle(address);
@@ -167,14 +173,6 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
-
-    if (beginCycle < endCycle) {
-      long spreadReward =0;
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
-      }
-      adjustAllowance(address, spreadReward);
-    }
 
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       delegationStore.setBeginCycle(address, endCycle + 1);
