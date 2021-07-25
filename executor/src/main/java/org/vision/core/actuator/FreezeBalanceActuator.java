@@ -50,6 +50,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
       ret.setStatus(fee, code.FAILED);
       throw new ContractExeException(e.getMessage());
     }
+
+    byte[] ownerAddress = freezeBalanceContract.getOwnerAddress().toByteArray();
+    if(freezeBalanceContract.getResource().equals(Common.ResourceCode.SPREAD)){
+      chainBaseManager.getMortgageService().withdrawSpreadMintReward(ownerAddress);
+    }
+
     AccountCapsule accountCapsule = accountStore
         .get(freezeBalanceContract.getOwnerAddress().toByteArray());
 
@@ -60,7 +66,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
     long expireTime = now + duration;
-    byte[] ownerAddress = freezeBalanceContract.getOwnerAddress().toByteArray();
+
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
 
@@ -106,9 +112,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
-        MortgageService mortgageService = chainBaseManager.getMortgageService();
-        mortgageService.withdrawSpreadMintReward(ownerAddress);
-
         if (!ArrayUtils.isEmpty(parentAddress)){
           spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
         }
