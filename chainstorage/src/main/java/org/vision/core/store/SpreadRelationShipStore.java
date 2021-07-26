@@ -46,4 +46,8 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
     }
   }
 
+  @Override
+  public void delete(byte[] key) {
+    super.delete(key);
+  }
 }

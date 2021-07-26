@@ -256,6 +256,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowSpreadMintLevelProp(entry.getValue());
           break;
         }
+        case PLEDGE_RATE_THRESHOLD: {
+          manager.getDynamicPropertiesStore().savePledgeRateThreshold(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
@@ -268,10 +272,20 @@ public class ProposalService extends ProposalUtil {
         find = false;
         continue;
       }
-      if (proposalType == ProposalType.SPREAD_MINT_LEVEL_PROP) {
-        manager.getDynamicPropertiesStore().saveSpreadMintLevelProp(entry.getValue());
-      } else {
-        find = false;
+      switch (proposalType) {
+        case SPREAD_MINT_LEVEL_PROP: {
+          manager.getDynamicPropertiesStore().saveSpreadMintLevelProp(entry.getValue());
+          break;
+        }
+        case INFLATION_RATE: {
+          long lowInflationRate = Long.parseLong(entry.getValue().split(",")[0]);
+          long highInflationRate = Long.parseLong(entry.getValue().split(",")[1]);
+          manager.getDynamicPropertiesStore().saveLowInflationRate(lowInflationRate);
+          manager.getDynamicPropertiesStore().saveHighInflationRate(highInflationRate);
+        }
+        default:
+          find = false;
+          break;
       }
     }
 
