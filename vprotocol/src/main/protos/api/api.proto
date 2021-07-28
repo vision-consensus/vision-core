@@ -58,7 +58,7 @@ service Wallet {
     };
   };
 
-  rpc GetSpreadMintParent (Account) returns (SpreadRelationShipList) {
+  rpc GetSpreadMintParent (SpreadRelationShipMessage) returns (SpreadRelationShipList) {
     option (google.api.http) = {
       post: "/wallet/getspreadmintparent"
       body: "*"
@@ -1095,6 +1095,8 @@ message DelegatedResourceList {
 message SpreadRelationShipMessage {
   bytes ownerAddress = 1;
   bytes parentAddress = 2;
+  int32 level = 3;
+  bytes address = 4;
 }
 
 message SpreadRelationShipList {

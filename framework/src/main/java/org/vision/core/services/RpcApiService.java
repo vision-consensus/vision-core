@@ -10,13 +10,6 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -30,9 +23,6 @@ import org.vision.api.MonitorGrpc;
 import org.vision.api.WalletExtensionGrpc;
 import org.vision.api.WalletGrpc.WalletImplBase;
 import org.vision.api.WalletSolidityGrpc.WalletSolidityImplBase;
-import org.vision.core.exception.*;
-import org.vision.core.services.filter.LiteFnQueryGrpcInterceptor;
-import org.vision.core.services.ratelimiter.RateLimiterInterceptor;
 import org.vision.common.application.Service;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -51,7 +41,10 @@ import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.Manager;
+import org.vision.core.exception.*;
 import org.vision.core.metrics.MetricsApiService;
+import org.vision.core.services.filter.LiteFnQueryGrpcInterceptor;
+import org.vision.core.services.ratelimiter.RateLimiterInterceptor;
 import org.vision.core.utils.TransactionUtil;
 import org.vision.core.zen.address.DiversifierT;
 import org.vision.core.zen.address.IncomingViewingKey;
@@ -63,13 +56,7 @@ import org.vision.protos.contract.AccountContract.AccountPermissionUpdateContrac
 import org.vision.protos.contract.AccountContract.AccountUpdateContract;
 import org.vision.protos.contract.AccountContract.SetAccountIdContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.*;
-import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
-import org.vision.protos.contract.BalanceContract.TransferContract;
-import org.vision.protos.contract.BalanceContract.AccountBalanceResponse;
-import org.vision.protos.contract.BalanceContract.AccountBalanceRequest;
-import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
-import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
-import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
+import org.vision.protos.contract.BalanceContract.*;
 import org.vision.protos.contract.ExchangeContract.ExchangeCreateContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeTransactionContract;
@@ -86,6 +73,14 @@ import org.vision.protos.contract.StorageContract.UpdateBrokerageContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.vision.core.Wallet.CONTRACT_VALIDATE_ERROR;
 
@@ -1877,6 +1872,13 @@ public class RpcApiService implements Service {
         StreamObserver<org.vision.protos.Protocol.DelegatedResourceAccountIndex> responseObserver) {
       responseObserver
           .onNext(wallet.getDelegatedResourceAccountIndex(request.getValue()));
+      responseObserver.onCompleted();
+    }
+
+    public void getSpreadMintParent(SpreadRelationShipMessage request,
+                                    StreamObserver<SpreadRelationShipList> responseObserver) {
+      responseObserver
+              .onNext(wallet.getSpreadMintParentList(request.getOwnerAddress().toByteArray(), request.getLevel()));
       responseObserver.onCompleted();
     }
 
