@@ -212,6 +212,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 long gasPrice = Long.parseLong(
                         toHexString(ethTrx.getGasPrice()), 16
                 );
+                if (gasPrice > 1_000_000_000l) {
+                    gasPrice /= 1_000_000_000l;
+                }
                 long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
                 logger.info("gasPrice={},gasLimit={}", gasPrice, gasLimit);
                 long feeLimit = gasPrice * gasLimit * 2;
@@ -302,7 +305,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_estimateGas(CallArguments args) throws Exception {
-        return null;
+        return "0x5208";
     }
 
     @Override
