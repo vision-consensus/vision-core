@@ -1,5 +1,6 @@
 package org.vision.core.net.peer;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.Deque;
@@ -141,6 +142,31 @@ public class PeerConnection extends Channel {
     syncBlockRequested.clear();
     syncBlockInProcess.clear();
     syncBlockInProcess.clear();
+  }
+
+  public JSONObject getNodeJson(){
+    JSONObject json = new JSONObject();
+    json.put("host", getNode().getHost());
+    json.put("port", getNode().getPort());
+    json.put("connectTime", (System.currentTimeMillis() - getStartTime()) / Constant.ONE_THOUSAND);
+    json.put("lastBlockNum", fastForwardBlock != null ? fastForwardBlock.getNum() : blockBothHave.getNum());
+    json.put("remainNum",remainNum);
+    return json;
+    /*
+    Peer 18.191.204.246:18888 [146e996f]
+    ping msg: count 30699, max-average-min-last: 12 5 1 5
+    connect time: 368958s
+    last know block num: 2463
+    needSyncFromPeer:false
+    needSyncFromUs:false
+    syncToFetchSize:0
+    syncToFetchSizePeekNum:-1
+    syncBlockRequestedSize:0
+    remainNum:0
+    syncChainRequested:0
+    blockInProcess:0
+    NodeStat[reput: 286(230), discover: 1/1 0/0 62097/62097 62098/62098 24ms, p2p: 1/1/1 , vision: 186632/36979   , tcp flow: 8910
+     */
   }
 
   public String log() {
