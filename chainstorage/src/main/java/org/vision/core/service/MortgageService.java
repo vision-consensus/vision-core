@@ -352,7 +352,7 @@ public class MortgageService {
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       try {
         JSONObject itemJsonObject = new JSONObject();
-        itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
+        itemJsonObject.put("address", Hex.toHexString(account.getAddress().toByteArray()));
         itemJsonObject.put("allowance", account.getAllowance());
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
         String jsonStr = itemJsonObject.toJSONString();

@@ -75,7 +75,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 
       try {
         JSONObject itemJsonObject = new JSONObject();
-        itemJsonObject.put("accountId", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
+        itemJsonObject.put("address", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
         itemJsonObject.put("allowance", allowance);
         itemJsonObject.put("balance", oldBalance + allowance);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
