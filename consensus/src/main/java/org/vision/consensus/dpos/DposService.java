@@ -1,5 +1,6 @@
 package org.vision.consensus.dpos;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
@@ -22,7 +23,6 @@ import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
@@ -145,18 +145,10 @@ public class DposService implements ConsensusInterface {
   }
 
   private void updateSolidBlock() {
-//    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
-//        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
-//        .sorted()
-//        .collect(Collectors.toList());
-    List<Long> numbers = new ArrayList<>();
-    for (ByteString item : consensusDelegate.getActiveWitnesses()) {
-      WitnessCapsule witness = consensusDelegate.getWitness(item.toByteArray());
-      if (witness.getLatestBlockNum() > 0) {
-        numbers.add(witness.getLatestBlockNum());
-      }
-    }
-    Collections.sort(numbers);
+    List<Long> numbers = consensusDelegate.getActiveWitnesses().stream()
+        .map(address -> consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())
+        .sorted()
+        .collect(Collectors.toList());
     StringBuilder numsb = new StringBuilder();
     numbers.forEach(n-> numsb.append(String.valueOf(n)).append(", "));
     StringBuilder addsb = new StringBuilder();
@@ -181,6 +173,7 @@ public class DposService implements ConsensusInterface {
       json.put("blockNum", newSolidNum);
       long totalEntropyWeight = 0L;
       long totalPhotonWeight = 0L;
+      long totalSRGuaranteeWeight = 0L;
       try {
         totalEntropyWeight = consensusDelegate.getDynamicPropertiesStore().getTotalEntropyWeight();
       }catch (Exception e){
@@ -191,9 +184,19 @@ public class DposService implements ConsensusInterface {
       }catch (Exception e){
         logger.info("no photon");
       }
+      try {
+        totalSRGuaranteeWeight = consensusDelegate.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+      }catch (Exception e){
+        logger.info("no SRGuarantee");
+      }
       json.put("totalEntropyWeight", totalEntropyWeight);
       json.put("totalPhotonWeight", totalPhotonWeight);
+      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight);
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
+      JSONArray witnesses = new JSONArray();
+      consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
+              .forEach(address -> witnesses.add(StringUtil.encode58Check(address.toByteArray())));
+      json.put("confirm_witnesses", witnesses);
       Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
     }
     logger.info("Update solid block number to {}", newSolidNum);

@@ -1352,7 +1352,7 @@ public class Manager {
     long spreadMintPayPerBlock = 0L;
     if (getDynamicPropertiesStore().allowChangeDelegation()) {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
-          getDynamicPropertiesStore().getWitnessPayPerBlock());
+          getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
       mortgageService.payStandbyWitness();
       //spread mint
       if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
@@ -1373,7 +1373,7 @@ public class Manager {
       byte[] witness = block.getWitnessAddress().toByteArray();
       AccountCapsule account = getAccountStore().get(witness);
       account.setAllowance(account.getAllowance()
-          + chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock());
+          + chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
 
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
@@ -1406,12 +1406,12 @@ public class Manager {
     chainBaseManager.getBlockStore().sendBlockMsg(block, reward);
 
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
+      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation();
     }
 
-    long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock();
-    long witness123PayPerBlock = (long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1));
+    long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation();
+    long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
     chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
 

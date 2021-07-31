@@ -1074,6 +1074,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
   }
 
+  public long getWitnessPayPerBlockInflation() {
+    long weight = getWitnessPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
   public void saveWitness123PayPerBlock(long pay) {
     logger.debug("WITNESS_100_PAY_PER_BLOCK:" + pay);
     this.put(WITNESS_123_PAY_PER_BLOCK,
@@ -1085,6 +1090,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElse(1200000L);
+  }
+
+  public long getWitness123PayPerBlockInflation() {
+    return (long) (getWitness123PayPerBlock() * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveWitnessStandbyAllowance(long allowance) {
@@ -1099,6 +1108,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
+  }
+
+  public long getWitnessStandbyAllowanceInflation() {
+    long weight = 0L;
+    try{
+      weight = getWitnessStandbyAllowance();
+    } catch (Exception e){
+      logger.info("no found WITNESS_STANDBY_ALLOWANCE");
+    }
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveOneDayPhotonLimit(long oneDayPhotonLimit) {
@@ -2478,6 +2497,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(256000L);
+  }
+
+  public long getSpreadMintPayPerBlockInflation() {
+    long weight = getSpreadMintPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public boolean supportSpreadMint() {

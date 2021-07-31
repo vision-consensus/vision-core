@@ -760,11 +760,21 @@ public class Wallet {
             .setKey("getWitnessPayPerBlock")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock())
             .build());
+    builder.addChainParameter(
+            Protocol.ChainParameters.ChainParameter.newBuilder()
+                    .setKey("getWitnessPayPerBlockInflation")
+                    .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation())
+                    .build());
     //    WITNESS_STANDBY_ALLOWANCE, //VDT ,6
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getWitnessStandbyAllowance")
-            .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowance()* (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowance())
+            .build());
+    builder.addChainParameter(
+        Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitnessStandbyAllowanceInflation")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceInflation())
             .build());
     //    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //VDT ,7
     builder.addChainParameter(
@@ -958,7 +968,12 @@ public class Wallet {
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getWitness123PayPerBlock")
-        .setValue((long) (chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock() * (chainBaseManager.getDynamicPropertiesStore().getInflationRate() * 1.0 / 120000 + 1)))
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock())
+        .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+        .setKey("getWitness123PayPerBlockInflation")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation())
         .build());
 
     builder.addChainParameter(
@@ -1013,6 +1028,10 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintPayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowSpreadMintLevelProp")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintLevelProp())
             .build());
@@ -1027,6 +1046,18 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRateThreshold")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRateThreshold())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getLowInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getLowInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getHighInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
             .build());
 
     return builder.build();
