@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+
 @Slf4j(topic = "mortgage")
 @Component
 public class MortgageService {
@@ -42,11 +44,12 @@ public class MortgageService {
   private AccountStore accountStore;
 
   public void initStore(WitnessStore witnessStore, DelegationStore delegationStore,
-      DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore) {
+      DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore, SpreadRelationShipStore spreadRelationShipStore) {
     this.witnessStore = witnessStore;
     this.delegationStore = delegationStore;
     this.dynamicPropertiesStore = dynamicPropertiesStore;
     this.accountStore = accountStore;
+    this.spreadRelationShipStore = spreadRelationShipStore;
   }
 
   public void payStandbyWitness() {
@@ -102,6 +105,38 @@ public class MortgageService {
     delegationStore.addSpreadMintReward(cycle, value);
   }
 
+  public void withdrawSpreadMintReward(byte[] address) {
+    if (!dynamicPropertiesStore.allowChangeDelegation()) {
+      return;
+    }
+    AccountCapsule accountCapsule = accountStore.get(address);
+    long beginCycle = delegationStore.getBeginCycle(address);
+    long endCycle = delegationStore.getEndCycle(address);
+    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long reward = 0;
+    if (beginCycle > currentCycle || accountCapsule == null) {
+      return;
+    }
+
+    //withdraw the latest cycle reward
+    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+      beginCycle += 1;
+    }
+    endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      long spreadReward =0;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
+      }
+      adjustAllowance(address, spreadReward);
+    }
+
+    logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
+            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+        beginCycle, endCycle, accountCapsule.getVotesList());
+  }
+
   public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
@@ -133,6 +168,15 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      long spreadReward =0;
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
+      }
+      adjustAllowance(address, spreadReward);
+    }
+
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       delegationStore.setBeginCycle(address, endCycle + 1);
       return;
@@ -147,15 +191,14 @@ public class MortgageService {
     delegationStore.setEndCycle(address, endCycle + 1);
     delegationStore.setAccountVote(endCycle, address, accountCapsule);
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
-        beginCycle, endCycle, accountCapsule.getVotesList());
+                    + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+            beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
   public long queryReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return 0;
     }
-
     AccountCapsule accountCapsule = accountStore.get(address);
     long beginCycle = delegationStore.getBeginCycle(address);
     long endCycle = delegationStore.getEndCycle(address);
@@ -177,6 +220,13 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
+
+    if (beginCycle < endCycle) {
+      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
+        reward += computeSpreadMintReward(cycle, accountCapsule, false);
+      }
+    }
+
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       return reward + accountCapsule.getAllowance();
     }
@@ -204,55 +254,63 @@ public class MortgageService {
           Hex.toHexString(accountCapsule.getAddress().toByteArray()), Hex.toHexString(srAddress),
           userVote, totalVote, totalReward, reward);
     }
-    //with spread mint reward
-    reward += computeSpreadMintReward(cycle, accountCapsule);
     return reward;
   }
 
-  private long computeSpreadMintReward(long cycle, AccountCapsule accountCapsule) {
+  private long computeSpreadMintReward(long cycle, AccountCapsule accountCapsule, boolean isWithdrawReward) {
+    if (!dynamicPropertiesStore.supportSpreadMint()){
+      return 0;
+    }
+
     long totalFreeze = delegationStore.getTotalFreezeBalanceForSpreadMint(cycle);
     if(totalFreeze==0L){
       return 0;
     }
     long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
-    long spreadReward = totalReward * accountFreeze / totalFreeze;
+    long spreadReward = (long)(totalReward * accountFreeze * 1.0 / VS_PRECISION / totalFreeze);
 
-    if (dynamicPropertiesStore.supportSpreadMint()){
-      String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
-
-      String[] levelProps = spreadLevelProp.split(",");
-      int[] props = new int[levelProps.length];
-      int sumProps = 0;
-      for(int i = 0; i < levelProps.length; i++)
-      {
-        props[i] = Integer.parseInt(levelProps[i]);
-        sumProps += props[i];
+    String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
+    String[] levelProps = spreadLevelProp.split(",");
+    int[] props = new int[levelProps.length];
+    int sumProps = 0;
+    for(int i = 0; i < levelProps.length; i++)
+    {
+      props[i] = Integer.parseInt(levelProps[i]);
+      if (props[i] < 0 || props[i] > 100){
+        break;
       }
+      sumProps += props[i];
+    }
 
-      if (sumProps != 100){
-        logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
-        return spreadReward;
-      }
+    if (sumProps != 100){
+      logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
+      return spreadReward;
+    }
 
-      AccountCapsule parentCapsule = accountCapsule;
-      for (int i = 1; i < props.length; i++) {
-        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
-        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-        if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
-          break;
-        }
-        adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze)));
-      }
-
+    if(!isWithdrawReward){
       return (long)(spreadReward * (props[0] / 100.0));
     }
 
-    return spreadReward;
+    AccountCapsule parentCapsule = accountCapsule;
+    for (int i = 1; i < props.length; i++) {
+      SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+      if (spreadRelationShipCapsule == null){
+        break;
+      }
+      parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+      if (spreadRelationShipCapsule.getParent().toString().equals(accountCapsule.getAddress().toString())){ // deal loop parent address
+        break;
+      }
+      long spreadResult = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+      adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadResult);
+    }
+
+    return (long)(spreadReward * (props[0] / 100.0));
   }
 
   public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
-    long parentAccountFreeze = parentCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    long parentAccountFreeze = parentCapsule.getSpreadFrozenBalance();
     double minSpreadMintProp = parentAccountFreeze * 1.0 / accountFreeze;
     return minSpreadMintProp < 1 ? minSpreadMintProp : 1.0;
   }

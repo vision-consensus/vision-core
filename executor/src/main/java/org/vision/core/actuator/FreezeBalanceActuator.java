@@ -110,7 +110,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
 
         MortgageService mortgageService = chainBaseManager.getMortgageService();
-        mortgageService.withdrawReward(ownerAddress);
+        mortgageService.withdrawSpreadMintReward(ownerAddress);
 
         long newFrozenBalanceForSpreadMint =
                 frozenBalance + accountCapsule.getAccountResource()
