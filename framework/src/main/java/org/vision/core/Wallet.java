@@ -1141,6 +1141,9 @@ public class Wallet {
     long totalEntropyWeight =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
+    long totalSRGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+    long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
+
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
 
@@ -1157,6 +1160,8 @@ public class Wallet {
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
         .setTotalEntropyLimit(totalEntropyLimit)
         .setTotalEntropyWeight(totalEntropyWeight)
+        .setTotalSRGuaranteeWeight(totalSRGuaranteeWeight)
+        .setTotalSpreadWeight(totalSpreadWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
