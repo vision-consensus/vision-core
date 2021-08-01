@@ -64,7 +64,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
   }
 
   public void addSpreadMintReward(long cycle, long value) {
-    byte[] key = buildSpreadMintRewordKey(cycle);
+    byte[] key = buildSpreadMintRewardKey(cycle);
     BytesCapsule bytesCapsule = get(key);
     if (bytesCapsule == null) {
       put(key, new BytesCapsule(ByteArray.fromLong(value)));
@@ -75,7 +75,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
   }
 
   public long getSpreadMintReward(long cycle) {
-    BytesCapsule bytesCapsule = get(buildSpreadMintRewordKey(cycle));
+    BytesCapsule bytesCapsule = get(buildSpreadMintRewardKey(cycle));
     if (bytesCapsule == null) {
       return 0L;
     } else {
@@ -185,7 +185,7 @@ public class DelegationStore extends VisionStoreWithRevoking<BytesCapsule> {
     return (cycle + "-" + Hex.toHexString(address) + "-brokerage").getBytes();
   }
 
-  private byte[] buildSpreadMintRewordKey(long cycle) {
+  private byte[] buildSpreadMintRewardKey(long cycle) {
     return (cycle + "-" + Hex.toHexString(ByteArray.fromLong(cycle)) + "-spread-mint-reward").getBytes();
   }
 
