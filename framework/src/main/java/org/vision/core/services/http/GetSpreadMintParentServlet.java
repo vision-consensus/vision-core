@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI.SpreadRelationShipList;
 import org.vision.core.Wallet;
-import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Account;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +49,7 @@ public class GetSpreadMintParentServlet extends RateLimiterServlet {
 
   private void fillResponseList(boolean visible, Account account, int level, HttpServletResponse response)
           throws Exception {
-    SpreadRelationShipList reply = wallet.getSpreadMintParentList(account, level);
+    SpreadRelationShipList reply = wallet.getSpreadMintParentList(account.getAddress().toByteArray(), level);
     if (reply != null) {
       response.getWriter().println(JsonFormat.printToString(reply, visible));
     } else {

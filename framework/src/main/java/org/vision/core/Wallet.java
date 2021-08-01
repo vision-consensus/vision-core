@@ -355,11 +355,11 @@ public class Wallet {
     return spreadRelationShipCapsule.getInstance();
   }
 
-  public SpreadRelationShipList getSpreadMintParentList(Account account, int level) {
+  public SpreadRelationShipList getSpreadMintParentList(byte[] address, int level) {
     SpreadRelationShipList.Builder builder = SpreadRelationShipList.newBuilder();
 
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(address);
     if (spreadRelationShipCapsule == null) {
       return null;
     }
