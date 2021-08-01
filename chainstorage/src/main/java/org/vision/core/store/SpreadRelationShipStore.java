@@ -34,4 +34,8 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
         .collect(Collectors.toList());
   }
 
+  @Override
+  public void delete(byte[] key) {
+    super.delete(key);
+  }
 }
