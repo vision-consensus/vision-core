@@ -25,8 +25,7 @@ import org.vision.core.capsule.WitnessCapsule;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -189,10 +188,10 @@ public class DposService implements ConsensusInterface {
       }catch (Exception e){
         logger.info("no SRGuarantee");
       }
-      json.put("totalEntropyWeight", totalEntropyWeight);
-      json.put("totalPhotonWeight", totalPhotonWeight);
-      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight);
-      json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
+      json.put("totalEntropyWeight", totalEntropyWeight * VS_PRECISION);
+      json.put("totalPhotonWeight", totalPhotonWeight * VS_PRECISION) ;
+      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight * VS_PRECISION);
+      json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight() * VS_PRECISION);
       JSONArray witnesses = new JSONArray();
       consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
               .forEach(address -> witnesses.add(StringUtil.encode58Check(address.toByteArray())));
