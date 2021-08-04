@@ -27,11 +27,15 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
   }
 
   @Deprecated
-  public List<SpreadRelationShipCapsule> getByFrom(byte[] key) {
+  public List<SpreadRelationShipCapsule> getByOwner(byte[] key) {
     return revokingDB.getValuesNext(key, Long.MAX_VALUE).stream()
         .map(SpreadRelationShipCapsule::new)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
+  @Override
+  public void delete(byte[] key) {
+    super.delete(key);
+  }
 }

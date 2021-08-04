@@ -106,7 +106,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_gasPrice() {
         // feeLimit = 100000000vdt = 21000 * 160Gwei
-        return "0x" + Long.toHexString(8);
+        return "0x" + Long.toHexString(8_000_000_000l);
     }
 
     @Override
@@ -209,12 +209,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (1 == accountType || isDeployContract) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
-                long gasPrice = Long.parseLong(
+                long gasPriceTmp = Long.parseLong(
                         toHexString(ethTrx.getGasPrice()), 16
                 );
+                double gasPrice = gasPriceTmp / 1_000_000_000.00;
                 long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
-                logger.info("gasPrice={},gasLimit={}", gasPrice, gasLimit);
-                long feeLimit = gasPrice * gasLimit * 2;
+                logger.info("gasPriceTmp={}, gasPrice={},gasLimit={}", gasPriceTmp, gasPrice, gasLimit);
+                long feeLimit = (long) gasPrice * gasLimit * 2;
                 Message message = null;
                 Protocol.Transaction.Contract.ContractType contractType = null;
                 if (isDeployContract) {
@@ -248,8 +249,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
             transactionCapsule = new TransactionCapsule(trx);
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
-                String errMsg = result.getMessage().toString();
-                return "broadcast trx failed:" + errMsg;
+
+                // String errMsg = result.getMessage().toString();
+                // return "broadcast trx failed:" + errMsg;
+                String errMsg = new String(result.getMessage().toByteArray(), "UTF-8");
+                return toHexString(errMsg.getBytes("UTF-8"));
+
             }
         } catch (Exception e) {
             logger.error("sendRawTransaction error", e);
@@ -297,12 +302,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
                     .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + errString));
         }
         trxExtBuilder.setResult(retBuilder);
-        return ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
+        return "0x" + ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
     }
 
     @Override
     public String eth_estimateGas(CallArguments args) throws Exception {
-        return null;
+        return "0x5208";
     }
 
     @Override

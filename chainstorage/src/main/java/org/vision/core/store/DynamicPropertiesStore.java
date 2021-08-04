@@ -15,10 +15,11 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 
 @Slf4j(topic = "DB")
 @Component
@@ -1073,6 +1074,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
   }
 
+  public long getWitnessPayPerBlockInflation() {
+    long weight = getWitnessPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
   public void saveWitness123PayPerBlock(long pay) {
     logger.debug("WITNESS_100_PAY_PER_BLOCK:" + pay);
     this.put(WITNESS_123_PAY_PER_BLOCK,
@@ -1084,6 +1090,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
         .orElse(1200000L);
+  }
+
+  public long getWitness123PayPerBlockInflation() {
+    return (long) (getWitness123PayPerBlock() * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveWitnessStandbyAllowance(long allowance) {
@@ -1098,6 +1108,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
+  }
+
+  public long getWitnessStandbyAllowanceInflation() {
+    long weight = 0L;
+    try{
+      weight = getWitnessStandbyAllowance();
+    } catch (Exception e){
+      logger.info("no found WITNESS_STANDBY_ALLOWANCE");
+    }
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveOneDayPhotonLimit(long oneDayPhotonLimit) {
@@ -2479,6 +2499,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(256000L);
   }
 
+  public long getSpreadMintPayPerBlockInflation() {
+    long weight = getSpreadMintPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
   public boolean supportSpreadMint() {
     return getAllowSpreadMintLevelProp() == 1L;
   }
@@ -2505,7 +2530,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(ByteArray::toStr)
             .orElseThrow(
                     () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
-//    return "80,10,8,2";
   }
 
   public void saveAllowSpreadMintLevelProp(long value) {

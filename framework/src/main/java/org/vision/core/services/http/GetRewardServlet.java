@@ -1,12 +1,16 @@
 package org.vision.core.services.http;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.core.db.Manager;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Component
@@ -18,12 +22,12 @@ public class GetRewardServlet extends RateLimiterServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
-      long value = 0;
+      Map<String, Long> rewardMap = new HashMap<String, Long>();
       byte[] address = Util.getAddress(request);
       if (address != null) {
-        value = manager.getMortgageService().queryReward(address);
+        rewardMap = manager.getMortgageService().queryAllReward(address);
       }
-      response.getWriter().println("{\"reward\": " + value + "}");
+      response.getWriter().println(JSON.toJSON(rewardMap));
     } catch (Exception e) {
       logger.error("", e);
       try {
