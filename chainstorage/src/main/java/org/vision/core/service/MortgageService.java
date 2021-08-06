@@ -353,8 +353,8 @@ public class MortgageService {
           break;
         }
 
-        addressList.add(spreadRelationShipCapsule.getOwner().toString());
-        if (addressList.contains(spreadRelationShipCapsule.getParent().toString())){ // deal loop parent address
+        addressList.add(Hex.toHexString(spreadRelationShipCapsule.getOwner().toByteArray()));
+        if (addressList.contains(Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray()))){ // deal loop parent address
           break;
         }
 
