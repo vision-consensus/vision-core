@@ -370,6 +370,8 @@ public class Wallet {
 
     SpreadRelationShipCapsule capsule = spreadRelationShipCapsule;
     int i = 1;
+    List<String> addressList = new ArrayList<>();
+    addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
     while (i < level){
       capsule = spreadRelationShipStore.get(capsule.getParent().toByteArray());
       if (capsule == null){
@@ -377,6 +379,11 @@ public class Wallet {
       }
       spreadRelationShipCapsuleList.add(capsule);
       i++;
+
+      addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
+      if (addressList.contains(Hex.toHexString(capsule.getParent().toByteArray()))) { // deal loop parent address
+        break;
+      }
     }
 
     spreadRelationShipCapsuleList

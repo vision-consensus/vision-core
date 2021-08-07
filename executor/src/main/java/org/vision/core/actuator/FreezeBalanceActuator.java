@@ -177,9 +177,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
       SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
       if (spreadRelationShipCapsule != null){
+        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
         long now = dynamicStore.getLatestBlockHeaderTimestamp();
         long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
-        if (frozenSpreadExpiredTime + FROZEN_PERIOD > now){
+        if (frozenSpreadExpiredTime - duration + FROZEN_PERIOD > now){
           throw new ContractValidateException("It's not time to re-freeze.");
         }
       }
