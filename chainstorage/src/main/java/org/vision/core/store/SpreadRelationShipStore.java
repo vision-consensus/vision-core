@@ -51,12 +51,14 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
 
   @Override
   public void delete(byte[] key) {
-    super.delete(key);
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
       SpreadRelationShipCapsule capsule = get(key);
-      JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(capsule.getInstance()));
-      jsonObject.put("type", "unfreeze");
-      Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
+      if(capsule != null){
+        JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(capsule.getInstance()));
+        jsonObject.put("type", "unfreeze");
+        Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
+      }
     }
+    super.delete(key);
   }
 }
