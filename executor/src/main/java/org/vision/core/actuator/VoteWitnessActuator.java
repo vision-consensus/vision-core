@@ -210,7 +210,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 
         String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
         logger.info("send votewitness to kafka accountId={}", address);
-        itemJsonObject.put("accountId", address);
+        itemJsonObject.put("address", address);
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
         String jsonStr = itemJsonObject.toJSONString();

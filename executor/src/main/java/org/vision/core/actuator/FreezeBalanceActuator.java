@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
@@ -18,6 +19,7 @@ import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
 import org.vision.protos.contract.Common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -173,6 +175,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
+      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+      if (spreadRelationShipCapsule != null){
+        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
+        long now = dynamicStore.getLatestBlockHeaderTimestamp();
+        long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
+        if (frozenSpreadExpiredTime - duration + FROZEN_PERIOD > now){
+          throw new ContractValidateException("It's not time to re-freeze.");
+        }
+      }
+
       if (frozenBalance < 0) {
         throw new ContractValidateException("frozenBalance must be positive");
       }
@@ -180,7 +192,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
         throw new ContractValidateException("frozenBalance must be more than 1VS");
       }
       if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
-        SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
         if (spreadRelationShipCapsule == null){
           throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
         }
@@ -243,6 +254,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException(
                     ActuatorConstant.ACCOUNT_EXCEPTION_STR
                             + readableParentAddress + NOT_EXIST_STR);
+          }
+
+          boolean isCycle = checkSpreadMintCycle(ownerAddress, parentAddress);
+          if (isCycle){
+            throw new ContractValidateException("Illegal parentAddress, the parentAddress will generate a cycle");
           }
         }
         break;
@@ -391,4 +407,43 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
     spreadRelationShipStore.put(key, spreadRelationShipCapsule);
   }
+
+  /**
+   * check if the spreadRelationship is a cycle
+   * @param ownerAddress
+   * @param parentAddress
+   * @return
+   */
+  private boolean checkSpreadMintCycle(byte[] ownerAddress, byte[] parentAddress){
+    boolean isCycle = false;
+    try {
+      SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+      AccountStore accountStore = chainBaseManager.getAccountStore();
+      String spreadLevelProp = chainBaseManager.getDynamicPropertiesStore().getSpreadMintLevelProp();
+      int level = spreadLevelProp.split(",").length;
+
+      ArrayList<String> addressList = new ArrayList<>();
+      addressList.add(Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()));
+
+      AccountCapsule parentCapsule = accountStore.get(parentAddress);
+      for (int i = 1; i < level; i++) {
+        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
+        if (spreadRelationShipCapsule == null){
+          break;
+        }
+
+        addressList.add(Hex.toHexString(spreadRelationShipCapsule.getOwner().toByteArray()));
+        if (addressList.contains(Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray()))) { // deal loop parent address
+          isCycle = true;
+          break;
+        }
+        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
+      }
+    }catch (Exception e){
+      logger.error("checkSpreadMintCycle error: {},{}", Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()), e);
+    }
+
+    return isCycle;
+  }
+
 }
