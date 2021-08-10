@@ -183,11 +183,11 @@ public class StakeProcessor {
     long visionPower = accountCapsule.getVisionPower();
     long voteCount = vote.getVoteCount();
     if (visionPower >= interval3) {
-      voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel3() * 1.0 / Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel3() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
     } else if (visionPower >= interval2) {
-      voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel2() * 1.0 /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel2() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
     } else if (visionPower >= interval1) {
-      voteCount = (long) (voteCount * (dynamicStore.getVoteFreezePercentLevel1() * 1.0 /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
     }
     votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
     accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);

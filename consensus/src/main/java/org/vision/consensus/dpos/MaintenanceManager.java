@@ -129,7 +129,7 @@ public class MaintenanceManager {
         long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
         if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
             maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /(dynamicPropertiesStore.getSrFreezeLowestPercent() * 1.0 / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
           maxVoteCounts /= VS_PRECISION;
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
