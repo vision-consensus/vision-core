@@ -43,7 +43,7 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
     super.put(key, item);
 
     if(CommonParameter.PARAMETER.isKafkaEnable()) {
-      JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+      JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(item.getInstance(), true));
       jsonObject.put("type", "freeze");
       Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
     }
@@ -54,7 +54,7 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
       SpreadRelationShipCapsule capsule = get(key);
       if(capsule != null){
-        JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(capsule.getInstance()));
+        JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(capsule.getInstance(), true));
         jsonObject.put("type", "unfreeze");
         Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
       }

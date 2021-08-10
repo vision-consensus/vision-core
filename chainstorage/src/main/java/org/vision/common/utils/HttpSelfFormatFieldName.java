@@ -160,6 +160,9 @@ public class HttpSelfFormatFieldName {
     //DelegatedResource
     AddressFieldNameMap.put("protocol.DelegatedResource.from", 1);
     AddressFieldNameMap.put("protocol.DelegatedResource.to", 1);
+    //SpreadRelationShip
+    AddressFieldNameMap.put("protocol.SpreadRelationShip.owner", 1);
+    AddressFieldNameMap.put("protocol.SpreadRelationShip.parent", 1);
     //Witness
     AddressFieldNameMap.put("protocol.Witness.address", 1);
     //Votes
