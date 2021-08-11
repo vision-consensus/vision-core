@@ -129,7 +129,7 @@ public class MaintenanceManager {
         long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
         if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
             maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /(dynamicPropertiesStore.getSrFreezeLowestPercent() * 1.0 / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
           maxVoteCounts /= VS_PRECISION;
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
@@ -317,9 +317,15 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
+
+    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+    dposService.getGenesisBlock().getWitnesses().forEach(witness -> {
+      bigGenesisVoteSum.add(new BigDecimal(witness.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    });
     //BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
-    BigDecimal assets= bigTotalAssets.add(bigVoteSum)
+    BigDecimal assets= bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
