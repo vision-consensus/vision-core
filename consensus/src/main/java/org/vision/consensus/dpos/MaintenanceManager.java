@@ -317,9 +317,15 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
+
+    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+    dposService.getGenesisBlock().getWitnesses().forEach(witness -> {
+      bigGenesisVoteSum.add(new BigDecimal(witness.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    });
     //BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
-    BigDecimal assets= bigTotalAssets.add(bigVoteSum)
+    BigDecimal assets= bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
