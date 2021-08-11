@@ -129,7 +129,7 @@ public class MaintenanceManager {
         long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
         if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
             maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /(dynamicPropertiesStore.getSrFreezeLowestPercent() * 1.0 / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
           maxVoteCounts /= VS_PRECISION;
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
@@ -296,28 +296,19 @@ public class MaintenanceManager {
     BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight).multiply(new BigDecimal(VS_PRECISION));
     long totalSRGuaranteeWeight = dynamicPropertiesStore.getTotalSRGuaranteeWeight();
     BigDecimal bigTotalSRGuaranteeWeight = new BigDecimal(totalSRGuaranteeWeight).multiply(new BigDecimal(VS_PRECISION));
-    logger.info("PledgeRate cycle:{} ", cycle);
-    logger.info("PledgeRate totalPhotonWeight:{} bigTotalPhotonWeight:{}", totalPhotonWeight, bigTotalPhotonWeight);
-    logger.info("PledgeRate totalEntropyWeight:{} bigTotalEntropyWeight:{}", totalEntropyWeight, bigTotalEntropyWeight);
-    logger.info("PledgeRate totalSRGuaranteeWeight:{} bigTotalSRGuaranteeWeight:{}", totalSRGuaranteeWeight, bigTotalSRGuaranteeWeight);
     long voteSum = mortgageService.getVoteSum();
     BigDecimal bigVoteSum = new BigDecimal(voteSum).multiply(new BigDecimal(VS_PRECISION));
-    logger.info("PledgeRate voteSum:{} bigVoteSum:{}", voteSum, bigVoteSum);
     long totalAssets = dynamicPropertiesStore.getTotalAssets();
     BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
-    logger.info("PledgeRate totalAssets:{} bigTotalAssets:{}", totalAssets, bigTotalAssets);
     BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
-    logger.info("PledgeRate pledgeAmount:{} ", pledgeAmount);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
-    logger.info("PledgeRate galaxyBalance:{} bigGalaxyBalance:{}", galaxyBalance, bigGalaxyBalance);
     long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
     if (0 == galaxyInitialAmount) {
       dynamicPropertiesStore.saveGalaxyInitialAmount(galaxyBalance);
       galaxyInitialAmount = galaxyBalance;
     }
     BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
-    logger.info("PledgeRate galaxyInitialAmount:{} bigGalaxyInitialAmount:{}", galaxyInitialAmount, bigGalaxyInitialAmount);
     long avalonBalance = accountStore.getAvalon().getBalance();
     BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
     long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
@@ -326,14 +317,16 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-    logger.info("PledgeRate avalonInitialAmount:{} bigAvalonInitialAmount:{}", avalonInitialAmount, bigAvalonInitialAmount);
+
+    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+    dposService.getGenesisBlock().getWitnesses().forEach(witness -> {
+      bigGenesisVoteSum.add(new BigDecimal(witness.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    });
     //BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
-    BigDecimal assets= bigTotalAssets.add(bigVoteSum)
+    BigDecimal assets= bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+
     long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
-    logger.info("PledgeRate bigTotalAssets: {} bigVoteSum:{} bigGalaxyInitialAmount:{} bigAvalonInitialAmount:{} bigGalaxyBalance:{} bigAvalonBalance:{}",
-            bigTotalAssets, bigVoteSum, bigGalaxyInitialAmount, bigAvalonInitialAmount, bigGalaxyBalance,bigAvalonBalance);
-    logger.info("PledgeRate pledgeAmount:{} assets:{} cyclePledgeRate:{}", pledgeAmount, assets, cyclePledgeRate);
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
     } else if (100 < cyclePledgeRate) {
@@ -344,7 +337,6 @@ public class MaintenanceManager {
 
   private void saveInflationRate(long pledgeRate) {
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-    logger.info("PledgeRate PledgeRateThreshold:{} pledgeRate:{}", dynamicPropertiesStore.getPledgeRateThreshold(), pledgeRate);
     if (dynamicPropertiesStore.getPledgeRateThreshold() <= pledgeRate) {
       consensusDelegate.getDynamicPropertiesStore().saveInflationRate(dynamicPropertiesStore.getLowInflationRate());
     } else {
@@ -361,7 +353,6 @@ public class MaintenanceManager {
     BigDecimal bigTotalPledgeRate = new BigDecimal(totalPledgeRate);
     BigDecimal bigEconomicCycle = new BigDecimal(economicCycle);
     long pledgeRate = bigTotalPledgeRate.divide(bigEconomicCycle,0,BigDecimal.ROUND_HALF_UP).longValue();
-    logger.info("Pledge Rate totalPledgeRate:{} economicCycle:{} pledgeRate:{}", totalPledgeRate, economicCycle, pledgeRate);
     consensusDelegate.getDynamicPropertiesStore().savePledgeRate(pledgeRate);
     return pledgeRate;
   }
