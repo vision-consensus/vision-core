@@ -333,6 +333,18 @@ public class MaintenanceManager {
       cyclePledgeRate = 100;
     }
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
+    logger.info("PledgeRate cycle:{} ", cycle);
+    logger.info("PledgeRate totalPhotonWeight:{} bigTotalPhotonWeight:{}", totalPhotonWeight, bigTotalPhotonWeight);
+    logger.info("PledgeRate totalEntropyWeight:{} bigTotalEntropyWeight:{}", totalEntropyWeight, bigTotalEntropyWeight);
+    logger.info("PledgeRate totalSRGuaranteeWeight:{} bigTotalSRGuaranteeWeight:{}", totalSRGuaranteeWeight, bigTotalSRGuaranteeWeight);
+    logger.info("PledgeRate voteSum:{} bigVoteSum:{}", voteSum, bigVoteSum);
+    logger.info("PledgeRate totalAssets:{} bigTotalAssets:{}", totalAssets, bigTotalAssets);
+    logger.info("PledgeRate pledgeAmount:{} ", pledgeAmount);
+    logger.info("PledgeRate galaxyBalance:{} bigGalaxyBalance:{}", galaxyBalance, bigGalaxyBalance);
+    logger.info("PledgeRate galaxyInitialAmount:{} bigGalaxyInitialAmount:{}", galaxyInitialAmount, bigGalaxyInitialAmount);
+    logger.info("PledgeRate avalonInitialAmount:{} bigAvalonInitialAmount:{}", avalonInitialAmount, bigAvalonInitialAmount);
+    logger.info("PledgeRate pledgeAmount:{} assets:{} cyclePledgeRate:{}", pledgeAmount, assets, cyclePledgeRate);
+
   }
 
   private void saveInflationRate(long pledgeRate) {
