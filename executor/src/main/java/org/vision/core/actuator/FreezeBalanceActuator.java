@@ -389,21 +389,23 @@ public class FreezeBalanceActuator extends AbstractActuator {
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(key);
 
+    long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
+
     if (spreadRelationShipCapsule != null) {
       if (ByteString.copyFrom(parentAddress).toString().equals(spreadRelationShipCapsule.getParent().toString())){
-        spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime);
+        spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime, cycle);
       }else{ // cover spreadRelationShip parentAddress
         long frozenBalanceForSpread = spreadRelationShipCapsule.getFrozenBalanceForSpread();
         spreadRelationShipCapsule = new SpreadRelationShipCapsule(
                 ByteString.copyFrom(ownerAddress),
                 ByteString.copyFrom(parentAddress));
-        spreadRelationShipCapsule.setFrozenBalanceForSpread(frozenBalanceForSpread + balance, expireTime);
+        spreadRelationShipCapsule.setFrozenBalanceForSpread(frozenBalanceForSpread + balance, expireTime, cycle);
       }
     } else {
       spreadRelationShipCapsule = new SpreadRelationShipCapsule(
               ByteString.copyFrom(ownerAddress),
               ByteString.copyFrom(parentAddress));
-      spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime);
+      spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime, cycle);
     }
     spreadRelationShipStore.put(key, spreadRelationShipCapsule);
   }
