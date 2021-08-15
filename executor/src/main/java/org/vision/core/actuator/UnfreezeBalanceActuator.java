@@ -455,10 +455,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
   private void deleteSpreadRelationShip(byte[] ownerAddress){
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
-            .get(ownerAddress);
-
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
     if (spreadRelationShipCapsule != null) {
+      long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
+      spreadRelationShipCapsule.setFrozenCycle(cycle);
       spreadRelationShipStore.delete(ownerAddress);
     }
   }

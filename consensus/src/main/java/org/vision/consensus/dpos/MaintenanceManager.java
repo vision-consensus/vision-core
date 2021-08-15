@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.vision.common.args.Witness;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.pbft.PbftManager;
 import org.vision.core.capsule.AccountCapsule;
@@ -314,9 +315,10 @@ public class MaintenanceManager {
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
 
     BigDecimal bigGenesisVoteSum = new BigDecimal(0);
-    dposService.getGenesisBlock().getWitnesses().forEach(witness -> {
-      bigGenesisVoteSum.add(new BigDecimal(witness.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
-    });
+    for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
+      bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    }
 
     BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
