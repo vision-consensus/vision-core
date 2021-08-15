@@ -240,6 +240,7 @@ message SpreadRelationShip {
   bytes parent = 2;
   int64 frozen_balance_for_spread = 3;
   int64 expire_time_for_spread = 4;
+  int64 frozen_cycle = 5;
 }
 
 message authority {
