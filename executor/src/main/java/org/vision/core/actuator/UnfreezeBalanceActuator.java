@@ -1,11 +1,15 @@
 package org.vision.core.actuator;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.JsonFormat;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
@@ -461,6 +465,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
       long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
+
+      if (CommonParameter.PARAMETER.isKafkaEnable()) {
+        JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(spreadRelationShipCapsule.getInstance(), true));
+        jsonObject.put("type", "unfreeze");
+        Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
+      }
     }
   }
 }
