@@ -194,16 +194,14 @@ public class DposService implements ConsensusInterface {
       json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight * VS_PRECISION);
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight() * VS_PRECISION);
       JSONArray witnesses = new JSONArray();
-//      consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
-//              .forEach(address -> witnesses.add(StringUtil.encode58Check(address.toByteArray())));
       consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
         .forEach(address -> {
           AccountCapsule account = consensusDelegate.getAccount(address.toByteArray());
           WitnessCapsule witness = consensusDelegate.getWitness(address.toByteArray());
           JSONObject tmp = new JSONObject();
           tmp.put("address", StringUtil.encode58Check(address.toByteArray()));
-          tmp.put("name", account.getAccountName().toStringUtf8());
-          tmp.put("url", witness.getUrl());
+          tmp.put("name", account!=null?account.getAccountName().toStringUtf8():"");
+          tmp.put("url", witness!=null?witness.getUrl():"");
           witnesses.add(tmp);
         });
       json.put("confirm_witnesses", witnesses);
