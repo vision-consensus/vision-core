@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPObject;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.JsonFormat;
-import org.vision.common.utils.Producer;
-import org.vision.common.utils.Sha256Hash;
-import org.vision.common.utils.Util;
+import org.vision.common.utils.*;
+import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.TransactionRetCapsule;
+import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.exception.BadItemException;
 import org.vision.protos.Protocol;
 
@@ -46,7 +46,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
     super(dbName);
   }
 
-  public void sendBlockMsg(final BlockCapsule capsule, long reward){
+  public void sendBlockMsg(final BlockCapsule capsule, long reward, AccountCapsule account, WitnessCapsule witness){
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
@@ -76,6 +76,13 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("entropyUsageTotal", entropyUsageTotal);
       obj.put("photonUsage", photonUsage);
       obj.put("reward", reward);
+      JSONArray witnesses = new JSONArray();
+      JSONObject tmp = new JSONObject();
+      tmp.put("address", StringUtil.encode58Check(capsule.getWitnessAddress().toByteArray()));
+      tmp.put("name", account!=null?account.getAccountName().toStringUtf8():"");
+      tmp.put("url", witness!=null?witness.getUrl():"");
+      witnesses.add(tmp);
+      obj.put("confirm_witnesses", witnesses);
       Producer.getInstance().send("BLOCK", obj.toJSONString());
     }
   }
