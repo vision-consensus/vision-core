@@ -1066,6 +1066,10 @@ public class Wallet {
             .setKey("getHighInflationRate")
             .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getFreezePeriodLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getFreezePeriodLimit())
+            .build());
 
     return builder.build();
   }
