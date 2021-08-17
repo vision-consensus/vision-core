@@ -260,6 +260,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().savePledgeRateThreshold(entry.getValue());
           break;
         }
+        case FREEZE_PERIOD_LIMIT: {
+          manager.getDynamicPropertiesStore().saveFreezePeriodLimit(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
