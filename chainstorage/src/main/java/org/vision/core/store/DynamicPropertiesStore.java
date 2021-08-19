@@ -406,6 +406,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
+      this.getFreePhotonLimit();
+    } catch (IllegalArgumentException e) {
+      this.saveFreezePeriodLimit(1L);
+    }
+
+    try {
       this.getGalaxyInitialAmount();
     } catch (IllegalArgumentException e) {
       this.saveGalaxyInitialAmount(0L);
@@ -1270,6 +1276,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(60L);
+  }
+
+  public void saveFreezePeriodLimit(long freezePeriodLimit) {
+    this.put(DynamicResourceProperties.FREEZE_PERIOD_LIMIT,
+            new BytesCapsule(ByteArray.fromLong(freezePeriodLimit)));
+  }
+
+  public long getFreezePeriodLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_PERIOD_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
   }
 
   public void saveLowInflationRate(long lowInflationRate) {
@@ -2688,6 +2706,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
+    private static final byte[] FREEZE_PERIOD_LIMIT = "FREEZE_PERIOD_LIMIT".getBytes();
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
     private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
