@@ -457,9 +457,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
     if (spreadRelationShipCapsule != null) {
-      long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
-      spreadRelationShipCapsule.setFrozenCycle(cycle);
-      spreadRelationShipStore.delete(ownerAddress);
+      DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+      long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+      long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+      spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
     }
   }
 }
