@@ -1068,7 +1068,7 @@ public class Wallet {
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getFreezePeriodLimit")
-            .setValue(dbManager.getDynamicPropertiesStore().getFreezePeriodLimit())
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
 
     return builder.build();

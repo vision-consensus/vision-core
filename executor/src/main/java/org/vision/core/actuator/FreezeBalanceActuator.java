@@ -173,16 +173,23 @@ public class FreezeBalanceActuator extends AbstractActuator {
           ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
+    long frozenDuration = freezeBalanceContract.getFrozenDuration();
+    long minFrozenTime = dynamicStore.getMinFrozenTime();
+    long maxFrozenTime = dynamicStore.getMaxFrozenTime();
+
+    boolean needCheckFrozeTime = CommonParameter.getInstance()
+            .getCheckFrozenTime() == 1;//for test
+    if (needCheckFrozeTime && !(frozenDuration >= minFrozenTime
+            && frozenDuration <= maxFrozenTime)) {
+      throw new ContractValidateException(
+              "frozenDuration must be less than " + maxFrozenTime + " days "
+                      + "and more than " + minFrozenTime + " days");
+    }
+
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
-      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
-      if (spreadRelationShipCapsule != null){
-        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
-        long now = dynamicStore.getLatestBlockHeaderTimestamp();
-        long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
-        if (frozenSpreadExpiredTime - duration + dynamicStore.getFreezePeriodLimit() * FROZEN_PERIOD > now){
-          throw new ContractValidateException("It's not time to re-freeze.");
-        }
+      if (!dynamicStore.supportSpreadMint()){
+        throw new ContractValidateException("It's not support spread type of frozen.");
       }
 
       if (frozenBalance < 0) {
@@ -190,6 +197,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
       if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
         throw new ContractValidateException("frozenBalance must be more than 1VS");
+      }
+
+      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+      if (spreadRelationShipCapsule != null){
+        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
+        long now = dynamicStore.getLatestBlockHeaderTimestamp();
+        long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
+        if (frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD > now){
+          throw new ContractValidateException("It's not time to re-freeze.");
+        }
       }
       if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
         if (spreadRelationShipCapsule == null){
@@ -218,19 +235,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
 //    if (accountCapsule.getFrozenCount() >= maxFrozenNumber) {
 //      throw new ContractValidateException("max frozen number is: " + maxFrozenNumber);
 //    }
-
-    long frozenDuration = freezeBalanceContract.getFrozenDuration();
-    long minFrozenTime = dynamicStore.getMinFrozenTime();
-    long maxFrozenTime = dynamicStore.getMaxFrozenTime();
-
-    boolean needCheckFrozeTime = CommonParameter.getInstance()
-        .getCheckFrozenTime() == 1;//for test
-    if (needCheckFrozeTime && !(frozenDuration >= minFrozenTime
-        && frozenDuration <= maxFrozenTime)) {
-      throw new ContractValidateException(
-          "frozenDuration must be less than " + maxFrozenTime + " days "
-              + "and more than " + minFrozenTime + " days");
-    }
 
     switch (freezeBalanceContract.getResource()) {
       case PHOTON:
