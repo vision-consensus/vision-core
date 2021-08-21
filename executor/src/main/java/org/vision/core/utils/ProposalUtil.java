@@ -461,10 +461,10 @@ public class ProposalUtil {
         }
         break;
       }
-      case FREEZE_PERIOD_LIMIT: {
+      case SPREAD_FREEZE_PERIOD_LIMIT: {
         if (value < 0 || value > 30L) {
           throw new ContractValidateException(
-                  "Bad FREEZE_PERIOD_LIMIT parameter value, valid range is [0,30L]");
+                  "Bad SPREAD_FREEZE_PERIOD_LIMIT parameter value, valid range is [0,30L]");
         }
         break;
       }
@@ -583,7 +583,7 @@ public class ProposalUtil {
     SPREAD_MINT_LEVEL_PROP(53),// "80,10,8,2"
     INFLATION_RATE(54),//"689,2322"
     PLEDGE_RATE_THRESHOLD(55),// [0, 100L]
-    FREEZE_PERIOD_LIMIT(56);// [0, 100L]
+    SPREAD_FREEZE_PERIOD_LIMIT(56);// [0, 100L]
 
     private long code;
 
