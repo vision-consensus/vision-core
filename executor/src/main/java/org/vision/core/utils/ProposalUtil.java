@@ -462,9 +462,9 @@ public class ProposalUtil {
         break;
       }
       case SPREAD_FREEZE_PERIOD_LIMIT: {
-        if (value < 0 || value > 30L) {
+        if (value < 1 || value > 30L) {
           throw new ContractValidateException(
-                  "Bad SPREAD_FREEZE_PERIOD_LIMIT parameter value, valid range is [0,30L]");
+                  "Bad SPREAD_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,30L]");
         }
         break;
       }
