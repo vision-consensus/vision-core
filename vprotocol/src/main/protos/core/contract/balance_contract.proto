@@ -33,7 +33,7 @@ message TransferContract {
   bytes owner_address = 1;
   bytes to_address = 2;
   int64 amount = 3;
-  int64 type = 4;  //if type=eth validate eth sign else validate tron sign  0 or null -> vision, 1 -> eth
+  int64 type = 4;  //if type=eth validate eth sign else validate  sign  0 or null -> vision, 1 -> eth
   bytes rlp_data = 5; // eth's RLP rawData
 }
 message TransactionBalanceTrace {

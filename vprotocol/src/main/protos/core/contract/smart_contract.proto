@@ -61,7 +61,7 @@ message CreateSmartContract {
   SmartContract new_contract = 2;
   int64 call_token_value = 3;
   int64 token_id = 4;
-  int64 type = 5; //if type=eth validate eth sign else validate tron sign  0 or null -> vision, 1 -> eth
+  int64 type = 5; //if type=eth validate eth sign else validate  sign  0 or null -> vision, 1 -> eth
   bytes rlp_data = 6; // eth's RLP rawData
 }
 
@@ -72,7 +72,7 @@ message TriggerSmartContract {
   bytes data = 4;
   int64 call_token_value = 5;
   int64 token_id = 6;
-  int64 type = 7; //if type=eth validate eth sign else validate tron sign  0 or null -> vision, 1 -> eth
+  int64 type = 7; //if type=eth validate eth sign else validate  sign  0 or null -> vision, 1 -> eth
   bytes rlp_data = 8; // eth's RLP rawData
 }
 
