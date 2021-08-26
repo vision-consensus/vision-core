@@ -454,6 +454,20 @@ public class ProposalUtil {
         }
         break;
       }
+      case PLEDGE_RATE_THRESHOLD: {
+        if (value < 0 || value > 100L) {
+          throw new ContractValidateException(
+                  "Bad PLEDGE_RATE_THRESHOLD parameter value, valid range is [0,100L]");
+        }
+        break;
+      }
+      case SPREAD_FREEZE_PERIOD_LIMIT: {
+        if (value < 1 || value > 30L) {
+          throw new ContractValidateException(
+                  "Bad SPREAD_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,30L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -467,17 +481,46 @@ public class ProposalUtil {
     switch (proposalType) {
       case SPREAD_MINT_LEVEL_PROP: {
         String[] levelProps = value.split(",");
+        if (levelProps.length != 4 ) {
+          throw new ContractValidateException(
+                  "Bad SPREAD_MINT_LEVEL_PROP parameter value, allowed like [80,10,8,2]");
+        }
         int[] props = new int[levelProps.length];
         int sumProps = 0;
         for(int i = 0; i < levelProps.length; i++)
         {
           props[i] = Integer.parseInt(levelProps[i]);
+          if (props[i] < 0 || props[i] > 100){
+            break;
+          }
           sumProps += props[i];
         }
 
         if (sumProps != 100){
           throw new ContractValidateException(
-                  "This value[SPREAD_MINT_LEVEL_PROP] is only allowed to be 1 or 0");
+                  "Bad SPREAD_MINT_LEVEL_PROP parameter value, allowed like [80,10,8,2]");
+        }
+        break;
+      }
+      case INFLATION_RATE: {
+        String[] inflationRates = value.split(",");
+        if (inflationRates.length != 2) {
+          throw new ContractValidateException(
+                  "Bad INFLATION_RATE parameter value, only allowed two positive integers like [value1,value2]");
+        }
+        int[] rates = new int[inflationRates.length];
+        for(int i = 0; i < inflationRates.length; i++)
+        {
+          rates[i] = Integer.parseInt(inflationRates[i]);
+          if (rates[i] < 0){
+            throw new ContractValidateException(
+                    "Bad INFLATION_RATE parameter value, only allowed positive integer");
+          }
+        }
+        if (rates[0] > rates[1]) {
+          throw new ContractValidateException(
+                  "Bad INFLATION_RATE parameter value, only allowed two positive integers " +
+                          "like [value1,value2] and value1 < value2");
         }
         break;
       }
@@ -537,7 +580,10 @@ public class ProposalUtil {
     SPREAD_MINT_PAY_PER_BLOCK(50),// [0,100_000_000]
     ECONOMY_CYCLE(51), // [1,500]
     ALLOW_SPREAD_MINT_LEVEL_PROP(52),// 0,1
-    SPREAD_MINT_LEVEL_PROP(53);// "80,10,8,2"
+    SPREAD_MINT_LEVEL_PROP(53),// "80,10,8,2"
+    INFLATION_RATE(54),//"689,2322"
+    PLEDGE_RATE_THRESHOLD(55),// [0, 100L]
+    SPREAD_FREEZE_PERIOD_LIMIT(56);// [0, 100L]
 
     private long code;
 

@@ -48,17 +48,19 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
     return this.spreadRelationShip.getFrozenBalanceForSpread();
   }
 
-  public void setFrozenBalanceForSpread(long spread, long expireTime) {
+  public void setFrozenBalanceForSpread(long spread, long expireTime, long cycle) {
     this.spreadRelationShip = this.spreadRelationShip.toBuilder()
         .setFrozenBalanceForSpread(spread)
         .setExpireTimeForSpread(expireTime)
+        .setFrozenCycle(cycle)
         .build();
   }
 
-  public void addFrozenBalanceForSpread(long spread, long expireTime) {
+  public void addFrozenBalanceForSpread(long spread, long expireTime, long cycle) {
     this.spreadRelationShip = this.spreadRelationShip.toBuilder()
         .setFrozenBalanceForSpread(this.spreadRelationShip.getFrozenBalanceForSpread() + spread)
         .setExpireTimeForSpread(expireTime)
+        .setFrozenCycle(cycle)
         .build();
   }
 
@@ -87,4 +89,17 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
     return this.spreadRelationShip;
   }
 
+  public long getFrozenCycle(){
+    SpreadRelationShip spreadRelationShip = getInstance();
+    if (spreadRelationShip == null){
+      return 0;
+    }
+    return spreadRelationShip.getFrozenCycle();
+  }
+
+  public void setFrozenCycle(long cycle){
+    this.spreadRelationShip = this.spreadRelationShip.toBuilder()
+            .setFrozenCycle(cycle)
+            .build();
+  }
 }

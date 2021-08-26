@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.vision.common.args.Witness;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.pbft.PbftManager;
 import org.vision.core.capsule.AccountCapsule;
@@ -129,7 +130,7 @@ public class MaintenanceManager {
         long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
         if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
             maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /(dynamicPropertiesStore.getSrFreezeLowestPercent() * 1.0 / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
+                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
           maxVoteCounts /= VS_PRECISION;
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
@@ -290,17 +291,12 @@ public class MaintenanceManager {
   private void calculationCyclePledgeRate() {
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long totalPhotonWeight = dynamicPropertiesStore.getTotalPhotonWeight();
-    BigDecimal bigTotalPhotonWeight = new BigDecimal(totalPhotonWeight).multiply(new BigDecimal(VS_PRECISION));
-    long totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
-    BigDecimal bigTotalEntropyWeight = new BigDecimal(totalEntropyWeight).multiply(new BigDecimal(VS_PRECISION));
-    long totalSRGuaranteeWeight = dynamicPropertiesStore.getTotalSRGuaranteeWeight();
-    BigDecimal bigTotalSRGuaranteeWeight = new BigDecimal(totalSRGuaranteeWeight).multiply(new BigDecimal(VS_PRECISION));
-    long voteSum = mortgageService.getVoteSum();
-    BigDecimal bigVoteSum = new BigDecimal(voteSum).multiply(new BigDecimal(VS_PRECISION));
-    long totalAssets = dynamicPropertiesStore.getTotalAssets();
-    BigDecimal bigTotalAssets = new BigDecimal(totalAssets);
-    BigDecimal pledgeAmount= bigTotalPhotonWeight.add(bigTotalEntropyWeight).add(bigTotalSRGuaranteeWeight);
+    BigDecimal bigTotalPhoton = new BigDecimal(dynamicPropertiesStore.getTotalPhotonWeight()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigTotalEntropy = new BigDecimal(dynamicPropertiesStore.getTotalEntropyWeight()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigTotalSRGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalSRGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
+    BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalSRGuarantee);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
     long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
@@ -317,10 +313,16 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-    //BigDecimal assets= bigTotalAssets.subtract(bigTotalPhotonWeight).subtract(bigTotalEntropyWeight).add(bigVoteSum)
-    BigDecimal assets= bigTotalAssets.add(bigVoteSum)
+
+    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+    for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
+      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
+      bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    }
+
+    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
-    long cyclePledgeRate = pledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
+    long cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
     } else if (100 < cyclePledgeRate) {

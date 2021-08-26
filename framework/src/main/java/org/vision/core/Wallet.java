@@ -355,11 +355,11 @@ public class Wallet {
     return spreadRelationShipCapsule.getInstance();
   }
 
-  public SpreadRelationShipList getSpreadMintParentList(Account account, int level) {
+  public SpreadRelationShipList getSpreadMintParentList(byte[] address, int level) {
     SpreadRelationShipList.Builder builder = SpreadRelationShipList.newBuilder();
 
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(address);
     if (spreadRelationShipCapsule == null) {
       return null;
     }
@@ -370,6 +370,8 @@ public class Wallet {
 
     SpreadRelationShipCapsule capsule = spreadRelationShipCapsule;
     int i = 1;
+    List<String> addressList = new ArrayList<>();
+    addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
     while (i < level){
       capsule = spreadRelationShipStore.get(capsule.getParent().toByteArray());
       if (capsule == null){
@@ -377,6 +379,11 @@ public class Wallet {
       }
       spreadRelationShipCapsuleList.add(capsule);
       i++;
+
+      addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
+      if (addressList.contains(Hex.toHexString(capsule.getParent().toByteArray()))) { // deal loop parent address
+        break;
+      }
     }
 
     spreadRelationShipCapsuleList
@@ -1046,6 +1053,22 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRateThreshold")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRateThreshold())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getLowInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getLowInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getHighInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getFreezePeriodLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
 
     return builder.build();

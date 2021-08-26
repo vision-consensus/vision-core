@@ -108,30 +108,32 @@ public class MortgageService {
       return;
     }
     AccountCapsule accountCapsule = accountStore.get(address);
-    long beginCycle = delegationStore.getBeginCycle(address);
-    long endCycle = delegationStore.getEndCycle(address);
+    long beginCycle = delegationStore.getSpreadMintBeginCycle(address);
+    long endCycle = delegationStore.getSpreadMintEndCycle(address);
     long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long reward = 0;
     if (beginCycle > currentCycle || accountCapsule == null) {
       return;
     }
 
     //withdraw the latest cycle reward
     if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
+
       beginCycle += 1;
     }
     endCycle = currentCycle;
 
+    long spreadReward =0;
     if (beginCycle < endCycle) {
-      long spreadReward =0;
       for (long cycle = beginCycle; cycle < endCycle; cycle++) {
         spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
       }
       adjustAllowance(address, spreadReward);
     }
 
+    delegationStore.setSpreadMintBeginCycle(address, endCycle);
+    delegationStore.setSpreadMintEndCycle(address, endCycle + 1);
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account vote {},", Hex.toHexString(address), reward, currentCycle,
+            + "account vote {},", Hex.toHexString(address), spreadReward, currentCycle,
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
@@ -139,6 +141,11 @@ public class MortgageService {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
+
+    if(dynamicPropertiesStore.supportSpreadMint()){
+      withdrawSpreadMintReward(address);
+    }
+
     AccountCapsule accountCapsule = accountStore.get(address);
     long beginCycle = delegationStore.getBeginCycle(address);
     long endCycle = delegationStore.getEndCycle(address);
@@ -166,14 +173,6 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
-
-    if (beginCycle < endCycle) {
-      long spreadReward =0;
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
-      }
-      adjustAllowance(address, spreadReward);
-    }
 
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       delegationStore.setBeginCycle(address, endCycle + 1);
@@ -224,7 +223,7 @@ public class MortgageService {
     endCycle = currentCycle;
 
     if (beginCycle < endCycle) {
-      Long spreadReward = 0L;
+      long spreadReward = 0L;
       for (long cycle = beginCycle; cycle < endCycle; cycle++) {
         spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
       }
@@ -315,9 +314,20 @@ public class MortgageService {
     if(totalFreeze==0L){
       return 0;
     }
+
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(accountCapsule.getAddress().toByteArray());
+    if (spreadRelationShipCapsule != null){
+      if (cycle < spreadRelationShipCapsule.getFrozenCycle()){ // filter cycle
+        return 0;
+      }
+    }
+
     long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
     long spreadReward = (long)(totalReward * accountFreeze * 1.0 / VS_PRECISION / totalFreeze);
+    if (spreadReward == 0){
+      return 0;
+    }
 
     String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
     String[] levelProps = spreadLevelProp.split(",");
@@ -354,8 +364,8 @@ public class MortgageService {
           break;
         }
 
-        addressList.add(spreadRelationShipCapsule.getOwner().toString());
-        if (addressList.contains(spreadRelationShipCapsule.getParent().toString())){ // deal loop parent address
+        addressList.add(Hex.toHexString(spreadRelationShipCapsule.getOwner().toByteArray()));
+        if (addressList.contains(Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray()))){ // deal loop parent address
           break;
         }
 

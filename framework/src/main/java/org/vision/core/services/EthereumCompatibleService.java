@@ -14,6 +14,7 @@ import org.vision.api.GrpcAPI;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.Sha256Hash;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
@@ -106,7 +107,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_gasPrice() {
         // feeLimit = 100000000vdt = 21000 * 160Gwei
-        return "0x" + Long.toHexString(8);
+        return "0x" + Long.toHexString(8_000_000_000l);
     }
 
     @Override
@@ -209,12 +210,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (1 == accountType || isDeployContract) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
-                long gasPrice = Long.parseLong(
+                long gasPriceTmp = Long.parseLong(
                         toHexString(ethTrx.getGasPrice()), 16
                 );
+                double gasPrice = gasPriceTmp / 1_000_000_000.00;
                 long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
-                logger.info("gasPrice={},gasLimit={}", gasPrice, gasLimit);
-                long feeLimit = gasPrice * gasLimit * 2;
+                logger.info("gasPriceTmp={}, gasPrice={},gasLimit={}", gasPriceTmp, gasPrice, gasLimit);
+                long feeLimit = (long) gasPrice * gasLimit * 2;
                 Message message = null;
                 Protocol.Transaction.Contract.ContractType contractType = null;
                 if (isDeployContract) {
@@ -248,8 +250,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
             transactionCapsule = new TransactionCapsule(trx);
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
-                String errMsg = result.getMessage().toString();
-                return "broadcast trx failed:" + errMsg;
+
+                // String errMsg = result.getMessage().toString();
+                // return "broadcast trx failed:" + errMsg;
+                String errMsg = new String(result.getMessage().toByteArray(), "UTF-8");
+                return toHexString(errMsg.getBytes("UTF-8"));
+
             }
         } catch (Exception e) {
             logger.error("sendRawTransaction error", e);
@@ -297,12 +303,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
                     .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + errString));
         }
         trxExtBuilder.setResult(retBuilder);
-        return ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
+        return "0x" + ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
     }
 
     @Override
     public String eth_estimateGas(CallArguments args) throws Exception {
-        return null;
+        return "0x5208";
     }
 
     @Override
@@ -368,29 +374,32 @@ public class EthereumCompatibleService implements EthereumCompatible {
         Protocol.BlockHeader blockHeader = reply.getBlockHeader();
         Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
 
-        // blockResult.difficulty = "0x2";
-        blockResult.difficulty = "0x20000";
-        //blockResult.extraData = "0xd883010003846765746888676f312e31332e34856c696e75780000000000000049116d665d92e4581c19cd8a67a316739ec2faa4d3e8d3fc518ad6c9e02dc51154bcd4ffbf3156d9d8265500c6bc775ff05b5a54650397fdd057f1d9cb98f6a501";
-        blockResult.extraData = "0xd5830105048650617269747986312e31352e31826c69";
-        blockResult.gasLimit = "0x1ca35b8";
-        blockResult.gasUsed = "0x1ca0e7f";
+        blockResult.difficulty = "0x00000";
+        blockResult.extraData = "0x00000000000000000000000000000000000000000000";
+        blockResult.gasLimit = "0x0000000";
+        blockResult.gasUsed = "0x0000000";
         BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
         BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
         blockResult.hash = "0x" + toHexString(blockId.getByteString().toByteArray());
-        // blockResult.hash = blockHeader.getWitnessSignature();
-        blockResult.logsBloom = "0x00000000000000000200800000000000000000000000000000000000000000000000004000004000000000000000000000000000001008000000000000000000000000000000000000000020000000000000000000000000000008000000000000000080000000000000000000000000000002000000000000000020000000100000000000000000000000000000200000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000020000000000004000000000000000000001000000000000000000000000000000000000000000000000001000000000000000000000000000000000000";
-        blockResult.miner = "0x0ed0d1f46391e08f0ceab98fc3700e5d9c1c7b19";
+        blockResult.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        byte[] addressTmp = blockHeader.getRawData().getWitnessAddress().toByteArray();
+        String hexAddress = getAddrNo46(ByteUtil.toHexString(addressTmp));
+        if (hexAddress.length() == 40) {
+            blockResult.miner = "0x" + hexAddress;
+        } else {
+            blockResult.miner = "0x0000000000000000000000000000000000000000";
+        }
+        logger.info("miner=[{}]", blockResult.miner);
         blockResult.mixHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
         blockResult.nonce = "0x0000000000000000";
-        //blockResult.number = "0x2d6c2e";
         blockResult.number = "0x" + Long.toHexString(rawData.getNumber()); // block height
         blockResult.parentHash = "0x" + toHexString(rawData.getParentHash().toByteArray()); // father block hash
-        blockResult.receiptsRoot = "0x5f695898d27a2e25c2ae05c436be37a38bc3f8993386bf409f0ce40d6292298c";
-        blockResult.sha3Uncles = "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347";
-        //blockResult.stateRoot = "0x" + toHexString(rawData.getAccountStateRoot().toByteArray());
-        blockResult.stateRoot = "0x8740447201cb72ea26aa8a0e5b846d334163355ad3c892a151786f2c3115a131";
+
+        blockResult.receiptsRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        blockResult.sha3Uncles = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        blockResult.stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        blockResult.totalDifficulty = "0x000000";
         blockResult.timestamp = "0x" + Long.toHexString(rawData.getTimestamp());
-        blockResult.totalDifficulty = "0x5abd10";
         List<Protocol.Transaction> transactionList = reply.getTransactionsList();
         List<String> transHashList = new ArrayList<>();
         List<TransactionResultDTO> tranFullList = new ArrayList<>();
@@ -418,7 +427,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
         }
 
         blockResult.transactionsRoot = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
-        // blockResult.uncles = new String[]{"0x8740447201cb72ea26aa8a0e5b846d334163355ad3c892a151786f2c3115a131"};
         blockResult.uncles = new String[]{};
     }
 
@@ -476,22 +484,20 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
             }
         });
-        // transactionResultDTO.gas = "0x1011f";
-        // transactionResultDTO.gasPrice = "0x6fc23ac00";
         String txID = ByteArray.toHexString(Sha256Hash
                 .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
                         transaction.getRawData().toByteArray()));
         transactionResultDTO.hash = "0x" + txID;
-        transactionResultDTO.input = "0x1fe927cf0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000046a0382046607ff830175c180835b8d80941fc313a8e56c86855e85c6fd40162ae990c3e8ff80418d78d40000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000022000000000000000000000000000000000000000000000000000000000000002c000000000000000000000000000000000000000000000000000000000000003600000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000034d4b5200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005544845544100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000035a525800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003555050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000050d05e35be0000000000000000000000000000000000000000000000000000000027961ff0000000000000000000000000000000000000000000000000000000000671ae9a8000000000000000000000000000000000000000000000000000000000983b4c80000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000006091571d000000000000000000000000000000000000000000000000000000006091570e000000000000000000000000000000000000000000000000000000006091570e00000000000000000000000000000000000000000000000000000000609157180000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000046661c000000000000000000000000000000000000000000000000000000000046660e000000000000000000000000000000000000000000000000000000000046660e000000000000000000000000000000000000000000000000000000000046661643e176ddde646f8e94c878a74472d9e9af1d8eb9e58cd647844fd3cd9eb53a4b0a1e245b5e3307519589c715ec4229f90361e8ed3a0599c629da78ebf73404280000000000000000000000000000000000000000000000";
-        transactionResultDTO.nonce = "0x152a0";
-        transactionResultDTO.publicKey = "0xbd48aced94ccdfb27f22682ae3308234389280d5560741aa6c62dcbb93fdf6ff72f853c86ea54e721f369229eacf64d3550c35ce219bf3e8c40be053694972be";
-        transactionResultDTO.r = "0x489ee11e816e3f05318e954cc721d20a8297d0294f6512ee2384f034e0dbf895";
+        transactionResultDTO.input = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        transactionResultDTO.nonce = "0x00000";
+        transactionResultDTO.publicKey = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        transactionResultDTO.r = "0x0000000000000000000000000000000000000000000000000000000000000000";
         String rawDataHex = ByteArray.toHexString(transaction.getRawData().toByteArray());
         transactionResultDTO.raw = "0x" + rawDataHex;
-        transactionResultDTO.s = "0x265ea4adf5bdb248baa6bbd2224ad8c2e733bd79e78137bc07723cf93e592a94";
-        transactionResultDTO.standardV = "0x1";
+        transactionResultDTO.s = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        transactionResultDTO.standardV = "0x0";
         transactionResultDTO.transactionIndex = "0x0";
-        transactionResultDTO.v = "0x78";
+        transactionResultDTO.v = "0x00";
         transactionResultDTO.value = "0x0";
     }
 
@@ -555,8 +561,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
 
             Protocol.Transaction.raw rawData = transaction.getRawData();
-            transactionReceiptDTO.cumulativeGasUsed = "0x41145";
-            transactionReceiptDTO.gasUsed = "0x5208";
+            transactionReceiptDTO.cumulativeGasUsed = "0x0";
+            transactionReceiptDTO.gasUsed = "0x0";
             transactionReceiptDTO.logs = null;
             transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             transactionReceiptDTO.transactionHash = transactionHash;

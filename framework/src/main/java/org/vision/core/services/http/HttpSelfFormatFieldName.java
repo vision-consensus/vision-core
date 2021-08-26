@@ -142,8 +142,6 @@ public class HttpSelfFormatFieldName {
     //ShieldedTransferContract
     AddressFieldNameMap.put("protocol.ShieldedTransferContract.transparent_from_address", 1);
     AddressFieldNameMap.put("protocol.ShieldedTransferContract.transparent_to_address", 1);
-    //UpdateBrokerageContract
-    AddressFieldNameMap.put("protocol.UpdateBrokerageContract.owner_address", 1);
 
     //***** Vision.proto *****
     //AccountId
@@ -162,6 +160,9 @@ public class HttpSelfFormatFieldName {
     //DelegatedResource
     AddressFieldNameMap.put("protocol.DelegatedResource.from", 1);
     AddressFieldNameMap.put("protocol.DelegatedResource.to", 1);
+    //SpreadRelationShip
+    AddressFieldNameMap.put("protocol.SpreadRelationShip.owner", 1);
+    AddressFieldNameMap.put("protocol.SpreadRelationShip.parent", 1);
     //Witness
     AddressFieldNameMap.put("protocol.Witness.address", 1);
     //Votes
