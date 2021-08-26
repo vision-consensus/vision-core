@@ -39,7 +39,7 @@ public class Create2Test021 {
   ECKey ecKey1 = new ECKey(Utils.getRandom());
   byte[] bytes;
   String description = "just-test";
-  String url = "https://github.com/tronprotocol/wallet-cli/";
+  String url = "https://github.com/vision-consensus/vision-wallet-client/";
   ByteString assetAccountId = null;
   ECKey ecKey2 = new ECKey(Utils.getRandom());
   byte[] resourceOnwerAddress = ecKey2.getAddress();
