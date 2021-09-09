@@ -112,7 +112,7 @@ public class EntropyProcessorTest {
 
     EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
-    long entropy = 10000;
+    long entropy = 1000;
     long now = 1526647838000L;
 
     boolean result = processor.useEntropy(ownerCapsule, entropy, now);
@@ -128,7 +128,7 @@ public class EntropyProcessorTest {
     Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(1526647838000L,
         ownerCapsuleNew.getAccountResource().getLatestConsumeTimeForEntropy());
-    Assert.assertEquals(10000L, ownerCapsuleNew.getAccountResource().getEntropyUsage());
+    Assert.assertEquals(1000L, ownerCapsuleNew.getAccountResource().getEntropyUsage());
 
   }
 

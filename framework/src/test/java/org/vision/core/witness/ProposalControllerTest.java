@@ -94,7 +94,7 @@ public class ProposalControllerTest {
     } catch (Exception ex) {
       System.out.println(ex.getMessage());
     }
-    Assert.assertEquals(State.DISAPPROVED, proposalCapsule.getState());
+    Assert.assertEquals(State.APPROVED, proposalCapsule.getState());
 
     proposalCapsule.setState(State.PENDING);
     dbManager.getProposalStore().put(key, proposalCapsule);
@@ -109,7 +109,7 @@ public class ProposalControllerTest {
     } catch (Exception ex) {
       System.out.println(ex.getMessage());
     }
-    Assert.assertEquals(State.DISAPPROVED, proposalCapsule.getState());
+    Assert.assertEquals(State.APPROVED, proposalCapsule.getState());
 
     List<ByteString> activeWitnesses = Lists.newArrayList();
     String prefix = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1a";
@@ -180,7 +180,7 @@ public class ProposalControllerTest {
     } catch (Exception ex) {
       System.out.println(ex.getMessage());
     }
-    Assert.assertEquals(State.DISAPPROVED, proposalCapsule3.getState());
+    Assert.assertEquals(State.APPROVED, proposalCapsule3.getState());
 
   }
 

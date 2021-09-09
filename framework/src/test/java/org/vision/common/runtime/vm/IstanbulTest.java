@@ -94,7 +94,7 @@ public class IstanbulTest extends VMTestBase {
             0, fee, manager, null);
     Assert.assertNull(result.getRuntime().getRuntimeError());
     Assert.assertEquals(Hex.toHexString(result.getRuntime().getResult().getHReturn()),
-        "00000000000000007adbf8dc20423f587a5f3f8ea83e2877e2129c5128c12d1e");
+        "00000000000000006bd8cb8a9becd5afa41b2fc9b2e2cf1242ab84cca0df9e2e");
     //genesis block hash
 
   }

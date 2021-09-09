@@ -52,6 +52,10 @@ public class ProposalServiceTest {
     for (ProposalUtil.ProposalType proposalType : ProposalUtil.ProposalType.values()) {
       if (proposalType == ProposalUtil.ProposalType.WITNESS_123_PAY_PER_BLOCK) {
         proposal = Proposal.newBuilder().putParameters(proposalType.getCode(), 16160).build();
+      } else if (proposalType == ProposalUtil.ProposalType.SPREAD_MINT_LEVEL_PROP){
+        proposal = Proposal.newBuilder().putStringParameters(proposalType.getCode(), "80,10,8,2").build();
+      } else if (proposalType == ProposalUtil.ProposalType.INFLATION_RATE){
+        proposal = Proposal.newBuilder().putStringParameters(proposalType.getCode(), "689,2322").build();
       } else {
         proposal = Proposal.newBuilder().putParameters(proposalType.getCode(), 1).build();
       }

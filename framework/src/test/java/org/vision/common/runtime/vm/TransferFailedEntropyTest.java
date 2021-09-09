@@ -181,18 +181,18 @@ public class TransferFailedEntropyTest extends VMTestBase {
   private static final String nonExistAddress = "27k66nycZATHzBasFT9782nTsYWqVtxdtAc";  // 21 char
   TestCase[] testCasesAfterAllowVvmConstantinop = {
       new TestCase("testTransferVsSelf()", Collections.emptyList(), false,
-          contractResult.TRANSFER_FAILED),
+          contractResult.REVERT),
       new TestCase("testSendVsSelf()", Collections.emptyList(), false,
-          contractResult.TRANSFER_FAILED),
+          contractResult.REVERT),
       new TestCase("testSuicideNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), false,
           contractResult.TRANSFER_FAILED),
       new TestCase("testTransferVsNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), false,
-          contractResult.TRANSFER_FAILED),
+          contractResult.REVERT),
       new TestCase("testCallVsNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), false,
-          contractResult.TRANSFER_FAILED),
+          contractResult.REVERT),
   };
   TestCase[] testCasesBeforeAllowVvmConstantinop = {
       new TestCase("testTransferVsSelf()", Collections.emptyList(),
@@ -212,7 +212,7 @@ public class TransferFailedEntropyTest extends VMTestBase {
           contractResult.REVERT),
       new TestCase("testSendVsInsufficientBalance()", Collections.emptyList(),
           false,
-          contractResult.SUCCESS),
+          contractResult.REVERT),
       new TestCase("testCreateTrxInsufficientBalance()", Collections.emptyList(),
           false,
           contractResult.REVERT),
@@ -385,6 +385,8 @@ public class TransferFailedEntropyTest extends VMTestBase {
     ReceiptCapsule receiptCapsule = result.getReceipt();
     Assert.assertEquals(receiptCapsule.getResult(), testCase.getReceiptResult(),
         testCase.getMethod());
+//    Assert.assertEquals(receiptCapsule.getResult(), contractResult.REVERT,
+//            testCase.getMethod());
     if (testCase.allEntropy) {
       Assert.assertEquals(programResult.getEntropyUsed(), 1000000, testCase.getMethod());
     } else {
