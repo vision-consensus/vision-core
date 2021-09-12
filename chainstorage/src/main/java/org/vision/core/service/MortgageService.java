@@ -222,12 +222,17 @@ public class MortgageService {
     //
     endCycle = currentCycle;
 
-    if (beginCycle < endCycle) {
-      long spreadReward = 0L;
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+
+    if (dynamicPropertiesStore.supportSpreadMint()){
+      long spreadMintBeginCycle = delegationStore.getSpreadMintBeginCycle(address);
+      long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
+      if (spreadMintBeginCycle < spreadMintEndCycle) {
+        long spreadReward = 0L;
+        for (long cycle = spreadMintBeginCycle; cycle < spreadMintEndCycle; cycle++) {
+          spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+        }
+        rewardMap.put("spreadReward", spreadReward);
       }
-      rewardMap.put("spreadReward", spreadReward);
     }
 
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
