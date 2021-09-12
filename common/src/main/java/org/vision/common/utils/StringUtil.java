@@ -44,14 +44,4 @@ public class StringUtil {
   public static ByteString hexString2ByteString(String hexString) {
     return ByteString.copyFrom(ByteArray.fromHexString(hexString));
   }
-
-  public static String stringToHexString(String s) {
-    String str = "";
-    for (int i = 0; i < s.length(); i++) {
-      int ch = s.charAt(i);
-      String s4 = Integer.toHexString(ch);
-      str = str + s4;
-    }
-    return str;
-  }
 }
