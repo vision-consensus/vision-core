@@ -1,6 +1,9 @@
 package org.vision.core.utils;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.util.StringUtils;
 import org.vision.common.utils.ForkController;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.config.Parameter.ForkBlockVersionConsts;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
@@ -481,15 +484,18 @@ public class ProposalUtil {
     switch (proposalType) {
       case SPREAD_MINT_LEVEL_PROP: {
         String[] levelProps = value.split(",");
-        if (levelProps.length != 4 ) {
-          throw new ContractValidateException(
-                  "Bad SPREAD_MINT_LEVEL_PROP parameter value, allowed like [80,10,8,2]");
+        if(levelProps.length < 1 || levelProps.length > 10){
+          throw new ContractValidateException("Bad SPREAD_MINT_LEVEL_PROP parameter value, valid level props length range is [1, 10]");
         }
         int[] props = new int[levelProps.length];
         int sumProps = 0;
         for(int i = 0; i < levelProps.length; i++)
         {
-          props[i] = Integer.parseInt(levelProps[i]);
+          String tmp = levelProps[i].trim();
+          if(!NumberUtils.isNumber(tmp)){
+            throw new ContractValidateException("Bad SPREAD_MINT_LEVEL_PROP parameter value, Level Prop must be a Number");
+          }
+          props[i] = Integer.parseInt(tmp);
           if (props[i] < 0 || props[i] > 100){
             break;
           }
@@ -511,7 +517,12 @@ public class ProposalUtil {
         int[] rates = new int[inflationRates.length];
         for(int i = 0; i < inflationRates.length; i++)
         {
-          rates[i] = Integer.parseInt(inflationRates[i]);
+          String tmp = inflationRates[i].trim();
+          if(!NumberUtils.isNumber(tmp)){
+            throw new ContractValidateException(
+                    "Bad INFLATION_RATE parameter value, rate must be a Number");
+          }
+          rates[i] = Integer.parseInt(tmp);
           if (rates[i] < 0){
             throw new ContractValidateException(
                     "Bad INFLATION_RATE parameter value, only allowed positive integer");
@@ -535,7 +546,7 @@ public class ProposalUtil {
     CREATE_ACCOUNT_FEE(2), // 0.1 VS, [0, 100000000000] VS
     TRANSACTION_FEE(3), // 10 Vdt/Byte, [0, 100000000000] VS
     ASSET_ISSUE_FEE(4), // 1024 VS, [0, 100000000000] VS
-    WITNESS_PAY_PER_BLOCK(5), // 0.105 VS, [0, 100000000000] VS
+    WITNESS_PAY_PER_BLOCK(5), // 0.144 VS, [0, 100000000000] VS
     WITNESS_STANDBY_ALLOWANCE(6), // 115200 VS, [0, 100000000000] VS
     CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT(7), // 0 VS, [0, 100000000000] VS
     CREATE_NEW_ACCOUNT_PHOTON_RATE(8), // 1 Bandwith/Byte, [0, 100000000000000000] Bandwith/Byte
@@ -561,7 +572,7 @@ public class ProposalUtil {
     // SHIELDED_TRANSACTION_FEE(28), // 10 VS, [0, 10000] VS
     ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER(29), // 1000, [1, 10000]
     ALLOW_CHANGE_DELEGATION(30), // 1, {0, 1}
-    WITNESS_123_PAY_PER_BLOCK(31), // 1.5 VS * frozenRate, [0, 100000000000] VS
+    WITNESS_123_PAY_PER_BLOCK(31), // 1.2 VS * frozenRate, [0, 100000000000] VS
     ALLOW_VVM_SOLIDITY_059(32), // 1, {0, 1}
     ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO(33), // 10, [1, 1000]
     // SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE(34), // 1 VS, [0, 10000] VS

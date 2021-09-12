@@ -879,12 +879,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getSpreadMintLevel();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadMintLevel(3);
-    }
-
-    try {
       this.getAllowSpreadMintLevelProp();
     } catch (IllegalArgumentException e) {
       this.saveAllowSpreadMintLevelProp(1L);
@@ -2524,18 +2518,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public boolean supportSpreadMint() {
     return getAllowSpreadMintLevelProp() == 1L;
-  }
-
-  public void saveSpreadMintLevel(int value) {
-    this.put(SPREAD_MINT_LEVEL, new BytesCapsule(ByteArray.fromInt(value)));
-  }
-
-  public int getSpreadMintLevel() {
-    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toInt)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found SPREAD_MINT_LEVEL"));
   }
 
   public void saveSpreadMintLevelProp(String value) {
