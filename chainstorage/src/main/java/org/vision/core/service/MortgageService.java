@@ -419,7 +419,8 @@ public class MortgageService {
     list.sort(Comparator.comparingLong((ByteString b) -> {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
       return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
-    })
+    }).thenComparing((ByteString b) ->
+            getWitnessByAddress(b).getVoteCountWeight())
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
   }
 
