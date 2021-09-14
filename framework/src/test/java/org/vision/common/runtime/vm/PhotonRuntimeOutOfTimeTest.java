@@ -76,8 +76,8 @@ public class PhotonRuntimeOutOfTimeTest {
   private static AnnotationConfigApplicationContext context;
   private static Manager dbManager;
 
-  private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-  private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
+  private static String OwnerAddress = "VCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
+  private static String TriggerOwnerAddress = "VCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
 
   static {
     Args.setParam(
@@ -93,7 +93,7 @@ public class PhotonRuntimeOutOfTimeTest {
     context = new VisionApplicationContext(DefaultConfig.class);
   }
 
-  private String trx2ContractAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
+  private String trx2ContractAddress = "27MBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
 
   /**
    * Init data.

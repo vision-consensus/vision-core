@@ -186,7 +186,7 @@ public class TransferFailedEntropyTest extends VMTestBase {
           contractResult.REVERT),
       new TestCase("testSuicideNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), false,
-          contractResult.TRANSFER_FAILED),
+          contractResult.REVERT),
       new TestCase("testTransferVsNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), false,
           contractResult.REVERT),
@@ -196,9 +196,9 @@ public class TransferFailedEntropyTest extends VMTestBase {
   };
   TestCase[] testCasesBeforeAllowVvmConstantinop = {
       new TestCase("testTransferVsSelf()", Collections.emptyList(),
-          true, contractResult.UNKNOWN),
+          true, contractResult.REVERT),
       new TestCase("testSendVsSelf()", Collections.emptyList(),
-          true, contractResult.UNKNOWN),
+          true, contractResult.REVERT),
       new TestCase("testSuicideNonexistentTarget(address)",
           Collections.singletonList(nonExistAddress), true, contractResult.UNKNOWN),
       new TestCase("testTransferVsNonexistentTarget(address)",
@@ -385,10 +385,10 @@ public class TransferFailedEntropyTest extends VMTestBase {
     ReceiptCapsule receiptCapsule = result.getReceipt();
     Assert.assertEquals(receiptCapsule.getResult(), testCase.getReceiptResult(),
         testCase.getMethod());
-//    Assert.assertEquals(receiptCapsule.getResult(), contractResult.REVERT,
-//            testCase.getMethod());
+    Assert.assertEquals(receiptCapsule.getResult(), contractResult.REVERT,
+            testCase.getMethod());
     if (testCase.allEntropy) {
-      Assert.assertEquals(programResult.getEntropyUsed(), 1000000, testCase.getMethod());
+      Assert.assertEquals(programResult.getEntropyUsed(), 20000000, testCase.getMethod());
     } else {
       Assert.assertTrue(programResult.getEntropyUsed() < allEntropy, testCase.getMethod());
     }

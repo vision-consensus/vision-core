@@ -96,7 +96,7 @@ public class ChargeTest {
     long expectEntropyUsageTotal = 51293; // 200 * code.length() + 93
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     /* ====================================================================== */
@@ -105,13 +105,13 @@ public class ChargeTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 20_000_000_000L, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert
         .assertTrue(result.getRuntime().getResult().getException() instanceof ArithmeticException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.16;
@@ -162,7 +162,7 @@ public class ChargeTest {
     long expectEntropyUsageTotal = 68111;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     /* =================CALL testNegative() with 0 callvalue ================================ */
@@ -171,13 +171,13 @@ public class ChargeTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, value, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert
         .assertTrue(result.getRuntime().getResult().getException() instanceof ArithmeticException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
 
 
     /* ==================CALL testNegative() with -100 callvalue ================================ */
@@ -186,13 +186,13 @@ public class ChargeTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, -100, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal3 = feeLimit / 100;
+    long expectEntropyUsageTotal3 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal3);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert
         .assertTrue(result.getRuntime().getResult().getException() instanceof ArithmeticException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(), totalBalance
-        - (expectEntropyUsageTotal + expectEntropyUsageTotal2 + expectEntropyUsageTotal3) * 100);
+        - (expectEntropyUsageTotal + expectEntropyUsageTotal2 + expectEntropyUsageTotal3) * 5);
 
   }
 
@@ -251,7 +251,7 @@ public class ChargeTest {
     long expectEntropyUsageTotal = 74517;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     /* ====================================================================== */
@@ -267,7 +267,7 @@ public class ChargeTest {
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertEquals(result.getRuntime().getResult().getException(), null);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
 
   }
 
@@ -368,7 +368,7 @@ public class ChargeTest {
     long expectEntropyUsageTotal = 286450;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     /* ====================================================================== */
@@ -384,7 +384,7 @@ public class ChargeTest {
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertEquals(result.getRuntime().getResult().getException(), null);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
 
   }
 
@@ -436,7 +436,7 @@ public class ChargeTest {
     long expectEntropyUsageTotal = 201839;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     /* ====================================================================== */
@@ -452,7 +452,7 @@ public class ChargeTest {
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertEquals(result.getRuntime().getResult().getException(), null);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
 
   }
 

@@ -93,7 +93,7 @@ public class ArgsTest {
 
     Assert.assertEquals("b7c2a186ad04fee26d374907e9357f36e4f6a5b35b82b3781455207b6cb77669",
         Args.getLocalWitnesses().getPrivateKey());
-    Assert.assertEquals("a0299f3db80a24b20a254b89ce639d59132f157f13",
+    Assert.assertEquals("a09f35db98b6787922c86035114a2f14ea012297d3",
         ByteArray.toHexString(Args.getLocalWitnesses()
             .getWitnessAccountAddress(CommonParameter.getInstance().isECKeyCryptoEngine())));
   }

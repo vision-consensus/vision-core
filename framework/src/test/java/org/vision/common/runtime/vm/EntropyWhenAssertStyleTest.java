@@ -110,7 +110,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 39487;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testOutOfIndex()", null);
@@ -118,13 +118,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.0;
@@ -165,7 +165,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 31875;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testbytesN()", null);
@@ -173,13 +173,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.0;
@@ -218,7 +218,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 27875;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testDivZero()", null);
@@ -226,13 +226,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.0;
@@ -273,7 +273,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 28475;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testShiftByNegative()", null);
@@ -281,13 +281,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.0;
@@ -328,7 +328,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 27475;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testEnumType()", null);
@@ -336,13 +336,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   // pragma solidity ^0.4.0;
@@ -435,7 +435,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 26675;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     byte[] triggerData = VvmTestUtils.parseAbi("testAssert()", null);
@@ -443,13 +443,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
         result.getRuntime().getResult().getException() instanceof Program.IllegalOperationException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
 
   }
 
@@ -503,7 +503,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 89214;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
 
     String params =
@@ -515,7 +515,7 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertTrue(
@@ -563,7 +563,7 @@ public class EntropyWhenAssertStyleTest {
     long expectEntropyUsageTotal = 40487;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 100);
+        totalBalance - expectEntropyUsageTotal * 5);
     byte[] contractAddress = result.getContractAddress();
     String params = "0000000000000000000000000000000000000000000000000000000000000001";
     byte[] triggerData = VvmTestUtils.parseAbi("testMem(uint256)", params);
@@ -571,13 +571,13 @@ public class EntropyWhenAssertStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, 0, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 100;
+    long expectEntropyUsageTotal2 = feeLimit / 5;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert
         .assertTrue(result.getRuntime().getResult().getException() instanceof Program.OutOfMemoryException);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
   }
 
   @Test
