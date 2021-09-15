@@ -1,9 +1,5 @@
 package org.vision.core.db;
 
-import static org.vision.common.utils.Commons.adjustBalance;
-import static org.vision.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
-import static org.vision.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -14,30 +10,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -48,11 +20,7 @@ import org.springframework.stereotype.Component;
 import org.vision.common.args.GenesisBlock;
 import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.common.logsfilter.FilterQuery;
-import org.vision.common.logsfilter.capsule.BlockLogTriggerCapsule;
-import org.vision.common.logsfilter.capsule.ContractTriggerCapsule;
-import org.vision.common.logsfilter.capsule.SolidityTriggerCapsule;
-import org.vision.common.logsfilter.capsule.TransactionLogTriggerCapsule;
-import org.vision.common.logsfilter.capsule.TriggerCapsule;
+import org.vision.common.logsfilter.capsule.*;
 import org.vision.common.logsfilter.trigger.ContractEventTrigger;
 import org.vision.common.logsfilter.trigger.ContractLogTrigger;
 import org.vision.common.logsfilter.trigger.ContractTrigger;
@@ -60,25 +28,15 @@ import org.vision.common.logsfilter.trigger.Trigger;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.RuntimeImpl;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Pair;
-import org.vision.common.utils.SessionOptional;
-import org.vision.common.utils.Sha256Hash;
+import org.vision.common.utils.*;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.consensus.Consensus;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
 import org.vision.core.actuator.ActuatorCreator;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.BlockBalanceTraceCapsule;
-import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.*;
 import org.vision.core.capsule.BlockCapsule.BlockId;
-import org.vision.core.capsule.BytesCapsule;
-import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.capsule.TransactionInfoCapsule;
-import org.vision.core.capsule.TransactionRetCapsule;
-import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.capsule.utils.TransactionUtil;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.config.args.Args;
@@ -91,59 +49,29 @@ import org.vision.core.db2.ISession;
 import org.vision.core.db2.core.Chainbase;
 import org.vision.core.db2.core.IVisionChainBase;
 import org.vision.core.db2.core.SnapshotManager;
-import org.vision.core.exception.AccountResourceInsufficientException;
-import org.vision.core.exception.BadBlockException;
-import org.vision.core.exception.BadItemException;
-import org.vision.core.exception.BadNumberBlockException;
-import org.vision.core.exception.BalanceInsufficientException;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractSizeNotEqualToOneException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.DupTransactionException;
-import org.vision.core.exception.ItemNotFoundException;
-import org.vision.core.exception.NonCommonBlockException;
-import org.vision.core.exception.ReceiptCheckErrException;
-import org.vision.core.exception.TaposException;
-import org.vision.core.exception.TooBigTransactionException;
-import org.vision.core.exception.TooBigTransactionResultException;
-import org.vision.core.exception.TransactionExpirationException;
-import org.vision.core.exception.UnLinkedBlockException;
-import org.vision.core.exception.VMIllegalException;
-import org.vision.core.exception.ValidateScheduleException;
-import org.vision.core.exception.ValidateSignatureException;
-import org.vision.core.exception.ZksnarkException;
+import org.vision.core.exception.*;
 import org.vision.core.metrics.MetricsKey;
 import org.vision.core.metrics.MetricsUtil;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountIdIndexStore;
-import org.vision.core.store.AccountIndexStore;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.AssetIssueStore;
-import org.vision.core.store.AssetIssueV2Store;
-import org.vision.core.store.CodeStore;
-import org.vision.core.store.ContractStore;
-import org.vision.core.store.DelegatedResourceAccountIndexStore;
-import org.vision.core.store.DelegatedResourceStore;
-import org.vision.core.store.DelegationStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.ExchangeStore;
-import org.vision.core.store.ExchangeV2Store;
-import org.vision.core.store.IncrementalMerkleTreeStore;
-import org.vision.core.store.NullifierStore;
-import org.vision.core.store.ProposalStore;
-import org.vision.core.store.StorageRowStore;
-import org.vision.core.store.StoreFactory;
-import org.vision.core.store.TransactionHistoryStore;
-import org.vision.core.store.TransactionRetStore;
-import org.vision.core.store.VotesStore;
-import org.vision.core.store.WitnessScheduleStore;
-import org.vision.core.store.WitnessStore;
+import org.vision.core.store.*;
 import org.vision.core.utils.TransactionRegister;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.TransactionInfo;
 import org.vision.protos.contract.BalanceContract;
+
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
+import static org.vision.common.utils.Commons.adjustBalance;
+import static org.vision.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
+import static org.vision.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
 
 
 @Slf4j(topic = "DB")
@@ -201,6 +129,8 @@ public class Manager {
   private MortgageService mortgageService;
   @Autowired
   private Consensus consensus;
+  @Autowired
+  private AccountStore accountStore;
   @Autowired
   @Getter
   private ChainBaseManager chainBaseManager;
@@ -344,7 +274,7 @@ public class Manager {
     Message.setDynamicPropertiesStore(this.getDynamicPropertiesStore());
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
-            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore());
+            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(), chainBaseManager.getSpreadRelationShipStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
@@ -521,6 +451,7 @@ public class Manager {
 
               final WitnessCapsule witnessCapsule =
                   new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
+              witnessCapsule.setVoteCountWeight(key.getVoteCount());
               witnessCapsule.setIsJobs(true);
               chainBaseManager.getWitnessStore().put(keyAddress, witnessCapsule);
             });
@@ -1404,13 +1335,21 @@ public class Manager {
   }
 
   private void payReward(BlockCapsule block) {
+    if (1 == block.getNum()) {
+      long avalonBalance = accountStore.getAvalon().getBalance();
+      long galaxyBalance = accountStore.getGalaxy().getBalance();
+      chainBaseManager.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
+      chainBaseManager.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+    }
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
             .getRawData().getWitnessAddress().toByteArray());
+    long spreadMintPayPerBlock = 0L;
     if (getDynamicPropertiesStore().allowChangeDelegation()) {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
-          getDynamicPropertiesStore().getWitnessPayPerBlock());
+          getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
       mortgageService.payStandbyWitness();
+
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
                 .floorDiv(chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),
@@ -1425,7 +1364,7 @@ public class Manager {
       byte[] witness = block.getWitnessAddress().toByteArray();
       AccountCapsule account = getAccountStore().get(witness);
       account.setAllowance(account.getAllowance()
-          + chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock());
+          + chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
 
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
@@ -1436,9 +1375,17 @@ public class Manager {
                 chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool()
                         - transactionFeeReward);
       }
-
       getAccountStore().put(account.createDbKey(), account);
     }
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
+      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation();
+    }
+
+    long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation();
+    long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {
@@ -1497,7 +1444,7 @@ public class Manager {
   public void updateFork(BlockCapsule block) {
     int blockVersion = block.getInstance().getBlockHeader().getRawData().getVersion();
     if (blockVersion > ChainConstant.BLOCK_VERSION) {
-      logger.warn("newer block version found: " + blockVersion + ", YOU MUST UPGRADE java-tron!");
+      logger.warn("newer block version found: " + blockVersion + ", YOU MUST UPGRADE vision-core!");
     }
     chainBaseManager
         .getForkController().update(block);

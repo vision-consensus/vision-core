@@ -1,39 +1,28 @@
 package org.vision.core.actuator;
 
-import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
-
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.vision.core.capsule.DelegatedResourceCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.VotesCapsule;
+import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DelegatedResourceAccountIndexStore;
-import org.vision.core.store.DelegatedResourceStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.VotesStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Account.AccountResource;
 import org.vision.protos.Protocol.Account.Frozen;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
+
+import java.util.*;
+
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "actuator")
 public class UnfreezeBalanceActuator extends AbstractActuator {
@@ -197,6 +186,26 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
+        case SRGUARANTEE:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSrguarantee()
+                  .getFrozenBalance();
+          AccountResource newSRGuarantee = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSrguarantee().build();
+          accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+                  .setBalance(oldBalance + unfreezeBalance)
+                  .setAccountResource(newSRGuarantee).build());
+          break;
+        case SPREAD:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
+                  .getFrozenBalance();
+          AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSpread().build();
+          accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+                  .setBalance(oldBalance + unfreezeBalance)
+                  .setAccountResource(newSpread).build());
+
+          clearSpreadRelationShip(ownerAddress);
+          break;
         default:
           //this should never happen
           break;
@@ -212,6 +221,13 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case ENTROPY:
         dynamicStore
             .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
+        break;
+      case SPREAD:
+        dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
+        break;
+      case SRGUARANTEE:
+        dynamicStore
+                .addTotalSRGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -395,6 +411,26 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForEntropy.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
+          break;
+        case SRGUARANTEE:
+          Frozen frozenBalanceForSRGuarantee = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSrguarantee();
+          if (frozenBalanceForSRGuarantee.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SRGuarantee)");
+          }
+          if (frozenBalanceForSRGuarantee.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(SRGuarantee).");
+          }
+          break;
+        case SPREAD:
+          Frozen frozenBalanceForSpread = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSpread();
+          if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SpreadMint)");
+          }
+          if (frozenBalanceForSpread.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+          }
 
           break;
         default:
@@ -417,4 +453,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     return 0;
   }
 
+  private void clearSpreadRelationShip(byte[] ownerAddress){
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
+    if (spreadRelationShipCapsule != null) {
+      DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+      long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+      long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+      spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
+    }
+  }
 }

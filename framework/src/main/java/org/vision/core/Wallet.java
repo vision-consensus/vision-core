@@ -18,14 +18,6 @@
 
 package org.vision.core;
 
-import static org.vision.common.utils.Commons.getAssetIssueStoreFinal;
-import static org.vision.common.utils.Commons.getExchangeStoreFinal;
-import static org.vision.common.utils.WalletUtil.isConstant;
-import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
-import static org.vision.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
-import static org.vision.core.config.Parameter.DatabaseConstants.MARKET_COUNT_LIMIT_MAX;
-import static org.vision.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
-
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.ImmutableList;
@@ -34,18 +26,6 @@ import com.google.common.collect.Range;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.ProtocolStringList;
-import java.math.BigInteger;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -92,18 +72,7 @@ import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
-import org.vision.core.capsule.*;
-import org.vision.core.config.args.Args;
-import org.vision.core.db.*;
-import org.vision.core.net.VisionNetDelegate;
-import org.vision.core.net.VisionNetService;
-import org.vision.core.net.message.TransactionMessage;
-import org.vision.core.store.*;
-import org.vision.core.zen.ShieldedVRC20ParametersBuilder;
-import org.vision.core.zen.ZenTransactionBuilder;
-import org.vision.core.zen.note.Note;
-import org.vision.core.zen.note.NoteEncryption;
-import org.vision.core.zen.note.OutgoingPlaintext;
+import org.vision.api.GrpcAPI.SpreadRelationShipList;
 import org.vision.common.crypto.Hash;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -129,8 +98,15 @@ import org.vision.consensus.ConsensusDelegate;
 import org.vision.core.actuator.Actuator;
 import org.vision.core.actuator.ActuatorFactory;
 import org.vision.core.actuator.VMActuator;
+import org.vision.core.capsule.*;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.utils.MarketUtils;
+import org.vision.core.config.args.Args;
+import org.vision.core.db.BlockIndexStore;
+import org.vision.core.db.EntropyProcessor;
+import org.vision.core.db.Manager;
+import org.vision.core.db.PhotonProcessor;
+import org.vision.core.db.TransactionContext;
 import org.vision.core.exception.AccountResourceInsufficientException;
 import org.vision.core.exception.BadItemException;
 import org.vision.core.exception.ContractExeException;
@@ -148,13 +124,22 @@ import org.vision.core.exception.TransactionExpirationException;
 import org.vision.core.exception.VMIllegalException;
 import org.vision.core.exception.ValidateSignatureException;
 import org.vision.core.exception.ZksnarkException;
+import org.vision.core.net.VisionNetDelegate;
+import org.vision.core.net.VisionNetService;
+import org.vision.core.net.message.TransactionMessage;
+import org.vision.core.store.*;
 import org.vision.core.utils.TransactionUtil;
+import org.vision.core.zen.ShieldedVRC20ParametersBuilder;
+import org.vision.core.zen.ZenTransactionBuilder;
 import org.vision.core.zen.address.DiversifierT;
 import org.vision.core.zen.address.ExpandedSpendingKey;
 import org.vision.core.zen.address.IncomingViewingKey;
 import org.vision.core.zen.address.KeyIo;
 import org.vision.core.zen.address.PaymentAddress;
 import org.vision.core.zen.address.SpendingKey;
+import org.vision.core.zen.note.Note;
+import org.vision.core.zen.note.NoteEncryption;
+import org.vision.core.zen.note.OutgoingPlaintext;
 import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Account;
 import org.vision.protos.Protocol.Block;
@@ -171,10 +156,11 @@ import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.TransactionInfo;
+import org.vision.protos.Protocol.SpreadRelationShip;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.BalanceContract;
-import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
+import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.ShieldContract.IncrementalMerkleTree;
 import org.vision.protos.contract.ShieldContract.IncrementalMerkleVoucherInfo;
 import org.vision.protos.contract.ShieldContract.OutputPoint;
@@ -186,6 +172,27 @@ import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+
+import java.math.BigInteger;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+
+import static org.vision.common.utils.Commons.getAssetIssueStoreFinal;
+import static org.vision.common.utils.Commons.getExchangeStoreFinal;
+import static org.vision.common.utils.WalletUtil.isConstant;
+import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
+import static org.vision.core.config.Parameter.ChainConstant.QUERY_SPREAD_MINT_PARENT_LEVEL_MAX;
+import static org.vision.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
+import static org.vision.core.config.Parameter.DatabaseConstants.MARKET_COUNT_LIMIT_MAX;
+import static org.vision.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
 
 @Slf4j
 @Component
@@ -336,6 +343,53 @@ public class Wallet {
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEntropy());
 
     return accountCapsule.getInstance();
+  }
+
+  public SpreadRelationShip getSpreadMintParent(Account account, int level) {
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
+    if (spreadRelationShipCapsule == null) {
+      return null;
+    }
+
+    return spreadRelationShipCapsule.getInstance();
+  }
+
+  public SpreadRelationShipList getSpreadMintParentList(byte[] address, int level) {
+    SpreadRelationShipList.Builder builder = SpreadRelationShipList.newBuilder();
+
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(address);
+    if (spreadRelationShipCapsule == null) {
+      return null;
+    }
+
+    List<SpreadRelationShipCapsule> spreadRelationShipCapsuleList = new ArrayList<>();
+    spreadRelationShipCapsuleList.add(spreadRelationShipCapsule);
+    level = Math.min(level, QUERY_SPREAD_MINT_PARENT_LEVEL_MAX);
+
+    SpreadRelationShipCapsule capsule = spreadRelationShipCapsule;
+    int i = 1;
+    List<String> addressList = new ArrayList<>();
+    addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
+    while (i < level){
+      capsule = spreadRelationShipStore.get(capsule.getParent().toByteArray());
+      if (capsule == null){
+        break;
+      }
+      spreadRelationShipCapsuleList.add(capsule);
+      i++;
+
+      addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
+      if (addressList.contains(Hex.toHexString(capsule.getParent().toByteArray()))) { // deal loop parent address
+        break;
+      }
+    }
+
+    spreadRelationShipCapsuleList
+            .forEach(spreadCapsule -> builder.addSpreadRelationShip(spreadCapsule.getInstance()));
+
+    return builder.build();
   }
 
   /**
@@ -713,11 +767,21 @@ public class Wallet {
             .setKey("getWitnessPayPerBlock")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock())
             .build());
+    builder.addChainParameter(
+            Protocol.ChainParameters.ChainParameter.newBuilder()
+                    .setKey("getWitnessPayPerBlockInflation")
+                    .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation())
+                    .build());
     //    WITNESS_STANDBY_ALLOWANCE, //VDT ,6
     builder.addChainParameter(
         Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getWitnessStandbyAllowance")
             .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowance())
+            .build());
+    builder.addChainParameter(
+        Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitnessStandbyAllowanceInflation")
+            .setValue(chainBaseManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceInflation())
             .build());
     //    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //VDT ,7
     builder.addChainParameter(
@@ -910,8 +974,13 @@ public class Wallet {
         .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-        .setKey("getWitness100PayPerBlock")
-        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness100PayPerBlock())
+        .setKey("getWitness123PayPerBlock")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock())
+        .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+        .setKey("getWitness123PayPerBlockInflation")
+        .setValue(chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation())
         .build());
 
     builder.addChainParameter(
@@ -956,6 +1025,50 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
         .setKey("getAllowOptimizeBlackHole")
         .setValue(dbManager.getDynamicPropertiesStore().getAllowBlackHoleOptimization())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getEconomyCycle")
+            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycle())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintPayPerBlock")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintPayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowSpreadMintLevelProp")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintLevelProp())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintLevelProp")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getSpreadMintLevelProp())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRateThreshold")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRateThreshold())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getLowInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getLowInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getHighInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getFreezePeriodLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
 
     return builder.build();
@@ -1092,6 +1205,9 @@ public class Wallet {
     long totalEntropyWeight =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
+    long totalSRGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+    long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
+
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
 
@@ -1108,6 +1224,8 @@ public class Wallet {
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
         .setTotalEntropyLimit(totalEntropyLimit)
         .setTotalEntropyWeight(totalEntropyWeight)
+        .setTotalSRGuaranteeWeight(totalSRGuaranteeWeight)
+        .setTotalSpreadWeight(totalSpreadWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
@@ -2523,6 +2641,28 @@ public class Wallet {
       return contractCapsule.getInstance();
     }
     return null;
+  }
+
+  /**
+   *
+   * @param address
+   * @return -1-none 0-account 1-contract
+   */
+  public int getAccountType(byte[] address) {
+    AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(address);
+    if (accountCapsule == null) {
+      logger.error(
+              "Get contract failed, the account does not exist or the account "
+                      + "does not have a code hash!");
+      return -1;
+    }
+
+    ContractCapsule contractCapsule = chainBaseManager.getContractStore()
+            .get(address);
+    if (Objects.nonNull(contractCapsule)) {
+      return 1;
+    }
+    return 0;
   }
 
   /**

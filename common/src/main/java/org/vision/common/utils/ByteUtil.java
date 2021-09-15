@@ -20,6 +20,8 @@ package org.vision.common.utils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedBytes;
+import org.spongycastle.util.encoders.Hex;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -443,6 +445,10 @@ public class ByteUtil {
     byte[] longBytes = ByteArray.fromLong(value);
     byte[] zeroBytes = new byte[24];
     return ByteUtil.merge(zeroBytes, longBytes);
+  }
+
+  public static String toHexString(byte[] data) {
+    return data == null ? "" : Hex.toHexString(data);
   }
 
 }

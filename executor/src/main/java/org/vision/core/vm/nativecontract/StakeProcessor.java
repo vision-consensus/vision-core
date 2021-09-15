@@ -9,6 +9,7 @@ import org.vision.common.utils.StringUtil;
 import org.vision.core.actuator.ActuatorConstant;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.VotesCapsule;
+import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -18,7 +19,9 @@ import org.vision.core.vm.nativecontract.param.StakeParam;
 import org.vision.core.vm.repository.Repository;
 import org.vision.protos.Protocol;
 
-import static org.vision.core.actuator.ActuatorConstant.*;
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "Processor")
 public class StakeProcessor {
@@ -172,8 +175,22 @@ public class StakeProcessor {
     logger.debug("countVoteAccount, address[{}]",
         ByteArray.toHexString(vote.getVoteAddress().toByteArray()));
 
-    votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount());
-    accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
+    // get freeze and compute a new votes
+    DynamicPropertiesStore dynamicStore = repository.getDynamicPropertiesStore();
+    long interval1 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel1(), VS_PRECISION);
+    long interval2 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel2(), VS_PRECISION);
+    long interval3 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel3(), VS_PRECISION);
+    long visionPower = accountCapsule.getVisionPower();
+    long voteCount = vote.getVoteCount();
+    if (visionPower >= interval3) {
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel3() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+    } else if (visionPower >= interval2) {
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel2() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+    } else if (visionPower >= interval1) {
+      voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+    }
+    votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
+    accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
 
     repository.putAccountValue(accountCapsule.createDbKey(), accountCapsule);
     repository.updateVotesCapsule(ownerAddress, votesCapsule);

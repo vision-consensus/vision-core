@@ -1,39 +1,32 @@
 package org.vision.core.actuator;
 
-import static junit.framework.TestCase.fail;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.vision.common.application.VisionApplicationContext;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.FileUtil;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
+import org.vision.core.capsule.*;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.Manager;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
-import org.vision.common.application.VisionApplicationContext;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.vision.core.capsule.DelegatedResourceCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.VotesCapsule;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.Vote;
 import org.vision.protos.contract.AssetIssueContractOuterClass;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.Common.ResourceCode;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.TestCase.fail;
 
 @Slf4j
 public class UnfreezeBalanceActuatorTest {
@@ -911,7 +904,7 @@ public class UnfreezeBalanceActuatorTest {
     VotesCapsule votesCapsule = new VotesCapsule(
         ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)), oldVotes);
     votesCapsule.addNewVotes(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-        100);
+        100, 0);
     dbManager.getVotesStore().put(ByteArray.fromHexString(OWNER_ADDRESS), votesCapsule);
     accountCapsule.setFrozen(1_000_000_000L, now);
     dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);

@@ -58,6 +58,16 @@ service Wallet {
     };
   };
 
+  rpc GetSpreadMintParent (SpreadRelationShipMessage) returns (SpreadRelationShipList) {
+    option (google.api.http) = {
+      post: "/wallet/getspreadmintparent"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/getspreadmintparent"
+      }
+    };
+  };
+
   //Please use CreateTransaction2 instead of this function.
   rpc CreateTransaction (TransferContract) returns (Transaction) {
     option (google.api.http) = {
@@ -472,6 +482,8 @@ service Wallet {
     };
   };
 
+  rpc GetSpreadRelationShip (SpreadRelationShipMessage) returns (SpreadRelationShipList) {
+  };
 
   rpc GetDelegatedResource (DelegatedResourceMessage) returns (DelegatedResourceList) {
   };
@@ -1080,6 +1092,17 @@ message DelegatedResourceList {
   repeated DelegatedResource delegatedResource = 1;
 }
 
+message SpreadRelationShipMessage {
+  bytes ownerAddress = 1;
+  bytes parentAddress = 2;
+  int32 level = 3;
+  bytes address = 4;
+}
+
+message SpreadRelationShipList {
+  repeated SpreadRelationShip spreadRelationShip = 1;
+}
+
 // Gossip node list
 message NodeList {
   repeated Node nodes = 1;
@@ -1154,6 +1177,9 @@ message AccountResourceMessage {
 
   int64 storageUsed = 21;
   int64 storageLimit = 22;
+
+  int64 TotalSRGuaranteeWeight = 27;
+  int64 TotalSpreadWeight = 32;
 }
 
 message PaginatedMessage {

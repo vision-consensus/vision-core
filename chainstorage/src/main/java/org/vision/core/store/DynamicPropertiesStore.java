@@ -1,10 +1,6 @@
 package org.vision.core.store;
 
 import com.google.protobuf.ByteString;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -18,6 +14,12 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
 
 @Slf4j(topic = "DB")
 @Component
@@ -61,7 +63,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] WITNESS_PAY_PER_BLOCK = "WITNESS_PAY_PER_BLOCK".getBytes();
 
-  private static final byte[] WITNESS_100_PAY_PER_BLOCK = "WITNESS_100_PAY_PER_BLOCK".getBytes();
+  private static final byte[] WITNESS_123_PAY_PER_BLOCK = "WITNESS_123_PAY_PER_BLOCK".getBytes();
 
   private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
   private static final byte[] ENTROPY_FEE = "ENTROPY_FEE".getBytes();
@@ -156,6 +158,24 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] MAX_FEE_LIMIT = "MAX_FEE_LIMIT".getBytes();
   private static final byte[] BURN_VS_AMOUNT = "BURN_VS_AMOUNT".getBytes();
   private static final byte[] ALLOW_BLACKHOLE_OPTIMIZATION = "ALLOW_BLACKHOLE_OPTIMIZATION".getBytes();
+
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL1 = "VOTE_FREEZE_STAGE_LEVEL1".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL2 = "VOTE_FREEZE_STAGE_LEVEL2".getBytes();
+  private static final byte[] VOTE_FREEZE_STAGE_LEVEL3 = "VOTE_FREEZE_STAGE_LEVEL3".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL1 = "VOTE_FREEZE_PERCENT_LEVEL1".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL2 = "VOTE_FREEZE_PERCENT_LEVEL2".getBytes();
+  private static final byte[] VOTE_FREEZE_PERCENT_LEVEL3 = "VOTE_FREEZE_PERCENT_LEVEL3".getBytes();
+
+  private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
+  private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
+
+  private static final byte[] SPREAD_MINT_PAY_PER_BLOCK = "SPREAD_MINT_PAY_PER_BLOCK".getBytes();
+
+  private static final byte[] ECONOMY_CYCLE = "ECONOMY_CYCLE".getBytes();
+  private static final byte[] EFFECT_ECONOMY_CYCLE = "EFFECT_ECONOMY_CYCLE".getBytes();
+  private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
+  private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
+  private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -273,13 +293,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessPayPerBlock(100000L);//0.1VS
+      this.saveWitnessPayPerBlock(144000L);//0.144000VS
     }
 
     try {
       this.getWitnessStandbyAllowance();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessStandbyAllowance(7_200_000_000L);//1VS
+      this.saveWitnessStandbyAllowance(115_200_000_000L);//115200 VS
     }
 
     try {
@@ -292,7 +312,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAccountUpgradeCost();
     } catch (IllegalArgumentException e) {
-      this.saveAccountUpgradeCost(9_999_000_000L);
+      this.saveAccountUpgradeCost(2_000_000_000L); // burn vs 9_999_000_000L --> 2_000_000_000L
     }
 
     try {
@@ -341,6 +361,72 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getTotalEntropyWeight();
     } catch (IllegalArgumentException e) {
       this.saveTotalEntropyWeight(0L);
+    }
+
+    try {
+      this.getTotalSRGuaranteeWeight();
+    } catch (IllegalArgumentException e) {
+      this.saveTotalSRGuaranteeWeight(0L);
+    }
+
+    try {
+      this.getTotalAssets();
+    } catch (IllegalArgumentException e) {
+      this.saveTotalAssets(0L);
+    }
+
+    try {
+      this.getPledgeRate();
+    } catch (IllegalArgumentException e) {
+      this.savePledgeRate(0L);
+    }
+
+    try {
+        this.getInflationRate();
+    } catch (IllegalArgumentException e) {
+        this.saveInflationRate(0L);
+    }
+
+    try {
+      this.getPledgeRateThreshold();
+    } catch (IllegalArgumentException e) {
+      this.savePledgeRateThreshold(60L);
+    }
+
+    try {
+      this.getLowInflationRate();
+    } catch (IllegalArgumentException e) {
+      this.saveLowInflationRate(689L);
+    }
+
+    try {
+      this.getHighInflationRate();
+    } catch (IllegalArgumentException e) {
+      this.saveHighInflationRate(2322L);
+    }
+
+    try {
+      this.getSpreadFreezePeriodLimit();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadFreezePeriodLimit(1L);
+    }
+
+    try {
+      this.getGalaxyInitialAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveGalaxyInitialAmount(0L);
+    }
+
+    try {
+      this.getAvalonInitialAmount();
+    } catch (IllegalArgumentException e) {
+      this.saveAvalonInitialAmount(0L);
+    }
+
+    try {
+      this.getLatestEconomyEndCycle();
+    } catch (IllegalArgumentException e) {
+      this.saveLatestEconomyEndCycle(FIRST_ECONOMY_CYCLE);
     }
 
     try {
@@ -732,6 +818,77 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.saveAllowBlackHoleOptimization(CommonParameter.getInstance().getAllowBlackHoleOptimization());
     }
 
+    try {
+      this.getEconomyCycle();
+    } catch (IllegalArgumentException e) {
+      this.saveEconomyCycle(120L);
+    }
+
+    try {
+      this.getEffectEconomyCycle();
+    } catch (IllegalArgumentException e) {
+      this.saveEffectEconomyCycle(120L);
+    }
+
+    try {
+      this.getVoteFreezeStageLevel1();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageLevel1(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL1);
+    }
+    try {
+      this.getVoteFreezeStageLevel2();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageLevel2(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL2);
+    }
+    try {
+      this.getVoteFreezeStageLevel3();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezeStageLevel3(Parameter.ChainConstant.VOTE_FREEZE_STAGE_LEVEL3);
+    }
+    try {
+      this.getVoteFreezePercentLevel1();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentLevel1(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL1);
+    }
+    try {
+      this.getVoteFreezePercentLevel2();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentLevel2(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL2);
+    }
+    try {
+      this.getVoteFreezePercentLevel3();
+    } catch (IllegalArgumentException e) {
+      this.saveVoteFreezePercentLevel3(Parameter.ChainConstant.VOTE_FREEZE_PERCENT_LEVEL3);
+    }
+
+    try {
+      this.getSrFreezeLowest();
+    } catch (IllegalArgumentException e) {
+      this.saveSrFreezeLowest(Parameter.ChainConstant.SR_FREEZE_LOWEST);
+    }
+    try {
+      this.getSrFreezeLowestPercent();
+    } catch (IllegalArgumentException e) {
+      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
+    }
+
+    try {
+      this.getSpreadMintPayPerBlock();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintPayPerBlock(256000L);//0.256vs
+    }
+
+    try {
+      this.getAllowSpreadMintLevelProp();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowSpreadMintLevelProp(1L);
+    }
+
+    try {
+      this.getSpreadMintLevelProp();
+    } catch (IllegalArgumentException e) {
+      this.saveSpreadMintLevelProp("80,10,8,2");
+    }
   }
 
   public String intArrayToString(int[] a) {
@@ -917,17 +1074,26 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
   }
 
-  public void saveWitness100PayPerBlock(long pay) {
+  public long getWitnessPayPerBlockInflation() {
+    long weight = getWitnessPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
+  public void saveWitness123PayPerBlock(long pay) {
     logger.debug("WITNESS_100_PAY_PER_BLOCK:" + pay);
-    this.put(WITNESS_100_PAY_PER_BLOCK,
+    this.put(WITNESS_123_PAY_PER_BLOCK,
         new BytesCapsule(ByteArray.fromLong(pay)));
   }
 
-  public long getWitness100PayPerBlock() {
-    return Optional.ofNullable(getUnchecked(WITNESS_100_PAY_PER_BLOCK))
+  public long getWitness123PayPerBlock() {
+    return Optional.ofNullable(getUnchecked(WITNESS_123_PAY_PER_BLOCK))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(16000000L);
+        .orElse(1200000L);
+  }
+
+  public long getWitness123PayPerBlockInflation() {
+    return (long) (getWitness123PayPerBlock() * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveWitnessStandbyAllowance(long allowance) {
@@ -942,6 +1108,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
+  }
+
+  public long getWitnessStandbyAllowanceInflation() {
+    long weight = 0L;
+    try{
+      weight = getWitnessStandbyAllowance();
+    } catch (Exception e){
+      logger.info("no found WITNESS_STANDBY_ALLOWANCE");
+    }
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
   }
 
   public void saveOneDayPhotonLimit(long oneDayPhotonLimit) {
@@ -1033,6 +1209,139 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
+  }
+
+  public void saveTotalSRGuaranteeWeight(long totalSRGuaranteeWeight) {
+    this.put(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalSRGuaranteeWeight)));
+  }
+
+  public long getTotalSRGuaranteeWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+            () -> new IllegalArgumentException("not found TOTAL_SRGUARANTEE_WEIGHT"));
+  }
+
+  public void saveTotalAssets(long totalAssets) {
+    this.put(DynamicResourceProperties.TOTAL_ASSETS,
+            new BytesCapsule(ByteArray.fromLong(totalAssets)));
+  }
+
+  public long getTotalAssets() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ASSETS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void savePledgeRate(long pledgeRate) {
+    this.put(DynamicResourceProperties.PLEDGE_RATE,
+            new BytesCapsule(ByteArray.fromLong(pledgeRate)));
+  }
+
+  public long getPledgeRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PLEDGE_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveInflationRate(long inflationRate) {
+    this.put(DynamicResourceProperties.INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(inflationRate)));
+  }
+
+  public long getInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.INFLATION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void savePledgeRateThreshold(long pledgeRateThreshold) {
+    this.put(DynamicResourceProperties.PLEDGE_RATE_THRESHOLD,
+            new BytesCapsule(ByteArray.fromLong(pledgeRateThreshold)));
+  }
+
+  public long getPledgeRateThreshold() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PLEDGE_RATE_THRESHOLD))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(60L);
+  }
+
+  public void saveSpreadFreezePeriodLimit(long freezePeriodLimit) {
+    this.put(DynamicResourceProperties.SPREAD_FREEZE_PERIOD_LIMIT,
+            new BytesCapsule(ByteArray.fromLong(freezePeriodLimit)));
+  }
+
+  public long getSpreadFreezePeriodLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SPREAD_FREEZE_PERIOD_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
+  public void saveLowInflationRate(long lowInflationRate) {
+    this.put(DynamicResourceProperties.LOW_INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(lowInflationRate)));
+  }
+
+  public long getLowInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LOW_INFLATION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(689L);
+  }
+
+  public void saveHighInflationRate(long highInflationRate) {
+    this.put(DynamicResourceProperties.HIGH_INFLATION_RATE,
+            new BytesCapsule(ByteArray.fromLong(highInflationRate)));
+  }
+
+  public long getHighInflationRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.HIGH_INFLATION_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(2322L);
+  }
+
+  public void saveGalaxyInitialAmount(long galaxyInitialAmount) {
+    this.put(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(galaxyInitialAmount)));
+  }
+
+  public long getGalaxyInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.GALAXY_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveAvalonInitialAmount(long avalonInitialAmount) {
+    this.put(DynamicResourceProperties.AVALON_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(avalonInitialAmount)));
+  }
+
+  public long getAvalonInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.AVALON_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveLatestEconomyEndCycle(long latestEconomyEndCycle) {
+    this.put(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(latestEconomyEndCycle)));
+  }
+
+  public long getLatestEconomyEndCycle() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(FIRST_ECONOMY_CYCLE);
   }
 
   public void saveTotalPhotonLimit(long totalPhotonLimit) {
@@ -1813,6 +2122,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException(msg));
   }
 
+
   public boolean supportShieldedTransaction() {
     return getAllowShieldedTransaction() == 1L;
   }
@@ -2006,6 +2316,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     saveTotalEntropyWeight(totalEntropyWeight);
   }
 
+  //The unit is vs
+  public void addTotalSRGuaranteeWeight(long amount) {
+    long totalnewSRGuarantee = getTotalSRGuaranteeWeight();
+    totalnewSRGuarantee += amount;
+    saveTotalSRGuaranteeWeight(totalnewSRGuarantee);
+  }
+
+  public void addTotalAssets(long amount) {
+    long totalAssets = getTotalAssets();
+    totalAssets += amount;
+    saveTotalAssets(totalAssets);
+  }
+
   public void addTotalCreateAccountCost(long fee) {
     long newValue = getTotalCreateAccountCost() + fee;
     saveTotalCreateAccountFee(newValue);
@@ -2162,6 +2485,182 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElseThrow(
             () -> new IllegalArgumentException("not found ALLOW_BLACKHOLE_OPTIMIZATION"));
   }
+
+  public void addTotalSpreadMintWeight(long amount) {
+      long totalSpreadMintWeight = getTotalSpreadMintWeight();
+      totalSpreadMintWeight += amount;
+      saveTotalSpreadMintWeight(totalSpreadMintWeight);
+    }
+
+  public void saveTotalSpreadMintWeight(long totalSpreadMintWeight) {
+    this.put(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalSpreadMintWeight)));
+  }
+
+  public long getTotalSpreadMintWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public long getSpreadMintPayPerBlock() {
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_PAY_PER_BLOCK))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(256000L);
+  }
+
+  public long getSpreadMintPayPerBlockInflation() {
+    long weight = getSpreadMintPayPerBlock();
+    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
+  }
+
+  public boolean supportSpreadMint() {
+    return getAllowSpreadMintLevelProp() == 1L;
+  }
+
+  public void saveSpreadMintLevelProp(String value) {
+    this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getSpreadMintLevelProp() {
+    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL_PROP))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
+  }
+
+  public void saveAllowSpreadMintLevelProp(long value) {
+    this.put(ALLOW_SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowSpreadMintLevelProp() {
+    return Optional.ofNullable(getUnchecked(ALLOW_SPREAD_MINT_LEVEL_PROP))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found ALLOW_SPREAD_MINT_LEVEL_PROP"));
+  }
+
+  public void saveVoteFreezeStageLevel1(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL1, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageLevel1() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL1))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_FIRST"));
+  }
+
+  public void saveVoteFreezeStageLevel2(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL2, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageLevel2() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL2))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_SECOND"));
+  }
+
+  public void saveVoteFreezeStageLevel3(long value) {
+    this.put(VOTE_FREEZE_STAGE_LEVEL3, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getVoteFreezeStageLevel3() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_STAGE_LEVEL3))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_STAGE_THREE"));
+  }
+
+  public void saveVoteFreezePercentLevel1(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL1, new BytesCapsule(ByteArray.fromInt(value)));
+  }
+  public int getVoteFreezePercentLevel1() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL1))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toInt)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_FIRST"));
+  }
+
+  public void saveVoteFreezePercentLevel2(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL2, new BytesCapsule(ByteArray.fromInt(value)));
+  }
+  public int getVoteFreezePercentLevel2() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL2))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toInt)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_SECOND"));
+  }
+
+  public void saveVoteFreezePercentLevel3(int value) {
+    this.put(VOTE_FREEZE_PERCENT_LEVEL3, new BytesCapsule(ByteArray.fromInt(value)));
+  }
+  public int getVoteFreezePercentLevel3() {
+    return Optional.ofNullable(getUnchecked(VOTE_FREEZE_PERCENT_LEVEL3))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toInt)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VOTE_FREEZE_PERCENT_THREE"));
+  }
+
+  public void saveSrFreezeLowest(long value) {
+    this.put(SR_FREEZE_LOWEST, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+  public long getSrFreezeLowest() {
+    return Optional.ofNullable(getUnchecked(SR_FREEZE_LOWEST))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST"));
+  }
+
+  public void saveSrFreezeLowestPercent(int value) {
+    this.put(SR_FREEZE_LOWEST_PERCENT, new BytesCapsule(ByteArray.fromInt(value)));
+  }
+  public int getSrFreezeLowestPercent() {
+    return Optional.ofNullable(getUnchecked(SR_FREEZE_LOWEST_PERCENT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toInt)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
+  }
+
+  public void saveSpreadMintPayPerBlock(long value) {
+    this.put(SPREAD_MINT_PAY_PER_BLOCK, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public void saveEconomyCycle(long value) {
+    this.put(ECONOMY_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getEconomyCycle() {
+    return Optional.ofNullable(getUnchecked(ECONOMY_CYCLE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(120L);
+  }
+
+  public void saveEffectEconomyCycle(long effectEconomyCycle) {
+    this.put(EFFECT_ECONOMY_CYCLE,
+            new BytesCapsule(ByteArray.fromLong(effectEconomyCycle)));
+  }
+
+  public long getEffectEconomyCycle() {
+    return Optional.ofNullable(getUnchecked(EFFECT_ECONOMY_CYCLE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(120L);
+  }
+
+
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
@@ -2183,12 +2682,26 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ENTROPY_WEIGHT = "TOTAL_ENTROPY_WEIGHT".getBytes();
     private static final byte[] TOTAL_ENTROPY_LIMIT = "TOTAL_ENTROPY_LIMIT".getBytes();
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
+
+    private static final byte[] TOTAL_SRGUARANTEE_WEIGHT = "TOTAL_SRGUARANTEE_WEIGHT".getBytes();
+    private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
+    private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
+    private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
+    private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
+    private static final byte[] SPREAD_FREEZE_PERIOD_LIMIT = "SPREAD_FREEZE_PERIOD_LIMIT".getBytes();
+    private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
+    private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
+    private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
+    private static final byte[] LATEST_ECONOMY_END_CYCLE = "LATEST_ECONOMY_END_CYCLE".getBytes();
+    private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO =
         "ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"
             .getBytes();
+    private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
+
   }
 
 }

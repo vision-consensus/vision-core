@@ -46,8 +46,8 @@ public class Parameter {
 
   public class ChainConstant {
 
-    public static final int MAX_ACTIVE_WITNESS_NUM = 23;
-    public static final int WITNESS_STANDBY_LENGTH = 100;
+    public static final int MAX_ACTIVE_WITNESS_NUM = 3; //TODO fix to 23
+    public static final int WITNESS_STANDBY_LENGTH = 123;
     public static final long TRANSFER_FEE = 0; // free
     public static final int BLOCK_PRODUCED_INTERVAL = 3000; //ms,produce block period, must be divisible by 60. millisecond
     public static final int MAX_VOTE_NUMBER = 30;
@@ -65,6 +65,24 @@ public class Parameter {
     public static final int BLOCK_VERSION = 20;
     public static final long FROZEN_PERIOD = 86_400_000L;
     public static final long VS_PRECISION = 1000_000L;
+    public static final long UN_FREEZE_SRGUARANTEE_LIMIT = 1987_200_000L;
+    public static final long FIRST_ECONOMY_CYCLE = 42L;
+    public static final int QUERY_SPREAD_MINT_PARENT_LEVEL_MAX = 4;
+
+
+
+    public static final long VOTE_FREEZE_STAGE_LEVEL1 = 1000;
+    public static final long VOTE_FREEZE_STAGE_LEVEL2 = 10000;
+    public static final long VOTE_FREEZE_STAGE_LEVEL3 = 100000;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL1 = 108;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL2 = 113;
+    public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
+
+
+    public static final long SR_FREEZE_LOWEST = 5000_000_000L;
+    public static final int SR_FREEZE_LOWEST_PERCENT = 65;
+    public static final int VOTE_PERCENT_PRECISION = 100;
+    public static final int SR_FREEZE_LOWEST_PRECISION = 1000;
   }
 
   public class NodeConstant {
