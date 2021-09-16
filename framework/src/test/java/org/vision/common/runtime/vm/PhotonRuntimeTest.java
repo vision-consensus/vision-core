@@ -64,9 +64,9 @@ public class PhotonRuntimeTest {
   private static Manager dbManager;
   private static ChainBaseManager chainBaseManager;
 
-  private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-  private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
-  private static String TriggerOwnerTwoAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
+  private static String OwnerAddress = "27ek4vTuvNVMMs4DRS2eoBxrarh1wnjQ4rq";
+  private static String TriggerOwnerAddress = "27ek4vTuvNVMMu2oqcmEtwo52DrxcmDkotu";
+  private static String TriggerOwnerTwoAddress = "27ek4vTuvNVMMw1QFoVpzhdHTb2uHgbFFmw";
 
   static {
     Args.setParam(
@@ -199,7 +199,7 @@ public class PhotonRuntimeTest {
 
       Assert.assertEquals(photon, receipt.getPhotonUsage());
       Assert.assertEquals(522850, receipt.getEntropyUsageTotal());
-      Assert.assertEquals(50000, receipt.getEntropyUsage());
+      Assert.assertEquals(3000, receipt.getEntropyUsage()); // 50000
       Assert.assertEquals(47285000, receipt.getEntropyFee());
       Assert.assertEquals(totalBalance - receipt.getEntropyFee(),
           balance);
@@ -251,12 +251,10 @@ public class PhotonRuntimeTest {
     entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
-    Assert.assertEquals(52299, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(50000, entropy);
-    Assert.assertEquals(229900, balance);
-    Assert
-        .assertEquals(52299 * Constant.VDT_PER_ENTROPY,
-            balance + entropy * Constant.VDT_PER_ENTROPY);
+    Assert.assertEquals(198003000, trace.getReceipt().getEntropyUsageTotal());//52299
+    Assert.assertEquals(3000, entropy); // 50000
+    Assert.assertEquals(990000000, balance);//229900
+    Assert.assertEquals(198003000, balance / 5 + entropy );
     Assert.assertNull(trace.getRuntimeError());
     return trace.getRuntimeResult().getContractAddress();
   }

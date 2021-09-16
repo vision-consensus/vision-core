@@ -11,10 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.*;
 import org.vision.consensus.dpos.DposSlot;
@@ -85,8 +82,8 @@ public class ManagerTest extends BlockGenerate {
   private static String accountAddress =
       Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
 
-  @Before
-  public void init() {
+  @BeforeClass
+  public static void init() {
     Args.setParam(new String[]{"-d", dbPath, "-w"}, Constant.TEST_CONF);
     Args.getInstance().setNodeListenPort(10000 + port.incrementAndGet());
     context = new VisionApplicationContext(DefaultConfig.class);
