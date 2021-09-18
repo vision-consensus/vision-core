@@ -46,7 +46,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
     super(dbName);
   }
 
-  public void sendBlockMsg(final BlockCapsule capsule, long reward, AccountCapsule account, WitnessCapsule witness){
+  public void sendBlockMsg(final BlockCapsule capsule, JSONObject reward, AccountCapsule account, WitnessCapsule witness){
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
@@ -75,7 +75,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("originEntropyUsage", originEntropyUsage);
       obj.put("entropyUsageTotal", entropyUsageTotal);
       obj.put("photonUsage", photonUsage);
-      obj.put("reward", reward);
+      obj.putAll(reward);
       JSONArray witnesses = new JSONArray();
       JSONObject tmp = new JSONObject();
       tmp.put("address", StringUtil.encode58Check(capsule.getWitnessAddress().toByteArray()));
