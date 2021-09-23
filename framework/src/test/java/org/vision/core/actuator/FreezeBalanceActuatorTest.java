@@ -120,6 +120,16 @@ public class FreezeBalanceActuatorTest {
             .build());
   }
 
+  private Any getContractForSpread(String ownerAddress, String parentAddress, long frozenBalance, long duration) {
+    return Any.pack(
+            FreezeBalanceContract.newBuilder()
+                    .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+                    .setFrozenBalance(frozenBalance)
+                    .setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(parentAddress)))
+                    .setFrozenDuration(duration)
+                    .setResource(ResourceCode.SPREAD)
+                    .build());
+  }
   private Any getDelegatedContractForPhoton(String ownerAddress, String receiverAddress,
                                             long frozenBalance,
                                             long duration) {
@@ -172,12 +182,12 @@ public class FreezeBalanceActuatorTest {
   }
 
   @Test
-  public void testFreezeBalanceForEntropy() {
+  public void testFreezeBalanceForSpread() {
     long frozenBalance = 1_000_000_000L;
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-        .setAny(getContractForCpu(OWNER_ADDRESS, frozenBalance, duration));
+        .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -190,6 +200,34 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - Parameter.ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
+      Assert.assertEquals(frozenBalance, owner.getSpreadFrozenBalance());
+      Assert.assertEquals(0L, owner.getVisionPower());
+    } catch (ContractValidateException e) {
+      Assert.assertFalse(e instanceof ContractValidateException);
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
+  }
+
+  @Test
+  public void testFreezeBalanceForEntropy() {
+    long frozenBalance = 1_000_000_000L;
+    long duration = 3;
+    FreezeBalanceActuator actuator = new FreezeBalanceActuator();
+    actuator.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForCpu(OWNER_ADDRESS, frozenBalance, duration));
+
+    TransactionResultCapsule ret = new TransactionResultCapsule();
+    try {
+      actuator.validate();
+      actuator.execute(ret);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      AccountCapsule owner =
+              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+
+      Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
+              - Parameter.ChainConstant.TRANSFER_FEE);
+      Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(frozenBalance, owner.getEntropyFrozenBalance());
       Assert.assertEquals(frozenBalance, owner.getVisionPower());
     } catch (ContractValidateException e) {
@@ -198,7 +236,6 @@ public class FreezeBalanceActuatorTest {
       Assert.assertFalse(e instanceof ContractExeException);
     }
   }
-
 
   @Test
   public void testFreezeDelegatedBalanceForPhotonWithContractAddress() {
@@ -650,6 +687,102 @@ public class FreezeBalanceActuatorTest {
 
     actuatorTest.setNullDBManagerMsg("No account store or dynamic store!");
     actuatorTest.nullDBManger();
+  }
+
+  @Test
+  public void noFrozenBalanceForSpreadFreezeTest(){
+    long frozenBalance = 0L;
+    long duration = 3;
+    FreezeBalanceActuator actuator = new FreezeBalanceActuator();
+    actuator.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+
+    TransactionResultCapsule ret = new TransactionResultCapsule();
+    try {
+      actuator.validate();
+      actuator.execute(ret);
+      fail("cannot run here.");
+    } catch (ContractValidateException e) {
+      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertEquals("the address has not yet set a parentAddress, frozenBalance must be more than 1VS", e.getMessage());
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
+  }
+
+  @Test
+  public void notTimeReFreezeSpreadTest(){
+    long frozenBalance = 1000000L;
+    long duration = 3;
+    FreezeBalanceActuator actuator = new FreezeBalanceActuator();
+    actuator.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+
+    TransactionResultCapsule ret = new TransactionResultCapsule();
+    try {
+      actuator.validate();
+      actuator.execute(ret);
+//      fail("cannot run here.");
+    } catch (ContractValidateException e) {
+      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertEquals("frozenBalance must be more than 1VS", e.getMessage());
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
+
+    // repeated freeze use the same parent address
+    FreezeBalanceActuator actuator2 = new FreezeBalanceActuator();
+    actuator2.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+    TransactionResultCapsule ret2 = new TransactionResultCapsule();
+    try {
+      actuator2.validate();
+      actuator2.execute(ret2);
+      fail("cannot run here.");
+    } catch (ContractValidateException e) {
+      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertEquals("It's not time to re-freeze.", e.getMessage());
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
+  }
+
+
+  @Test
+  public void isCycleFreezeForSpreadTest(){
+    long frozenBalance = 1000000L;
+    long duration = 3;
+    FreezeBalanceActuator actuator = new FreezeBalanceActuator();
+    actuator.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+
+    TransactionResultCapsule ret = new TransactionResultCapsule();
+    try {
+      actuator.validate();
+      actuator.execute(ret);
+//      fail("cannot run here.");
+    } catch (ContractValidateException e) {
+      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertEquals("frozenBalance must be more than 1VS", e.getMessage());
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
+
+    // repeated freeze use the same parent address
+    FreezeBalanceActuator actuator2 = new FreezeBalanceActuator();
+    actuator2.setChainBaseManager(dbManager.getChainBaseManager())
+            .setAny(getContractForSpread(RECEIVER_ADDRESS, OWNER_ADDRESS, frozenBalance, duration));
+    TransactionResultCapsule ret2 = new TransactionResultCapsule();
+    try {
+      actuator2.validate();
+      actuator2.execute(ret2);
+      fail("cannot run here.");
+    } catch (ContractValidateException e) {
+      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertEquals("Illegal parentAddress, the parentAddress will generate a cycle", e.getMessage());
+    } catch (ContractExeException e) {
+      Assert.assertFalse(e instanceof ContractExeException);
+    }
   }
 
 
