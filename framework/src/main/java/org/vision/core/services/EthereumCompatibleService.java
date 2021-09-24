@@ -28,6 +28,7 @@ import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
 import org.vision.core.services.http.JsonFormat;
 import org.vision.core.services.http.Util;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
@@ -189,6 +190,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_sendRawTransaction(String rawData) throws Exception {
+        long allowMetamaskSendRawTransaction = chainBaseManager.getDynamicPropertiesStore().getAllowMetamaskSendRawTransaction();
+        if (allowMetamaskSendRawTransaction == 0) {
+            return "not allowed,please submit proposal";
+        }
         TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(ByteArray.fromHexString(rawData));
         ethTrx.rlpParse();
         GrpcAPI.TransactionExtention.Builder trxExtBuilder = GrpcAPI.TransactionExtention.newBuilder();

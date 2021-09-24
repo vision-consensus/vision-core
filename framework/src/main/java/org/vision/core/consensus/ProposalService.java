@@ -264,6 +264,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSpreadFreezePeriodLimit(entry.getValue());
           break;
         }
+        case ALLOW_METAMASK_SENDRAWTRANSACTION: {
+          manager.getDynamicPropertiesStore().saveAllowMetamaskSendRawTransaction(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;

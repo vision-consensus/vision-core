@@ -1284,6 +1284,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
+  public void saveAllowMetamaskSendRawTransaction(long allowMetamaskSendRawTransaction) {
+    this.put(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION,
+            new BytesCapsule(ByteArray.fromLong(allowMetamaskSendRawTransaction)));
+  }
+
+  public long getAllowMetamaskSendRawTransaction() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
   public void saveLowInflationRate(long lowInflationRate) {
     this.put(DynamicResourceProperties.LOW_INFLATION_RATE,
             new BytesCapsule(ByteArray.fromLong(lowInflationRate)));
@@ -2689,6 +2701,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
     private static final byte[] SPREAD_FREEZE_PERIOD_LIMIT = "SPREAD_FREEZE_PERIOD_LIMIT".getBytes();
+    private static final byte[] ALLOW_METAMASK_SENDRAWTRANSACTION = "ALLOW_METAMASK_SENDRAWTRANSACTION".getBytes();
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
     private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
