@@ -71,10 +71,12 @@ public class ForkController {
     long hardForkTime = ((versionEnum.getHardForkTime() - 1) / maintenanceTimeInterval + 1)
         * maintenanceTimeInterval;
     if (latestBlockTime < hardForkTime) {
+      logger.info("passNew latestBlockTime: {} hardForkTime: {}", latestBlockTime, hardForkTime);
       return false;
     }
     byte[] stats = manager.getDynamicPropertiesStore().statsByVersion(version);
     if (stats == null || stats.length == 0) {
+      logger.info("passNew stats by version is null");
       return false;
     }
     int count = 0;
@@ -83,6 +85,8 @@ public class ForkController {
         ++count;
       }
     }
+    logger.info("passNew count: {}, hardForkRate: {}", count, Math
+            .ceil((double) versionEnum.getHardForkRate() * manager.getWitnesses().size() / 100));
     return count >= Math
         .ceil((double) versionEnum.getHardForkRate() * manager.getWitnesses().size() / 100);
   }
