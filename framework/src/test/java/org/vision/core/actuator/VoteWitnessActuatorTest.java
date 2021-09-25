@@ -6,11 +6,15 @@ import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import java.io.File;
+import java.lang.reflect.Method;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
+import org.junit.rules.TestName;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.FileUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.dpos.MaintenanceManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
@@ -102,13 +106,13 @@ public class VoteWitnessActuatorTest {
             StringUtil.hexString2ByteString(WITNESS_ADDRESS),
             10L,
             URL);
-    // ownerCapsule.setVoteCountWeight(ownerCapsule.getVoteCount());
+    ownerCapsule.setVoteCountWeight(ownerCapsule.getVoteCount());
     AccountCapsule witnessAccountSecondCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(WITNESS_NAME),
             StringUtil.hexString2ByteString(WITNESS_ADDRESS),
             AccountType.Normal,
-            300L);
+            300_000_000_000L);
     AccountCapsule ownerAccountFirstCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(ACCOUNT_NAME),
@@ -189,7 +193,7 @@ public class VoteWitnessActuatorTest {
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
               .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
+      maintenanceManager.doMaintenance();
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
           .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       Assert.assertEquals(10 + 1, witnessCapsule.getVoteCount());
@@ -204,7 +208,7 @@ public class VoteWitnessActuatorTest {
    * voteWitness with weight,result is success.
    * 1000-10000  voteCount*1.08
    */
-  // @Test
+  @Test
   public void voteWitnessLevel1() {
     long frozenBalance = 2_000_000_000L;
     long duration = 3;
@@ -227,7 +231,7 @@ public class VoteWitnessActuatorTest {
               dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
                       .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
+      maintenanceManager.doMaintenance();
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
               .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       Assert.assertEquals(10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel1() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
@@ -242,7 +246,7 @@ public class VoteWitnessActuatorTest {
    * voteWitness with weight,result is success.
    * 10000-100000  voteCount*1.13
    */
-  // @Test
+  @Test
   public void voteWitnessLevel2() {
     long frozenBalance = 20_000_000_000L;
     long duration = 3;
@@ -265,7 +269,7 @@ public class VoteWitnessActuatorTest {
               dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
                       .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
+      maintenanceManager.doMaintenance();
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
               .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       Assert.assertEquals(10 + 113, 10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel2() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
@@ -280,7 +284,7 @@ public class VoteWitnessActuatorTest {
    * voteWitness with weight,result is success.
    * >100000  voteCount*1.16
    */
-  // @Test
+  @Test
   public void voteWitnessLevel3() {
     long frozenBalance = 200_000_000_000L;
     long duration = 3;
@@ -303,7 +307,7 @@ public class VoteWitnessActuatorTest {
               dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
                       .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
+      maintenanceManager.doMaintenance();
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
               .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       Assert.assertEquals(10 + 116, 10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel3() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
@@ -318,7 +322,7 @@ public class VoteWitnessActuatorTest {
    * voteWitness with weight,result is success.
    * 1000-10000  voteCount*1.08
    */
-  // @Test
+  @Test
   public void voteWitnessThresHold() {
     long frozenBalance = 2_000_000_000L;
     long duration = 3;
@@ -347,7 +351,7 @@ public class VoteWitnessActuatorTest {
               dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
                       .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
+      maintenanceManager.doMaintenance();
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
               .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       AccountCapsule account = dbManager.getAccountStore().get(ByteArray.fromHexString(WITNESS_ADDRESS));
