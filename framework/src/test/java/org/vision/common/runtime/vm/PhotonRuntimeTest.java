@@ -28,6 +28,7 @@ import org.vision.common.utils.Commons;
 import org.vision.common.utils.FileUtil;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
+import org.vision.core.Wallet;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.ReceiptCapsule;
@@ -53,6 +54,7 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.raw;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import stest.vision.wallet.common.client.Parameter;
 
 public class PhotonRuntimeTest {
 
@@ -159,13 +161,14 @@ public class PhotonRuntimeTest {
       trace.exec();
       trace.finalization();
 
+      Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
       triggerOwner = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerAddress));
       entropy = triggerOwner.getEntropyUsage();
       long balance = triggerOwner.getBalance();
-      Assert.assertEquals(45706, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(45706, entropy);
-      Assert.assertEquals(totalBalance, balance);
+      Assert.assertEquals(75706, trace.getReceipt().getEntropyUsageTotal());//45706
+      Assert.assertEquals(3000, entropy); //45706
+      Assert.assertEquals(9999999636470L, balance); //totalBalance
     } catch (VisionException e) {
       Assert.assertNotNull(e);
     }
@@ -192,15 +195,16 @@ public class PhotonRuntimeTest {
       trace.exec();
       trace.finalization();
 
+      Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
       AccountCapsule triggerOwnerTwo = dbManager.getAccountStore()
           .get(Commons.decodeFromBase58Check(TriggerOwnerTwoAddress));
       long balance = triggerOwnerTwo.getBalance();
       ReceiptCapsule receipt = trace.getReceipt();
 
       Assert.assertEquals(photon, receipt.getPhotonUsage());
-      Assert.assertEquals(522850, receipt.getEntropyUsageTotal());
+      Assert.assertEquals(1257850, receipt.getEntropyUsageTotal()); //522850
       Assert.assertEquals(3000, receipt.getEntropyUsage()); // 50000
-      Assert.assertEquals(47285000, receipt.getEntropyFee());
+      Assert.assertEquals(6274250, receipt.getEntropyFee()); //47285000
       Assert.assertEquals(totalBalance - receipt.getEntropyFee(),
           balance);
     } catch (VisionException e) {
@@ -251,10 +255,10 @@ public class PhotonRuntimeTest {
     entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertNull(trace.getRuntimeError());
-    Assert.assertEquals(198003000, trace.getReceipt().getEntropyUsageTotal());//52299
+    Assert.assertEquals(52299, trace.getReceipt().getEntropyUsageTotal());//52299,198003000
     Assert.assertEquals(3000, entropy); // 50000
-    Assert.assertEquals(990000000, balance);//229900
-    Assert.assertEquals(198003000, balance / 5 + entropy );
+    Assert.assertEquals(246495, balance);//229900,990000000
+    Assert.assertEquals(52299, balance / 5 + entropy ); //198003000
     Assert.assertNull(trace.getRuntimeError());
     return trace.getRuntimeResult().getContractAddress();
   }

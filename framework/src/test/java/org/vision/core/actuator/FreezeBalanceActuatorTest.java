@@ -38,6 +38,7 @@ public class FreezeBalanceActuatorTest {
   private static final String dbPath = "output_freeze_balance_test";
   private static final String OWNER_ADDRESS;
   private static final String RECEIVER_ADDRESS;
+  private static final String PARENT_ADDRESS;
   private static final String OWNER_ADDRESS_INVALID = "aaaa";
   private static final String OWNER_ACCOUNT_INVALID;
   private static final long initBalance = 10_000_000_000L;
@@ -49,6 +50,7 @@ public class FreezeBalanceActuatorTest {
     context = new VisionApplicationContext(DefaultConfig.class);
     OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
     RECEIVER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049150";
+    PARENT_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049151";
     OWNER_ACCOUNT_INVALID =
         Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
   }
@@ -695,7 +697,7 @@ public class FreezeBalanceActuatorTest {
     long duration = 3;
     FreezeBalanceActuator actuator = new FreezeBalanceActuator();
     actuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContractForSpread(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration));
+            .setAny(getContractForSpread(RECEIVER_ADDRESS, PARENT_ADDRESS, frozenBalance, duration));
 
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -763,7 +765,7 @@ public class FreezeBalanceActuatorTest {
 //      fail("cannot run here.");
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("frozenBalance must be more than 1VS", e.getMessage());
+      Assert.assertEquals("It's not time to re-freeze.", e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
     }

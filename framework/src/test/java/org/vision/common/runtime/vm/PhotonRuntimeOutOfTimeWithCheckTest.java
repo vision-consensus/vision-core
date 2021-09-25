@@ -101,6 +101,8 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
     context = new VisionApplicationContext(DefaultConfig.class);
   }
 
+  private String trx2ContractAddress = "27ek4vTuvNVMMw1QFoVpzhdHTb2uHgbFFmw";
+
   /**
    * Init data.
    */
@@ -182,7 +184,7 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
       Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(50000, entropy);
+      Assert.assertEquals(3000, entropy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENTROPY,
           balance + entropy * Constant.VDT_PER_ENTROPY);

@@ -76,8 +76,8 @@ public class PhotonRuntimeOutOfTimeTest {
   private static AnnotationConfigApplicationContext context;
   private static Manager dbManager;
 
-  private static String OwnerAddress = "VCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-  private static String TriggerOwnerAddress = "VCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
+  private static String OwnerAddress = "27ek4vTuvNVMMs4DRS2eoBxrarh1wnjQ4rq";
+  private static String TriggerOwnerAddress = "27ek4vTuvNVMMu2oqcmEtwo52DrxcmDkotu";
 
   static {
     Args.setParam(
@@ -167,7 +167,7 @@ public class PhotonRuntimeOutOfTimeTest {
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
       Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(50000, entropy);
+      Assert.assertEquals(3000, entropy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENTROPY,
           balance + entropy * Constant.VDT_PER_ENTROPY);
@@ -228,9 +228,9 @@ public class PhotonRuntimeOutOfTimeTest {
     entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
     Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(50000, entropy);
-    Assert.assertEquals(3852900, balance);
-    Assert.assertEquals(88529 * 100, balance + entropy * 100);
+    Assert.assertEquals(3000, entropy);
+    Assert.assertEquals(427645, balance); //3852900
+    Assert.assertEquals(88529 * 5, balance + entropy * 5);
     if (trace.getRuntimeError() != null) {
       return trace.getRuntimeResult().getContractAddress();
     }

@@ -19,6 +19,8 @@ import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.File;
+import java.util.Objects;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -165,7 +167,7 @@ public class TransactionTraceTest {
         + "\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"pay"
         + "able\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
     CreateSmartContract smartContract = VvmTestUtils.createSmartContract(
-        Commons.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0,
+            Objects.requireNonNull(Commons.decodeFromBase58Check(OwnerAddress)), contractName, abi, code, 0,
         100);
     Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
         Contract.newBuilder().setParameter(Any.pack(smartContract))
