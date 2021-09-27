@@ -308,7 +308,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
                     .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + errString));
         }
         trxExtBuilder.setResult(retBuilder);
-        return "0x" + ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
+        if(trxExtBuilder.build().getConstantResultCount()>0){
+            return "0x" + ByteArray.toHexString(trxExtBuilder.build().getConstantResult(0).toByteArray());
+        }else{
+            return null;
+        }
     }
 
     @Override
