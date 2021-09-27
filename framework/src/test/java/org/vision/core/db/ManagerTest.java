@@ -71,6 +71,7 @@ import org.vision.protos.contract.ShieldContract;
 public class ManagerTest extends BlockGenerate {
 
   private static final int SHIELDED_TRANS_IN_BLOCK_COUNTS = 1;
+  private static final long AMOUNT = 100000000L;
   private static Manager dbManager;
   private static ChainBaseManager chainManager;
   private static ConsensusService consensusService;
@@ -383,6 +384,7 @@ public class ManagerTest extends BlockGenerate {
 
   @Test
   public void adjustTotalShieldPoolValueTest() {
+    chainManager.getDynamicPropertiesStore().saveTotalShieldedPoolValue(AMOUNT);
     long valueBalance = chainManager.getDynamicPropertiesStore().getTotalShieldedPoolValue() + 1;
     try {
       Commons.adjustTotalShieldedPoolValue(valueBalance, chainManager.getDynamicPropertiesStore());

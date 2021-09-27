@@ -29,7 +29,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.vision.common.runtime.VvmTestUtils;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
+import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.FileUtil;
+import org.vision.core.Wallet;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.ContractCapsule;
 import org.vision.core.capsule.TransactionCapsule;
@@ -54,6 +56,7 @@ import org.vision.protos.Protocol.Transaction.raw;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import stest.vision.wallet.common.client.Parameter;
 
 public class TransactionTraceTest {
 
@@ -166,6 +169,7 @@ public class TransactionTraceTest {
         + "name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable"
         + "\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"pay"
         + "able\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
+    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     CreateSmartContract smartContract = VvmTestUtils.createSmartContract(
             Objects.requireNonNull(Commons.decodeFromBase58Check(OwnerAddress)), contractName, abi, code, 0,
         100);
@@ -195,6 +199,7 @@ public class TransactionTraceTest {
       throws VMIllegalException, BalanceInsufficientException,
       ContractValidateException, ContractExeException {
 
+    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
@@ -331,6 +336,7 @@ public class TransactionTraceTest {
         + "\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payab"
         + "le\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\""
         + "payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
+    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     CreateSmartContract smartContract = VvmTestUtils.createSmartContract(
         Commons.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0,
         100);
