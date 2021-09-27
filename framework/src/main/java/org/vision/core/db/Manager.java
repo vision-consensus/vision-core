@@ -1398,10 +1398,16 @@ public class Manager {
         }
       }
     }
-    long reward = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock();
-    reward += chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock();
+    JSONObject reward = new JSONObject();
+    reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock());
+    reward.put("witnessPay", chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock());
+    int brokerage = getDelegationStore().getBrokerage(
+            chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber(),
+            witnessCapsule.getAddress().toByteArray());
+    reward.put("brokerageRate", (double) brokerage / 100);
+    reward.put("spreadMintPay", 0);
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-      reward += chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
+      reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
     }
     chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule);
 

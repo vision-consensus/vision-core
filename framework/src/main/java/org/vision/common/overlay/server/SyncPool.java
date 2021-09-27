@@ -119,17 +119,17 @@ public class SyncPool {
     String str = String.format("\n\n============ Peer stats: all %d, active %d, passive %d\n\n",
         channelManager.getActivePeers().size(), activePeersCount.get(), passivePeersCount.get());
     StringBuilder sb = new StringBuilder(str);
-    JSONArray peers = new JSONArray();
+//    JSONArray peers = new JSONArray();
     for (PeerConnection peer : new ArrayList<>(activePeers)) {
       sb.append(peer.log()).append('\n');
-      if(CommonParameter.PARAMETER.isKafkaEnable()) {
-        peers.add(peer.getNodeJson());
-      }
+//      if(CommonParameter.PARAMETER.isKafkaEnable()) {
+//        peers.add(peer.getNodeJson());
+//      }
     }
     logger.info(sb.toString());
-    if(CommonParameter.PARAMETER.isKafkaEnable()) {
-      Producer.getInstance().send("NODEINFO", peers.toJSONString());
-    }
+//    if(CommonParameter.PARAMETER.isKafkaEnable()) {
+//      Producer.getInstance().send("NODEINFO", peers.toJSONString());
+//    }
   }
 
   public List<PeerConnection> getActivePeers() {

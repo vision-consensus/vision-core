@@ -189,10 +189,10 @@ public class DposService implements ConsensusInterface {
       }catch (Exception e){
         logger.info("no SRGuarantee");
       }
-      json.put("totalEntropyWeight", totalEntropyWeight * VS_PRECISION);
-      json.put("totalPhotonWeight", totalPhotonWeight * VS_PRECISION) ;
-      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight * VS_PRECISION);
-      json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight() * VS_PRECISION);
+      json.put("totalEntropyWeight", totalEntropyWeight);
+      json.put("totalPhotonWeight", totalPhotonWeight);
+      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight);
+      json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       JSONArray witnesses = new JSONArray();
       consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
         .forEach(address -> {

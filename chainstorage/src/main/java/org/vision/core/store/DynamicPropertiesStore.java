@@ -879,12 +879,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getSpreadMintLevel();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadMintLevel(3);
-    }
-
-    try {
       this.getAllowSpreadMintLevelProp();
     } catch (IllegalArgumentException e) {
       this.saveAllowSpreadMintLevelProp(1L);
@@ -1285,6 +1279,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public long getSpreadFreezePeriodLimit() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SPREAD_FREEZE_PERIOD_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
+  public void saveAllowMetamaskSendRawTransaction(long allowMetamaskSendRawTransaction) {
+    this.put(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION,
+            new BytesCapsule(ByteArray.fromLong(allowMetamaskSendRawTransaction)));
+  }
+
+  public long getAllowMetamaskSendRawTransaction() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(1L);
@@ -1971,6 +1977,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
           .getAllowVvmConstantinople());
       addSystemContractAndSetPermission(48);
     }
+    if (CommonParameter.getInstance()
+            .getChangedDelegation() != 0) {
+      saveChangeDelegation(CommonParameter.getInstance()
+              .getChangedDelegation());
+      addSystemContractAndSetPermission(49);
+    }
   }
 
   public void saveActiveDefaultOperations(byte[] value) {
@@ -2526,18 +2538,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getAllowSpreadMintLevelProp() == 1L;
   }
 
-  public void saveSpreadMintLevel(int value) {
-    this.put(SPREAD_MINT_LEVEL, new BytesCapsule(ByteArray.fromInt(value)));
-  }
-
-  public int getSpreadMintLevel() {
-    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toInt)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found SPREAD_MINT_LEVEL"));
-  }
-
   public void saveSpreadMintLevelProp(String value) {
     this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
   }
@@ -2707,6 +2707,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
     private static final byte[] SPREAD_FREEZE_PERIOD_LIMIT = "SPREAD_FREEZE_PERIOD_LIMIT".getBytes();
+    private static final byte[] ALLOW_METAMASK_SENDRAWTRANSACTION = "ALLOW_METAMASK_SENDRAWTRANSACTION".getBytes();
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
     private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();

@@ -264,6 +264,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSpreadFreezePeriodLimit(entry.getValue());
           break;
         }
+        case ALLOW_METAMASK_SENDRAWTRANSACTION: {
+          manager.getDynamicPropertiesStore().saveAllowMetamaskSendRawTransaction(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
@@ -272,6 +276,7 @@ public class ProposalService extends ProposalUtil {
 
     for (Map.Entry<Long, String> entry : mapString.entrySet()) {
       ProposalType proposalType = ProposalType.getEnumOrNull(entry.getKey());
+      find = true;
       if (proposalType == null) {
         find = false;
         continue;
@@ -286,6 +291,7 @@ public class ProposalService extends ProposalUtil {
           long highInflationRate = Long.parseLong(entry.getValue().split(",")[1]);
           manager.getDynamicPropertiesStore().saveLowInflationRate(lowInflationRate);
           manager.getDynamicPropertiesStore().saveHighInflationRate(highInflationRate);
+          break;
         }
         default:
           find = false;
