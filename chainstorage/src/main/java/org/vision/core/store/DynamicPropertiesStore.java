@@ -1965,6 +1965,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
           .getAllowVvmConstantinople());
       addSystemContractAndSetPermission(48);
     }
+    if (CommonParameter.getInstance()
+            .getChangedDelegation() != 0) {
+      saveChangeDelegation(CommonParameter.getInstance()
+              .getChangedDelegation());
+      addSystemContractAndSetPermission(49);
+    }
   }
 
   public void saveActiveDefaultOperations(byte[] value) {

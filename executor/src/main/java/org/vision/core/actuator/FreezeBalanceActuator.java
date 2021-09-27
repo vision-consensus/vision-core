@@ -191,7 +191,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
       if (!dynamicStore.supportSpreadMint()){
-        throw new ContractValidateException("It's not support spread type of frozen.");
+        throw new ContractValidateException("It's not support SPREAD type of frozen.");
       }
 
       if (ArrayUtils.isEmpty(parentAddress)){
@@ -203,25 +203,29 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
       if (frozenBalance < 0) {
         throw new ContractValidateException("frozenBalance must be positive");
-      }else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+      } else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
         throw new ContractValidateException("frozenBalance must be more than 1VS");
-      } else { // frozenBalance == 0
-        SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
-        if (spreadRelationShipCapsule != null){
+      }
+
+      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+      if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
+        if (spreadRelationShipCapsule == null){
+          throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+        } else {
           String oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
           String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
           if (oldParent.equals(newParent)) {
             throw new ContractValidateException("The new and old parentAddress cannot be the same address");
           }
+        }
+      }
 
-          long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
-          long now = dynamicStore.getLatestBlockHeaderTimestamp();
-          long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
-          if (frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD > now){
-            throw new ContractValidateException("It's not time to re-freeze.");
-          }
-        }else{
-            throw new ContractValidateException("The address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+      if (spreadRelationShipCapsule != null){
+        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
+        long now = dynamicStore.getLatestBlockHeaderTimestamp();
+        long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
+        if (frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD > now){
+          throw new ContractValidateException("It's not time to re-freeze.");
         }
       }
     }else{
