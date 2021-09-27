@@ -1,9 +1,7 @@
 package org.vision.core.utils;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.util.StringUtils;
 import org.vision.common.utils.ForkController;
-import org.vision.common.utils.StringUtil;
 import org.vision.core.config.Parameter.ForkBlockVersionConsts;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
@@ -471,6 +469,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -594,7 +599,8 @@ public class ProposalUtil {
     SPREAD_MINT_LEVEL_PROP(53),// "80,10,8,2"
     INFLATION_RATE(54),//"689,2322"
     PLEDGE_RATE_THRESHOLD(55),// [0, 100L]
-    SPREAD_FREEZE_PERIOD_LIMIT(56);// [0, 100L]
+    SPREAD_FREEZE_PERIOD_LIMIT(56),// [0, 100L]
+    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(57);// 0,1
 
     private long code;
 
