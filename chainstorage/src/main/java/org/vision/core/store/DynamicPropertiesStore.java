@@ -2678,6 +2678,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(120L);
   }
 
+  public void saveAllowEthereumCompatibleTransaction(long allowMetamaskSendRawTransaction) {
+    this.put(DynamicResourceProperties.ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION,
+            new BytesCapsule(ByteArray.fromLong(allowMetamaskSendRawTransaction)));
+  }
+
+  public long getAllowEthereumCompatibleTransaction() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
 
   private static class DynamicResourceProperties {
 
@@ -2720,7 +2731,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         "ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"
             .getBytes();
     private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
-
+    public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
   }
 
 }

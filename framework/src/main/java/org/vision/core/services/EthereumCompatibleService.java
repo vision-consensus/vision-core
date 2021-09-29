@@ -28,7 +28,6 @@ import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
 import org.vision.core.services.http.JsonFormat;
 import org.vision.core.services.http.Util;
-import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
@@ -181,18 +180,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
         return null;
     }
 
-    public static void main(String[] args) {
-        TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(ByteArray.fromHexString("0xf8a802847735940082d0c8945442b1eb46e8844c52d9d95774f4779f64fc055580b844a9059cbb0000000000000000000000001f45212b81773a02f67545e510cba43e3c5cc5e6000000000000000000000000000000000000000000000000000000003b9aca0029a06a9d8223e794458529a643f0a74575920e7e12caf7a1533eddc1eb353b776a19a02317c972f03cbb4d5c7a1bfa12d59260580a9e4accf43843759a2f8462610d8b"));
-        ethTrx.rlpParse();
-        System.out.println(ByteArray.toHexString(ethTrx.getSender()));//0x28E2Fc69A14Abe85AAC11778FA0637FE659664b8
-        System.out.println(ByteArray.toHexString(ethTrx.getReceiveAddress()));//
-    }
-
     @Override
     public String eth_sendRawTransaction(String rawData) throws Exception {
-        long allowMetamaskSendRawTransaction = chainBaseManager.getDynamicPropertiesStore().getAllowMetamaskSendRawTransaction();
-        if (allowMetamaskSendRawTransaction == 0) {
-            return "not allowed,please submit proposal";
+        if (chainBaseManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction() == 0) {
+            logger.info("AllowEthereumCompatibleTransaction is off");
+            return null;
         }
         TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(ByteArray.fromHexString(rawData));
         ethTrx.rlpParse();
