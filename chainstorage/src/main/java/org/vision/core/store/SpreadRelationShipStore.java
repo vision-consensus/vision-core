@@ -1,9 +1,11 @@
 package org.vision.core.store;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
 
@@ -32,6 +34,10 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
         .map(SpreadRelationShipCapsule::new)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  public void put(byte[] key, SpreadRelationShipCapsule item, boolean isUpdate) {
+    super.put(key, item);
   }
 
   @Override

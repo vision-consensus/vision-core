@@ -293,6 +293,12 @@ public class VMActuator implements Actuator2 {
     if (contract == null) {
       throw new ContractValidateException("Cannot get CreateSmartContract from transaction");
     }
+
+    if(contract.getType() == 1 &&
+            repository.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction() == 0){
+      throw new ContractValidateException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+    }
+
     SmartContract newSmartContract = contract.getNewContract();
     if (!contract.getOwnerAddress().equals(newSmartContract.getOriginAddress())) {
       logger.info("OwnerAddress not equals OriginAddress");
@@ -417,6 +423,11 @@ public class VMActuator implements Actuator2 {
     TriggerSmartContract contract = ContractCapsule.getTriggerContractFromTransaction(trx);
     if (contract == null) {
       return;
+    }
+
+    if(contract.getType() == 1 &&
+            repository.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction() == 0){
+      throw new ContractValidateException("EthereumCompatibleTransaction is off, need to be opened by proposal");
     }
 
     if (contract.getContractAddress() == null) {
