@@ -1070,7 +1070,10 @@ public class Wallet {
             .setKey("getFreezePeriodLimit")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
-
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowEthereumCompatibleTransaction")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction())
+            .build());
     return builder.build();
   }
 

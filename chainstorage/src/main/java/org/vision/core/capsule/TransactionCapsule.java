@@ -609,6 +609,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TriggerSmartContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
       if (this.transaction.getSignatureCount() <= 0
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
