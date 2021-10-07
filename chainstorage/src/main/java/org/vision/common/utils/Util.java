@@ -200,7 +200,7 @@ public class Util {
                 .parseObject(JsonFormat.printToString(deployContract, selfType));
             byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
             byte[] contractAddress = generateContractAddress(transaction, ownerAddress);
-            jsonTransaction.put("contract_address", ByteArray.toHexString(contractAddress));
+            jsonTransaction.put("contract_address", org.vision.common.utils.StringUtil.encode58Check(contractAddress));
             break;
           default:
             Class clazz = TransactionFactory.getContract(contract.getType());
