@@ -98,9 +98,6 @@ public class ProposalUtil {
         if (!forkController.pass(ForkBlockVersionConsts.ENTROPY_LIMIT)) {
           throw new ContractValidateException(BAD_PARAM_ID);
         }
-        if (forkController.pass(ForkBlockVersionEnum.VERSION_3_2_2)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value < 0 || value > LONG_VALUE) {
           throw new ContractValidateException(LONG_VALUE_ERROR);
         }
@@ -118,18 +115,12 @@ public class ProposalUtil {
         break;
       }
       case TOTAL_CURRENT_ENTROPY_LIMIT: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_2_2)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value < 0 || value > LONG_VALUE) {
           throw new ContractValidateException(LONG_VALUE_ERROR);
         }
         break;
       }
       case ALLOW_MULTI_SIGN: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_5)) {
-          throw new ContractValidateException("Bad chain parameter id: ALLOW_MULTI_SIGN");
-        }
         if (value != 1) {
           throw new ContractValidateException(
               PRE_VALUE_NOT_ONE_ERROR + "ALLOW_MULTI_SIGN" + VALUE_NOT_ONE_ERROR);
@@ -137,9 +128,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_ADAPTIVE_ENTROPY: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_5)) {
-          throw new ContractValidateException("Bad chain parameter id: ALLOW_ADAPTIVE_ENTROPY");
-        }
         if (value != 1) {
           throw new ContractValidateException(
               PRE_VALUE_NOT_ONE_ERROR + "ALLOW_ADAPTIVE_ENTROPY" + VALUE_NOT_ONE_ERROR);
@@ -147,28 +135,18 @@ public class ProposalUtil {
         break;
       }
       case UPDATE_ACCOUNT_PERMISSION_FEE: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_5)) {
-          throw new ContractValidateException(
-              "Bad chain parameter id: UPDATE_ACCOUNT_PERMISSION_FEE");
-        }
         if (value < 0 || value > MAX_SUPPLY) {
           throw new ContractValidateException(MAX_SUPPLY_ERROR);
         }
         break;
       }
       case MULTI_SIGN_FEE: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_5)) {
-          throw new ContractValidateException("Bad chain parameter id: MULTI_SIGN_FEE");
-        }
         if (value < 0 || value > MAX_SUPPLY) {
           throw new ContractValidateException(MAX_SUPPLY_ERROR);
         }
         break;
       }
       case ALLOW_PROTO_FILTER_NUM: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1 && value != 0) {
           throw new ContractValidateException(
               "This value[ALLOW_PROTO_FILTER_NUM] is only allowed to be 1 or 0");
@@ -176,9 +154,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_ACCOUNT_STATE_ROOT: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1 && value != 0) {
           throw new ContractValidateException(
               "This value[ALLOW_ACCOUNT_STATE_ROOT] is only allowed to be 1 or 0");
@@ -186,9 +161,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_VVM_CONSTANTINOPLE: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1) {
           throw new ContractValidateException(
               PRE_VALUE_NOT_ONE_ERROR + "ALLOW_VVM_CONSTANTINOPLE" + VALUE_NOT_ONE_ERROR);
@@ -201,10 +173,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_VVM_SOLIDITY_059: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1) {
           throw new ContractValidateException(
               PRE_VALUE_NOT_ONE_ERROR + "ALLOW_VVM_SOLIDITY_059" + VALUE_NOT_ONE_ERROR);
@@ -217,9 +185,6 @@ public class ProposalUtil {
         break;
       }
       case ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value < 1 || value > 1_000) {
           throw new ContractValidateException(
               "Bad chain parameter value, valid range is [1,1_000]");
@@ -227,9 +192,6 @@ public class ProposalUtil {
         break;
       }
       case ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value < 1 || value > 10_000L) {
           throw new ContractValidateException(
               "Bad chain parameter value, valid range is [1,10_000]");
@@ -237,9 +199,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_CHANGE_DELEGATION: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1 && value != 0) {
           throw new ContractValidateException(
               "This value[ALLOW_CHANGE_DELEGATION] is only allowed to be 1 or 0");
@@ -247,56 +206,12 @@ public class ProposalUtil {
         break;
       }
       case WITNESS_123_PAY_PER_BLOCK: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value < 0 || value > LONG_VALUE) {
           throw new ContractValidateException(LONG_VALUE_ERROR);
         }
         break;
       }
-//      case ALLOW_SHIELDED_TRANSACTION: {
-//        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_0)) {
-//          throw new ContractValidateException(
-//              "Bad chain parameter id [ALLOW_SHIELDED_TRANSACTION]");
-//        }
-//        if (value != 1) {
-//          throw new ContractValidateException(
-//                  PRE_VALUE_NOT_ONE_ERROR + "ALLOW_SHIELDED_TRANSACTION" + VALUE_NOT_ONE_ERROR);
-//        }
-//        break;
-//      }
-//      case SHIELDED_TRANSACTION_FEE: {
-//        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_0)) {
-//          throw new ContractValidateException("Bad chain parameter id [SHIELD_TRANSACTION_FEE]");
-//        }
-//        if (!dynamicPropertiesStore.supportShieldedTransaction()) {
-//          throw new ContractValidateException(
-//              "Shielded Transaction is not activated, can not set Shielded Transaction fee");
-//        }
-//        if (dynamicPropertiesStore.getAllowCreationOfContracts() == 0) {
-//          throw new ContractValidateException(
-//              "[ALLOW_CREATION_OF_CONTRACTS] proposal must be approved "
-//                  + "before [FORBID_TRANSFER_TO_CONTRACT] can be proposed");
-//        }
-//        break;
-//      }
-//      case SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE: {
-//        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_0)) {
-//          throw new ContractValidateException(
-//              "Bad chain parameter id [SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE]");
-//        }
-//        if (value < 0 || value > 10_000_000_000L) {
-//          throw new ContractValidateException(
-//              "Bad SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE parameter value, valid range is [0,10_000_000_000L]");
-//        }
-//        break;
-//      }
       case FORBID_TRANSFER_TO_CONTRACT: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_3_6_6)) {
-
-          throw new ContractValidateException(BAD_PARAM_ID);
-        }
         if (value != 1) {
           throw new ContractValidateException(
               "This value[FORBID_TRANSFER_TO_CONTRACT] is only allowed to be 1");
@@ -309,10 +224,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_PBFT: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-          throw new ContractValidateException(
-              "Bad chain parameter id [ALLOW_PBFT]");
-        }
         if (value != 1) {
           throw new ContractValidateException(
               "This value[ALLOW_PBFT] is only allowed to be 1");
@@ -320,10 +231,6 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_VVM_ISTANBUL: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-          throw new ContractValidateException(
-              "Bad chain parameter id [ALLOW_VVM_ISTANBUL]");
-        }
         if (value != 1) {
           throw new ContractValidateException(
               "This value[ALLOW_VVM_ISTANBUL] is only allowed to be 1");
@@ -331,43 +238,13 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_SHIELDED_VRC20_TRANSACTION: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_0_1)) {
-          throw new ContractValidateException(
-              "Bad chain parameter id [ALLOW_SHIELDED_VRC20_TRANSACTION]");
-        }
         if (value != 1 && value != 0) {
           throw new ContractValidateException(
               "This value[ALLOW_SHIELDED_VRC20_TRANSACTION] is only allowed to be 1 or 0");
         }
         break;
       }
-//      case ALLOW_VVM_STAKE: {
-//          if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-//          throw new ContractValidateException(
-//              "Bad chain parameter id [ALLOW_VVM_STAKE]");
-//        }
-//        if (value != 1 && value != 0) {
-//          throw new ContractValidateException(
-//              "This value[ALLOW_VVM_STAKE] is only allowed to be 1 or 0");
-//        }
-//        break;
-//      }
-      //  case ALLOW_VVM_ASSET_ISSUE: {
-      //  if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-      //      throw new ContractValidateException(
-      //          "Bad chain parameter id [ALLOW_VVM_ASSET_ISSUE]");
-      //  }
-      //  if (value != 1 && value != 0) {
-      //    throw new ContractValidateException(
-      //        "This value[ALLOW_VVM_ASSET_ISSUE] is only allowed to be 1 or 0");
-      //  }
-      //  break;
-      //}
       case ALLOW_MARKET_TRANSACTION: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-          throw new ContractValidateException(
-              "Bad chain parameter id [ALLOW_MARKET_TRANSACTION]");
-        }
         if (value != 1) {
           throw new ContractValidateException(
               "This value[ALLOW_MARKET_TRANSACTION] is only allowed to be 1");
@@ -375,9 +252,6 @@ public class ProposalUtil {
         break;
       }
       case MARKET_SELL_FEE: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-          throw new ContractValidateException("Bad chain parameter id [MARKET_SELL_FEE]");
-        }
         if (!dynamicPropertiesStore.supportAllowMarketTransaction()) {
           throw new ContractValidateException(
               "Market Transaction is not activated, can not set Market Sell Fee");
@@ -389,9 +263,6 @@ public class ProposalUtil {
         break;
       }
       case MARKET_CANCEL_FEE: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1)) {
-          throw new ContractValidateException("Bad chain parameter id [MARKET_CANCEL_FEE]");
-        }
         if (!dynamicPropertiesStore.supportAllowMarketTransaction()) {
           throw new ContractValidateException(
               "Market Transaction is not activated, can not set Market Cancel Fee");
@@ -403,7 +274,7 @@ public class ProposalUtil {
         break;
       }
       case MAX_FEE_LIMIT: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1_2)) {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_0_0)) {
           throw new ContractValidateException("Bad chain parameter id [MAX_FEE_LIMIT]");
         }
         if (value < 0 || value > 10_000_000_000L) {
@@ -413,7 +284,7 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_TRANSACTION_FEE_POOL: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1_2)) {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_0_0)) {
           throw new ContractValidateException(
                   "Bad chain parameter id [ALLOW_TRANSACTION_FEE_POOL]");
         }
@@ -424,7 +295,7 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_BLACKHOLE_OPTIMIZATION: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_4_1_2)) {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_0_0)) {
           throw new ContractValidateException(
               "Bad chain parameter id [ALLOW_REMOVE_BLACKHOLE]");
         }
