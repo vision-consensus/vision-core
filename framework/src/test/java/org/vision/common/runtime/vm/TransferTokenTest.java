@@ -118,8 +118,8 @@ public class TransferTokenTest {
    * contract tokenTest{ constructor() public payable{} // positive case function
    * TransferTokenTo(address toAddress, vrcToken id,uint256 amount) public payable{
    * toAddress.transferToken(amount,id); } function suicide(address toAddress) payable public{
-   * selfdestruct(toAddress); } function get(vrcToken trc) public payable returns(uint256){ return
-   * address(this).tokenBalance(trc); } }
+   * selfdestruct(toAddress); } function get(vrcToken vrc) public payable returns(uint256){ return
+   * address(this).tokenBalance(vrc); } }
    *
    * 1. deploy 2. trigger and internal transaction 3. suicide (all token)
    */
