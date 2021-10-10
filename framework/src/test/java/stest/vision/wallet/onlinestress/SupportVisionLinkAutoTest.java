@@ -322,10 +322,10 @@ public class SupportVisionLinkAutoTest {
       String triggerString = "\"" + ownerKey
           + "\"" + ", 20000000000";
       System.out.println(triggerString);
-      //dapp chain vrc20 tract TXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7
-      byte[] contractAddress = PublicMethed.decode58Check("TXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7");
-      //main chain TRC 20 contract TCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71
-      //byte[] contractAddress =  PublicMethed.decode58Check("TCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71");
+      //dapp chain vrc20 tract VXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7
+      byte[] contractAddress = PublicMethed.decode58Check("VXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7");
+      //main chain VRC 20 contract VCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71
+      //byte[] contractAddress =  PublicMethed.decode58Check("VCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71");
 
       PublicMethed
           .triggerContract(contractAddress, "transfer(address,uint256)", triggerString, false,

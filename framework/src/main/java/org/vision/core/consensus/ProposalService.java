@@ -2,7 +2,6 @@ package org.vision.core.consensus;
 
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.capsule.ProposalCapsule;
-import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.db.Manager;
 import org.vision.core.utils.ProposalUtil;
 
@@ -120,14 +119,12 @@ public class ProposalService extends ProposalUtil {
         case ALLOW_ADAPTIVE_ENTROPY: {
           if (manager.getDynamicPropertiesStore().getAllowAdaptiveEntropy() == 0) {
             manager.getDynamicPropertiesStore().saveAllowAdaptiveEntropy(entry.getValue());
-            if (manager.getChainBaseManager()
-                .getForkController().pass(ForkBlockVersionEnum.VERSION_3_6_5)) {
-              //24 * 60 * 2 . one minute,1/2 total limit.
-              manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitTargetRatio(2880);
-              manager.getDynamicPropertiesStore().saveTotalEntropyTargetLimit(
-                  manager.getDynamicPropertiesStore().getTotalEntropyLimit() / 2880);
-              manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitMultiplier(50);
-            }
+
+            //24 * 60 * 2 . one minute,1/2 total limit.
+            manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitTargetRatio(2880);
+            manager.getDynamicPropertiesStore().saveTotalEntropyTargetLimit(
+                manager.getDynamicPropertiesStore().getTotalEntropyLimit() / 2880);
+            manager.getDynamicPropertiesStore().saveAdaptiveResourceLimitMultiplier(50);
           }
           break;
         }
@@ -176,22 +173,6 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveWitness123PayPerBlock(entry.getValue());
           break;
         }
-        //case ALLOW_SHIELDED_TRANSACTION: {
-        //  if (manager.getDynamicPropertiesStore().getAllowShieldedTransaction() == 0) {
-        //    manager.getDynamicPropertiesStore().saveAllowShieldedTransaction(entry.getValue());
-        //    manager.getDynamicPropertiesStore().addSystemContractAndSetPermission(51);
-        //  }
-        //  break;
-        //}
-        //case SHIELDED_TRANSACTION_FEE: {
-        //  manager.getDynamicPropertiesStore().saveShieldedTransactionFee(entry.getValue());
-        //  break;
-        //}
-        //        case SHIELDED_TRANSACTION_CREATE_ACCOUNT_FEE: {
-        //          manager.getDynamicPropertiesStore()
-        //              .saveShieldedTransactionCreateAccountFee(entry.getValue());
-        //          break;
-        //        }
         case FORBID_TRANSFER_TO_CONTRACT: {
           manager.getDynamicPropertiesStore().saveForbidTransferToContract(entry.getValue());
           break;
@@ -208,14 +189,6 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowShieldedVRC20Transaction(entry.getValue());
           break;
         }
-        //case ALLOW_VVM_STAKE: {
-        //  manager.getDynamicPropertiesStore().saveAllowVvmStake(entry.getValue());
-        //  break;
-        //}
-        //case ALLOW_VVM_ASSET_ISSUE: {
-        //  manager.getDynamicPropertiesStore().saveAllowVvmAssetIssue(entry.getValue());
-        //  break;
-        //}
         case ALLOW_MARKET_TRANSACTION: {
           if (manager.getDynamicPropertiesStore().getAllowMarketTransaction() == 0) {
             manager.getDynamicPropertiesStore().saveAllowMarketTransaction(entry.getValue());
@@ -262,6 +235,10 @@ public class ProposalService extends ProposalUtil {
         }
         case SPREAD_FREEZE_PERIOD_LIMIT: {
           manager.getDynamicPropertiesStore().saveSpreadFreezePeriodLimit(entry.getValue());
+          break;
+        }
+        case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION: {
+          manager.getDynamicPropertiesStore().saveAllowEthereumCompatibleTransaction(entry.getValue());
           break;
         }
         default:

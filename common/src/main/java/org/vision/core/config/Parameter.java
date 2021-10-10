@@ -6,15 +6,7 @@ public class Parameter {
 
   public enum ForkBlockVersionEnum {
     ENTROPY_LIMIT(5, 0L, 0),
-    VERSION_3_2_2(6, 0L, 0),
-    VERSION_3_5(7, 0L, 0),
-    VERSION_3_6(8, 0L, 0),
-    VERSION_3_6_5(9, 0L, 0),
-    VERSION_3_6_6(10, 0L, 0),
-    VERSION_4_0(16, 0L, 0),
-    VERSION_4_0_1(17, 1596780000000L, 80),//GMT 2020-08-07 06:00:00,80 means 22 SR upgrade
-    VERSION_4_1(19, 1596780000000L, 80),//GMT 2020-08-07 06:00:00,80 means 22 SR upgrade
-    VERSION_4_1_2(20, 0L, 80);//0,80 means 22 SR upgrade
+    VERSION_1_0_0(20, 0L, 0);
 
     @Getter
     private int value;
@@ -46,7 +38,7 @@ public class Parameter {
 
   public class ChainConstant {
 
-    public static final int MAX_ACTIVE_WITNESS_NUM = 3; //TODO fix to 23
+    public static final int MAX_ACTIVE_WITNESS_NUM = 23;
     public static final int WITNESS_STANDBY_LENGTH = 123;
     public static final long TRANSFER_FEE = 0; // free
     public static final int BLOCK_PRODUCED_INTERVAL = 3000; //ms,produce block period, must be divisible by 60. millisecond
