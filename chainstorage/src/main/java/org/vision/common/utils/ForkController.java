@@ -44,20 +44,7 @@ public class ForkController {
   }
 
   public synchronized boolean pass(int version) {
-    if (version > ForkBlockVersionEnum.VERSION_4_0.getValue()) {
-      return passNew(version);
-    } else {
-      return passOld(version);
-    }
-  }
-
-  private boolean passOld(int version) {
-    if (version == ForkBlockVersionConsts.ENTROPY_LIMIT) {
-      return checkForEntropyLimit();
-    }
-
-    byte[] stats = manager.getDynamicPropertiesStore().statsByVersion(version);
-    return check(stats);
+    return passNew(version);
   }
 
   private boolean passNew(int version) {

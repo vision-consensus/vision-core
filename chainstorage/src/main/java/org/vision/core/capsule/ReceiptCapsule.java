@@ -172,8 +172,7 @@ public class ReceiptCapsule {
     } else {
       entropyProcessor.useEntropy(account, accountEntropyLeft, now);
 
-      if (forkController.pass(ForkBlockVersionEnum.VERSION_3_6_5) &&
-          dynamicPropertiesStore.getAllowAdaptiveEntropy() == 1) {
+      if (dynamicPropertiesStore.getAllowAdaptiveEntropy() == 1) {
         long blockEntropyUsage =
             dynamicPropertiesStore.getBlockEntropyUsage() + (usage - accountEntropyLeft);
         dynamicPropertiesStore.saveBlockEntropyUsage(blockEntropyUsage);
