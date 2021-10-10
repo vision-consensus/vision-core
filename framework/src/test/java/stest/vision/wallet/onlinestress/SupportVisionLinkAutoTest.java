@@ -296,26 +296,26 @@ public class SupportVisionLinkAutoTest {
   public void test005SendVrc20() {
 
     String[] witnessKey = {
-        "TR8CyAPJFMjCvphCVuWeeVxBh5iTG7VWxe",
-        "TMhGDU7NiXwckCW64PqAvWFuC2kR1WSF5J",
-        "TDf3JZtjDeEqsFdPGp6vT9meG3JxMwmXwA",
-        "TEtG9fnVi2qythiog6owPrg4sD9rwFBQBN",
-        "TUvda1oqrNLbqDKhZDxDnrPhiDCdxem218",
-        "TKEH31jJ2YQ3Bteh1ngjwdT8667ztyYPSp",
-        "TAzrJHKa57nXnn3dZGFG87PDuWx12dY97s",
-        "TWhc6AAh6BWRr3k5dV8iMvkp8ys7NHzXCk",
-        "TSsaSxHnb3xLTop2A8LrDk1P896yiDeupe",
-        "TMDs8oTj8mVnakqiVyDKdp2ruWPdFeDgbq",
-        "TWv2FEsoPp5XKxujVHffoNwksgJSxvf3QG",
-        "TGamEmt6U9ZUg9bFsMq7KT9bRa3uvkdtHM",
-        "TXhQk442CCGLydh6cfyfqvM6yJanEGeQj1",
-        "TKktQcbjXsXZDKPYLvUm8sxox2cT83g5rP",
-        "TBQUhYhdQpMRksBGAbpbTWSiE7WkGgy3Km",
-        "TALf34yjuLZjF1WQqCaUkf73X8WbhfiEyM",
-        "TCGp3JAFM5vQZpsdNiKRTci7fVb7A2TPcu",
-        "TBExF3mNvnhmEFgHW4TmYXXdhevRchnQyb",
-        "TS8o6WcHroSnzWNt4AiserAuVkye5Msvcm",
-        "TBtMRD79NkLyAvMkCTTj5VC5KZnz2Po2XZ",
+        "VR8CyAPJFMjCvphCVuWeeVxBh5iTG7VWxe",
+        "VMhGDU7NiXwckCW64PqAvWFuC2kR1WSF5J",
+        "VDf3JZtjDeEqsFdPGp6vT9meG3JxMwmXwA",
+        "VEtG9fnVi2qythiog6owPrg4sD9rwFBQBN",
+        "VUvda1oqrNLbqDKhZDxDnrPhiDCdxem218",
+        "VKEH31jJ2YQ3Bteh1ngjwdT8667ztyYPSp",
+        "VAzrJHKa57nXnn3dZGFG87PDuWx12dY97s",
+        "VWhc6AAh6BWRr3k5dV8iMvkp8ys7NHzXCk",
+        "VSsaSxHnb3xLTop2A8LrDk1P896yiDeupe",
+        "VMDs8oTj8mVnakqiVyDKdp2ruWPdFeDgbq",
+        "VWv2FEsoPp5XKxujVHffoNwksgJSxvf3QG",
+        "VGamEmt6U9ZUg9bFsMq7KT9bRa3uvkdtHM",
+        "VXhQk442CCGLydh6cfyfqvM6yJanEGeQj1",
+        "VKktQcbjXsXZDKPYLvUm8sxox2cT83g5rP",
+        "VBQUhYhdQpMRksBGAbpbTWSiE7WkGgy3Km",
+        "VALf34yjuLZjF1WQqCaUkf73X8WbhfiEyM",
+        "VCGp3JAFM5vQZpsdNiKRTci7fVb7A2TPcu",
+        "VBExF3mNvnhmEFgHW4TmYXXdhevRchnQyb",
+        "VS8o6WcHroSnzWNt4AiserAuVkye5Msvcm",
+        "VBtMRD79NkLyAvMkCTTj5VC5KZnz2Po2XZ",
     };
     int i = 1;
     for (String ownerKey : witnessKey) {
@@ -323,8 +323,8 @@ public class SupportVisionLinkAutoTest {
           + "\"" + ", 20000000000";
       System.out.println(triggerString);
       //dapp chain vrc20 tract TXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7
-      byte[] contractAddress = PublicMethed.decode58Check("TXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7");
-      //main chain TRC 20 contract TCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71
+      byte[] contractAddress = PublicMethed.decode58Check("VXkdXbzjoLpxGAD2strP1zwjJzR6osNfD7");
+      //main chain VRC 20 contract TCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71
       //byte[] contractAddress =  PublicMethed.decode58Check("TCCcBZEdTHmS1NfFtCYfwpjBKeTv515n71");
 
       PublicMethed
