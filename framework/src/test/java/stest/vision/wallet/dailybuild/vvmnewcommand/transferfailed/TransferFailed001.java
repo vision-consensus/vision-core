@@ -530,7 +530,7 @@ public class TransferFailed001 {
 
   @Test(enabled = true, description = "PreCompiled transfertoken with value,"
       + " long.max < value or long.min > value")
-  public void test007TransferTrckenPreCompiled() {
+  public void test007TransferVrcTokenPreCompiled() {
 
     AccountResourceMessage resourceInfo = PublicMethed.getAccountResource(contractExcAddress,
         blockingStubFull);
@@ -621,7 +621,7 @@ public class TransferFailed001 {
   }
 
   @Test(enabled = false, description = "PreCompiled tokenbalance")
-  public void test008TransferTrctoken() {
+  public void test008TransferVrcToken() {
 
     Assert.assertTrue(PublicMethed
         .sendcoin(contractExcAddress, 10000_000_000L, testNetAccountAddress, testNetAccountKey,
