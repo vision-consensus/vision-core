@@ -107,7 +107,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_gasPrice() {
         // feeLimit = 100000000vdt = 21000 * 160Gwei
-        return "0x" + Long.toHexString(8_000_000_000l);
+        return "0x" + Long.toHexString(160_000_000_000L);
     }
 
     @Override
