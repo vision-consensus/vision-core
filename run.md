@@ -78,21 +78,13 @@ java -jar FullNode.jar -p 650950B193DDDDB35B6E48912DD28F7AB0E7140C1BFDEFD493348F
 Using TaskInputs.file() with something that doesn't resolve to a File object has been deprecated and is scheduled to be removed in Gradle 5.0. Use TaskInputs.files() instead.
 
 > Task :run 
-
+```
 
 </details>
 
 * In IntelliJ IDEA
   
-<details>
-<summary>
 
-Open the configuration panel:
-
-</summary>
-
-
-</details>  
 
 <details>
 <summary>
@@ -100,8 +92,6 @@ Open the configuration panel:
 In the `Program arguments` option, fill in `--witness`:
 
 </summary>
-
-![](docs/images/set_witness_param.jpeg)
 
 </details> 
   
