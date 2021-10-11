@@ -26,8 +26,7 @@ import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import java.util.*;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "actuator")
 public class UnfreezeBalanceActuator extends AbstractActuator {
@@ -423,7 +422,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForSRGuarantee.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(SRGuarantee)");
           }
-          if (frozenBalanceForSRGuarantee.getExpireTime() - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 360000L) {
+          if (frozenBalanceForSRGuarantee.getExpireTime() - now > UN_FREEZE_SRGUARANTEE_LIMIT - 360000L) {
             throw new ContractValidateException("It's not time to unfreeze(SRGuarantee).");
           }
           break;
