@@ -41,7 +41,7 @@ This guide walks the user through the VISION Quickstart (v1.0.0) image setup.
  walks the user through how to deploy a FullNode and an SR node.
 
 # Channel
-[Core Developers Community](https://t.me/visioncoredevs_community) is the Telegram channel for vision-core community developers. If you want to contribute to vision-core, please join this channel.
+[Core Developers Community](https://t.me/vision_core_devs) is the Telegram channel for vision-core community developers. If you want to contribute to vision-core, please join this channel.
 
 
 # Contribution
