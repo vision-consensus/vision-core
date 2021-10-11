@@ -609,6 +609,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
                                       TriggerSmartContract contract)
           throws ValidateSignatureException {
     if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
       if (this.transaction.getSignatureCount() <= 0
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
@@ -1267,7 +1270,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(new BigInteger(this.value).divide(new BigInteger("1000000000000")).longValue());
+      build.setAmount(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue());
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));

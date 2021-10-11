@@ -249,9 +249,9 @@ public class MarketUtils {
 
   /**
    * ex.
-   * for sellToken is A, buyToken is TRX.
-   * price_A_maker * sellQuantity_maker = Price_TRX * buyQuantity_maker
-   * ==> price_A_maker = Price_TRX * buyQuantity_maker/sellQuantity_maker
+   * for sellToken is A, buyToken is VS.
+   * price_A_maker * sellQuantity_maker = Price_VS * buyQuantity_maker
+   * ==> price_A_maker = Price_VS * buyQuantity_maker/sellQuantity_maker
    *
    * price_A_maker_1 < price_A_maker_2
    * ==> buyQuantity_maker_1/sellQuantity_maker_1 < buyQuantity_maker_2/sellQuantity_maker_2
@@ -272,13 +272,13 @@ public class MarketUtils {
    * firstly, we should change the token pair of taker to be the same with maker
    */
   public static boolean priceMatch(MarketPrice takerPrice, MarketPrice makerPrice) {
-    // for takerPrice, buyToken is A,sellToken is TRX.
-    // price_A_taker * buyQuantity_taker = Price_TRX * sellQuantity_taker
-    // ==> price_A_taker = Price_TRX * sellQuantity_taker/buyQuantity_taker
+    // for takerPrice, buyToken is A,sellToken is VS.
+    // price_A_taker * buyQuantity_taker = Price_VS * sellQuantity_taker
+    // ==> price_A_taker = Price_VS * sellQuantity_taker/buyQuantity_taker
 
     // price_A_taker must be greater or equal to price_A_maker
     // price_A_taker / price_A_maker >= 1
-    // ==> Price_TRX * sellQuantity_taker/buyQuantity_taker >= Price_TRX * buyQuantity_maker/sellQuantity_maker
+    // ==> Price_VS * sellQuantity_taker/buyQuantity_taker >= Price_VS * buyQuantity_maker/sellQuantity_maker
     // ==> sellQuantity_taker * sellQuantity_maker > buyQuantity_taker * buyQuantity_maker
 
     return comparePrice(takerPrice.getBuyTokenQuantity(), takerPrice.getSellTokenQuantity(),

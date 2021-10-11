@@ -172,9 +172,10 @@ public class DposService implements ConsensusInterface {
     {
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(b.toByteArray());
       return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
-    })
-        .reversed()
-        .thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
+    }).thenComparing((ByteString b) ->
+            consensusDelegate.getWitness(b.toByteArray()).getVoteCountWeight())
+      .reversed()
+      .thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
 
     if (list.size() > MAX_ACTIVE_WITNESS_NUM) {
       consensusDelegate

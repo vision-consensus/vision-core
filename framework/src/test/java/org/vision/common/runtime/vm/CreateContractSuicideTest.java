@@ -137,9 +137,9 @@ contract D {
     byte[] address = Hex.decode(OWNER_ADDRESS);
 
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionEnum.VERSION_3_2_2.getValue(), stats);
+        .statsByVersion(Parameter.ForkBlockVersionEnum.VERSION_1_0_0.getValue(), stats);
     this.manager.getDynamicPropertiesStore()
-        .statsByVersion(Parameter.ForkBlockVersionEnum.VERSION_3_5.getValue(), stats);
+        .statsByVersion(Parameter.ForkBlockVersionEnum.VERSION_1_0_0.getValue(), stats);
 
     Transaction aTrx = VvmTestUtils.generateDeploySmartContractAndGetTransaction(
         "testA", address, abi, aCode, value, fee, consumeUserResourcePercent, null, engeryLimit);

@@ -22,7 +22,7 @@ public class BackupRocksDBAspect {
   private BackupManager backupManager;
 
 
-  @Pointcut("execution(** org.tron.core.db.Manager.pushBlock(..)) && args(block)")
+  @Pointcut("execution(** org.vision.core.db.Manager.pushBlock(..)) && args(block)")
   public void pointPushBlock(BlockCapsule block) {
 
   }

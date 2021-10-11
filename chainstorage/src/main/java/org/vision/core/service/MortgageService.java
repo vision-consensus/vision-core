@@ -222,12 +222,17 @@ public class MortgageService {
     //
     endCycle = currentCycle;
 
-    if (beginCycle < endCycle) {
-      Long spreadReward = 0L;
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+
+    if (dynamicPropertiesStore.supportSpreadMint()){
+      long spreadMintBeginCycle = delegationStore.getSpreadMintBeginCycle(address);
+      long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
+      if (spreadMintBeginCycle < spreadMintEndCycle) {
+        long spreadReward = 0L;
+        for (long cycle = spreadMintBeginCycle; cycle < spreadMintEndCycle; cycle++) {
+          spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
+        }
+        rewardMap.put("spreadReward", spreadReward);
       }
-      rewardMap.put("spreadReward", spreadReward);
     }
 
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
@@ -314,9 +319,20 @@ public class MortgageService {
     if(totalFreeze==0L){
       return 0;
     }
+
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(accountCapsule.getAddress().toByteArray());
+    if (spreadRelationShipCapsule != null){
+      if (cycle < spreadRelationShipCapsule.getFrozenCycle()){ // filter cycle
+        return 0;
+      }
+    }
+
     long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
     long spreadReward = (long)(totalReward * accountFreeze * 1.0 / VS_PRECISION / totalFreeze);
+    if (spreadReward == 0){
+      return 0;
+    }
 
     String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
     String[] levelProps = spreadLevelProp.split(",");
@@ -353,8 +369,8 @@ public class MortgageService {
           break;
         }
 
-        addressList.add(spreadRelationShipCapsule.getOwner().toString());
-        if (addressList.contains(spreadRelationShipCapsule.getParent().toString())){ // deal loop parent address
+        addressList.add(Hex.toHexString(spreadRelationShipCapsule.getOwner().toByteArray()));
+        if (addressList.contains(Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray()))){ // deal loop parent address
           break;
         }
 
@@ -408,7 +424,8 @@ public class MortgageService {
     list.sort(Comparator.comparingLong((ByteString b) -> {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
       return Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
-    })
+    }).thenComparing((ByteString b) ->
+            getWitnessByAddress(b).getVoteCountWeight())
         .reversed().thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
   }
 

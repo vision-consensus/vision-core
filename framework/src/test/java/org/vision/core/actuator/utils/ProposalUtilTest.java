@@ -63,7 +63,7 @@ public class ProposalUtilTest {
     Assert.assertEquals(true, ProposalUtil.ProposalType.contain(2));
 
     Assert.assertEquals(null, ProposalUtil.ProposalType.getEnumOrNull(-2));
-    Assert.assertEquals(ProposalUtil.ProposalType.ALLOW_VVM_SOLIDITY_059, ProposalUtil.ProposalType.getEnumOrNull(32));
+    Assert.assertEquals(ProposalUtil.ProposalType.ALLOW_VVM_SOLIDITY_059, ProposalUtil.ProposalType.getEnumOrNull(30));
 
     long code = -1;
     try {
@@ -73,7 +73,7 @@ public class ProposalUtilTest {
       Assert.assertEquals("Does not support code : " + code, e.getMessage());
     }
 
-    code = 32;
+    code = 30;
     Assert.assertEquals(ProposalUtil.ProposalType.ALLOW_VVM_SOLIDITY_059, ProposalUtil.ProposalType.getEnum(code));
 
   }
