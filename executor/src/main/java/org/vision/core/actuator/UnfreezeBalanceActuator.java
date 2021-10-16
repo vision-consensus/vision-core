@@ -190,14 +190,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
-        case SRGUARANTEE:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSrguarantee()
+        case FVGUARANTEE:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForFvguarantee()
                   .getFrozenBalance();
-          AccountResource newSRGuarantee = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForSrguarantee().build();
+          AccountResource newFVGuarantee = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForFvguarantee().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newSRGuarantee).build());
+                  .setAccountResource(newFVGuarantee).build());
           break;
         case SPREAD:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
@@ -229,9 +229,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case SPREAD:
         dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case SRGUARANTEE:
+      case FVGUARANTEE:
         dynamicStore
-                .addTotalSRGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
+                .addTotalFVGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
