@@ -330,7 +330,7 @@ public class MaintenanceManager {
     }
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
     logger.info("PledgeRate cycle:{} ", cycle);
-    logger.info("PledgeRate bigTotalPhoton:{} bigTotalEntropy:{} bigTotalSRGuarantee:{}", bigTotalPhoton, bigTotalEntropy, bigTotalSRGuarantee);
+    logger.info("PledgeRate bigTotalPhoton:{} bigTotalEntropy:{} bigTotalSRGuarantee:{}", bigTotalPhoton, bigTotalEntropy, bigTotalFVGuarantee);
     logger.info("PledgeRate bigVoteSum:{} bigGenesisVoteSum:{}", bigVoteSum, bigGenesisVoteSum);
     logger.info("PledgeRate bigGalaxyBalance:{} bigGalaxyInitialAmount:{}", bigGalaxyBalance, bigGalaxyInitialAmount);
     logger.info("PledgeRate bigAvalonBalance:{} bigAvalonInitialAmount:{}", bigAvalonBalance, bigAvalonInitialAmount);
