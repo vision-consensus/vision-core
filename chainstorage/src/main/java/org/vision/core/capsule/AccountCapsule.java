@@ -1030,14 +1030,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
             .build();
   }
 
-  public void setFrozenForFVGuarantee(long newFrozenBalanceForFVGuarantee, long time) {
-    Frozen newFrozenForFVGuarantee = Frozen.newBuilder()
-            .setFrozenBalance(newFrozenBalanceForFVGuarantee)
+  public void setFrozenForSRGuarantee(long newFrozenBalanceForSRGuarantee, long time) {
+    Frozen newFrozenForSRGuarantee = Frozen.newBuilder()
+            .setFrozenBalance(newFrozenBalanceForSRGuarantee)
             .setExpireTime(time)
             .build();
 
     AccountResource newAccountResource = getAccountResource().toBuilder()
-            .setFrozenBalanceForFvguarantee(newFrozenForFVGuarantee)
+            .setFrozenBalanceForSrguarantee(newFrozenForSRGuarantee)
             .build();
 
     this.account = this.account.toBuilder()
@@ -1045,10 +1045,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
             .build();
   }
 
-  public long getFVGuaranteeFrozenBalance() {
+  public long getSRGuaranteeFrozenBalance() {
     long balance = 0L;
     try {
-      balance = this.account.getAccountResource().getFrozenBalanceForFvguarantee().getFrozenBalance();
+      balance = this.account.getAccountResource().getFrozenBalanceForSrguarantee().getFrozenBalance();
     }catch (Exception e){
       logger.debug(e.getMessage());
     }

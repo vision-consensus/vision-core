@@ -693,7 +693,7 @@ service Wallet {
   rpc GetNodeInfo (EmptyMessage) returns (NodeInfo) {
   };
 
-  rpc GetRewardInfo (BytesMessage) returns (RewardMessage) {
+  rpc GetRewardInfo (BytesMessage) returns (NumberMessage) {
   };
 
   rpc GetBrokerageInfo (BytesMessage) returns (NumberMessage) {
@@ -945,7 +945,7 @@ service WalletSolidity {
   rpc IsShieldedVRC20ContractNoteSpent (NfVRC20Parameters) returns (NullifierResult) {
   };
 
-  rpc GetRewardInfo (BytesMessage) returns (RewardMessage) {
+  rpc GetRewardInfo (BytesMessage) returns (NumberMessage) {
   };
 
   rpc GetBrokerageInfo (BytesMessage) returns (NumberMessage) {
@@ -1124,10 +1124,6 @@ message EmptyMessage {
 message NumberMessage {
   int64 num = 1;
 }
-message RewardMessage {
-  int64 reward = 1;
-  int64 spreadReward = 2;
-}
 message BytesMessage {
   bytes value = 1;
 }
@@ -1182,7 +1178,7 @@ message AccountResourceMessage {
   int64 storageUsed = 21;
   int64 storageLimit = 22;
 
-  int64 TotalFVGuaranteeWeight = 27;
+  int64 TotalSRGuaranteeWeight = 27;
   int64 TotalSpreadWeight = 32;
 }
 

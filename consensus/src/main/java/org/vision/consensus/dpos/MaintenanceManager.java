@@ -127,9 +127,9 @@ public class MaintenanceManager {
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
         long maxVoteCounts = 0;
-        long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
-        if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-            maxVoteCounts = (long) ((fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
+        long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
+        if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+            maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
                     /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
           maxVoteCounts /= VS_PRECISION;
         }
@@ -293,10 +293,10 @@ public class MaintenanceManager {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     BigDecimal bigTotalPhoton = new BigDecimal(dynamicPropertiesStore.getTotalPhotonWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalEntropy = new BigDecimal(dynamicPropertiesStore.getTotalEntropyWeight()).multiply(new BigDecimal(VS_PRECISION));
-    BigDecimal bigTotalFVGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalFVGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigTotalSRGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalSRGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
-    BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
+    BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalSRGuarantee);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
     long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();

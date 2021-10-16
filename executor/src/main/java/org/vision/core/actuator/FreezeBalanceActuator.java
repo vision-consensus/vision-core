@@ -104,15 +104,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
-      case FVGUARANTEE:
-        long fvGuaranteeExpireTime = now + UN_FREEZE_FVGUARANTEE_LIMIT;
-        long newFrozenBalanceForFVGuarantee =
+      case SRGUARANTEE:
+        long srGuaranteeExpireTime = now + UN_FREEZE_SRGUARANTEE_LIMIT;
+        long newFrozenBalanceForSRGuarantee =
                 frozenBalance + accountCapsule.getAccountResource()
-                        .getFrozenBalanceForFvguarantee()
+                        .getFrozenBalanceForSrguarantee()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, fvGuaranteeExpireTime);
+        accountCapsule.setFrozenForSRGuarantee(newFrozenBalanceForSRGuarantee, srGuaranteeExpireTime);
         dynamicStore
-                .addTotalFVGuaranteeWeight(frozenBalance / VS_PRECISION);
+                .addTotalSRGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
         if (!ArrayUtils.isEmpty(parentAddress)){
@@ -251,7 +251,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case ENTROPY:
         break;
-      case FVGUARANTEE:
+      case SRGUARANTEE:
         break;
       case SPREAD: // check the parentAddress is a valid account
           AccountCapsule parentCapsule = accountStore.get(parentAddress);
@@ -269,7 +269,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       default:
         throw new ContractValidateException(
-            "ResourceCode error,valid ResourceCode[PHOTON、ENTROPY、FVGUARANTEE、SPREAD]");
+            "ResourceCode error,valid ResourceCode[PHOTON、ENTROPY、SRGUARANTEE、SPREAD]");
     }
 
     //todo：need version control and config for delegating resource

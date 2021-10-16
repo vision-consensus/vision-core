@@ -37,16 +37,17 @@ This guide walks the user through the VISION Quickstart (v1.0.0) image setup.
 * [Run](./run.md) Run vision-core
 
 # Deployment
-[Deployment Guide](https://developers.v.network/docs/deployment-steps)
- walks the user through how to deploy a FullNode and upgrade to be a First Validator.
+[Deployment Guide]()
+ walks the user through how to deploy a FullNode and an SR node.
 
 # Channel
-[Core Developers Community](https://t.me/vision_core_devs) is the Telegram channel for vision-core community developers. If you want to contribute to vision-core, please join this channel.
+[Core Developers Community](https://t.me/visioncoredevscommunity) is the Telegram channel for vision-core community developers. If you want to contribute to vision-core, please join this channel.
 
 
 # Contribution
 If you'd like to contribute to vision-core, please read the following instructions.
-- [Community Developers Incentives Programme][coming soon...]
+- [Contribution](./CONTRIBUTING.md)
+- [Community Developers Incentives Programme](./CONTRIBUTING.md#community-developers-incentives-programme)
 
 # Resources
 * [Developers Community](https://developers.v.network/) The V Network(Vision) Developers Hub

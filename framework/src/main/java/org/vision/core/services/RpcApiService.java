@@ -574,7 +574,7 @@ public class RpcApiService implements Service {
 
     @Override
     public void getRewardInfo(BytesMessage request,
-        StreamObserver<RewardMessage> responseObserver) {
+        StreamObserver<NumberMessage> responseObserver) {
       getRewardInfoCommon(request, responseObserver);
     }
 
@@ -2417,7 +2417,7 @@ public class RpcApiService implements Service {
 
     @Override
     public void getRewardInfo(BytesMessage request,
-        StreamObserver<RewardMessage> responseObserver) {
+        StreamObserver<NumberMessage> responseObserver) {
       getRewardInfoCommon(request, responseObserver);
     }
 
@@ -2569,12 +2569,11 @@ public class RpcApiService implements Service {
   }
 
   public void getRewardInfoCommon(BytesMessage request,
-      StreamObserver<RewardMessage> responseObserver) {
+      StreamObserver<NumberMessage> responseObserver) {
     try {
-      Map<String, Long> value = dbManager.getMortgageService().queryAllReward(request.getValue().toByteArray());
-      RewardMessage.Builder builder = RewardMessage.newBuilder();
-      builder.setReward(value.get("reward"));
-      builder.setSpreadReward(value.get("spreadReward"));
+      long value = dbManager.getMortgageService().queryReward(request.getValue().toByteArray());
+      NumberMessage.Builder builder = NumberMessage.newBuilder();
+      builder.setNum(value);
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);

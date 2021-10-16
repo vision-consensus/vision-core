@@ -186,14 +186,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setAccountResource(newAccountResource).build());
 
           break;
-        case FVGUARANTEE:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForFvguarantee()
+        case SRGUARANTEE:
+          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSrguarantee()
                   .getFrozenBalance();
-          AccountResource newFVGuarantee = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForFvguarantee().build();
+          AccountResource newSRGuarantee = accountCapsule.getAccountResource().toBuilder()
+                  .clearFrozenBalanceForSrguarantee().build();
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newFVGuarantee).build());
+                  .setAccountResource(newSRGuarantee).build());
           break;
         case SPREAD:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
@@ -225,9 +225,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case SPREAD:
         dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
         break;
-      case FVGUARANTEE:
+      case SRGUARANTEE:
         dynamicStore
-                .addTotalFVGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
+                .addTotalSRGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
         break;
       default:
         //this should never happen
@@ -412,15 +412,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
           break;
-        case FVGUARANTEE:
-          Frozen frozenBalanceForFVGuarantee = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForFvguarantee();
-          if (frozenBalanceForFVGuarantee.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(FVGuarantee)");
+        case SRGUARANTEE:
+          Frozen frozenBalanceForSRGuarantee = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForSrguarantee();
+          if (frozenBalanceForSRGuarantee.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(SRGuarantee)");
           }
-
-          if (frozenBalanceForFVGuarantee.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(FVGuarantee).");
+          if (frozenBalanceForSRGuarantee.getExpireTime() - now > UN_FREEZE_SRGUARANTEE_LIMIT - 360000L) {
+            throw new ContractValidateException("It's not time to unfreeze(SRGuarantee).");
           }
           break;
         case SPREAD:

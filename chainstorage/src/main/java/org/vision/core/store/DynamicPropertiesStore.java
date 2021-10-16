@@ -364,9 +364,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getTotalFVGuaranteeWeight();
+      this.getTotalSRGuaranteeWeight();
     } catch (IllegalArgumentException e) {
-      this.saveTotalFVGuaranteeWeight(0L);
+      this.saveTotalSRGuaranteeWeight(0L);
     }
 
     try {
@@ -1211,17 +1211,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
   }
 
-  public void saveTotalFVGuaranteeWeight(long totalFVGuaranteeWeight) {
-    this.put(DynamicResourceProperties.TOTAL_FVGUARANTEE_WEIGHT,
-            new BytesCapsule(ByteArray.fromLong(totalFVGuaranteeWeight)));
+  public void saveTotalSRGuaranteeWeight(long totalSRGuaranteeWeight) {
+    this.put(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalSRGuaranteeWeight)));
   }
 
-  public long getTotalFVGuaranteeWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FVGUARANTEE_WEIGHT))
+  public long getTotalSRGuaranteeWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_FVGUARANTEE_WEIGHT"));
+            () -> new IllegalArgumentException("not found TOTAL_SRGUARANTEE_WEIGHT"));
   }
 
   public void saveTotalAssets(long totalAssets) {
@@ -2330,10 +2330,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   //The unit is vs
-  public void addTotalFVGuaranteeWeight(long amount) {
-    long totalnewFVGuarantee = getTotalFVGuaranteeWeight();
-    totalnewFVGuarantee += amount;
-    saveTotalFVGuaranteeWeight(totalnewFVGuarantee);
+  public void addTotalSRGuaranteeWeight(long amount) {
+    long totalnewSRGuarantee = getTotalSRGuaranteeWeight();
+    totalnewSRGuarantee += amount;
+    saveTotalSRGuaranteeWeight(totalnewSRGuarantee);
   }
 
   public void addTotalAssets(long amount) {
@@ -2707,7 +2707,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ENTROPY_LIMIT = "TOTAL_ENTROPY_LIMIT".getBytes();
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
 
-    private static final byte[] TOTAL_FVGUARANTEE_WEIGHT = "TOTAL_FVGUARANTEE_WEIGHT".getBytes();
+    private static final byte[] TOTAL_SRGUARANTEE_WEIGHT = "TOTAL_SRGUARANTEE_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();

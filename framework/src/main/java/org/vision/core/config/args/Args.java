@@ -734,10 +734,6 @@ public class Args extends CommonParameter {
     PARAMETER.historyBalanceLookup = config.hasPath(Constant.HISTORY_BALANCE_LOOKUP) && config
         .getBoolean(Constant.HISTORY_BALANCE_LOOKUP);
 
-    PARAMETER.gasPrice =
-            config.hasPath(Constant.ETH_GAS_PRICE) ? config
-                    .getLong(Constant.ETH_GAS_PRICE) : 160_000_000_000L;
-
     logConfig();
   }
 
