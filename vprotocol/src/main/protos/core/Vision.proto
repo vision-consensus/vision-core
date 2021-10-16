@@ -209,8 +209,8 @@ message Account {
     // the frozen balance for spread_mint
     Frozen frozen_balance_for_spread = 9;
 
-    // the frozen balance for SRGuarantee
-    Frozen frozen_balance_for_srguarantee = 10;
+    // the frozen balance for FVGuarantee
+    Frozen frozen_balance_for_fvguarantee = 10;
 
   }
   AccountResource account_resource = 26;
@@ -276,7 +276,7 @@ message Witness {
   bool isJobs = 9;
   //the weight of vote count
   int64 voteCountWeight = 10;
-  //the threshold of SRGuarantee
+  //the threshold of FVGuarantee
   int64 voteCountThreshold = 11;
 }
 

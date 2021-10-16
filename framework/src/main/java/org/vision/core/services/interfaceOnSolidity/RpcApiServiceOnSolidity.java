@@ -336,7 +336,7 @@ public class RpcApiServiceOnSolidity implements Service {
 
     @Override
     public void getRewardInfo(BytesMessage request,
-        StreamObserver<NumberMessage> responseObserver) {
+        StreamObserver<RewardMessage> responseObserver) {
       walletOnSolidity.futureGet(
           () -> rpcApiService.getWalletSolidityApi().getRewardInfo(request, responseObserver));
     }
