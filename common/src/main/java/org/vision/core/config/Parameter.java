@@ -38,6 +38,7 @@ public class Parameter {
 
   public class ChainConstant {
 
+
     public static final int MAX_ACTIVE_WITNESS_NUM = 3;
     public static final int WITNESS_STANDBY_LENGTH = 123;
     public static final long TRANSFER_FEE = 0; // free
@@ -57,7 +58,7 @@ public class Parameter {
     public static final int BLOCK_VERSION = 20;
     public static final long FROZEN_PERIOD = 86_400_000L;
     public static final long VS_PRECISION = 1000_000L;
-    public static final long UN_FREEZE_SRGUARANTEE_LIMIT = 1987_200_000L;
+    public static final long UN_FREEZE_FVGUARANTEE_LIMIT = 1987_200_000L;
     public static final long FIRST_ECONOMY_CYCLE = 42L;
     public static final int QUERY_SPREAD_MINT_PARENT_LEVEL_MAX = 4;
 

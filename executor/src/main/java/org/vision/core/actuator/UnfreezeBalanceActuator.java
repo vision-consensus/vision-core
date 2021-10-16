@@ -416,14 +416,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
           break;
-        case SRGUARANTEE:
-          Frozen frozenBalanceForSRGuarantee = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForSrguarantee();
-          if (frozenBalanceForSRGuarantee.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(SRGuarantee)");
+        case FVGUARANTEE:
+          Frozen frozenBalanceForFVGuarantee = accountCapsule.getAccountResource()
+                  .getFrozenBalanceForFvguarantee();
+          if (frozenBalanceForFVGuarantee.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("no frozenBalance(FVGuarantee)");
           }
-          if (frozenBalanceForSRGuarantee.getExpireTime() - now > UN_FREEZE_SRGUARANTEE_LIMIT - 360000L) {
-            throw new ContractValidateException("It's not time to unfreeze(SRGuarantee).");
+          if (frozenBalanceForFVGuarantee.getExpireTime() - now > UN_FREEZE_FVGUARANTEE_LIMIT - 360000L) {
+            throw new ContractValidateException("It's not time to unfreeze(FVGuarantee).");
           }
           break;
         case SPREAD:
@@ -465,12 +465,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
       long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
-
-      if (CommonParameter.PARAMETER.isKafkaEnable()) {
-        JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(spreadRelationShipCapsule.getInstance(), true));
-        jsonObject.put("type", "unfreeze");
-        Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
-      }
     }
   }
 }

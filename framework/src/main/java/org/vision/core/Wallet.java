@@ -1067,7 +1067,7 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getFreezePeriodLimit")
+            .setKey("getSpreadFreezePeriodLimit")
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1208,7 +1208,7 @@ public class Wallet {
     long totalEntropyWeight =
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
-    long totalSRGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+    long totalFVGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
     long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
 
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
@@ -1227,7 +1227,7 @@ public class Wallet {
         .setEntropyUsed(accountCapsule.getAccountResource().getEntropyUsage())
         .setTotalEntropyLimit(totalEntropyLimit)
         .setTotalEntropyWeight(totalEntropyWeight)
-        .setTotalSRGuaranteeWeight(totalSRGuaranteeWeight)
+        .setTotalFVGuaranteeWeight(totalFVGuaranteeWeight)
         .setTotalSpreadWeight(totalSpreadWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
