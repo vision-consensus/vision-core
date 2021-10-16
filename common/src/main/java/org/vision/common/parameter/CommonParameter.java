@@ -463,6 +463,9 @@ public class CommonParameter {
   @Setter
   public String kafkaBootStrapServers;
 
+  @Getter
+  @Setter
+  public long gasPrice;
 
 
   private static double calcMaxTimeRatio() {
