@@ -224,7 +224,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
         long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
         long now = dynamicStore.getLatestBlockHeaderTimestamp();
         long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
-        if (frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD > now){
+        long frozenBalanceForSpread = spreadRelationShipCapsule.getFrozenBalanceForSpread();
+        if (frozenBalanceForSpread > 0 && frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L){
           throw new ContractValidateException("It's not time to re-freeze.");
         }
       }

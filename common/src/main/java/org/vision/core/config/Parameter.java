@@ -38,7 +38,6 @@ public class Parameter {
 
   public class ChainConstant {
 
-
     public static final int MAX_ACTIVE_WITNESS_NUM = 23;
     public static final int WITNESS_STANDBY_LENGTH = 123;
     public static final long TRANSFER_FEE = 0; // free
