@@ -173,7 +173,7 @@ public class DposService implements ConsensusInterface {
       json.put("blockNum", newSolidNum);
       long totalEntropyWeight = 0L;
       long totalPhotonWeight = 0L;
-      long totalSRGuaranteeWeight = 0L;
+      long totalFVGuaranteeWeight = 0L;
       try {
         totalEntropyWeight = consensusDelegate.getDynamicPropertiesStore().getTotalEntropyWeight();
       }catch (Exception e){
@@ -185,13 +185,13 @@ public class DposService implements ConsensusInterface {
         logger.info("no photon");
       }
       try {
-        totalSRGuaranteeWeight = consensusDelegate.getDynamicPropertiesStore().getTotalSRGuaranteeWeight();
+        totalFVGuaranteeWeight = consensusDelegate.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
       }catch (Exception e){
         logger.info("no SRGuarantee");
       }
       json.put("totalEntropyWeight", totalEntropyWeight);
       json.put("totalPhotonWeight", totalPhotonWeight);
-      json.put("totalSRGuaranteeWeight", totalSRGuaranteeWeight);
+      json.put("totalFVGuaranteeWeight", totalFVGuaranteeWeight);
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       JSONArray witnesses = new JSONArray();
       consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
