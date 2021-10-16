@@ -276,4 +276,5 @@ public class Constant {
   public static final String LOCAL_HOST = "127.0.0.1";
   public static final String KAFKA_SENDER_ENABLE = "kafka.enable";
   public static final String KAFKA_BOOTSTRAP_SERVERS_CONFIG = "kafka.bootstrap.servers";
+  public static final String ETH_GAS_PRICE = "eth.gasPrice";
 }

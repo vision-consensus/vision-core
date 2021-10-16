@@ -735,6 +735,11 @@ public class Args extends CommonParameter {
         .getBoolean(Constant.HISTORY_BALANCE_LOOKUP);
     PARAMETER.setKafkaEnable(config.hasPath(Constant.KAFKA_SENDER_ENABLE) && config.getBoolean(Constant.KAFKA_SENDER_ENABLE));
     PARAMETER.kafkaBootStrapServers = config.hasPath(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) ? config.getString(Constant.KAFKA_BOOTSTRAP_SERVERS_CONFIG) : "";
+
+    PARAMETER.gasPrice =
+            config.hasPath(Constant.ETH_GAS_PRICE) ? config
+                    .getLong(Constant.ETH_GAS_PRICE) : 160_000_000_000L;
+
     logConfig();
   }
 
