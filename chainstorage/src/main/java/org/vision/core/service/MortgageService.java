@@ -228,7 +228,7 @@ public class MortgageService {
       long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
       if (spreadMintBeginCycle < spreadMintEndCycle) {
         long spreadReward = 0L;
-        for (long cycle = spreadMintBeginCycle; cycle < spreadMintEndCycle; cycle++) {
+        for (long cycle = spreadMintBeginCycle; cycle < currentCycle; cycle++) {
           spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
         }
         rewardMap.put("spreadReward", spreadReward);
