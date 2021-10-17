@@ -52,7 +52,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     mortgageService.withdrawReward(withdrawBalanceContract.getOwnerAddress()
-        .toByteArray());
+        .toByteArray(), true);
     AccountCapsule accountCapsule = accountStore.
         get(withdrawBalanceContract.getOwnerAddress().toByteArray());
     long oldBalance = accountCapsule.getBalance();
