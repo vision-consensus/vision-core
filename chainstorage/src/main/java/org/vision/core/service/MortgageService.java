@@ -145,12 +145,12 @@ public class MortgageService {
         beginCycle, endCycle, accountCapsule.getVotesList());
   }
 
-  public void withdrawReward(byte[] address) {
+  public void withdrawReward(byte[] address, boolean isWithdrawalSpread) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
     }
 
-    if(dynamicPropertiesStore.supportSpreadMint()){
+    if(isWithdrawalSpread && dynamicPropertiesStore.supportSpreadMint()){
       withdrawSpreadMintReward(address);
     }
 
