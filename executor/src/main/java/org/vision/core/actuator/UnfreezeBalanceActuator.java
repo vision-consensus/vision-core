@@ -22,6 +22,7 @@ import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
+import org.vision.protos.contract.Common;
 
 import java.util.*;
 
@@ -61,7 +62,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();
 
     //
-    mortgageService.withdrawReward(ownerAddress);
+    if(unfreezeBalanceContract.getResource() != Common.ResourceCode.FVGUARANTEE){
+      mortgageService.withdrawReward(ownerAddress, unfreezeBalanceContract.getResource() == Common.ResourceCode.SPREAD);
+    }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     long oldBalance = accountCapsule.getBalance();
