@@ -1354,11 +1354,7 @@ public class Manager {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
       mortgageService.payStandbyWitness();
-      //spread mint
-      if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-        mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-        spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock();
-      }
+
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = Math
                 .floorDiv(chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),
