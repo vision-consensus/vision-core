@@ -1284,18 +1284,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
-  public void saveAllowMetamaskSendRawTransaction(long allowMetamaskSendRawTransaction) {
-    this.put(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION,
-            new BytesCapsule(ByteArray.fromLong(allowMetamaskSendRawTransaction)));
-  }
-
-  public long getAllowMetamaskSendRawTransaction() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_METAMASK_SENDRAWTRANSACTION))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(1L);
-  }
-
   public void saveLowInflationRate(long lowInflationRate) {
     this.put(DynamicResourceProperties.LOW_INFLATION_RATE,
             new BytesCapsule(ByteArray.fromLong(lowInflationRate)));
