@@ -115,14 +115,32 @@ public class MortgageService {
       return;
     }
 
+    if (beginCycle == currentCycle) {
+      AccountCapsule account = delegationStore.getAccountSpreadMint(beginCycle, address);
+      if (account != null) {
+        return;
+      }
+    }
+
+    long spreadReward =0;
     //withdraw the latest cycle reward
     if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
-
+      AccountCapsule account = delegationStore.getAccountSpreadMint(beginCycle, address);
+      if (account != null) {
+        spreadReward = computeSpreadMintReward(beginCycle, account, true);
+        adjustAllowance(address, spreadReward);
+        logger.info("latest cycle spread reward {},{},{}", beginCycle, account.getSpreadFrozenBalance(), spreadReward);
+        spreadReward = 0;
+      }
       beginCycle += 1;
     }
     endCycle = currentCycle;
 
-    long spreadReward =0;
+    if (accountCapsule.getSpreadFrozenBalance() == 0) {
+      delegationStore.setSpreadMintBeginCycle(address, endCycle + 1);
+      return;
+    }
+
     if (beginCycle < endCycle) {
       for (long cycle = beginCycle; cycle < endCycle; cycle++) {
         spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
@@ -132,9 +150,10 @@ public class MortgageService {
 
     delegationStore.setSpreadMintBeginCycle(address, endCycle);
     delegationStore.setSpreadMintEndCycle(address, endCycle + 1);
+    delegationStore.setAccountSpreadMint(endCycle, address, accountCapsule);
     logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account vote {},", Hex.toHexString(address), spreadReward, currentCycle,
-        beginCycle, endCycle, accountCapsule.getVotesList());
+            + "account spread {},", Hex.toHexString(address), spreadReward, currentCycle,
+        beginCycle, endCycle, accountCapsule.getSpreadFrozenBalance());
   }
 
   public void withdrawReward(byte[] address, boolean isWithdrawalSpread) {
