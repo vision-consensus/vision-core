@@ -115,6 +115,13 @@ public class MortgageService {
       return;
     }
 
+    if (beginCycle == currentCycle) {
+      AccountCapsule account = delegationStore.getAccountSpreadMint(beginCycle, address);
+      if (account != null) {
+        return;
+      }
+    }
+
     long spreadReward =0;
     //withdraw the latest cycle reward
     if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
