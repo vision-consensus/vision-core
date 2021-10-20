@@ -62,6 +62,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
         .setBalance(oldBalance + allowance)
         .setAllowance(0L)
+        .setSpreadMintAllowance(0L)
         .setLatestWithdrawTime(now)
         .build());
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
