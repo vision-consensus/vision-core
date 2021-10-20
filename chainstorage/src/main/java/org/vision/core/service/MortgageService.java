@@ -218,53 +218,61 @@ public class MortgageService {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return rewardMap;
     }
-    AccountCapsule accountCapsule = accountStore.get(address);
-    long beginCycle = delegationStore.getBeginCycle(address);
-    long endCycle = delegationStore.getEndCycle(address);
-    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long reward = 0;
-    if (accountCapsule == null) {
-      return rewardMap;
+
+    // query reward
+    long reward = queryReward(address);
+    rewardMap.put("reward", reward);
+
+    // query spreadReward
+    if (dynamicPropertiesStore.supportSpreadMint()){
+      long spreadReward = querySpreadReward(address);
+      rewardMap.put("spreadReward", spreadReward);
     }
-    if (beginCycle > currentCycle) {
-      rewardMap.put("reward", accountCapsule.getAllowance());
-      return rewardMap;
+
+    return rewardMap;
+  }
+
+  public long querySpreadReward(byte[] address){
+    if (!dynamicPropertiesStore.allowChangeDelegation()) {
+      return 0;
+    }
+    if (!dynamicPropertiesStore.supportSpreadMint()){
+      return 0;
+    }
+
+    AccountCapsule accountCapsule = accountStore.get(address);
+    long spreadMintBeginCycle = delegationStore.getSpreadMintBeginCycle(address);
+    long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
+    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
+    long spreadReward = 0L;
+    if (accountCapsule == null) {
+      return spreadReward;
+    }
+    if (spreadMintBeginCycle > currentCycle) {
+//      reward = accountCapsule.getAllowance();
+      return spreadReward;
     }
     //withdraw the latest cycle reward
-    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
-      AccountCapsule account = delegationStore.getAccountVote(beginCycle, address);
+    if (spreadMintBeginCycle + 1 == spreadMintEndCycle && spreadMintBeginCycle < currentCycle) {
+      AccountCapsule account = delegationStore.getAccountSpreadMint(spreadMintBeginCycle, address);
       if (account != null) {
-        reward = computeReward(beginCycle, account);
+        spreadReward = computeSpreadMintReward(spreadMintBeginCycle, account, false);
       }
-      beginCycle += 1;
+      spreadMintBeginCycle += 1;
     }
-    //
-    endCycle = currentCycle;
+    spreadMintEndCycle = currentCycle;
 
-
-    if (dynamicPropertiesStore.supportSpreadMint()){
-      long spreadMintBeginCycle = delegationStore.getSpreadMintBeginCycle(address);
-      long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
-      if (spreadMintBeginCycle < spreadMintEndCycle) {
-        long spreadReward = 0L;
-        for (long cycle = spreadMintBeginCycle; cycle < currentCycle; cycle++) {
-          spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
-        }
-        rewardMap.put("spreadReward", spreadReward);
+    if (accountCapsule.getSpreadFrozenBalance() == 0) {
+//      spreadReward += accountCapsule.getAllowance();
+      return spreadReward;
+    }
+    if (spreadMintBeginCycle < spreadMintEndCycle) {
+      for (long cycle = spreadMintBeginCycle; cycle < spreadMintEndCycle; cycle++) {
+        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
       }
+//      spreadReward += accountCapsule.getAllowance();
     }
-
-    if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
-      rewardMap.put("reward", reward + accountCapsule.getAllowance());
-      return rewardMap;
-    }
-    if (beginCycle < endCycle) {
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        reward += computeReward(cycle, accountCapsule);
-      }
-      rewardMap.put("reward", reward + accountCapsule.getAllowance());
-    }
-    return rewardMap;
+    return spreadReward;
   }
 
   public long queryReward(byte[] address) {
@@ -292,12 +300,6 @@ public class MortgageService {
     }
     //
     endCycle = currentCycle;
-
-    if (beginCycle < endCycle) {
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        reward += computeSpreadMintReward(cycle, accountCapsule, false);
-      }
-    }
 
     if (CollectionUtils.isEmpty(accountCapsule.getVotesList())) {
       return reward + accountCapsule.getAllowance();
