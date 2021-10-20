@@ -190,7 +190,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     if (needCheckFrozeTime
             && freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD
-            && frozenDuration != dynamicStore.getSpreadFreezePeriodLimit()) {
+            && frozenDuration != dynamicStore.getSpreadFreezePeriodLimit()
+            && dynamicStore.getLatestBlockHeaderNumber() >= 206379L
+    ) {
       throw new ContractValidateException(
               "[SPREAD] frozenDuration must be " + dynamicStore.getSpreadFreezePeriodLimit() + " days");
     }
@@ -236,7 +238,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
 
       if (spreadRelationShipCapsule != null){
-        if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
+        if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()
+                && dynamicStore.getLatestBlockHeaderNumber() >= 206379L
+        ){
           throw new ContractValidateException("It's not time to re-freeze.");
         }
       }
