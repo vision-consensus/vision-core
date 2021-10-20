@@ -218,6 +218,8 @@ message Account {
   Permission owner_permission = 31;
   Permission witness_permission = 32;
   repeated Permission active_permission = 33;
+
+  int64 spread_mint_allowance = 34;
 }
 
 

@@ -753,6 +753,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = this.account.toBuilder().setAllowance(allowance).build();
   }
 
+  public long getSpreadMintAllowance() {
+    return getInstance().getSpreadMintAllowance();
+  }
+
+  public void setSpreadMintAllowance(long allowance) {
+    this.account = this.account.toBuilder().setSpreadMintAllowance(allowance).build();
+  }
+
   public long getLatestWithdrawTime() {
     return getInstance().getLatestWithdrawTime();
   }

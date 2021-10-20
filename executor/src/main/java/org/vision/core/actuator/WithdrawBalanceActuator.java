@@ -62,6 +62,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
         .setBalance(oldBalance + allowance)
         .setAllowance(0L)
+        .setSpreadMintAllowance(0L)
         .setLatestWithdrawTime(now)
         .build());
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
@@ -127,7 +128,8 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0) {
+        mortgageService.queryReward(ownerAddress) <= 0 &&
+            mortgageService.querySpreadReward(ownerAddress) <= 0) {
       throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {

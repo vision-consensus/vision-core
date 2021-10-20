@@ -105,12 +105,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
             .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         break;
       case FVGUARANTEE:
-        long fvGuaranteeExpireTime = now + UN_FREEZE_FVGUARANTEE_LIMIT;
         long newFrozenBalanceForFVGuarantee =
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForFvguarantee()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, fvGuaranteeExpireTime);
+        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, expireTime);
         dynamicStore
                 .addTotalFVGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
@@ -180,11 +179,29 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     boolean needCheckFrozeTime = CommonParameter.getInstance()
             .getCheckFrozenTime() == 1;//for test
-    if (needCheckFrozeTime && !(frozenDuration >= minFrozenTime
-            && frozenDuration <= maxFrozenTime)) {
+
+    if (needCheckFrozeTime
+            && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
+            && !(frozenDuration >= minFrozenTime && frozenDuration <= maxFrozenTime)) {
       throw new ContractValidateException(
-              "frozenDuration must be less than " + maxFrozenTime + " days "
+              "[PHOTON、ENTROPY] frozenDuration must be less than " + maxFrozenTime + " days "
                       + "and more than " + minFrozenTime + " days");
+    }
+
+    if (needCheckFrozeTime
+            && freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD
+            && frozenDuration != dynamicStore.getSpreadFreezePeriodLimit()
+            && dynamicStore.getLatestBlockHeaderNumber() >= 206379L
+    ) {
+      throw new ContractValidateException(
+              "[SPREAD] frozenDuration must be " + dynamicStore.getSpreadFreezePeriodLimit() + " days");
+    }
+
+    if (needCheckFrozeTime
+            && freezeBalanceContract.getResource() == Common.ResourceCode.FVGUARANTEE
+            && frozenDuration != UN_FREEZE_FVGUARANTEE_LIMIT) {
+      throw new ContractValidateException(
+              "[FVGUARANTEE] frozenDuration must be " + UN_FREEZE_FVGUARANTEE_LIMIT + " days");
     }
 
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
@@ -221,10 +238,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
 
       if (spreadRelationShipCapsule != null){
-        long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
-        long now = dynamicStore.getLatestBlockHeaderTimestamp();
-        long frozenSpreadExpiredTime = spreadRelationShipCapsule.getExpireTimeForSpread();
-        if (frozenSpreadExpiredTime - duration + dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD > now){
+        if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()
+                && dynamicStore.getLatestBlockHeaderNumber() >= 206379L
+        ){
           throw new ContractValidateException("It's not time to re-freeze.");
         }
       }
