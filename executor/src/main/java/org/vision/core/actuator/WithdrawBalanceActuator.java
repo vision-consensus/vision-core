@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
@@ -66,6 +67,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
         .setBalance(oldBalance + allowance)
         .setAllowance(0L)
+        .setSpreadMintAllowance(0L)
         .setLatestWithdrawTime(now)
         .build());
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
@@ -146,8 +148,13 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0) {
-      throw new ContractValidateException("witnessAccount does not have any reward");
+        mortgageService.queryReward(ownerAddress) <= 0 &&
+            mortgageService.querySpreadReward(ownerAddress) <= 0) {
+      //TODO will delete
+      List<Long> blocks = Arrays.asList(118761L, 117734L);
+      if(!blocks.contains(dynamicStore.getLatestBlockHeaderNumber())){
+        throw new ContractValidateException("witnessAccount does not have any reward");
+      }
     }
     try {
       LongMath.checkedAdd(accountCapsule.getBalance(), accountCapsule.getAllowance());
