@@ -131,11 +131,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if (accountCapsule.getAllowance() <= 0 &&
         mortgageService.queryReward(ownerAddress) <= 0 &&
             mortgageService.querySpreadReward(ownerAddress) <= 0) {
-      //TODO will delete
-      List<Long> blocks = Arrays.asList(118761L, 117734L);
-      if(!blocks.contains(dynamicStore.getLatestBlockHeaderNumber())){
-        throw new ContractValidateException("witnessAccount does not have any reward");
-      }
+      throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {
       LongMath.checkedAdd(accountCapsule.getBalance(), accountCapsule.getAllowance());
