@@ -307,11 +307,13 @@ public class MortgageService {
     long endCycle = delegationStore.getEndCycle(address);
     long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
     long reward = 0;
-    reward += querySpreadUnLiquiatedReward(address);
 
     if (accountCapsule == null) {
       return 0;
     }
+
+    reward += querySpreadUnLiquiatedReward(address);
+
     if (beginCycle > currentCycle) {
       reward += accountCapsule.getAllowance();
       return reward;
@@ -320,7 +322,7 @@ public class MortgageService {
     if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
       AccountCapsule account = delegationStore.getAccountVote(beginCycle, address);
       if (account != null) {
-        reward = computeReward(beginCycle, account);
+        reward += computeReward(beginCycle, account);
       }
       beginCycle += 1;
     }
