@@ -380,7 +380,7 @@ public class MortgageService {
 
     long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
-    long spreadReward = (long)(totalReward * accountFreeze * 1.0 / VS_PRECISION / totalFreeze);
+    long spreadReward = (long)((accountFreeze * 1.0 / VS_PRECISION / totalFreeze) * totalReward);
     if (spreadReward == 0){
       return 0;
     }
