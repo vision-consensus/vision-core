@@ -68,7 +68,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long newBalance = accountCapsule.getBalance() - freezeBalanceContract.getFrozenBalance();
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
-    long expireTime = now + duration;
+    long expireTime = now + 180000L;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
@@ -109,7 +109,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForFvguarantee()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, expireTime);
+        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, expireTime + 180000L);
         dynamicStore
                 .addTotalFVGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
