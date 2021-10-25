@@ -1,15 +1,11 @@
 package org.vision.core.actuator;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.JsonFormat;
-import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
@@ -27,7 +23,7 @@ import org.vision.protos.contract.Common;
 import java.util.*;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.*;
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "actuator")
 public class UnfreezeBalanceActuator extends AbstractActuator {
@@ -171,7 +167,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           long now = dynamicStore.getLatestBlockHeaderTimestamp();
           while (iterator.hasNext()) {
             Frozen next = iterator.next();
-            if (next.getExpireTime() - now <= dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L) {
+            if (next.getExpireTime() <= now) {
               unfreezeBalance += next.getFrozenBalance();
               iterator.remove();
             }
@@ -356,7 +352,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             }
           }
 
-          if (delegatedResourceCapsule.getExpireTimeForPhoton() - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L) {
+          if (delegatedResourceCapsule.getExpireTimeForPhoton() > now) {
             throw new ContractValidateException("It's not time to unfreeze.");
           }
           break;
@@ -387,7 +383,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             }
           }
 
-          if (delegatedResourceCapsule.getExpireTimeForEntropy(dynamicStore) - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L) {
+          if (delegatedResourceCapsule.getExpireTimeForEntropy(dynamicStore) > now) {
             throw new ContractValidateException("It's not time to unfreeze.");
           }
           break;
@@ -404,7 +400,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           }
 
           long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
-              .filter(frozen -> frozen.getExpireTime() - now <= dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L).count();
+              .filter(frozen -> frozen.getExpireTime() <= now).count();
           if (allowedUnfreezeCount <= 0) {
             throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
           }
@@ -415,7 +411,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForEntropy.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(Entropy)");
           }
-          if (frozenBalanceForEntropy.getExpireTime() - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L) {
+          if (frozenBalanceForEntropy.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
           break;
@@ -425,7 +421,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForFVGuarantee.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(FVGuarantee)");
           }
-          if (frozenBalanceForFVGuarantee.getExpireTime() - now > UN_FREEZE_FVGUARANTEE_LIMIT - 360000L) {
+          if (frozenBalanceForFVGuarantee.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(FVGuarantee).");
           }
           break;
@@ -435,7 +431,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
-          if (frozenBalanceForSpread.getExpireTime() - now > dynamicStore.getMaxFrozenTime() * FROZEN_PERIOD - 180000L) {
+          if (frozenBalanceForSpread.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
           }
 
