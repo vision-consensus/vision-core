@@ -8,6 +8,7 @@ import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.parameter.CommonParameter;
@@ -52,7 +53,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     mortgageService.withdrawReward(withdrawBalanceContract.getOwnerAddress()
-        .toByteArray());
+        .toByteArray(), true);
     AccountCapsule accountCapsule = accountStore.
         get(withdrawBalanceContract.getOwnerAddress().toByteArray());
     long oldBalance = accountCapsule.getBalance();
@@ -62,6 +63,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
         .setBalance(oldBalance + allowance)
         .setAllowance(0L)
+        .setSpreadMintAllowance(0L)
         .setLatestWithdrawTime(now)
         .build());
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
@@ -127,7 +129,8 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0) {
+        mortgageService.queryReward(ownerAddress) <= 0 &&
+            mortgageService.querySpreadReward(ownerAddress) <= 0) {
       throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {

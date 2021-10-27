@@ -1048,6 +1048,10 @@ public class Wallet {
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getInflationRate")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getLowInflationRate()+","+dbManager.getDynamicPropertiesStore().getHighInflationRate())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getCurrentInflationRate")
             .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
