@@ -129,17 +129,16 @@ public class MaintenanceManager {
         long maxVoteCounts = 0;
         long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
         if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-            maxVoteCounts = (long) ((fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
-          maxVoteCounts /= VS_PRECISION;
+          long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+          maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
         witnessCapsule.setVoteCountThreshold(maxVoteCounts);
         // witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
         consensusDelegate.saveWitness(witnessCapsule);
-        logger.info("address is {} , countVote is {}", witnessCapsule.createReadableString(),
-                witnessCapsule.getVoteCount());
+        logger.info("address is {} , countVote is {} , countVoteWeight is {} , countVoteThreshold is {}", witnessCapsule.createReadableString(),
+                witnessCapsule.getVoteCount() ,witnessCapsule.getVoteCountWeight() ,witnessCapsule.getVoteCountThreshold());
       });
 
       dposService.updateWitness(newWitnessAddressList);
