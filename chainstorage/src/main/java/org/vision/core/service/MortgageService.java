@@ -378,9 +378,9 @@ public class MortgageService {
       }
     }
 
-    long accountFreeze = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    long accountSpreadFreezeVdt = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long totalReward = delegationStore.getSpreadMintReward(cycle);
-    long spreadReward = (long)((accountFreeze * 1.0 / VS_PRECISION / totalFreeze) * totalReward);
+    long spreadReward = (long)((accountSpreadFreezeVdt * 1.0 / VS_PRECISION / totalFreeze) * totalReward);
     if (spreadReward == 0){
       return 0;
     }
@@ -406,11 +406,11 @@ public class MortgageService {
     if(!isWithdrawReward){
       return (long)(spreadReward * (props[0] / 100.0));
     }
-    adjustSpreadMintParentAllowance(accountCapsule, props, spreadReward, accountFreeze);
+    adjustSpreadMintParentAllowance(accountCapsule, props, spreadReward, accountSpreadFreezeVdt);
     return (long)(spreadReward * (props[0] / 100.0));
   }
 
-  private void adjustSpreadMintParentAllowance(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountFreeze){
+  private void adjustSpreadMintParentAllowance(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountSpreadFreezeVdt){
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
@@ -426,7 +426,7 @@ public class MortgageService {
         }
 
         parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-        long spreadAmount = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+        long spreadAmount = (long)(props[i] / 100.0 * spreadReward * minSpreadMintProp(parentCapsule, accountSpreadFreezeVdt));
         adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
         adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
       }
@@ -435,9 +435,9 @@ public class MortgageService {
     }
   }
 
-  public double minSpreadMintProp(AccountCapsule parentCapsule, long accountFreeze){
-    long parentAccountFreeze = parentCapsule.getSpreadFrozenBalance();
-    double minSpreadMintProp = parentAccountFreeze * 1.0 / accountFreeze;
+  public double minSpreadMintProp(AccountCapsule parentCapsule, long accountSpreadFreezeVdt){
+    long parentAccountSpreadFreezeVdt = parentCapsule.getSpreadFrozenBalance();
+    double minSpreadMintProp = parentAccountSpreadFreezeVdt * 1.0 / accountSpreadFreezeVdt;
     return minSpreadMintProp < 1 ? minSpreadMintProp : 1.0;
   }
 
