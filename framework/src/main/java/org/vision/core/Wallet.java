@@ -1078,6 +1078,10 @@ public class Wallet {
             .setKey("getAllowEthereumCompatibleTransaction")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowModifySpreadMintParent")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowModifySpreadMintParent())
+            .build());
     return builder.build();
   }
 
