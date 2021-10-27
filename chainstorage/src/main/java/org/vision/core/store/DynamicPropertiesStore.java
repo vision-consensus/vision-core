@@ -864,12 +864,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getSrFreezeLowest();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowest(Parameter.ChainConstant.SR_FREEZE_LOWEST);
+      this.saveSrFreezeLowest(Parameter.ChainConstant.FV_FREEZE_LOWEST);
     }
     try {
       this.getSrFreezeLowestPercent();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
+      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.FV_FREEZE_LOWEST_PERCENT);
     }
 
     try {
@@ -888,6 +888,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getSpreadMintLevelProp();
     } catch (IllegalArgumentException e) {
       this.saveSpreadMintLevelProp("80,10,8,2");
+    }
+
+    try {
+      this.getAllowModifySpreadMintParent();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowModifySpreadMintParent(1L);
     }
   }
 
@@ -2533,6 +2539,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getAllowSpreadMintLevelProp() == 1L;
   }
 
+  public boolean supportModifySpreadMintParent() {
+    return getAllowModifySpreadMintParent() == 1L;
+  }
+
   public void saveSpreadMintLevelProp(String value) {
     this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
   }
@@ -2685,6 +2695,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
+  public void saveAllowModifySpreadMintParent(long allowModifySpreadMintParent) {
+    this.put(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT,
+            new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
+  }
+
+  public long getAllowModifySpreadMintParent() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
@@ -2727,6 +2749,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .getBytes();
     private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
+    public static final byte[] ALLOW_MODIFY_SPREAD_MINT_PARENT = "ALLOW_MODIFY_SPREAD_MINT_PARENT".getBytes();
   }
 
 }

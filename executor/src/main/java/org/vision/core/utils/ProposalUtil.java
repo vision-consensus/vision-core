@@ -347,6 +347,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_MODIFY_SPREAD_MINT_PARENT: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_MODIFY_SPREAD_MINT_PARENT] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -466,7 +473,8 @@ public class ProposalUtil {
     INFLATION_RATE(46),//"689,2322"
     PLEDGE_RATE_THRESHOLD(47),// [0, 100L]
     SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
-    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49);// 0,1
+    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
+    ALLOW_MODIFY_SPREAD_MINT_PARENT(50);// 0,1
 
     private long code;
 

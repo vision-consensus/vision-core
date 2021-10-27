@@ -23,7 +23,7 @@ import org.vision.protos.contract.Common;
 import java.util.*;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "actuator")
 public class UnfreezeBalanceActuator extends AbstractActuator {

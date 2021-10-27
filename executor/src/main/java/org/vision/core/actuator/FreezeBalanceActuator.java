@@ -223,13 +223,25 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
 
       SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
-      if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
-        if (spreadRelationShipCapsule == null){
-          throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
-        } else {
-          String oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
-          String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
-          if (oldParent.equals(newParent)) {
+      String oldParent = "";
+      String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
+      if(spreadRelationShipCapsule != null){
+        oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
+      }
+
+      if (!dynamicStore.supportModifySpreadMintParent()){
+        if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
+          throw new ContractValidateException("It's not allowed to modify the parentAddress");
+        }
+        if (frozenBalance == 0){
+          throw new ContractValidateException("frozenBalance must be more than 1VS");
+        }
+      } else { // supportModifySpreadMintParent == true
+        if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
+          if (spreadRelationShipCapsule == null){
+            throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+          }
+          if (!oldParent.isEmpty() && oldParent.equals(newParent)) {
             throw new ContractValidateException("The new and old parentAddress cannot be the same address");
           }
         }
