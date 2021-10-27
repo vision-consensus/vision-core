@@ -241,6 +241,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowEthereumCompatibleTransaction(entry.getValue());
           break;
         }
+        case ALLOW_MODIFY_SPREAD_MINT_PARENT: {
+          manager.getDynamicPropertiesStore().saveAllowModifySpreadMintParent(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
