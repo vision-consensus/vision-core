@@ -418,7 +418,7 @@ public class MortgageService {
         }
 
         parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-        long spreadAmount = (long)(spreadReward * props[i] / 100.0 * minSpreadMintProp(parentCapsule, accountFreeze));
+        long spreadAmount = (long)(props[i] / 100.0 * spreadReward * minSpreadMintProp(parentCapsule, accountFreeze));
         adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
         adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
       }
