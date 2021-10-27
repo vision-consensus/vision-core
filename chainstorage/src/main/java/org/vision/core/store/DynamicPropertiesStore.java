@@ -864,12 +864,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getSrFreezeLowest();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowest(Parameter.ChainConstant.SR_FREEZE_LOWEST);
+      this.saveSrFreezeLowest(Parameter.ChainConstant.FV_FREEZE_LOWEST);
     }
     try {
       this.getSrFreezeLowestPercent();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
+      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.FV_FREEZE_LOWEST_PERCENT);
     }
 
     try {
