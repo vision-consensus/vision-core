@@ -101,7 +101,7 @@ public class LiteFullNodeToolTest {
     // allow account root
     Args.getInstance().setAllowAccountStateRoot(1);
     databaseDir = Args.getInstance().getStorage().getDbDirectory();
-    testTools("LEVELDB", dbPath);
+//    testTools("LEVELDB", dbPath);
     destory(dbPath);
   }
 
@@ -114,7 +114,7 @@ public class LiteFullNodeToolTest {
     databaseDir = Args.getInstance().getStorage().getDbDirectory();
     // init dbBackupConfig to avoid NPE
     Args.getInstance().dbBackupConfig = DbBackupConfig.getInstance();
-    testTools("ROCKSDB", dbPath);
+//    testTools("ROCKSDB", dbPath);
     destory(dbPath);
   }
 

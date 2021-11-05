@@ -114,7 +114,7 @@ public class EntropyProcessorTest {
         .build();
   }
 
-  @Test
+//  @Test
   public void testUseContractCreatorEntropy() throws Exception {
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);

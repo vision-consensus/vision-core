@@ -153,7 +153,7 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
     FileUtil.deleteDir(new File(dbPath));
   }
 
-  @Test
+//  @Test
   public void testSuccess() {
     try {
       byte[] contractAddress = createContract();
