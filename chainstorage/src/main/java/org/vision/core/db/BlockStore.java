@@ -35,6 +35,7 @@ import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.TransactionRetCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.exception.BadItemException;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol;
 
 @Slf4j(topic = "DB")
@@ -46,7 +47,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
     super(dbName);
   }
 
-  public void sendBlockMsg(final BlockCapsule capsule, JSONObject reward, AccountCapsule account, WitnessCapsule witness){
+  public void sendBlockMsg(final BlockCapsule capsule, JSONObject reward, AccountCapsule account, WitnessCapsule witness, DynamicPropertiesStore dynamicPropertiesStore){
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
@@ -72,6 +73,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
           }
         }
       }
+
       obj.put("originEntropyUsage", originEntropyUsage);
       obj.put("entropyUsageTotal", entropyUsageTotal);
       obj.put("photonUsage", photonUsage);
@@ -83,6 +85,31 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       tmp.put("url", witness!=null?witness.getUrl():"");
       witnesses.add(tmp);
       obj.put("confirm_witnesses", witnesses);
+
+
+      long totalEntropyWeight = 0L;
+      long totalPhotonWeight = 0L;
+      long totalFVGuaranteeWeight = 0L;
+      try {
+        totalEntropyWeight = dynamicPropertiesStore.getTotalEntropyWeight();
+      }catch (Exception e){
+        logger.info("no entropy");
+      }
+      try {
+        totalPhotonWeight = dynamicPropertiesStore.getTotalPhotonWeight();
+      }catch (Exception e){
+        logger.info("no photon");
+      }
+      try {
+        totalFVGuaranteeWeight = dynamicPropertiesStore.getTotalFVGuaranteeWeight();
+      }catch (Exception e){
+        logger.info("no SRGuarantee");
+      }
+      obj.put("totalEntropyWeight", totalEntropyWeight);
+      obj.put("totalPhotonWeight", totalPhotonWeight);
+      obj.put("totalFVGuaranteeWeight", totalFVGuaranteeWeight);
+      obj.put("totalSpreadMintWeight", dynamicPropertiesStore.getTotalSpreadMintWeight());
+
       Producer.getInstance().send("BLOCK", obj.toJSONString());
     }
   }
