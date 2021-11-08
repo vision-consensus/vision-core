@@ -116,6 +116,13 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if (type != WithdrawBalanceContract.WithdrawBalanceType.ALL && type != WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
       throw new ContractValidateException("Invalid WithdrawBalance type");
     }
+    long spreadReward = 0;
+    if (type == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
+      spreadReward = mortgageService.querySpreadReward(ownerAddress);
+      if (spreadReward <= 0){
+        throw new ContractValidateException("Spread mint reward must be positive");
+      }
+    }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     if (accountCapsule == null) {
@@ -145,9 +152,13 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0 &&
-          mortgageService.querySpreadReward(ownerAddress) <= 0) {
-      throw new ContractValidateException("witnessAccount does not have any reward");
+        mortgageService.queryReward(ownerAddress) <= 0) {
+      if (type == WithdrawBalanceContract.WithdrawBalanceType.ALL){
+        spreadReward = mortgageService.querySpreadReward(ownerAddress);
+      }
+      if (spreadReward <= 0 ){
+        throw new ContractValidateException("witnessAccount does not have any reward");
+      }
     }
     try {
       LongMath.checkedAdd(accountCapsule.getBalance(), accountCapsule.getAllowance());
