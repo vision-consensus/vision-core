@@ -164,6 +164,8 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private GetChainParametersServlet getChainParametersServlet;
   @Autowired
+  private GetNonProposalChainParametersServlet getNonProposalChainParametersServlet;
+  @Autowired
   private GetAccountResourceServlet getAccountResourceServlet;
   @Autowired
   private GetSpreadMintParentServlet getSpreadMintParentServlet;
@@ -424,6 +426,8 @@ public class FullNodeHttpApiService implements Service {
       context.addServlet(new ServletHolder(listExchangesServlet), "/wallet/listexchanges");
       context.addServlet(new ServletHolder(getChainParametersServlet),
           "/wallet/getchainparameters");
+      context.addServlet(new ServletHolder(getNonProposalChainParametersServlet),
+          "/wallet/getnonproposalchainparameters");
       context.addServlet(new ServletHolder(getAccountResourceServlet),
           "/wallet/getaccountresource");
       context.addServlet(new ServletHolder(getSpreadMintParentServlet),
