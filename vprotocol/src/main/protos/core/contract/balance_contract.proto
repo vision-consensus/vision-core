@@ -26,7 +26,13 @@ message UnfreezeBalanceContract {
 }
 
 message WithdrawBalanceContract {
+  enum WithdrawBalanceType {
+    ALL = 0x00;
+    SPREAD_MINT = 0x01;
+  }
+
   bytes owner_address = 1;
+  WithdrawBalanceType type = 2;
 }
 
 message TransferContract {

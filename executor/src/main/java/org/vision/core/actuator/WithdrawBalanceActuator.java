@@ -58,14 +58,26 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         get(withdrawBalanceContract.getOwnerAddress().toByteArray());
     long oldBalance = accountCapsule.getBalance();
     long allowance = accountCapsule.getAllowance();
+    long spreadAllowance = accountCapsule.getSpreadMintAllowance();
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
-    accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-        .setBalance(oldBalance + allowance)
-        .setAllowance(0L)
-        .setSpreadMintAllowance(0L)
-        .setLatestWithdrawTime(now)
-        .build());
+    if (withdrawBalanceContract.getType() == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
+      accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+              .setBalance(oldBalance + spreadAllowance)
+              .setAllowance(allowance - spreadAllowance)
+              .setSpreadMintAllowance(0L)
+              .setLatestWithdrawTime(now)
+              .build());
+    } else {
+      accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+              .setBalance(oldBalance + allowance)
+              .setAllowance(0L)
+              .setSpreadMintAllowance(0L)
+              .setLatestWithdrawTime(now)
+              .build());
+    }
+
+
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     ret.setWithdrawAmount(allowance);
     ret.setStatus(fee, code.SUCESS);
@@ -100,6 +112,10 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if (!DecodeUtil.addressValid(ownerAddress)) {
       throw new ContractValidateException("Invalid address");
     }
+    int type = withdrawBalanceContract.getTypeValue();
+    if (type != 0 && type != 1){
+      throw new ContractValidateException("Invalid type");
+    }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     if (accountCapsule == null) {
@@ -129,8 +145,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0 &&
-            mortgageService.querySpreadReward(ownerAddress) <= 0) {
+        mortgageService.queryReward(ownerAddress) <= 0) {
       throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {
