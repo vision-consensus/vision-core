@@ -243,10 +243,7 @@ public class MortgageService {
   }
 
   public long querySpreadReward(byte[] address){
-    if (!dynamicPropertiesStore.allowChangeDelegation()) {
-      return 0;
-    }
-    if (!dynamicPropertiesStore.supportSpreadMint()){
+    if (!dynamicPropertiesStore.allowChangeDelegation() || !dynamicPropertiesStore.supportSpreadMint()) {
       return 0;
     }
 
@@ -256,10 +253,7 @@ public class MortgageService {
   }
 
   public long querySpreadUnLiquiatedReward(byte[] address){
-    if (!dynamicPropertiesStore.allowChangeDelegation()) {
-      return 0;
-    }
-    if (!dynamicPropertiesStore.supportSpreadMint()){
+    if (!dynamicPropertiesStore.allowChangeDelegation() || !dynamicPropertiesStore.supportSpreadMint()) {
       return 0;
     }
 
