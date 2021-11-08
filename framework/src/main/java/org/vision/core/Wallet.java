@@ -1085,6 +1085,49 @@ public class Wallet {
     return builder.build();
   }
 
+  public Protocol.ChainParameters getNonProposalChainParameters(){
+    Protocol.ChainParameters.Builder builder = Protocol.ChainParameters.newBuilder();
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPledgeRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getInflationRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalAssets")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalAssets())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getEconomyCycle")
+            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycle())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getEffectEconomyCycle")
+            .setValue(dbManager.getDynamicPropertiesStore().getEffectEconomyCycle())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getVoteFreezePercentLevel")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel1() + ","
+                    + dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel2() + ","
+                    + dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel3())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getVoteFreezeStageLevel")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getVoteFreezeStageLevel1() + ","
+                    + dbManager.getDynamicPropertiesStore().getVoteFreezeStageLevel2() + ","
+                    + dbManager.getDynamicPropertiesStore().getVoteFreezeStageLevel3())
+            .build());
+    return builder.build();
+  }
+
   public AssetIssueList getAssetIssueList() {
     AssetIssueList.Builder builder = AssetIssueList.newBuilder();
 
