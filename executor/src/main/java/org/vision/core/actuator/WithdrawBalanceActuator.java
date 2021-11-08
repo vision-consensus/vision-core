@@ -112,9 +112,9 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if (!DecodeUtil.addressValid(ownerAddress)) {
       throw new ContractValidateException("Invalid address");
     }
-    int type = withdrawBalanceContract.getTypeValue();
-    if (type != 0 && type != 1){
-      throw new ContractValidateException("Invalid type");
+    WithdrawBalanceContract.WithdrawBalanceType type = withdrawBalanceContract.getType();
+    if (type != WithdrawBalanceContract.WithdrawBalanceType.ALL && type != WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
+      throw new ContractValidateException("Invalid WithdrawBalance type");
     }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
