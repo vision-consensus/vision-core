@@ -145,7 +145,8 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (accountCapsule.getAllowance() <= 0 &&
-        mortgageService.queryReward(ownerAddress) <= 0) {
+        mortgageService.queryReward(ownerAddress) <= 0 &&
+          mortgageService.querySpreadReward(ownerAddress) <= 0) {
       throw new ContractValidateException("witnessAccount does not have any reward");
     }
     try {
