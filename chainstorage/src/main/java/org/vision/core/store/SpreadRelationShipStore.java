@@ -38,13 +38,14 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
         .collect(Collectors.toList());
   }
 
-  public void put(byte[] key, SpreadRelationShipCapsule item, boolean isUpdate) {
+  public void put(byte[] key, SpreadRelationShipCapsule item, boolean isUpdate,long frozenDuration) {
     super.put(key, item);
 
     if(CommonParameter.PARAMETER.isKafkaEnable()) {
       JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(item.getInstance(), true));
       String type = isUpdate ? "update" : "freeze";
       jsonObject.put("type", type);
+      jsonObject.put("frozenDuration", frozenDuration);
       Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
     }
   }
