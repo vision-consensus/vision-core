@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,9 +24,7 @@ import org.vision.common.net.udp.message.Message;
 import org.vision.common.overlay.discover.node.statistics.NodeStatistics;
 import org.vision.common.overlay.discover.table.NodeTable;
 import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.CollectionUtils;
-import org.vision.common.utils.JsonUtil;
+import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.args.Args;
@@ -183,6 +183,14 @@ public class NodeManager implements EventHandler {
       nodeHandlerMap.put(key, ret);
     } else if (ret.getNode().isDiscoveryNode() && !n.isDiscoveryNode()) {
       ret.setNode(n);
+    }
+
+    try {
+      if(CommonParameter.PARAMETER.isKafkaEnable()) {
+        Producer.getInstance().send("NODEINFO",JSONObject.toJSONString(n));
+      }
+    } catch (Exception e) {
+      logger.error("send NODEINFO fail", e);
     }
     return ret;
   }

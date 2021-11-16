@@ -4,6 +4,7 @@ import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -12,8 +13,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
@@ -78,11 +81,29 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               .build());
     }
 
-
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     ret.setWithdrawAmount(allowance);
     ret.setStatus(fee, code.SUCESS);
 
+    if(CommonParameter.PARAMETER.isKafkaEnable()){
+      try {
+        JSONObject itemJsonObject = new JSONObject();
+        itemJsonObject.put("address", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
+        itemJsonObject.put("type", withdrawBalanceContract.getType());
+        if(withdrawBalanceContract.getType()== WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
+          itemJsonObject.put("allowance", spreadAllowance);
+          itemJsonObject.put("balance", oldBalance + spreadAllowance);
+        }else{
+          itemJsonObject.put("allowance", allowance);
+          itemJsonObject.put("balance", oldBalance + allowance);
+        }
+        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        String jsonStr = itemJsonObject.toJSONString();
+        Producer.getInstance().send("WITHDRAWBALANCE", jsonStr);
+      } catch (Exception e) {
+        logger.error("send WITHDRAWBALANCE fail", e);
+      }
+    }
     return true;
   }
 
