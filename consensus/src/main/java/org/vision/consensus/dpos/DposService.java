@@ -196,6 +196,7 @@ public class DposService implements ConsensusInterface {
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       JSONArray witnesses = new JSONArray();
       List<Long> confirmNumbers = numbers.subList(position, (int) size);
+      logger.info("confirm numbers: "+confirmNumbers.toString());
       consensusDelegate.getActiveWitnesses().forEach(address -> {
         if(confirmNumbers.contains(consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())){
           AccountCapsule account = consensusDelegate.getAccount(address.toByteArray());
