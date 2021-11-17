@@ -1087,6 +1087,42 @@ public class Wallet {
 
   public Protocol.ChainParameters getNonProposalChainParameters(){
     Protocol.ChainParameters.Builder builder = Protocol.ChainParameters.newBuilder();
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalEntropyWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalEntropyWeight())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalPhotonWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonWeight())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalSpreadMintWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalSpreadMintWeight())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalFVGuaranteeWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalFVGuaranteeWeight())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalTransactionCost")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalTransactionCost())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalStoragePool")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalStoragePool())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalStorageReserved")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalStorageReserved())
+            .build());
+
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
@@ -1095,6 +1131,36 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getInflationRate")
             .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getGalaxyInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getGalaxyInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAvalonInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getAvalonInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitnessStandbyAllowanceInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceInflation())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitnessPayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getWitness123PayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadMintPayPerBlockInflation")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
