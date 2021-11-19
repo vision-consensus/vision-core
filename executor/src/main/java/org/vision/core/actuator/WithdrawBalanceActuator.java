@@ -92,9 +92,11 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         itemJsonObject.put("type", withdrawBalanceContract.getType());
         if(withdrawBalanceContract.getType()== WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
           itemJsonObject.put("allowance", spreadAllowance);
+          itemJsonObject.put("spreadAllowance", spreadAllowance);
           itemJsonObject.put("balance", oldBalance + spreadAllowance);
         }else{
           itemJsonObject.put("allowance", allowance);
+          itemJsonObject.put("spreadAllowance", spreadAllowance);
           itemJsonObject.put("balance", oldBalance + allowance);
         }
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
