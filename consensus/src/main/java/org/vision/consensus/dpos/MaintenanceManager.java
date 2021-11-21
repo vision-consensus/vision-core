@@ -327,7 +327,11 @@ public class MaintenanceManager {
     } else if (100 < cyclePledgeRate) {
       cyclePledgeRate = 100;
     }
-    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
+
+    dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
+    dynamicPropertiesStore.saveCyclePledgeRateNumerator(totalPledgeAmount.toString());
+    dynamicPropertiesStore.saveCyclePledgeRateDenominator(assets.toString());
+    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle, cyclePledgeRate);
   }
 
   private void saveInflationRate(long pledgeRate) {

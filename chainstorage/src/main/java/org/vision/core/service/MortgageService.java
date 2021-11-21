@@ -222,13 +222,18 @@ public class MortgageService {
     }
 
     // query spreadReward
+    long spreadReward = 0;
     if (dynamicPropertiesStore.supportSpreadMint()){
-      long spreadReward = querySpreadReward(address);
+      spreadReward = querySpreadReward(address);
       rewardMap.put("spreadReward", spreadReward);
     }
 
     // query reward
     long reward = queryReward(address);
+    if (spreadReward > 0){
+      reward += spreadReward;
+      reward -= accountStore.get(address).getSpreadMintAllowance();
+    }
     rewardMap.put("reward", reward);
 
     return rewardMap;
@@ -243,8 +248,13 @@ public class MortgageService {
     }
 
     AccountCapsule accountCapsule = accountStore.get(address);
+    long spreadAllowance = 0;
+    if (accountCapsule == null) {
+      return spreadAllowance;
+    }
+    spreadAllowance = accountCapsule.getSpreadMintAllowance();
     long spreadReward = querySpreadUnLiquiatedReward(address);
-    return accountCapsule.getSpreadMintAllowance() + spreadReward;
+    return spreadAllowance + spreadReward;
   }
 
   public long querySpreadUnLiquiatedReward(byte[] address){
@@ -304,7 +314,7 @@ public class MortgageService {
       return 0;
     }
 
-    reward += querySpreadUnLiquiatedReward(address);
+//    reward += querySpreadUnLiquiatedReward(address);
 
     if (beginCycle > currentCycle) {
       reward += accountCapsule.getAllowance();

@@ -15,6 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -173,9 +174,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] ECONOMY_CYCLE = "ECONOMY_CYCLE".getBytes();
   private static final byte[] EFFECT_ECONOMY_CYCLE = "EFFECT_ECONOMY_CYCLE".getBytes();
-  private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
   private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
+  private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
+  private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
+  private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
+
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -2707,8 +2711,41 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
-  private static class DynamicResourceProperties {
+  public void saveGenesisVoteSum(long voteSum) {
+    this.put(TOTAL_GENESIS_VOTE_SUM,
+            new BytesCapsule(ByteArray.fromLong(voteSum)));
+  }
 
+  public long getGenesisVoteSum() {
+    return Optional.ofNullable(getUnchecked(TOTAL_GENESIS_VOTE_SUM))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveCyclePledgeRateNumerator(String totalPledgeAmount) {
+    this.put(TOTAL_PLEDGE_AMOUNT, new BytesCapsule(ByteArray.fromString(totalPledgeAmount)));
+  }
+
+  public String getCyclePledgeRateNumerator() {
+    return Optional.ofNullable(getUnchecked(TOTAL_PLEDGE_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  public void saveCyclePledgeRateDenominator(String denominator) {
+    this.put(PLEDGE_RATE_DENOMINATOR, new BytesCapsule(ByteArray.fromString(denominator)));
+  }
+
+  public String getCyclePledgeRateDenominator() {
+    return Optional.ofNullable(getUnchecked(PLEDGE_RATE_DENOMINATOR))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
     //public free photon
     private static final byte[] PUBLIC_PHOTON_USAGE = "PUBLIC_PHOTON_USAGE".getBytes();
