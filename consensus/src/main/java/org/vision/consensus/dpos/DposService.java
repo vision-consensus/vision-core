@@ -169,6 +169,7 @@ public class DposService implements ConsensusInterface {
         .setOldSolidityBlockNum(consensusDelegate.getLatestSolidifiedBlockNum());
     consensusDelegate.saveLatestSolidifiedBlockNum(newSolidNum);
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
+
       JSONObject json = new JSONObject();
       json.put("blockNum", newSolidNum);
       long totalEntropyWeight = 0L;
@@ -194,8 +195,10 @@ public class DposService implements ConsensusInterface {
       json.put("totalFVGuaranteeWeight", totalFVGuaranteeWeight);
       json.put("totalSpreadMintWeight", consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       JSONArray witnesses = new JSONArray();
-      consensusDelegate.getActiveWitnesses().subList(0, (int) (size * ( SOLIDIFIED_THRESHOLD * 1.0 / 100)))
-        .forEach(address -> {
+      List<Long> confirmNumbers = numbers.subList(position, (int) size);
+      logger.info("confirm numbers: "+confirmNumbers.toString());
+      consensusDelegate.getActiveWitnesses().forEach(address -> {
+        if(confirmNumbers.contains(consensusDelegate.getWitness(address.toByteArray()).getLatestBlockNum())){
           AccountCapsule account = consensusDelegate.getAccount(address.toByteArray());
           WitnessCapsule witness = consensusDelegate.getWitness(address.toByteArray());
           JSONObject tmp = new JSONObject();
@@ -203,7 +206,8 @@ public class DposService implements ConsensusInterface {
           tmp.put("name", account!=null?account.getAccountName().toStringUtf8():"");
           tmp.put("url", witness!=null?witness.getUrl():"");
           witnesses.add(tmp);
-        });
+        }
+      });
       json.put("confirm_witnesses", witnesses);
       Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
     }
