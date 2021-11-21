@@ -327,6 +327,11 @@ public class MaintenanceManager {
     } else if (100 < cyclePledgeRate) {
       cyclePledgeRate = 100;
     }
+
+    dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
+    dynamicPropertiesStore.saveCyclePledgeRateNumerator(totalPledgeAmount.toString());
+    dynamicPropertiesStore.saveCyclePledgeRateDenominator(assets.toString());
+    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle, cyclePledgeRate);
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
     logger.info("PledgeRate cycle:{} ", cycle);
     logger.info("PledgeRate bigTotalPhoton:{} bigTotalEntropy:{} bigTotalSRGuarantee:{}", bigTotalPhoton, bigTotalEntropy, bigTotalFVGuarantee);
