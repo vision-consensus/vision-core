@@ -90,6 +90,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         JSONObject itemJsonObject = new JSONObject();
         itemJsonObject.put("address", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
         itemJsonObject.put("type", withdrawBalanceContract.getType());
+        itemJsonObject.put("num", dynamicStore.getLatestBlockHeaderNumber());
         if(withdrawBalanceContract.getType()== WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
           itemJsonObject.put("allowance", spreadAllowance);
           itemJsonObject.put("spreadAllowance", spreadAllowance);
