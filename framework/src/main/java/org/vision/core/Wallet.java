@@ -1191,6 +1191,22 @@ public class Wallet {
                     + dbManager.getDynamicPropertiesStore().getVoteFreezeStageLevel2() + ","
                     + dbManager.getDynamicPropertiesStore().getVoteFreezeStageLevel3())
             .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getGenesisVoteSum")
+            .setValue(dbManager.getDynamicPropertiesStore().getGenesisVoteSum())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getCyclePledgeRateNumerator")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getCyclePledgeRateNumerator())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getCyclePledgeRateDenominator")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getCyclePledgeRateDenominator())
+            .build());
+
     return builder.build();
   }
 
