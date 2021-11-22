@@ -40,7 +40,7 @@ public class Parameter {
 
 
     public static final int MAX_ACTIVE_WITNESS_NUM = 5;
-    public static final int WITNESS_STANDBY_LENGTH = 100;
+    public static final int WITNESS_STANDBY_LENGTH = 105;
     public static final long TRANSFER_FEE = 0; // free
     public static final int BLOCK_PRODUCED_INTERVAL = 3000; //ms,produce block period, must be divisible by 60. millisecond
     public static final int MAX_VOTE_NUMBER = 30;
