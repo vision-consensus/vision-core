@@ -312,16 +312,18 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-
-    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
-    for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
-      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
-      bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
-    }
     BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+
+    dynamicPropertiesStore.saveGenesisVoteSum(0);
     if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
+      BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+      for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
+        WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
+        bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+      }
       assets = assets.subtract(bigGenesisVoteSum);
+      dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
     }
     long cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
@@ -330,7 +332,6 @@ public class MaintenanceManager {
       cyclePledgeRate = 100;
     }
 
-    dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
     dynamicPropertiesStore.saveCyclePledgeRateNumerator(totalPledgeAmount.toString());
     dynamicPropertiesStore.saveCyclePledgeRateDenominator(assets.toString());
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle, cyclePledgeRate);
