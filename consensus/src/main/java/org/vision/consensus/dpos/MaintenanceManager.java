@@ -318,9 +318,11 @@ public class MaintenanceManager {
       WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
       bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
     }
-
-    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
+    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+    if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
+      assets = assets.subtract(bigGenesisVoteSum);
+    }
     long cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
