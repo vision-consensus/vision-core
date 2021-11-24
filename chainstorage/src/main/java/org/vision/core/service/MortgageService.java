@@ -55,7 +55,11 @@ public class MortgageService {
     for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
       witnessAddressList.add(witnessCapsule.getAddress());
     }
+    long startTime = System.currentTimeMillis();
     sortWitness(witnessAddressList);
+    long endTime = System.currentTimeMillis();
+    logger.info("payStandbyWitness sortWitness time: {} ms", endTime - startTime);
+
     if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
       witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
     }
@@ -515,7 +519,11 @@ public class MortgageService {
     for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
       witnessAddressList.add(witnessCapsule.getAddress());
     }
+    long startTime = System.currentTimeMillis();
     sortWitness(witnessAddressList);
+    long endTime = System.currentTimeMillis();
+    logger.info("getVoteSum sortWitness time: {} ms", endTime - startTime);
+
     if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
       witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
     }
