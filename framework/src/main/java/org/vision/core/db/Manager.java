@@ -1405,7 +1405,7 @@ public class Manager {
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
       reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
     }
-    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule);
+    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule, getDynamicPropertiesStore());
 
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
       mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());

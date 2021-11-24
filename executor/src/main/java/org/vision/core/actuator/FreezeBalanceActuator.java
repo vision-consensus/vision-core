@@ -115,7 +115,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case SPREAD:
         if (!ArrayUtils.isEmpty(parentAddress)){
-          spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
+          spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime,freezeBalanceContract.getFrozenDuration());
         }
 
         long newFrozenBalanceForSpreadMint =
@@ -410,7 +410,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);
   }
 
-  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime){
+  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime,long frozenDuration){
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(ownerAddress);
@@ -437,7 +437,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
               ByteString.copyFrom(parentAddress));
       spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime, cycle);
     }
-    spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule, isUpdate);
+    spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule, isUpdate,frozenDuration);
   }
 
   /**
