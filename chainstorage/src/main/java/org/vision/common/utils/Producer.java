@@ -38,15 +38,10 @@ public class Producer {
 
     public void send(String topic, String message){
         try {
-            producer.send(new ProducerRecord<>(topic, UUID.randomUUID().toString(), message), new Callback() {
-                @Override
-                public void onCompletion(RecordMetadata metadata, Exception exception) {
-                    if (exception != null) {
-                        exception.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception e) {
+            producer.send(new ProducerRecord<>(topic,
+                    UUID.randomUUID().toString(),
+                    message)).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
