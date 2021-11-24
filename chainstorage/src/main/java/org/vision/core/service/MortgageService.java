@@ -41,23 +41,35 @@ public class MortgageService {
   @Setter
   private AccountStore accountStore;
 
+  @Getter
+  @Setter
+  private WitnessScheduleStore witnessScheduleStore;
+
   public void initStore(WitnessStore witnessStore, DelegationStore delegationStore,
-      DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore, SpreadRelationShipStore spreadRelationShipStore) {
+                        DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore,
+                        SpreadRelationShipStore spreadRelationShipStore, WitnessScheduleStore witnessScheduleStore) {
     this.witnessStore = witnessStore;
     this.delegationStore = delegationStore;
     this.dynamicPropertiesStore = dynamicPropertiesStore;
     this.accountStore = accountStore;
     this.spreadRelationShipStore = spreadRelationShipStore;
+    this.witnessScheduleStore = witnessScheduleStore;
   }
 
   public void payStandbyWitness() {
     List<ByteString> witnessAddressList = new ArrayList<>();
-    for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
-      witnessAddressList.add(witnessCapsule.getAddress());
-    }
-    sortWitness(witnessAddressList);
-    if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
-      witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
+    try {
+      witnessAddressList = witnessScheduleStore.getStandbyWitnesses();
+    } catch (Exception e) {
+      logger.info("getStandbyWitnesses None");
+      for (WitnessCapsule witnessCapsule : witnessStore.getAllWitnesses()) {
+        witnessAddressList.add(witnessCapsule.getAddress());
+      }
+      sortWitness(witnessAddressList);
+      if (witnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
+        witnessAddressList = witnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH);
+      }
+      witnessScheduleStore.saveStandbyWitnesses(witnessAddressList);
     }
 
     long voteSum = 0;
