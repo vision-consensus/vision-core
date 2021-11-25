@@ -230,6 +230,13 @@ public class DposService implements ConsensusInterface {
     } else {
       consensusDelegate.saveActiveWitnesses(list);
     }
+
+    if (list.size() > WITNESS_STANDBY_LENGTH) {
+      consensusDelegate
+              .saveStandbyWitnesses(list.subList(0, WITNESS_STANDBY_LENGTH));
+    } else {
+      consensusDelegate.saveStandbyWitnesses(list);
+    }
   }
 
 }

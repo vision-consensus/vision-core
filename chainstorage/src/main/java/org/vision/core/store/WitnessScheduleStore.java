@@ -18,6 +18,7 @@ public class WitnessScheduleStore extends VisionStoreWithRevoking<BytesCapsule> 
 
   private static final byte[] ACTIVE_WITNESSES = "active_witnesses".getBytes();
   private static final byte[] CURRENT_SHUFFLED_WITNESSES = "current_shuffled_witnesses".getBytes();
+  private static final byte[] STANDBY_WITNESSES = "standby_witnesses".getBytes();
 
   private static final int ADDRESS_BYTE_ARRAY_LENGTH = 21;
 
@@ -62,6 +63,14 @@ public class WitnessScheduleStore extends VisionStoreWithRevoking<BytesCapsule> 
 
   public List<ByteString> getActiveWitnesses() {
     return getData(ACTIVE_WITNESSES);
+  }
+
+  public void saveStandbyWitnesses(List<ByteString> witnessesAddressList) {
+    saveData(STANDBY_WITNESSES, witnessesAddressList);
+  }
+
+  public List<ByteString> getStandbyWitnesses() {
+    return getData(STANDBY_WITNESSES);
   }
 
   public void saveCurrentShuffledWitnesses(List<ByteString> witnessesAddressList) {
