@@ -21,8 +21,7 @@ import org.vision.core.capsule.WitnessCapsule;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.vision.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NUM;
-import static org.vision.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -182,6 +181,13 @@ public class DposService implements ConsensusInterface {
           .saveActiveWitnesses(list.subList(0, MAX_ACTIVE_WITNESS_NUM));
     } else {
       consensusDelegate.saveActiveWitnesses(list);
+    }
+
+    if (list.size() > WITNESS_STANDBY_LENGTH) {
+      consensusDelegate
+              .saveStandbyWitnesses(list.subList(0, WITNESS_STANDBY_LENGTH));
+    } else {
+      consensusDelegate.saveStandbyWitnesses(list);
     }
   }
 
