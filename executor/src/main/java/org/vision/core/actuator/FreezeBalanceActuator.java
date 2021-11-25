@@ -68,7 +68,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long newBalance = accountCapsule.getBalance() - freezeBalanceContract.getFrozenBalance();
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
-    long expireTime = now + duration;
+    long expireTime = now + 180000L;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
