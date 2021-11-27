@@ -274,7 +274,8 @@ public class Manager {
     Message.setDynamicPropertiesStore(this.getDynamicPropertiesStore());
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
-            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(), chainBaseManager.getSpreadRelationShipStore());
+            chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(),
+                chainBaseManager.getSpreadRelationShipStore(), chainBaseManager.getWitnessScheduleStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
