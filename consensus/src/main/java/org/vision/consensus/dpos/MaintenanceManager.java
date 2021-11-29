@@ -104,6 +104,18 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
+    consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
+      AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
+      DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+      long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
+      if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+        long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+        long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
+        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
+        consensusDelegate.saveWitness(witnessCapsule);
+      }
+    });
+
     Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
       List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
@@ -138,18 +150,6 @@ public class MaintenanceManager {
         consensusDelegate.saveWitness(witnessCapsule);
         logger.info("address is {} , countVote is {} , countVoteWeight is {} , countVoteThreshold is {}", witnessCapsule.createReadableString(),
                 witnessCapsule.getVoteCount() ,witnessCapsule.getVoteCountWeight() ,witnessCapsule.getVoteCountThreshold());
-      });
-
-      consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
-        AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
-        DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-        long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
-        if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-          long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
-          long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
-          witnessCapsule.setVoteCountThreshold(maxVoteCounts);
-          consensusDelegate.saveWitness(witnessCapsule);
-        }
       });
 
       dposService.updateWitness(newWitnessAddressList);
