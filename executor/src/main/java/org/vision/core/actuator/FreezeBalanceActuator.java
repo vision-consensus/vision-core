@@ -109,7 +109,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 frozenBalance + accountCapsule.getAccountResource()
                         .getFrozenBalanceForFvguarantee()
                         .getFrozenBalance();
-        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, expireTime+180000L);
+        accountCapsule.setFrozenForFVGuarantee(newFrozenBalanceForFVGuarantee, expireTime);
         dynamicStore
                 .addTotalFVGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
