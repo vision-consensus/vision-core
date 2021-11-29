@@ -21,7 +21,9 @@ import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+import org.vision.core.db.BlockStore;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +69,9 @@ public class DposService implements ConsensusInterface {
   private GenesisBlock genesisBlock;
   @Getter
   private Map<ByteString, Miner> miners = new HashMap<>();
+
+  @Autowired
+  private BlockStore blockStore;
 
   @Override
   public void start(Param param) {
@@ -172,6 +177,7 @@ public class DposService implements ConsensusInterface {
 
       JSONObject json = new JSONObject();
       json.put("blockNum", newSolidNum);
+      json.put("transactions", blockStore.getBlockByLatestNum(newSolidNum).get(0).getTransactions());
       long totalEntropyWeight = 0L;
       long totalPhotonWeight = 0L;
       long totalFVGuaranteeWeight = 0L;
