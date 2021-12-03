@@ -104,17 +104,20 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
-    consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
-      AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
-      DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-      long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
-      if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-        long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
-        long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
-        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
-        consensusDelegate.saveWitness(witnessCapsule);
-      }
-    });
+    //TODO only for test
+    if(consensusDelegate.getDynamicPropertiesStore().getCurrentCycleNumber() >= 1166300L){
+      consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
+        AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
+        DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+        long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
+        if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+          long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+          long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
+          witnessCapsule.setVoteCountThreshold(maxVoteCounts);
+          consensusDelegate.saveWitness(witnessCapsule);
+        }
+      });
+    }
 
     Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
