@@ -15,6 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -173,9 +174,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   private static final byte[] ECONOMY_CYCLE = "ECONOMY_CYCLE".getBytes();
   private static final byte[] EFFECT_ECONOMY_CYCLE = "EFFECT_ECONOMY_CYCLE".getBytes();
-  private static final byte[] SPREAD_MINT_LEVEL = "SPREAD_LEVEL".getBytes();
   private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
   private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
+  private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
+  private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
+  private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
+
 
   @Autowired
   private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -364,9 +368,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getTotalSRGuaranteeWeight();
+      this.getTotalFVGuaranteeWeight();
     } catch (IllegalArgumentException e) {
-      this.saveTotalSRGuaranteeWeight(0L);
+      this.saveTotalFVGuaranteeWeight(0L);
     }
 
     try {
@@ -864,12 +868,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getSrFreezeLowest();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowest(Parameter.ChainConstant.SR_FREEZE_LOWEST);
+      this.saveSrFreezeLowest(Parameter.ChainConstant.FV_FREEZE_LOWEST);
     }
     try {
       this.getSrFreezeLowestPercent();
     } catch (IllegalArgumentException e) {
-      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.SR_FREEZE_LOWEST_PERCENT);
+      this.saveSrFreezeLowestPercent(Parameter.ChainConstant.FV_FREEZE_LOWEST_PERCENT);
     }
 
     try {
@@ -888,6 +892,12 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getSpreadMintLevelProp();
     } catch (IllegalArgumentException e) {
       this.saveSpreadMintLevelProp("80,10,8,2");
+    }
+
+    try {
+      this.getAllowModifySpreadMintParent();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowModifySpreadMintParent(1L);
     }
   }
 
@@ -1211,17 +1221,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found TOTAL_ENTROPY_WEIGHT"));
   }
 
-  public void saveTotalSRGuaranteeWeight(long totalSRGuaranteeWeight) {
-    this.put(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT,
-            new BytesCapsule(ByteArray.fromLong(totalSRGuaranteeWeight)));
+  public void saveTotalFVGuaranteeWeight(long totalFVGuaranteeWeight) {
+    this.put(DynamicResourceProperties.TOTAL_FVGUARANTEE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(totalFVGuaranteeWeight)));
   }
 
-  public long getTotalSRGuaranteeWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SRGUARANTEE_WEIGHT))
+  public long getTotalFVGuaranteeWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FVGUARANTEE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElseThrow(
-            () -> new IllegalArgumentException("not found TOTAL_SRGUARANTEE_WEIGHT"));
+            () -> new IllegalArgumentException("not found TOTAL_FVGUARANTEE_WEIGHT"));
   }
 
   public void saveTotalAssets(long totalAssets) {
@@ -2330,10 +2340,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   //The unit is vs
-  public void addTotalSRGuaranteeWeight(long amount) {
-    long totalnewSRGuarantee = getTotalSRGuaranteeWeight();
-    totalnewSRGuarantee += amount;
-    saveTotalSRGuaranteeWeight(totalnewSRGuarantee);
+  public void addTotalFVGuaranteeWeight(long amount) {
+    long totalnewFVGuarantee = getTotalFVGuaranteeWeight();
+    totalnewFVGuarantee += amount;
+    saveTotalFVGuaranteeWeight(totalnewFVGuarantee);
   }
 
   public void addTotalAssets(long amount) {
@@ -2533,6 +2543,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getAllowSpreadMintLevelProp() == 1L;
   }
 
+  public boolean supportModifySpreadMintParent() {
+    return getAllowModifySpreadMintParent() == 1L;
+  }
+
   public void saveSpreadMintLevelProp(String value) {
     this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
   }
@@ -2685,8 +2699,53 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
-  private static class DynamicResourceProperties {
+  public void saveAllowModifySpreadMintParent(long allowModifySpreadMintParent) {
+    this.put(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT,
+            new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
+  }
 
+  public long getAllowModifySpreadMintParent() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
+  public void saveGenesisVoteSum(long voteSum) {
+    this.put(TOTAL_GENESIS_VOTE_SUM,
+            new BytesCapsule(ByteArray.fromLong(voteSum)));
+  }
+
+  public long getGenesisVoteSum() {
+    return Optional.ofNullable(getUnchecked(TOTAL_GENESIS_VOTE_SUM))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveCyclePledgeRateNumerator(String totalPledgeAmount) {
+    this.put(TOTAL_PLEDGE_AMOUNT, new BytesCapsule(ByteArray.fromString(totalPledgeAmount)));
+  }
+
+  public String getCyclePledgeRateNumerator() {
+    return Optional.ofNullable(getUnchecked(TOTAL_PLEDGE_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  public void saveCyclePledgeRateDenominator(String denominator) {
+    this.put(PLEDGE_RATE_DENOMINATOR, new BytesCapsule(ByteArray.fromString(denominator)));
+  }
+
+  public String getCyclePledgeRateDenominator() {
+    return Optional.ofNullable(getUnchecked(PLEDGE_RATE_DENOMINATOR))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
     //public free photon
     private static final byte[] PUBLIC_PHOTON_USAGE = "PUBLIC_PHOTON_USAGE".getBytes();
@@ -2707,7 +2766,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ENTROPY_LIMIT = "TOTAL_ENTROPY_LIMIT".getBytes();
     private static final byte[] BLOCK_ENTROPY_USAGE = "BLOCK_ENTROPY_USAGE".getBytes();
 
-    private static final byte[] TOTAL_SRGUARANTEE_WEIGHT = "TOTAL_SRGUARANTEE_WEIGHT".getBytes();
+    private static final byte[] TOTAL_FVGUARANTEE_WEIGHT = "TOTAL_FVGUARANTEE_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
@@ -2726,6 +2785,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .getBytes();
     private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
+    public static final byte[] ALLOW_MODIFY_SPREAD_MINT_PARENT = "ALLOW_MODIFY_SPREAD_MINT_PARENT".getBytes();
   }
 
 }

@@ -359,7 +359,7 @@ public class RpcApiServiceOnPBFT implements Service {
 
     @Override
     public void getRewardInfo(BytesMessage request,
-        StreamObserver<NumberMessage> responseObserver) {
+        StreamObserver<GrpcAPI.RewardMessage> responseObserver) {
       walletOnPBFT.futureGet(
           () -> rpcApiService.getWalletSolidityApi().getRewardInfo(request, responseObserver)
       );

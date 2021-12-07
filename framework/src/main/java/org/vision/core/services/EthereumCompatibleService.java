@@ -22,6 +22,7 @@ import org.vision.core.Wallet;
 import org.vision.core.actuator.TransactionFactory;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
+import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.exception.ContractValidateException;
@@ -107,7 +108,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_gasPrice() {
         // feeLimit = 100000000vdt = 21000 * 160Gwei
-        return "0x" + Long.toHexString(8_000_000_000l);
+        return "0x" + Long.toHexString(CommonParameter.PARAMETER.gasPrice);
     }
 
     @Override

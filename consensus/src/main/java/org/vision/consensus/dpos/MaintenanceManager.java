@@ -104,6 +104,18 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
+    consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
+      AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
+      DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+      long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
+      if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+        long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+        long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
+        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
+        consensusDelegate.saveWitness(witnessCapsule);
+      }
+    });
+
     Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
       List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
@@ -127,19 +139,17 @@ public class MaintenanceManager {
 
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
         long maxVoteCounts = 0;
-        long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
-        if (sRGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-            maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest())
-                    /((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
-          maxVoteCounts /= VS_PRECISION;
+        long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
+        if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+          long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+          maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
         }
         witnessCapsule.setVoteCountWeight(witnessCapsule.getVoteCountWeight() + voteBuilder.getVoteCountWeight());
         witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteBuilder.getVoteCount());
         witnessCapsule.setVoteCountThreshold(maxVoteCounts);
-        // witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
         consensusDelegate.saveWitness(witnessCapsule);
-        logger.info("address is {} , countVote is {}", witnessCapsule.createReadableString(),
-                witnessCapsule.getVoteCount());
+        logger.info("address is {} , countVote is {} , countVoteWeight is {} , countVoteThreshold is {}", witnessCapsule.createReadableString(),
+                witnessCapsule.getVoteCount() ,witnessCapsule.getVoteCountWeight() ,witnessCapsule.getVoteCountThreshold());
       });
 
       dposService.updateWitness(newWitnessAddressList);
@@ -293,10 +303,10 @@ public class MaintenanceManager {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     BigDecimal bigTotalPhoton = new BigDecimal(dynamicPropertiesStore.getTotalPhotonWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalEntropy = new BigDecimal(dynamicPropertiesStore.getTotalEntropyWeight()).multiply(new BigDecimal(VS_PRECISION));
-    BigDecimal bigTotalSRGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalSRGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
+    BigDecimal bigTotalFVGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalFVGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
-    BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalSRGuarantee);
+    BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
     long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
@@ -313,22 +323,29 @@ public class MaintenanceManager {
       avalonInitialAmount = avalonBalance;
     }
     BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-
-    BigDecimal bigGenesisVoteSum = new BigDecimal(0);
-    for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
-      WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
-      bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
-    }
-
-    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigGenesisVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
+    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
             .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
+
+    dynamicPropertiesStore.saveGenesisVoteSum(0);
+    if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
+      BigDecimal bigGenesisVoteSum = new BigDecimal(0);
+      for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
+        WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
+        bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+      }
+      assets = assets.subtract(bigGenesisVoteSum);
+      dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
+    }
     long cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
     if (0 > cyclePledgeRate) {
       cyclePledgeRate = 0;
     } else if (100 < cyclePledgeRate) {
       cyclePledgeRate = 100;
     }
-    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
+
+    dynamicPropertiesStore.saveCyclePledgeRateNumerator(totalPledgeAmount.toString());
+    dynamicPropertiesStore.saveCyclePledgeRateDenominator(assets.toString());
+    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle, cyclePledgeRate);
   }
 
   private void saveInflationRate(long pledgeRate) {

@@ -151,7 +151,7 @@ public class VoteWitnessActuator extends AbstractActuator {
     VotesCapsule votesCapsule;
 
     //
-    mortgageService.withdrawReward(ownerAddress);
+    mortgageService.withdrawReward(ownerAddress, false);
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
 

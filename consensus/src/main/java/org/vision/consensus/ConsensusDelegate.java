@@ -88,6 +88,10 @@ public class ConsensusDelegate {
     witnessScheduleStore.saveActiveWitnesses(addresses);
   }
 
+  public void saveStandbyWitnesses(List<ByteString> addresses) {
+    witnessScheduleStore.saveStandbyWitnesses(addresses);
+  }
+
   public List<ByteString> getActiveWitnesses() {
     return witnessScheduleStore.getActiveWitnesses();
   }
