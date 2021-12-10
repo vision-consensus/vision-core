@@ -1,5 +1,6 @@
 package org.vision.core.store;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import com.typesafe.config.ConfigObject;
 import java.util.HashMap;
@@ -77,7 +78,9 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
       }
     }
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("ACCOUNT", JsonFormat.printToString(item.getInstance()));
+      JSONObject itemJsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+      itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      Producer.getInstance().send("ACCOUNT", itemJsonObject.toJSONString());
     }
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);

@@ -193,7 +193,6 @@ public class VoteWitnessActuator extends AbstractActuator {
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     votesStore.put(ownerAddress, votesCapsule);
-    logger.info("isKafaEnable={}", CommonParameter.PARAMETER.isKafkaEnable());
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       try {
         JSONObject itemJsonObject = new JSONObject();
@@ -209,12 +208,13 @@ public class VoteWitnessActuator extends AbstractActuator {
         }
 
         String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
-        logger.info("send votewitness to kafka accountId={}", address);
         itemJsonObject.put("address", address);
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+
         String jsonStr = itemJsonObject.toJSONString();
-        logger.info("send VOTEWITNESS start");
+        logger.info("send VOTEWITNESS TOPIC start, accontId:{}", address);
         Producer.getInstance().send("VOTEWITNESS", jsonStr);
       } catch (Exception e) {
         logger.error("send VOTEWITNESS fail", e);

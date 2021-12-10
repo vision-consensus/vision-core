@@ -1,5 +1,6 @@
 package org.vision.core.store;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
     super(dbName);
   }
 
+  @Autowired
+  private BalanceTraceStore balanceTraceStore;
 
   @Override
   public AssetIssueCapsule get(byte[] key) {
@@ -37,7 +40,10 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
     super.put(key, item);
 
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("ASSETISSUE", JsonFormat.printToString(item.getInstance()));
+      JSONObject itemJsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+      itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      Producer.getInstance().send("ASSETISSUE", itemJsonObject.toJSONString());
+//      Producer.getInstance().send("ASSETISSUE", JsonFormat.printToString(item.getInstance()));
     }
   }
 
