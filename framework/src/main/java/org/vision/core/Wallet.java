@@ -1109,6 +1109,16 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalPhotonLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonLimit())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalEntropyLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalEntropyLimit())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalTransactionCost")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalTransactionCost())
             .build());
