@@ -179,13 +179,23 @@ public class BalanceTraceStore extends VisionStoreWithRevoking<BlockBalanceTrace
 
   // This is for the function of mongo branch
   public JSONObject assembleJsonInfo(){
+    return assembleJsonInfo(true);
+  }
+
+  // This is for the function of mongo branch
+  public JSONObject assembleJsonInfo(boolean isNormal){
     BlockCapsule.BlockId blockId = getCurrentBlockId();
     JSONObject jsonObject = new JSONObject();
     if (blockId != null){
       jsonObject.put("blockNum", blockId.getNum());
       jsonObject.put("blockId", blockId);
+    }
+
+    if (isNormal){
       jsonObject.put("trxId", getCurrentTransactionId());
       jsonObject.put("status", "normal");
+    }else{
+      jsonObject.put("status", "rollback");
     }
     return jsonObject;
   }

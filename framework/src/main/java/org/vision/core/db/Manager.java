@@ -682,10 +682,38 @@ public class Manager {
       revokingStore.fastPop();
       logger.info("end to erase block:" + oldHeadBlock);
       poppedTransactions.addAll(oldHeadBlock.getTransactions());
-
+      rollbackMongo(oldHeadBlock);
     } catch (ItemNotFoundException | BadItemException e) {
       logger.warn(e.getMessage(), e);
     }
+  }
+
+  // for mongo
+  public void rollbackMongo(BlockCapsule oldBlock){
+    if (CommonParameter.PARAMETER.isKafkaEnable()){
+      Producer producer = Producer.getInstance();
+
+      JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
+      // ADD rollback TOPIC
+//      producer.send("ROLLBACK", jsonAssemble.toJSONString());
+
+      // rollback block
+      JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
+      jsonBlock.put("status", "rollback");
+      producer.send("BLOCK", jsonBlock.toJSONString());
+
+      // rollback account
+      oldBlock.getTransactions().forEach(transaction -> {
+        Transaction.Contract contract = transaction.getInstance().getRawData().getContractList().get(0);
+
+        byte[] owner = TransactionCapsule.getOwner(contract);
+        AccountCapsule accountCapsule = accountStore.get(owner);
+        JSONObject jsonAccount = JSONObject.parseObject(JsonFormat.printToString(accountCapsule.getInstance()));
+        jsonAccount.putAll(jsonAssemble);
+        producer.send("Account", jsonAccount.toJSONString());
+      });
+    }
+
   }
 
   public void pushVerifiedBlock(BlockCapsule block) throws ContractValidateException,
