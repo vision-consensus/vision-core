@@ -20,6 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.vision.common.args.GenesisBlock;
 import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.common.logsfilter.FilterQuery;
@@ -31,6 +32,7 @@ import org.vision.common.logsfilter.trigger.Trigger;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.RuntimeImpl;
+import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.common.zksnark.MerkleContainer;
 import org.vision.consensus.Consensus;
@@ -58,6 +60,7 @@ import org.vision.core.metrics.MetricsUtil;
 import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.core.utils.TransactionRegister;
+import org.vision.core.vm.repository.RepositoryImpl;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
@@ -701,9 +704,12 @@ public class Manager {
     JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
     // rollback block
     JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
-    jsonBlock.put("status", "rollback");
+    jsonBlock.put("state", "delete");
     producer.send("BLOCK", jsonBlock.toJSONString());
 
+    if(oldBlock.getTransactions().isEmpty()){
+      return;
+    }
     // rollback account
     oldBlock.getTransactions().forEach(transaction -> {
       Transaction.Contract contract = transaction.getInstance().getRawData().getContractList().get(0);
@@ -712,29 +718,43 @@ public class Manager {
 
       AccountCapsule accountCapsule = accountStore.get(owner);
       JSONObject jsonAccount = new JSONObject();
+      jsonAccount.putAll(jsonAssemble);
       if (accountCapsule != null){
         jsonAccount = JSONObject.parseObject(JsonFormat.printToString(accountCapsule.getInstance()));
       } else {
         jsonAccount.put("address", address);
+        jsonAccount.put("state", "delete");
       }
-      jsonAccount.putAll(jsonAssemble);
       producer.send("Account", jsonAccount.toJSONString());
 
-      // rollback other TOPIC: STORAGE, VOTEWITNESS,WITHDRAWBALANCE
+      // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
       ContractStore contractStore = chainBaseManager.getContractStore();
       switch(contract.getType()){
-//        case CreateSmartContract:
-//        case TriggerSmartContract:
+        case CreateSmartContract:
+        case TriggerSmartContract:
 //          JSONObject jsonStorage = new JSONObject();
 //          jsonStorage.putAll(jsonAssemble);
-//          jsonStorage.put("address", address);
-//          producer.send("STORAGE", jsonStorage.toJSONString());
-//          break;
+//          try {
+////            DataWord key = new DataWord(address);
+//            byte[] contractAddress;
+//            if (contract.getType() == CreateSmartContract){
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.CreateSmartContract.class).getNewContract().getContractAddress().toByteArray();
+//            } else {
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.TriggerSmartContract.class).getContractAddress().toByteArray();
+//            }
+//            jsonStorage.put("address", StringUtil.encode58Check(contractAddress));
+//            jsonStorage.put("hexAddress", ByteArray.toHexString(contractAddress));
+//            producer.send("STORAGE", jsonStorage.toJSONString());
+//          } catch (InvalidProtocolBufferException e) {
+//            logger.error("send STORAGE TOPIC rollback fail", e);
+//          }
+          break;
         case VoteWitnessContract:
           JSONObject jsonVoteWitness = new JSONObject();
           jsonVoteWitness.putAll(jsonAssemble);
           if (accountCapsule == null){
             jsonVoteWitness.put("address", address);
+            jsonVoteWitness.put("state", "delete");
           } else {
             try {
               List<org.vision.protos.Protocol.Vote> voteList = accountCapsule.getVotesList();
@@ -750,59 +770,52 @@ public class Manager {
               jsonVoteWitness.put("address", address);
               jsonVoteWitness.put("votesList", voteArray);
               jsonVoteWitness.put("createTime", Calendar.getInstance().getTimeInMillis());
-              Producer.getInstance().send("VOTEWITNESS",  jsonVoteWitness.toJSONString());
-              logger.info("send VOTEWITNESS TOPIC rollback, accontId:{}", address);
             } catch (Exception e) {
-              logger.error("send VOTEWITNESS fail", e);
+              logger.error("send VOTEWITNESS TOPIC rollback fail", e);
             }
           }
+          Producer.getInstance().send("VOTEWITNESS",  jsonVoteWitness.toJSONString());
+          logger.info("send VOTEWITNESS TOPIC rollback, accontId:{}", address);
           break;
-        case WithdrawBalanceContract:
-          JSONObject jsonWithdrawBalance = new JSONObject();
-          jsonWithdrawBalance.putAll(jsonAssemble);
-          jsonWithdrawBalance.put("address", address);
-          producer.send("WITHDRAWBALANCE", jsonWithdrawBalance.toString());
+        case AssetIssueContract:
+          AssetIssueCapsule assetIssueCapsule = chainBaseManager.getAssetIssueStore().get(owner);
+          JSONObject jsonAssetIssue = new JSONObject();
+          jsonAssetIssue.putAll(jsonAssemble);
+          if (assetIssueCapsule == null){
+            jsonAssetIssue.put("address", address);
+            jsonAssetIssue.put("state", "delete");
+          }else{
+            jsonAssetIssue = JSONObject.parseObject(JsonFormat.printToString(assetIssueCapsule.getInstance()));
+          }
+          Producer.getInstance().send("ASSETISSUE", jsonAssetIssue.toJSONString());
           break;
         case ClearABIContract:
-          try {
-            byte[] contractAddress = contract.getParameter()
-                    .unpack(SmartContractOuterClass.ClearABIContract.class).getContractAddress().toByteArray();
-            ContractCapsule contractCapsule = contractStore.get(contractAddress);
-            contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
-            JSONObject jsonObject = JSONObject
-                    .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
-            jsonObject.putAll(jsonAssemble);
-            Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
-          } catch (InvalidProtocolBufferException e) {
-            logger.error("rollBackMongo ClearABIContract error");
-          }
-          break;
         case UpdateSettingContract:
-          try {
-            byte[] contractAddress = contract.getParameter()
-                    .unpack(SmartContractOuterClass.UpdateSettingContract.class).getContractAddress().toByteArray();
-            ContractCapsule contractCapsule = contractStore.get(contractAddress);
-            contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
-            JSONObject jsonObject = JSONObject
-                    .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
-            jsonObject.putAll(jsonAssemble);
-            Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
-          } catch (InvalidProtocolBufferException e) {
-            logger.error("rollBackMongo UpdateSettingContract error");
-          }
-          break;
         case UpdateEntropyLimitContract:
+          JSONObject jsonContract = new JSONObject();
+          jsonContract.putAll(jsonAssemble);
           try {
-            byte[] contractAddress = contract.getParameter()
-                    .unpack(SmartContractOuterClass.UpdateEntropyLimitContract.class).getContractAddress().toByteArray();
+            byte[] contractAddress;
+            if (contract.getType() == ClearABIContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.ClearABIContract.class).getContractAddress().toByteArray();
+            }else if (contract.getType() == UpdateSettingContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateSettingContract.class).getContractAddress().toByteArray();
+            } else {
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateEntropyLimitContract.class).getContractAddress().toByteArray();
+            }
             ContractCapsule contractCapsule = contractStore.get(contractAddress);
-            contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
-            JSONObject jsonObject = JSONObject
-                    .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
-            jsonObject.putAll(jsonAssemble);
-            Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
+            if(contractCapsule == null){
+              jsonContract.put("address", address);
+              jsonContract.put("contract_address", StringUtil.encode58Check(contractAddress));
+              jsonContract.put("state", "delete");
+            } else {
+              contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
+              jsonContract = JSONObject
+                      .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
+            }
+            Producer.getInstance().send("CONTRACT", jsonContract.toJSONString());
           } catch (InvalidProtocolBufferException e) {
-            logger.error("rollBackMongo UpdateEntropyLimitContract error");
+            logger.error("rollBackMongo Contract TOPIC error");
           }
           break;
         default:
@@ -1425,7 +1438,7 @@ public class Manager {
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
           JSONObject json = JSONObject.parseObject(JsonFormat.printToString(result));
-          json.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+          json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
           Producer.getInstance().send("TRANSACTIONINFO", json.toJSONString());
         }
 

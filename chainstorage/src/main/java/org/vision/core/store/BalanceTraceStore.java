@@ -187,15 +187,14 @@ public class BalanceTraceStore extends VisionStoreWithRevoking<BlockBalanceTrace
     BlockCapsule.BlockId blockId = getCurrentBlockId();
     JSONObject jsonObject = new JSONObject();
     if (blockId != null){
-      jsonObject.put("blockNum", blockId.getNum());
-      jsonObject.put("blockId", blockId);
+      jsonObject.put("blockNumber", blockId.getNum());
+      jsonObject.put("blockID", blockId.toString());
     }
 
     if (isNormal){
-      jsonObject.put("trxId", getCurrentTransactionId());
-      jsonObject.put("status", "normal");
+      jsonObject.put("trxId", getCurrentTransactionId().toString());
     }else{
-      jsonObject.put("status", "rollback");
+      jsonObject.put("state", "overrite");
     }
     return jsonObject;
   }
