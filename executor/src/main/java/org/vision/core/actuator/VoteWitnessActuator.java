@@ -201,13 +201,13 @@ public class VoteWitnessActuator extends AbstractActuator {
         if (null != voteList && voteList.size() > 0) {
           for (org.vision.protos.Protocol.Vote vote : voteList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("voteAddress", Hex.toHexString(vote.getVoteAddress().toByteArray()));
+            jsonObject.put("voteAddress", StringUtil.encode58Check(vote.getVoteAddress().toByteArray()));
             jsonObject.put("voteCount", vote.getVoteCount());
             voteArray.add(jsonObject);
           }
         }
 
-        String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
+        String address = StringUtil.encode58Check(accountCapsule.getAddress().toByteArray());
         itemJsonObject.put("address", address);
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
