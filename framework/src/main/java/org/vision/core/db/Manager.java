@@ -696,7 +696,7 @@ public class Manager {
 
   // for mongo
   public void rollbackMongo(BlockCapsule oldBlock){
-    if (CommonParameter.PARAMETER.isKafkaEnable()) {
+    if (!CommonParameter.PARAMETER.isKafkaEnable()) {
       return;
     }
 
@@ -730,25 +730,29 @@ public class Manager {
       // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
       ContractStore contractStore = chainBaseManager.getContractStore();
       switch(contract.getType()){
-        case CreateSmartContract:
-        case TriggerSmartContract:
+//        case CreateSmartContract:
+//        case TriggerSmartContract:
 //          JSONObject jsonStorage = new JSONObject();
 //          jsonStorage.putAll(jsonAssemble);
 //          try {
-////            DataWord key = new DataWord(address);
 //            byte[] contractAddress;
 //            if (contract.getType() == CreateSmartContract){
 //              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.CreateSmartContract.class).getNewContract().getContractAddress().toByteArray();
 //            } else {
 //              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.TriggerSmartContract.class).getContractAddress().toByteArray();
 //            }
+//
+//            DataWord key = new DataWord(address);
+//            RepositoryImpl repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
+//            DataWord value = repository.getStorageValue(contractAddress, key);
+//            jsonStorage.put(key.toHexString(), value.bigIntValue());
 //            jsonStorage.put("address", StringUtil.encode58Check(contractAddress));
 //            jsonStorage.put("hexAddress", ByteArray.toHexString(contractAddress));
 //            producer.send("STORAGE", jsonStorage.toJSONString());
 //          } catch (InvalidProtocolBufferException e) {
 //            logger.error("send STORAGE TOPIC rollback fail", e);
 //          }
-          break;
+//          break;
         case VoteWitnessContract:
           JSONObject jsonVoteWitness = new JSONObject();
           jsonVoteWitness.putAll(jsonAssemble);
