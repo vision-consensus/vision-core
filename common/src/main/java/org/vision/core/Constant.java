@@ -275,4 +275,6 @@ public class Constant {
   public static final String HISTORY_BALANCE_LOOKUP = "storage.balance.history.lookup";
   public static final String LOCAL_HOST = "127.0.0.1";
   public static final String ETH_GAS_PRICE = "eth.gasPrice";
+  public static final String DEBUG_FEATURE_EFFECT_SPREADMINT_UNLIMITEDPLEDGE  = "debug.feature.effect.spreadMint.unlimitedPledge";
+  public static final String DEBUG_FEATURE_EFFECT_WITNESS_SORT  = "debug.feature.effect.witness.sort";
 }
