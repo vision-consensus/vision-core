@@ -483,12 +483,19 @@ public class FreezeBalanceActuator extends AbstractActuator {
         parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
       }
     }catch (Exception e){
-      logger.error("checkSpreadMintCycle error: {},{}", Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()), e);
+      logger.error("checkSpreadMintCycle error: {},{}", Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()),
+              Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray()),e);
     }
 
     return isCycle;
   }
 
+  /**
+   *  check if the spreadRelationship is a no self cycle
+   * @param ownerAddress
+   * @param parentAddress
+   * @return
+   */
   private boolean checkSpreadMintCycleNoSelf(byte[] ownerAddress, byte[] parentAddress){
     boolean isCycle = false;
     try {
@@ -515,7 +522,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
         parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
       }
     }catch (Exception e){
-      logger.error("checkSpreadMintCycle error: {},{}", Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()), e);
+      logger.error("checkSpreadMintCycleNoSelf error: {},{}", Hex.toHexString(ByteString.copyFrom(ownerAddress).toByteArray()),
+              Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray()),e);
     }
 
     return isCycle;
