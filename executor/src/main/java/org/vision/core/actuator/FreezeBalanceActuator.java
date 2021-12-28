@@ -8,6 +8,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
+import org.vision.common.utils.Time;
 import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -204,7 +205,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
-    boolean isUnlimitedPledge = dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnlimitedPledge;
+    boolean isUnlimitedPledge = dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnlimitedPledgeEffectBlockNum;
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
       if (!dynamicStore.supportSpreadMint()){
         throw new ContractValidateException("It's not support SPREAD type of frozen.");
@@ -251,11 +252,13 @@ public class FreezeBalanceActuator extends AbstractActuator {
       if (spreadRelationShipCapsule != null){
         if (isUnlimitedPledge){
           if (!oldParent.equals(newParent) && spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to modify parentAddress.");
+            throw new ContractValidateException("It's not time to modify parentAddress. Time left: "+
+                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
           }
         }else{
           if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to re-freeze.");
+            throw new ContractValidateException("It's not time to re-freeze. Time left: "+
+                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
           }
         }
       }

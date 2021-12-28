@@ -469,11 +469,11 @@ public class CommonParameter {
 
   @Getter
   @Setter
-  public long spreadMintUnlimitedPledge;
+  public long spreadMintUnlimitedPledgeEffectBlockNum;
 
   @Getter
   @Setter
-  public long witnessSort;
+  public long witnessSortEffectBlockNum;
 
 
   private static double calcMaxTimeRatio() {
