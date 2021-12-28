@@ -738,6 +738,14 @@ public class Args extends CommonParameter {
             config.hasPath(Constant.ETH_GAS_PRICE) ? config
                     .getLong(Constant.ETH_GAS_PRICE) : 160_000_000_000L;
 
+    PARAMETER.spreadMintUnlimitedPledgeEffectBlockNum =
+            config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE) ? config
+                    .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE) : 0L;
+
+    PARAMETER.witnessSortEffectBlockNum =
+            config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) ? config
+                    .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) : 0L;
+
     logConfig();
   }
 
