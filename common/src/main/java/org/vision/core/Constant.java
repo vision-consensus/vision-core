@@ -277,4 +277,6 @@ public class Constant {
   public static final String KAFKA_SENDER_ENABLE = "kafka.enable";
   public static final String KAFKA_BOOTSTRAP_SERVERS_CONFIG = "kafka.bootstrap.servers";
   public static final String ETH_GAS_PRICE = "eth.gasPrice";
+  public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE = "debug.feature.effectBlockNum.spreadMint.unlimitedPledge";
+  public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT = "debug.feature.effectBlockNum.witness.sort";
 }
