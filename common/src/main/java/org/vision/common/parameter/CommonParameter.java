@@ -467,6 +467,14 @@ public class CommonParameter {
   @Setter
   public long gasPrice;
 
+  @Getter
+  @Setter
+  public long spreadMintUnlimitedPledgeEffectBlockNum;
+
+  @Getter
+  @Setter
+  public long witnessSortEffectBlockNum;
+
 
   private static double calcMaxTimeRatio() {
     //return max(2.0, min(5.0, 5 * 4.0 / max(Runtime.getRuntime().availableProcessors(), 1)));

@@ -10,6 +10,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.args.Witness;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.pbft.PbftManager;
 import org.vision.core.capsule.AccountCapsule;
@@ -105,7 +106,7 @@ public class MaintenanceManager {
     tryRemoveThePowerOfTheGr();
 
     //TODO only for test
-    if(consensusDelegate.getDynamicPropertiesStore().getCurrentCycleNumber() >= 1166300L){
+    if(consensusDelegate.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.witnessSortEffectBlockNum){
       consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
         AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
         DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
