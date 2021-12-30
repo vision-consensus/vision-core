@@ -1134,6 +1134,11 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getMaintenancePledgeRate")
+            .setValue(dbManager.getDelegationStore().getCyclePledgeRate(dbManager.getDynamicPropertiesStore().getCurrentCycleNumber() - 1))
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getInflationRate")
             .setValue(dbManager.getDynamicPropertiesStore().getInflationRate())
             .build());

@@ -144,7 +144,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 
     long latestWithdrawTime = accountCapsule.getLatestWithdrawTime();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
-    long witnessAllowanceFrozenTime = dynamicStore.getWitnessAllowanceFrozenTime() * FROZEN_PERIOD;
+    long witnessAllowanceFrozenTime = 180000L;// dynamicStore.getWitnessAllowanceFrozenTime() * FROZEN_PERIOD; // for vtest
 
     if (now - latestWithdrawTime < witnessAllowanceFrozenTime) {
       throw new ContractValidateException("The last withdraw time is "
