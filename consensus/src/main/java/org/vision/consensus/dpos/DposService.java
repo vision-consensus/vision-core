@@ -14,6 +14,7 @@ import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
+import org.vision.common.utils.Util;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.base.BlockHandle;
 import org.vision.consensus.base.ConsensusInterface;
@@ -22,6 +23,7 @@ import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.WitnessCapsule;
+import org.vision.core.db.BlockStore;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,6 +51,9 @@ public class DposService implements ConsensusInterface {
 
   @Autowired
   private MaintenanceManager maintenanceManager;
+
+  @Autowired
+  private BlockStore blockStore;
 
   @Getter
   @Setter
@@ -172,6 +177,11 @@ public class DposService implements ConsensusInterface {
 
       JSONObject json = new JSONObject();
       json.put("blockNum", newSolidNum);
+      List<BlockCapsule> blockCapsuleList = blockStore.getLimitNumber(newSolidNum, 1);
+      if (!blockCapsuleList.isEmpty() && !blockCapsuleList.get(0).getTransactions().isEmpty()){
+        json.put("transactions",
+                Util.printTransactionListToJSON(blockCapsuleList.get(0).getTransactions(), true));
+      }
       long totalEntropyWeight = 0L;
       long totalPhotonWeight = 0L;
       long totalFVGuaranteeWeight = 0L;
@@ -188,7 +198,7 @@ public class DposService implements ConsensusInterface {
       try {
         totalFVGuaranteeWeight = consensusDelegate.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
       }catch (Exception e){
-        logger.info("no SRGuarantee");
+        logger.info("no FVGuarantee");
       }
       json.put("totalEntropyWeight", totalEntropyWeight);
       json.put("totalPhotonWeight", totalPhotonWeight);
