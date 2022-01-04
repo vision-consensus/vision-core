@@ -74,7 +74,7 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
             TransferContract contractTransfer = contractParameter.unpack(TransferContract.class);
 
             if (Objects.nonNull(contractTransfer)) {
-              transactionLogTrigger.setAssetName("trx");
+              transactionLogTrigger.setAssetName("vs");
 
               if (Objects.nonNull(contractTransfer.getOwnerAddress())) {
                 transactionLogTrigger.setFromAddress(StringUtil

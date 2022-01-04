@@ -1109,6 +1109,11 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalPhotonLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonLimit())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalTransactionCost")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalTransactionCost())
             .build());
@@ -1126,6 +1131,11 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getPledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getPledgeRate())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getMaintenancePledgeRate")
+            .setValue(dbManager.getDelegationStore().getCyclePledgeRate(dbManager.getDynamicPropertiesStore().getCurrentCycleNumber() - 1))
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1166,11 +1176,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalAssets")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalAssets())
-            .build());
-
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getEconomyCycle")
-            .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycle())
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
