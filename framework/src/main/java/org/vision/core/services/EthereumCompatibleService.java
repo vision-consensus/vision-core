@@ -196,8 +196,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         try {
             byte[] receiveAddressStr = ethTrx.getReceiveAddress();
             boolean isDeployContract = (null == receiveAddressStr || receiveAddressStr.length == 0);
+            String data = ByteArray.toHexString(ethTrx.getData());
             if (isDeployContract) {
-                String data = ByteArray.toHexString(ethTrx.getData());
                 if (StringUtils.isBlank(data)) {
                     throw new IllegalArgumentException("no data!");
                 }
@@ -205,7 +205,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             byte[] receiveAddress = ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(ethTrx.getReceiveAddress()));
             int accountType = wallet.getAccountType(receiveAddress);
             logger.info("accountType={}", accountType);
-            if (1 == accountType || isDeployContract) { //
+            if ((1 == accountType && !StringUtils.isBlank(data)) || isDeployContract) { //
                 // long feeLimit = 210000000;
                 // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
                 long gasPriceTmp = Long.parseLong(
