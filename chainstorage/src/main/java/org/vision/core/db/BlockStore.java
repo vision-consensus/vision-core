@@ -49,7 +49,6 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
 
   public void sendBlockMsg(final BlockCapsule capsule, JSONObject reward, AccountCapsule account, WitnessCapsule witness, DynamicPropertiesStore dynamicPropertiesStore){
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      logger.info("sendBlock start num:{}",capsule.getInstance().getBlockHeader().getRawData().getNumber());
       JSONObject obj = JSONObject.parseObject(Util.printBlock(capsule.getInstance(), true));
       obj.put("transactionCount", capsule.getTransactions().size());
       obj.put("blockSize", capsule.getInstance().toByteArray().length);
@@ -112,7 +111,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("totalSpreadMintWeight", dynamicPropertiesStore.getTotalSpreadMintWeight());
 
       Producer.getInstance().send("BLOCK", obj.toJSONString());
-      logger.info("sendBlock end num:{}",capsule.getInstance().getBlockHeader().getRawData().getNumber());
+      logger.info("send BLOCK TOPIC success, num:{}", capsule.getInstance().getBlockHeader().getRawData().getNumber());
     }
   }
 

@@ -446,7 +446,7 @@ public class RepositoryImpl implements Repository {
       json.put(key.toHexString(), value.bigIntValue());
       json.put("address", StringUtil.encode58Check(address));
       json.put("hexAddress", ByteArray.toHexString(address));
-      Producer.getInstance().send("STORAGE", json.toJSONString());
+      Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
     }
   }
 

@@ -2,6 +2,7 @@ package org.vision.core.store;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,7 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
       String type = isUpdate ? "update" : "freeze";
       jsonObject.put("type", type);
       jsonObject.put("frozenDuration", frozenDuration);
-      Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
+      Producer.getInstance().send("SPREADRELATIONSHIP", Hex.toHexString(item.getOwner().toByteArray()), jsonObject.toJSONString());
     }
   }
 

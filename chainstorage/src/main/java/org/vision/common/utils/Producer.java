@@ -50,6 +50,24 @@ public class Producer {
             e.printStackTrace();
         }
     }
+
+    public void send(String topic, String key, String message){
+        try {
+            if (key == null || key.isEmpty()){
+                key = UUID.randomUUID().toString();
+            }
+            producer.send(new ProducerRecord<>(topic, key, message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 class ProducerCallBack implements Callback {

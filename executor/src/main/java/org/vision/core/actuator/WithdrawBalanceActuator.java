@@ -103,6 +103,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
         String jsonStr = itemJsonObject.toJSONString();
         Producer.getInstance().send("WITHDRAWBALANCE", jsonStr);
+        logger.info("send WITHDRAWBALANCE TOPIC success, address: {}", StringUtil.encode58Check(accountCapsule.getAddress().toByteArray()));
       } catch (Exception e) {
         logger.error("send WITHDRAWBALANCE fail", e);
       }
