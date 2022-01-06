@@ -725,7 +725,7 @@ public class Manager {
         jsonAccount.put("address", address);
         jsonAccount.put("state", "delete");
       }
-      producer.send("Account", jsonAccount.toJSONString());
+      producer.send("ACCOUNT", jsonAccount.toJSONString());
 
       // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
       ContractStore contractStore = chainBaseManager.getContractStore();
@@ -753,6 +753,23 @@ public class Manager {
 //            logger.error("send STORAGE TOPIC rollback fail", e);
 //          }
 //          break;
+        case TransferContract:
+          try {
+            byte[] to = contract.getParameter().unpack(BalanceContract.TransferContract.class).getToAddress().toByteArray();
+            AccountCapsule toAccountCapsule = accountStore.get(to);
+            JSONObject jsonToAccount = new JSONObject();
+            jsonToAccount.putAll(jsonAssemble);
+            if (toAccountCapsule != null){
+              jsonToAccount = JSONObject.parseObject(JsonFormat.printToString(toAccountCapsule.getInstance()));
+            } else {
+              jsonToAccount.put("address", StringUtil.encode58Check(to));
+              jsonToAccount.put("state", "delete");
+            }
+            producer.send("ACCOUNT", jsonToAccount.toJSONString());
+          } catch (InvalidProtocolBufferException e) {
+            logger.error("send Account TOPIC toAddress rollback fail", e);
+          }
+          break;
         case VoteWitnessContract:
           JSONObject jsonVoteWitness = new JSONObject();
           jsonVoteWitness.putAll(jsonAssemble);
