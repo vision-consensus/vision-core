@@ -51,6 +51,33 @@ public class Producer {
         }
     }
 
+    /**
+     * create a special partition TOPIC to send to kafka
+     * @param topic -
+     * @param partition - The partition to which the record should be sent
+     * @param message -
+     */
+    public void send(String topic, Integer partition, String message){
+        try {
+            producer.send(new ProducerRecord<>(topic, partition, UUID.randomUUID().toString(), message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * create a special key TOPIC to send to kafka
+     * @param topic -
+     * @param key - The key that will be included in the record
+     * @param message-
+     */
     public void send(String topic, String key, String message){
         try {
             if (key == null || key.isEmpty()){

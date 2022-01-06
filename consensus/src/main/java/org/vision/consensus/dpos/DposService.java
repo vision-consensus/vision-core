@@ -220,7 +220,7 @@ public class DposService implements ConsensusInterface {
         }
       });
       json.put("confirm_witnesses", witnesses);
-      Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
+      Producer.getInstance().send("SOLIDIFIED", 0, json.toJSONString());
     }
     logger.info("Update solid block number to {}", newSolidNum);
   }
