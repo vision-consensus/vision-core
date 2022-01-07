@@ -451,7 +451,7 @@ public class RepositoryImpl implements Repository {
         json.put("address", StringUtil.encode58Check(address));
         json.put("hexAddress", ByteArray.toHexString(address));
         json.putAll(balanceTraceStore.assembleJsonInfo());
-        Producer.getInstance().send("STORAGE", json.toJSONString());
+        Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
         logger.info("send STORAGE success, address:{}",StringUtil.encode58Check(address));
       }catch (Exception e){
         logger.error("send STORAGE fail", e);

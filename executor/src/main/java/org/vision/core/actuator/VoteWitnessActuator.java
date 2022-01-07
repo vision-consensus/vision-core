@@ -214,8 +214,8 @@ public class VoteWitnessActuator extends AbstractActuator {
         itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
 
         String jsonStr = itemJsonObject.toJSONString();
-        logger.info("send VOTEWITNESS TOPIC start, accontId:{}", address);
-        Producer.getInstance().send("VOTEWITNESS", jsonStr);
+        Producer.getInstance().send("VOTEWITNESS", address, jsonStr);
+        logger.info("send VOTEWITNESS countVoteAccount start, address:{}", address);
       } catch (Exception e) {
         logger.error("send VOTEWITNESS fail", e);
       }

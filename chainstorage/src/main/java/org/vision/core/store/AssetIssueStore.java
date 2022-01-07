@@ -3,6 +3,7 @@ package org.vision.core.store;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -42,8 +43,7 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject itemJsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
       itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
-      Producer.getInstance().send("ASSETISSUE", itemJsonObject.toJSONString());
-//      Producer.getInstance().send("ASSETISSUE", JsonFormat.printToString(item.getInstance()));
+      Producer.getInstance().send("ASSETISSUE", Hex.toHexString(item.getOwnerAddress().toByteArray()), itemJsonObject.toJSONString());
     }
   }
 

@@ -6,6 +6,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.JsonFormat;
@@ -472,7 +473,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(spreadRelationShipCapsule.getInstance(), true));
         jsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
         jsonObject.put("type", "unfreeze");
-        Producer.getInstance().send("SPREADRELATIONSHIP", jsonObject.toJSONString());
+        Producer.getInstance().send("SPREADRELATIONSHIP", Hex.toHexString(ownerAddress), jsonObject.toJSONString());
       }
     }
   }
