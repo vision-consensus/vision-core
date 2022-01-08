@@ -528,6 +528,21 @@ public class Wallet {
       } else {
         dbManager.getTransactionIdCache().put(trx.getTransactionId(), true);
       }
+
+      // TODO verify eth rlpData and nonce
+      // add config eth.rawHash to verify consistent
+      Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
+      if (ethRawDataHash != null){
+        if (dbManager.getRlpDataCache().getIfPresent(ethRawDataHash) != null){
+          logger.warn("Broadcast transaction {} has failed, it already exists.",
+                  trx.getTransactionId());
+          return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
+        }else{
+          dbManager.getRlpDataCache().put(ethRawDataHash, true);
+          // TODO verify nonce gt latest 20 Block Number
+        }
+      }
+
       if (chainBaseManager.getDynamicPropertiesStore().supportVM()) {
         trx.resetResult();
       }
