@@ -101,6 +101,7 @@ import org.vision.core.actuator.VMActuator;
 import org.vision.core.capsule.*;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.utils.MarketUtils;
+import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.db.EntropyProcessor;
@@ -529,31 +530,31 @@ public class Wallet {
         dbManager.getTransactionIdCache().put(trx.getTransactionId(), true);
       }
 
-      if (getNowBlock().getBlockHeader().getRawData().getNumber() >= CommonParameter.getInstance().ethCompatibleEffectBlockNum) {
-        // TODO verify eth rlpData and nonce
-        // add config eth.rawHash to verify consistent
-        Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
-        if (ethRawDataHash != null) {
-          if (dbManager.getRlpDataCache().getIfPresent(ethRawDataHash) != null) {
-            logger.warn("Broadcast transaction {} has failed, it already exists.",
-                    trx.getTransactionId());
-            return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
-          } else {
-            // TODO verify nonce gt latest 20 Block Number
-            TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData());
-            if (!ethTrx.isParsed()) {
-              ethTrx.rlpParse();
-            }
-            long nonce = ByteUtil.byteArrayToLong(ethTrx.getNonce());
-            long nowBlock = getNowBlock().getBlockHeader().getRawData().getNumber();
-            if ((nowBlock - nonce) <= 20) {
-              dbManager.getRlpDataCache().put(ethRawDataHash, true);
-            } else {
-              logger.warn("Broadcast transaction {} has failed, it already exists.",
-                      trx.getTransactionId());
+      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().ethCompatibleEffectBlockNum) {
+        try {
+          Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
+          if (ethRawDataHash != null) {
+            if (dbManager.getRlpDataCache().getIfPresent(ethRawDataHash) != null) {
+              logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, it already exists.",
+                      trx.getTransactionId(), ethRawDataHash);
               return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
+            } else {
+              TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData());
+              if (!ethTrx.isParsed()) {
+                ethTrx.rlpParse();
+              }
+              long nonce = ByteUtil.byteArrayToLong(ethTrx.getNonce());
+              long nowBlock = chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
+              dbManager.getRlpDataCache().put(ethRawDataHash, true);
+              if ((nowBlock - nonce) >= Parameter.ChainConstant.ETH_TRANSACTION_VALID_NONCE_SCOPE) {
+                logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, nonce: {}, blockNumber: {}, it already expired.",
+                        trx.getTransactionId(), ethRawDataHash, nonce, nowBlock);
+                return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
+              }
             }
           }
+        }catch (Exception e){
+          logger.error("Broadcast eth Transaction failed.", e);
         }
       }
 
