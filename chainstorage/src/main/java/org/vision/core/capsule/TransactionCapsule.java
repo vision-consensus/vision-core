@@ -364,7 +364,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         }
       }
     } catch (Exception ex) {
-      rlpData = new byte[0];
       logger.error(ex.getMessage());
     }
     return  rlpData;
@@ -823,10 +822,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     public EthTrx(byte[] rawData) {
       this.rlpEncoded = rawData;
       parsed = false;
-    }
-
-    public Sha256Hash getEthRlpRawHash(){
-      return Sha256Hash.of(CommonParameter.getInstance().isECKeyCryptoEngine(), rlpEncoded);
     }
 
     public EthTrx(byte[] nonce, byte[] gasPrice, byte[] gasLimit, byte[] receiveAddress, byte[] value, byte[] data,

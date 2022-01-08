@@ -477,7 +477,7 @@ public class CommonParameter {
 
   @Getter
   @Setter
-  public long ethCompatibleEffectBlockNum;
+  public long ethCompatibleRlpDeDupEffectBlockNum;
 
 
   private static double calcMaxTimeRatio() {

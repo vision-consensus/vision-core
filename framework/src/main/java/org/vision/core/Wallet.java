@@ -530,7 +530,7 @@ public class Wallet {
         dbManager.getTransactionIdCache().put(trx.getTransactionId(), true);
       }
 
-      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().ethCompatibleEffectBlockNum) {
+      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
         try {
           Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
           if (ethRawDataHash != null) {
@@ -545,12 +545,12 @@ public class Wallet {
               }
               long nonce = ByteUtil.byteArrayToLong(ethTrx.getNonce());
               long nowBlock = chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
-              dbManager.getRlpDataCache().put(ethRawDataHash, true);
-              if ((nowBlock - nonce) >= Parameter.ChainConstant.ETH_TRANSACTION_VALID_NONCE_SCOPE) {
+              if ((nowBlock - nonce) >= Parameter.ChainConstant.ETH_TRANSACTION_RLP_VALID_NONCE_SCOPE) {
                 logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, nonce: {}, blockNumber: {}, it already expired.",
                         trx.getTransactionId(), ethRawDataHash, nonce, nowBlock);
-                return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
+                return builder.setResult(false).setCode(response_code.TRANSACTION_EXPIRATION_ERROR).build();
               }
+              dbManager.getRlpDataCache().put(ethRawDataHash, true);
             }
           }
         }catch (Exception e){
