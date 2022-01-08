@@ -746,6 +746,10 @@ public class Args extends CommonParameter {
             config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) ? config
                     .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) : 0L;
 
+    PARAMETER.ethCompatibleRlpDeDupEffectBlockNum =
+            config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_ETH_COMPATIBLE_RLP_DEDUP) ? config
+                    .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_ETH_COMPATIBLE_RLP_DEDUP) : 0L;
+
     logConfig();
   }
 
