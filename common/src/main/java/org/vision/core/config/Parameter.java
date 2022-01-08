@@ -59,6 +59,7 @@ public class Parameter {
     public static final long UN_FREEZE_FVGUARANTEE_LIMIT = 23L;
     public static final long FIRST_ECONOMY_CYCLE = 42L;
     public static final int QUERY_SPREAD_MINT_PARENT_LEVEL_MAX = 4;
+    public static final int ETH_TRANSACTION_RLP_VALID_NONCE_SCOPE = 20;
 
 
 

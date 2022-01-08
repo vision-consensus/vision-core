@@ -339,6 +339,36 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
   }
 
+  public byte[] getEthRlpData(){
+    byte[] rlpData = new byte[0];
+    try {
+      Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
+      if (contract.getType() == ContractType.TriggerSmartContract) {
+        TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
+        if (c != null && c.getType() == 1) {
+          rlpData = c.getRlpData().toByteArray();
+        }
+      }
+
+      if (contract.getType() == ContractType.TransferContract) {
+        TransferContract c = contract.getParameter().unpack(TransferContract.class);
+        if (c != null && c.getType() == 1) {
+          rlpData = c.getRlpData().toByteArray();
+        }
+      }
+
+      if (contract.getType() == ContractType.CreateSmartContract) {
+        CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
+        if (c != null && c.getType() == 1) {
+          rlpData = c.getRlpData().toByteArray();
+        }
+      }
+    } catch (Exception ex) {
+      logger.error(ex.getMessage());
+    }
+    return  rlpData;
+  }
+
   public static <T extends com.google.protobuf.Message> T parse(Class<T> clazz,
       CodedInputStream codedInputStream) throws InvalidProtocolBufferException {
     T defaultInstance = Internal.getDefaultInstance(clazz);
@@ -1409,6 +1439,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   public Sha256Hash getTransactionId() {
     return getRawHash();
+  }
+
+  public Sha256Hash getEthRawDataHash(){
+    byte[] rlpData = getEthRlpData();
+    if (rlpData.length <= 0){
+      return null;
+    }
+
+    return Sha256Hash.of(CommonParameter.getInstance().isECKeyCryptoEngine(), rlpData);
   }
 
   @Override
