@@ -83,6 +83,7 @@ public class Manager {
   private static final String SAVE_BLOCK = "save block: ";
   private static final int SLEEP_TIME_OUT = 50;
   private static final int TX_ID_CACHE_SIZE = 100_000;
+  private static final int ETH_RLP_DATA_CACHE_SIZE = 100_000;
   private final int shieldedTransInPendingMaxCounts =
       Args.getInstance().getShieldedTransInPendingMaxCounts();
   @Getter
@@ -120,6 +121,9 @@ public class Manager {
   @Getter
   private Cache<Sha256Hash, Boolean> transactionIdCache = CacheBuilder
       .newBuilder().maximumSize(TX_ID_CACHE_SIZE).recordStats().build();
+  @Getter
+  private Cache<Sha256Hash, Boolean> rlpDataCache = CacheBuilder
+          .newBuilder().maximumSize(ETH_RLP_DATA_CACHE_SIZE).recordStats().build();
   @Autowired
   private AccountStateCallBack accountStateCallBack;
   @Autowired
