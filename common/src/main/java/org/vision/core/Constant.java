@@ -277,4 +277,5 @@ public class Constant {
   public static final String ETH_GAS_PRICE = "eth.gasPrice";
   public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE = "debug.feature.effectBlockNum.spreadMint.unlimitedPledge";
   public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT = "debug.feature.effectBlockNum.witness.sort";
+  public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_ETH_COMPATIBLE = "debug.feature.effectBlockNum.eth.compatible";
 }
