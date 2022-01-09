@@ -1437,6 +1437,12 @@ public class Manager {
   private void updateTransHashCache(BlockCapsule block) {
     for (TransactionCapsule transactionCapsule : block.getTransactions()) {
       this.transactionIdCache.put(transactionCapsule.getTransactionId(), true);
+      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+        Sha256Hash ethRawDataHash = transactionCapsule.getEthRawDataHash();
+        if (ethRawDataHash != null) {
+          this.rlpDataCache.put(ethRawDataHash, true);
+        }
+      }
     }
   }
 
