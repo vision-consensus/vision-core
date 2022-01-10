@@ -101,6 +101,7 @@ import org.vision.core.actuator.VMActuator;
 import org.vision.core.capsule.*;
 import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.utils.MarketUtils;
+import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.db.EntropyProcessor;
@@ -528,6 +529,35 @@ public class Wallet {
       } else {
         dbManager.getTransactionIdCache().put(trx.getTransactionId(), true);
       }
+
+      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+        try {
+          Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
+          if (ethRawDataHash != null) {
+            if (dbManager.getRlpDataCache().getIfPresent(ethRawDataHash) != null) {
+              logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, it already exists.",
+                      trx.getTransactionId(), ethRawDataHash);
+              return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
+            } else {
+              TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData());
+              if (!ethTrx.isParsed()) {
+                ethTrx.rlpParse();
+              }
+              long nonce = ByteUtil.byteArrayToLong(ethTrx.getNonce());
+              long nowBlock = chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
+              if ((nowBlock - nonce) >= Parameter.ChainConstant.ETH_TRANSACTION_RLP_VALID_NONCE_SCOPE) {
+                logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, nonce: {}, blockNumber: {}, it already expired.",
+                        trx.getTransactionId(), ethRawDataHash, nonce, nowBlock);
+                return builder.setResult(false).setCode(response_code.TRANSACTION_EXPIRATION_ERROR).build();
+              }
+              dbManager.getRlpDataCache().put(ethRawDataHash, true);
+            }
+          }
+        }catch (Exception e){
+          logger.error("Broadcast eth Transaction failed.", e);
+        }
+      }
+
       if (chainBaseManager.getDynamicPropertiesStore().supportVM()) {
         trx.resetResult();
       }
