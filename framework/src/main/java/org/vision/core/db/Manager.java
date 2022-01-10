@@ -579,7 +579,16 @@ public class Manager {
   }
 
   private boolean containsTransaction(TransactionCapsule transactionCapsule) {
-    return containsTransaction(transactionCapsule.getTransactionId().getBytes());
+    boolean existTransaction = containsTransaction(transactionCapsule.getTransactionId().getBytes());
+    if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+      if (!existTransaction) {
+        Sha256Hash ethRlpDataHash = transactionCapsule.getEthRlpDataHash();
+        if (ethRlpDataHash != null) {
+          existTransaction = containsEthereumTransaction(ethRlpDataHash.getBytes());
+        }
+      }
+    }
+    return existTransaction;
   }
   private boolean containsTransaction(byte[] transactionId) {
     if (transactionCache != null) {
@@ -589,6 +598,10 @@ public class Manager {
     return chainBaseManager.getTransactionStore()
         .has(transactionId);
   }
+  private boolean containsEthereumTransaction(byte[] ethRlpDataHash){
+    return chainBaseManager.getEthereumCompatibleRlpDedupStore().has(ethRlpDataHash);
+  }
+
 
   /**
    * push transaction into pending.
@@ -1089,6 +1102,14 @@ public class Manager {
       trxCap.setResult(trace.getTransactionContext());
     }
     chainBaseManager.getTransactionStore().put(trxCap.getTransactionId().getBytes(), trxCap);
+    if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+      Sha256Hash ethRlpDataHash = trxCap.getEthRlpDataHash();
+      if (ethRlpDataHash != null) {
+        EthereumCompatibleRlpDedupCapsule ethRlpCap
+                = new EthereumCompatibleRlpDedupCapsule(ethRlpDataHash.getBytes(), trxCap.getTransactionId().getBytes());
+        chainBaseManager.getEthereumCompatibleRlpDedupStore().put(ethRlpDataHash.getBytes(), ethRlpCap);
+      }
+    }
 
     Optional.ofNullable(transactionCache)
         .ifPresent(t -> t.put(trxCap.getTransactionId().getBytes(),
@@ -1438,9 +1459,9 @@ public class Manager {
     for (TransactionCapsule transactionCapsule : block.getTransactions()) {
       this.transactionIdCache.put(transactionCapsule.getTransactionId(), true);
       if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
-        Sha256Hash ethRawDataHash = transactionCapsule.getEthRawDataHash();
-        if (ethRawDataHash != null) {
-          this.rlpDataCache.put(ethRawDataHash, true);
+        Sha256Hash ethRlpDataHash = transactionCapsule.getEthRlpDataHash();
+        if (ethRlpDataHash != null) {
+          this.rlpDataCache.put(ethRlpDataHash, true);
         }
       }
     }
