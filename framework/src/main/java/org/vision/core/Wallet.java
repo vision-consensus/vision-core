@@ -550,6 +550,12 @@ public class Wallet {
                         trx.getTransactionId(), ethRlpDataHash, nonce, nowBlock);
                 return builder.setResult(false).setCode(response_code.TRANSACTION_EXPIRATION_ERROR).build();
               }
+
+              if (ethTrx.getChainId() == null || ethTrx.getChainId() != CommonParameter.PARAMETER.nodeP2pVersion){
+                logger.info("Broadcast eth transaction {} has failed, ethRlpDataHash: {}, p2pVersion:{}, chainId: {}, chainId is illegal",
+                        trx.getTransactionId(), ethRlpDataHash, CommonParameter.PARAMETER.nodeP2pVersion, ethTrx.getChainId());
+                return builder.setResult(false).setCode(response_code.OTHER_ERROR).build();
+              }
               dbManager.getRlpDataCache().put(ethRlpDataHash, true);
             }
           }

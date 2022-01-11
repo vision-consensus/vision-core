@@ -30,6 +30,7 @@ import org.vision.core.actuator.ActuatorCreator;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.Manager;
+import org.vision.core.exception.*;
 import org.vision.core.services.http.FullNodeHttpApiService;
 import org.vision.core.zen.ZenTransactionBuilder;
 import org.vision.core.zen.note.Note;
@@ -49,19 +50,6 @@ import org.vision.core.capsule.ReceiveDescriptionCapsule;
 import org.vision.core.capsule.SpendDescriptionCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.exception.AccountResourceInsufficientException;
-import org.vision.core.exception.BadItemException;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.DupTransactionException;
-import org.vision.core.exception.ReceiptCheckErrException;
-import org.vision.core.exception.TaposException;
-import org.vision.core.exception.TooBigTransactionException;
-import org.vision.core.exception.TooBigTransactionResultException;
-import org.vision.core.exception.TransactionExpirationException;
-import org.vision.core.exception.VMIllegalException;
-import org.vision.core.exception.ValidateSignatureException;
-import org.vision.core.exception.ZksnarkException;
 import org.vision.core.zen.address.DiversifierT;
 import org.vision.core.zen.address.ExpandedSpendingKey;
 import org.vision.core.zen.address.FullViewingKey;
@@ -442,11 +430,11 @@ public class SendCoinShieldTest {
 
   @Test
   public void pushShieldedTransactionAndDecryptWithIvk()
-      throws ContractValidateException, TooBigTransactionException,
+          throws ContractValidateException, TooBigTransactionException,
           TooBigTransactionResultException, TaposException, TransactionExpirationException,
-      ReceiptCheckErrException, DupTransactionException, VMIllegalException,
-      ValidateSignatureException, BadItemException, ContractExeException,
-      AccountResourceInsufficientException, InvalidProtocolBufferException, ZksnarkException {
+          ReceiptCheckErrException, DupTransactionException, VMIllegalException,
+          ValidateSignatureException, BadItemException, ContractExeException,
+          AccountResourceInsufficientException, InvalidProtocolBufferException, ZksnarkException, P2pVersionException {
     long ctx = JLibrustzcash.librustzcashSaplingProvingCtxInit();
 
     librustzcashInitZksnarkParams();
@@ -529,11 +517,11 @@ public class SendCoinShieldTest {
 
   @Test
   public void pushShieldedTransactionAndDecryptWithOvk()
-      throws ContractValidateException, TooBigTransactionException,
-      TooBigTransactionResultException, TaposException, TransactionExpirationException,
-      ReceiptCheckErrException, DupTransactionException, VMIllegalException,
-      ValidateSignatureException, BadItemException, ContractExeException,
-      AccountResourceInsufficientException, InvalidProtocolBufferException, ZksnarkException {
+          throws ContractValidateException, TooBigTransactionException,
+          TooBigTransactionResultException, TaposException, TransactionExpirationException,
+          ReceiptCheckErrException, DupTransactionException, VMIllegalException,
+          ValidateSignatureException, BadItemException, ContractExeException,
+          AccountResourceInsufficientException, InvalidProtocolBufferException, ZksnarkException, P2pVersionException {
     long ctx = JLibrustzcash.librustzcashSaplingProvingCtxInit();
 
     librustzcashInitZksnarkParams();
@@ -719,11 +707,11 @@ public class SendCoinShieldTest {
 
   @Test
   public void pushShieldedTransaction()
-      throws ContractValidateException, TooBigTransactionException,
-      TooBigTransactionResultException,
-      TaposException, TransactionExpirationException, ReceiptCheckErrException,
-      DupTransactionException, VMIllegalException, ValidateSignatureException, BadItemException,
-      ContractExeException, AccountResourceInsufficientException, ZksnarkException {
+          throws ContractValidateException, TooBigTransactionException,
+          TooBigTransactionResultException,
+          TaposException, TransactionExpirationException, ReceiptCheckErrException,
+          DupTransactionException, VMIllegalException, ValidateSignatureException, BadItemException,
+          ContractExeException, AccountResourceInsufficientException, ZksnarkException, P2pVersionException {
     long ctx = JLibrustzcash.librustzcashSaplingProvingCtxInit();
     // generate spend proof
     librustzcashInitZksnarkParams();
