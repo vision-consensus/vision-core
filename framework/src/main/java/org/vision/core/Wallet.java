@@ -532,11 +532,11 @@ public class Wallet {
 
       if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
         try {
-          Sha256Hash ethRawDataHash = trx.getEthRawDataHash();
-          if (ethRawDataHash != null) {
-            if (dbManager.getRlpDataCache().getIfPresent(ethRawDataHash) != null) {
-              logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, it already exists.",
-                      trx.getTransactionId(), ethRawDataHash);
+          Sha256Hash ethRlpDataHash = trx.getEthRlpDataHash();
+          if (ethRlpDataHash != null) {
+            if (dbManager.getRlpDataCache().getIfPresent(ethRlpDataHash) != null) {
+              logger.warn("Broadcast eth transaction {} has failed, ethRlpDataHash: {}, it already exists.",
+                      trx.getTransactionId(), ethRlpDataHash);
               return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
             } else {
               TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData());
@@ -546,11 +546,17 @@ public class Wallet {
               long nonce = ByteUtil.byteArrayToLong(ethTrx.getNonce());
               long nowBlock = chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
               if ((nowBlock - nonce) >= Parameter.ChainConstant.ETH_TRANSACTION_RLP_VALID_NONCE_SCOPE) {
-                logger.warn("Broadcast eth transaction {} has failed, ethRawDataHash: {}, nonce: {}, blockNumber: {}, it already expired.",
-                        trx.getTransactionId(), ethRawDataHash, nonce, nowBlock);
+                logger.warn("Broadcast eth transaction {} has failed, ethRlpDataHash: {}, nonce: {}, blockNumber: {}, it already expired.",
+                        trx.getTransactionId(), ethRlpDataHash, nonce, nowBlock);
                 return builder.setResult(false).setCode(response_code.TRANSACTION_EXPIRATION_ERROR).build();
               }
-              dbManager.getRlpDataCache().put(ethRawDataHash, true);
+
+              if (ethTrx.getChainId() == null || ethTrx.getChainId() != CommonParameter.PARAMETER.nodeP2pVersion){
+                logger.info("Broadcast eth transaction {} has failed, ethRlpDataHash: {}, p2pVersion:{}, chainId: {}, chainId is illegal",
+                        trx.getTransactionId(), ethRlpDataHash, CommonParameter.PARAMETER.nodeP2pVersion, ethTrx.getChainId());
+                return builder.setResult(false).setCode(response_code.OTHER_ERROR).build();
+              }
+              dbManager.getRlpDataCache().put(ethRlpDataHash, true);
             }
           }
         }catch (Exception e){

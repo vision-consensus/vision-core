@@ -146,6 +146,9 @@ public class ChainBaseManager {
   @Autowired
   @Getter
   private TransactionHistoryStore transactionHistoryStore;
+  @Autowired
+  @Getter
+  private EthereumCompatibleRlpDedupStore ethereumCompatibleRlpDedupStore;
 
   @Getter
   @Setter
@@ -189,6 +192,7 @@ public class ChainBaseManager {
     closeOneStore(recentBlockStore);
     closeOneStore(transactionHistoryStore);
     closeOneStore(transactionStore);
+    closeOneStore(ethereumCompatibleRlpDedupStore);
     closeOneStore(accountStore);
     closeOneStore(blockStore);
     closeOneStore(blockIndexStore);
