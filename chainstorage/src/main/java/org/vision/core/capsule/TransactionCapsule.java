@@ -110,6 +110,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   @Setter
   private long time;
 
+  private byte[] ethRlpData;
+
   /**
    * constructor TransactionCapsule.
    */
@@ -340,33 +342,36 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   }
 
   public byte[] getEthRlpData(){
-    byte[] rlpData = new byte[0];
+    if (this.ethRlpData != null){
+      return this.ethRlpData;
+    }
+
     try {
       Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
       if (contract.getType() == ContractType.TriggerSmartContract) {
         TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
         if (c != null && c.getType() == 1) {
-          rlpData = c.getRlpData().toByteArray();
+          this.ethRlpData = c.getRlpData().toByteArray();
         }
       }
 
       if (contract.getType() == ContractType.TransferContract) {
         TransferContract c = contract.getParameter().unpack(TransferContract.class);
         if (c != null && c.getType() == 1) {
-          rlpData = c.getRlpData().toByteArray();
+          this.ethRlpData = c.getRlpData().toByteArray();
         }
       }
 
       if (contract.getType() == ContractType.CreateSmartContract) {
         CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
         if (c != null && c.getType() == 1) {
-          rlpData = c.getRlpData().toByteArray();
+          this.ethRlpData = c.getRlpData().toByteArray();
         }
       }
     } catch (Exception ex) {
       logger.error(ex.getMessage());
     }
-    return  rlpData;
+    return this.ethRlpData;
   }
 
   public static <T extends com.google.protobuf.Message> T parse(Class<T> clazz,
@@ -1441,7 +1446,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     return getRawHash();
   }
 
-  public Sha256Hash getEthRawDataHash(){
+  public Sha256Hash getEthRlpDataHash(){
     byte[] rlpData = getEthRlpData();
     if (rlpData.length <= 0){
       return null;
