@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.backup.BackupServer;
 import org.vision.common.overlay.server.SyncPool;
+import org.vision.core.exception.*;
 import org.vision.core.metrics.MetricsService;
 import org.vision.core.net.message.BlockMessage;
 import org.vision.core.net.message.TransactionMessage;
@@ -26,29 +27,7 @@ import org.vision.core.capsule.BlockCapsule.BlockId;
 import org.vision.core.capsule.PbftSignCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.db.Manager;
-import org.vision.core.exception.AccountResourceInsufficientException;
-import org.vision.core.exception.BadBlockException;
-import org.vision.core.exception.BadItemException;
-import org.vision.core.exception.BadNumberBlockException;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractSizeNotEqualToOneException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.DupTransactionException;
-import org.vision.core.exception.ItemNotFoundException;
-import org.vision.core.exception.NonCommonBlockException;
-import org.vision.core.exception.P2pException;
 import org.vision.core.exception.P2pException.TypeEnum;
-import org.vision.core.exception.ReceiptCheckErrException;
-import org.vision.core.exception.StoreException;
-import org.vision.core.exception.TaposException;
-import org.vision.core.exception.TooBigTransactionException;
-import org.vision.core.exception.TooBigTransactionResultException;
-import org.vision.core.exception.TransactionExpirationException;
-import org.vision.core.exception.UnLinkedBlockException;
-import org.vision.core.exception.VMIllegalException;
-import org.vision.core.exception.ValidateScheduleException;
-import org.vision.core.exception.ValidateSignatureException;
-import org.vision.core.exception.ZksnarkException;
 import org.vision.core.net.message.MessageTypes;
 import org.vision.core.store.WitnessScheduleStore;
 import org.vision.protos.Protocol.Inventory.InventoryType;
@@ -232,7 +211,8 @@ public class VisionNetDelegate {
           | NonCommonBlockException
           | ReceiptCheckErrException
           | VMIllegalException
-          | ZksnarkException e) {
+          | ZksnarkException
+          | P2pVersionException e) {
         metricsService.failProcessBlock(block.getNum(), e.getMessage());
         logger.error("Process block failed, {}, reason: {}.", blockId.getString(), e.getMessage());
         throw new P2pException(TypeEnum.BAD_BLOCK, e);
@@ -256,7 +236,8 @@ public class VisionNetDelegate {
         | TransactionExpirationException
         | ReceiptCheckErrException
         | TooBigTransactionResultException
-        | AccountResourceInsufficientException e) {
+        | AccountResourceInsufficientException
+        | P2pVersionException e) {
       throw new P2pException(TypeEnum.TRX_EXE_FAILED, e);
     }
   }
