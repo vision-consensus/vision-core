@@ -369,7 +369,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         }
       }
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error("getEthRlpData failed, {}",ex.getMessage());
     }
     return this.ethRlpData;
   }
@@ -1448,7 +1448,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   public Sha256Hash getEthRlpDataHash(){
     byte[] rlpData = getEthRlpData();
-    if (rlpData.length <= 0){
+    if (rlpData == null || rlpData.length <= 0){
       return null;
     }
 
