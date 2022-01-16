@@ -651,9 +651,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -665,11 +664,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
@@ -695,9 +694,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -709,11 +707,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         CreateSmartContract contractFromParse = t.rlpParseToDeployContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
@@ -739,9 +737,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -753,11 +750,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         TransferContract contractFromParse = t.rlpParseToTransferContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
