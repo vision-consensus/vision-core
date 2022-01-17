@@ -95,6 +95,31 @@ public class Producer {
             e.printStackTrace();
         }
     }
+
+    /**
+     * create a special key TOPIC to send to kafka
+     * @param topic -
+     * @param partition - The partition to which the record should be sent
+     * @param key - The key that will be included in the record
+     * @param message-
+     */
+    public void send(String topic, Integer partition, String key, String message){
+        try {
+            if (key == null || key.isEmpty()){
+                key = UUID.randomUUID().toString();
+            }
+            producer.send(new ProducerRecord<>(topic, partition, key, message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 class ProducerCallBack implements Callback {

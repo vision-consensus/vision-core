@@ -1301,7 +1301,7 @@ public class Manager {
         TransactionInfo result = processTransaction(transactionCapsule, block);
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
-            Producer.getInstance().send("TRANSACTIONINFO", JsonFormat.printToString(result));
+            Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), JsonFormat.printToString(result));
         }
 
         accountStateCallBack.exeTransFinish();
