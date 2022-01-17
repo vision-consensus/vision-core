@@ -110,7 +110,7 @@ public class BlockStore extends VisionStoreWithRevoking<BlockCapsule> {
       obj.put("totalFVGuaranteeWeight", totalFVGuaranteeWeight);
       obj.put("totalSpreadMintWeight", dynamicPropertiesStore.getTotalSpreadMintWeight());
 
-      Producer.getInstance().send("BLOCK", 0, obj.toJSONString());
+      Producer.getInstance().send("BLOCK", 0, String.valueOf(capsule.getNum()), obj.toJSONString());
       logger.info("send BLOCK TOPIC success, num:{}", capsule.getInstance().getBlockHeader().getRawData().getNumber());
     }
   }
