@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class DelegatedResourceStore extends VisionStoreWithRevoking<DelegatedRes
   public void put(byte[] key, DelegatedResourceCapsule item){
     super.put(key, item);
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("DELEGATE", JsonFormat.printToString(item.getInstance(), true));
+      Producer.getInstance().send("DELEGATE", Hex.toHexString(item.getFrom().toByteArray()), JsonFormat.printToString(item.getInstance(), true));
     }
   }
 
