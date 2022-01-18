@@ -492,18 +492,18 @@ public class MortgageService {
     }
     account.setAllowance(allowance + amount);
     accountStore.put(account.createDbKey(), account);
-    if(CommonParameter.PARAMETER.isKafkaEnable()){
-      try {
-        JSONObject itemJsonObject = new JSONObject();
-        itemJsonObject.put("address", Hex.toHexString(account.getAddress().toByteArray()));
-        itemJsonObject.put("allowance", account.getAllowance());
-        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
-        String jsonStr = itemJsonObject.toJSONString();
-        Producer.getInstance().send("PAYREWARD", jsonStr);
-      } catch (Exception e) {
-        logger.error("send PAYREWARD fail", e);
-      }
-    }
+//    if(CommonParameter.PARAMETER.isKafkaEnable()){
+//      try {
+//        JSONObject itemJsonObject = new JSONObject();
+//        itemJsonObject.put("address", Hex.toHexString(account.getAddress().toByteArray()));
+//        itemJsonObject.put("allowance", account.getAllowance());
+//        itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+//        String jsonStr = itemJsonObject.toJSONString();
+//        Producer.getInstance().send("PAYREWARD", jsonStr);
+//      } catch (Exception e) {
+//        logger.error("send PAYREWARD fail", e);
+//      }
+//    }
   }
 
   public void adjustSpreadMintAllowance(byte[] address, long amount) {

@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class Producer {
     private final KafkaProducer<String, String> producer;
+    private static final String PREFIX = "VSCAN-";
     public static Producer instance;
     public static Producer getInstance() {
         if (Objects.isNull(instance)) {
@@ -38,6 +39,7 @@ public class Producer {
 
     public void send(String topic, String message){
         try {
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, UUID.randomUUID().toString(), message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
@@ -59,6 +61,7 @@ public class Producer {
      */
     public void send(String topic, Integer partition, String message){
         try {
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, partition, UUID.randomUUID().toString(), message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
@@ -83,6 +86,7 @@ public class Producer {
             if (key == null || key.isEmpty()){
                 key = UUID.randomUUID().toString();
             }
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, key, message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
@@ -108,6 +112,7 @@ public class Producer {
             if (key == null || key.isEmpty()){
                 key = UUID.randomUUID().toString();
             }
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, partition, key, message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {

@@ -1421,18 +1421,18 @@ public class Manager {
                         - transactionFeeReward);
       }
       getAccountStore().put(account.createDbKey(), account);
-      if(CommonParameter.PARAMETER.isKafkaEnable()){
-        try {
-          JSONObject itemJsonObject = new JSONObject();
-          itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
-          itemJsonObject.put("allowance",account.getAllowance());
-          itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
-          String jsonStr = itemJsonObject.toJSONString();
-          Producer.getInstance().send("PAYREWARD", jsonStr);
-        } catch (Exception e) {
-          logger.error("send PAYREWARD fail", e);
-        }
-      }
+//      if(CommonParameter.PARAMETER.isKafkaEnable()){
+//        try {
+//          JSONObject itemJsonObject = new JSONObject();
+//          itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
+//          itemJsonObject.put("allowance",account.getAllowance());
+//          itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+//          String jsonStr = itemJsonObject.toJSONString();
+//          Producer.getInstance().send("PAYREWARD", jsonStr);
+//        } catch (Exception e) {
+//          logger.error("send PAYREWARD fail", e);
+//        }
+//      }
     }
     JSONObject reward = new JSONObject();
     reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock());
