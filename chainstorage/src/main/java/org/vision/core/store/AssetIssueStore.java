@@ -42,7 +42,9 @@ public class AssetIssueStore extends VisionStoreWithRevoking<AssetIssueCapsule> 
 
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject itemJsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
-      itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+        itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      }
       Producer.getInstance().send("ASSETISSUE", Hex.toHexString(item.getOwnerAddress().toByteArray()), itemJsonObject.toJSONString());
     }
   }

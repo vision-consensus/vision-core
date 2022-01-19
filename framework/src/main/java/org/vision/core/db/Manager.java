@@ -704,6 +704,10 @@ public class Manager {
       return;
     }
 
+    if (!CommonParameter.PARAMETER.isHistoryBalanceLookup()) {
+      return;
+    }
+
     Producer producer = Producer.getInstance();
     JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
     // rollback block

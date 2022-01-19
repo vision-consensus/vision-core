@@ -86,7 +86,9 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       try {
         JSONObject itemJsonObject = new JSONObject();
-        itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        }
         itemJsonObject.put("address", StringUtil.encode58Check(accountCapsule.getAddress().toByteArray()));
         itemJsonObject.put("type", withdrawBalanceContract.getType());
         itemJsonObject.put("num", dynamicStore.getLatestBlockHeaderNumber());

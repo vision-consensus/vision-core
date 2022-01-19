@@ -42,7 +42,9 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
         item.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
         JSONObject jsonObject = JSONObject
                 .parseObject(JsonFormat.printToString(item.generateWrapper(), true));
-        jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+        }
         Producer.getInstance().send("CONTRACT", Hex.toHexString(item.getInstance().getContractAddress().toByteArray()), jsonObject.toJSONString());
       } catch (Exception e) {
         e.printStackTrace();

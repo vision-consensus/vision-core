@@ -37,7 +37,9 @@ public class DelegatedResourceStore extends VisionStoreWithRevoking<DelegatedRes
     super.put(key, item);
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       JSONObject jsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
-      jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+        jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      }
       Producer.getInstance().send("DELEGATE", jsonObject.toJSONString());
     }
   }

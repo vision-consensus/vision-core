@@ -211,8 +211,9 @@ public class VoteWitnessActuator extends AbstractActuator {
         itemJsonObject.put("address", address);
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
-        itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
-
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        }
         String jsonStr = itemJsonObject.toJSONString();
         Producer.getInstance().send("VOTEWITNESS", address, jsonStr);
         logger.info("send VOTEWITNESS countVoteAccount start, address:{}", address);
