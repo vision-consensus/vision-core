@@ -178,7 +178,6 @@ public class DposService implements ConsensusInterface {
 
       JSONObject json = new JSONObject();
       json.put("blockNum", newSolidNum);
-      json.put("status", "nomal");
       List<BlockCapsule> blockCapsuleList = blockStore.getLimitNumber(newSolidNum, 1);
       if (!blockCapsuleList.isEmpty() && !blockCapsuleList.get(0).getTransactions().isEmpty()){
         json.put("transactions",
