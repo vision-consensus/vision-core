@@ -1294,7 +1294,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
-      build.setCallValue(ByteUtil.byteArrayToLong(this.value));
+      build.setCallValue(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue());
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
       build.setTokenId(0);
@@ -1325,15 +1325,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       smartBuilder
               .setAbi(abiBuilder)
               .setBytecode(ByteString.copyFrom(this.data))
-              .setCallValue(0) // transfer to contract
+              .setCallValue(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue()) // transfer to contract
               .setConsumeUserResourcePercent(100)
-              .setOriginEntropyLimit(50000);
+              .setOriginEntropyLimit(ByteUtil.byteArrayToLong(gasLimit));
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
 
       build.setNewContract(smartBuilder);
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setCallTokenValue(0l); // default is 0l,this can drop
-      build.setTokenId(0l); // default is 0l,this can drop
+      build.setCallTokenValue(0L); // default is 0l,this can drop
+      build.setTokenId(0L); // default is 0l,this can drop
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
 
