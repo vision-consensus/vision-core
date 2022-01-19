@@ -1,5 +1,6 @@
 package org.vision.core.db;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -11,6 +12,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,7 @@ import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.TransactionInfo;
 import org.vision.protos.contract.BalanceContract;
+import org.vision.protos.contract.SmartContractOuterClass;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -71,7 +74,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.vision.common.utils.Commons.adjustBalance;
-import static org.vision.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
+import static org.vision.protos.Protocol.Transaction.Contract.ContractType.*;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
 
 
@@ -712,10 +715,165 @@ public class Manager {
       revokingStore.fastPop();
       logger.info("end to erase block:" + oldHeadBlock);
       poppedTransactions.addAll(oldHeadBlock.getTransactions());
-
+      rollbackMongo(oldHeadBlock);
     } catch (ItemNotFoundException | BadItemException e) {
       logger.warn(e.getMessage(), e);
     }
+  }
+
+  // for mongo
+  public void rollbackMongo(BlockCapsule oldBlock){
+    if (!CommonParameter.PARAMETER.isKafkaEnable()) {
+      return;
+    }
+
+    if (!CommonParameter.PARAMETER.isHistoryBalanceLookup()) {
+      return;
+    }
+
+    Producer producer = Producer.getInstance();
+    JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
+    // rollback block
+    JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
+    jsonBlock.put("state", "delete");
+    producer.send("BLOCK", jsonBlock.toJSONString());
+
+    if(oldBlock.getTransactions().isEmpty()){
+      return;
+    }
+    // rollback account
+    oldBlock.getTransactions().forEach(transaction -> {
+      Transaction.Contract contract = transaction.getInstance().getRawData().getContractList().get(0);
+      byte[] owner = TransactionCapsule.getOwner(contract);
+      String address = StringUtil.encode58Check(owner);
+
+      AccountCapsule accountCapsule = accountStore.get(owner);
+      JSONObject jsonAccount = new JSONObject();
+      jsonAccount.putAll(jsonAssemble);
+      if (accountCapsule != null){
+        jsonAccount = JSONObject.parseObject(JsonFormat.printToString(accountCapsule.getInstance()));
+      } else {
+        jsonAccount.put("address", address);
+        jsonAccount.put("state", "delete");
+      }
+      producer.send("ACCOUNT", jsonAccount.toJSONString());
+
+      // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
+      ContractStore contractStore = chainBaseManager.getContractStore();
+      switch(contract.getType()){
+//        case CreateSmartContract:
+//        case TriggerSmartContract:
+//          JSONObject jsonStorage = new JSONObject();
+//          jsonStorage.putAll(jsonAssemble);
+//          try {
+//            byte[] contractAddress;
+//            if (contract.getType() == CreateSmartContract){
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.CreateSmartContract.class).getNewContract().getContractAddress().toByteArray();
+//            } else {
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.TriggerSmartContract.class).getContractAddress().toByteArray();
+//            }
+//
+//            DataWord key = new DataWord(address);
+//            RepositoryImpl repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
+//            DataWord value = repository.getStorageValue(contractAddress, key);
+//            jsonStorage.put(key.toHexString(), value.bigIntValue());
+//            jsonStorage.put("address", StringUtil.encode58Check(contractAddress));
+//            jsonStorage.put("hexAddress", ByteArray.toHexString(contractAddress));
+//            producer.send("STORAGE", jsonStorage.toJSONString());
+//          } catch (InvalidProtocolBufferException e) {
+//            logger.error("send STORAGE TOPIC rollback fail", e);
+//          }
+//          break;
+        case TransferContract:
+          try {
+            byte[] to = contract.getParameter().unpack(BalanceContract.TransferContract.class).getToAddress().toByteArray();
+            AccountCapsule toAccountCapsule = accountStore.get(to);
+            JSONObject jsonToAccount = new JSONObject();
+            jsonToAccount.putAll(jsonAssemble);
+            if (toAccountCapsule != null){
+              jsonToAccount = JSONObject.parseObject(JsonFormat.printToString(toAccountCapsule.getInstance()));
+            } else {
+              jsonToAccount.put("address", StringUtil.encode58Check(to));
+              jsonToAccount.put("state", "delete");
+            }
+            producer.send("ACCOUNT", jsonToAccount.toJSONString());
+          } catch (InvalidProtocolBufferException e) {
+            logger.error("send Account TOPIC toAddress rollback fail", e);
+          }
+          break;
+        case VoteWitnessContract:
+          JSONObject jsonVoteWitness = new JSONObject();
+          jsonVoteWitness.putAll(jsonAssemble);
+          if (accountCapsule == null){
+            jsonVoteWitness.put("address", address);
+            jsonVoteWitness.put("state", "delete");
+          } else {
+            try {
+              List<org.vision.protos.Protocol.Vote> voteList = accountCapsule.getVotesList();
+              JSONArray voteArray = new JSONArray();
+              if (null != voteList && voteList.size() > 0) {
+                for (org.vision.protos.Protocol.Vote vote : voteList) {
+                  JSONObject jsonObject = new JSONObject();
+                  jsonObject.put("voteAddress", Hex.toHexString(vote.getVoteAddress().toByteArray()));
+                  jsonObject.put("voteCount", vote.getVoteCount());
+                  voteArray.add(jsonObject);
+                }
+              }
+              jsonVoteWitness.put("address", address);
+              jsonVoteWitness.put("votesList", voteArray);
+              jsonVoteWitness.put("createTime", Calendar.getInstance().getTimeInMillis());
+            } catch (Exception e) {
+              logger.error("send VOTEWITNESS TOPIC rollback fail", e);
+            }
+          }
+          Producer.getInstance().send("VOTEWITNESS",  jsonVoteWitness.toJSONString());
+          logger.info("send VOTEWITNESS TOPIC rollback, accontId:{}", address);
+          break;
+        case AssetIssueContract:
+          AssetIssueCapsule assetIssueCapsule = chainBaseManager.getAssetIssueStore().get(owner);
+          JSONObject jsonAssetIssue = new JSONObject();
+          jsonAssetIssue.putAll(jsonAssemble);
+          if (assetIssueCapsule == null){
+            jsonAssetIssue.put("address", address);
+            jsonAssetIssue.put("state", "delete");
+          }else{
+            jsonAssetIssue = JSONObject.parseObject(JsonFormat.printToString(assetIssueCapsule.getInstance()));
+          }
+          Producer.getInstance().send("ASSETISSUE", jsonAssetIssue.toJSONString());
+          break;
+        case ClearABIContract:
+        case UpdateSettingContract:
+        case UpdateEntropyLimitContract:
+          JSONObject jsonContract = new JSONObject();
+          jsonContract.putAll(jsonAssemble);
+          try {
+            byte[] contractAddress;
+            if (contract.getType() == ClearABIContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.ClearABIContract.class).getContractAddress().toByteArray();
+            }else if (contract.getType() == UpdateSettingContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateSettingContract.class).getContractAddress().toByteArray();
+            } else {
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateEntropyLimitContract.class).getContractAddress().toByteArray();
+            }
+            ContractCapsule contractCapsule = contractStore.get(contractAddress);
+            if(contractCapsule == null){
+              jsonContract.put("address", address);
+              jsonContract.put("contract_address", StringUtil.encode58Check(contractAddress));
+              jsonContract.put("state", "delete");
+            } else {
+              contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
+              jsonContract = JSONObject
+                      .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
+            }
+            Producer.getInstance().send("CONTRACT", jsonContract.toJSONString());
+          } catch (InvalidProtocolBufferException e) {
+            logger.error("rollBackMongo Contract TOPIC error");
+          }
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   public void pushVerifiedBlock(BlockCapsule block) throws ContractValidateException,
@@ -1340,7 +1498,9 @@ public class Manager {
         TransactionInfo result = processTransaction(transactionCapsule, block);
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
-            Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), JsonFormat.printToString(result));
+          JSONObject json = JSONObject.parseObject(JsonFormat.printToString(result));
+          json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
+          Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), json.toJSONString());
         }
 
         accountStateCallBack.exeTransFinish();

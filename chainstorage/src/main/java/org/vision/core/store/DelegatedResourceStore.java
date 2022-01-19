@@ -3,6 +3,7 @@ package org.vision.core.store;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class DelegatedResourceStore extends VisionStoreWithRevoking<DelegatedRes
     super(dbName);
   }
 
+  @Autowired
+  private BalanceTraceStore balanceTraceStore;
+
   @Override
   public DelegatedResourceCapsule get(byte[] key) {
 
@@ -33,7 +37,11 @@ public class DelegatedResourceStore extends VisionStoreWithRevoking<DelegatedRes
   public void put(byte[] key, DelegatedResourceCapsule item){
     super.put(key, item);
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("DELEGATE", Hex.toHexString(item.getFrom().toByteArray()), JsonFormat.printToString(item.getInstance(), true));
+      JSONObject jsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+      if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+        jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      }
+      Producer.getInstance().send("DELEGATE", Hex.toHexString(item.getFrom().toByteArray()), jsonObject.toJSONString());
     }
   }
 

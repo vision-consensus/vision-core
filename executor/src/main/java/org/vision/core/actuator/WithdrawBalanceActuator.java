@@ -2,7 +2,6 @@ package org.vision.core.actuator;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.math.LongMath;
@@ -10,7 +9,6 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
@@ -88,7 +86,10 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       try {
         JSONObject itemJsonObject = new JSONObject();
-        itemJsonObject.put("address", Hex.toHexString(accountCapsule.getAddress().toByteArray()));
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        }
+        itemJsonObject.put("address", StringUtil.encode58Check(accountCapsule.getAddress().toByteArray()));
         itemJsonObject.put("type", withdrawBalanceContract.getType());
         itemJsonObject.put("num", dynamicStore.getLatestBlockHeaderNumber());
         if(withdrawBalanceContract.getType()== WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){

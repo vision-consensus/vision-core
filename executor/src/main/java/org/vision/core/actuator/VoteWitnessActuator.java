@@ -193,7 +193,6 @@ public class VoteWitnessActuator extends AbstractActuator {
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     votesStore.put(ownerAddress, votesCapsule);
-    logger.info("isKafaEnable={}", CommonParameter.PARAMETER.isKafkaEnable());
     if(CommonParameter.PARAMETER.isKafkaEnable()){
       try {
         JSONObject itemJsonObject = new JSONObject();
@@ -202,17 +201,19 @@ public class VoteWitnessActuator extends AbstractActuator {
         if (null != voteList && voteList.size() > 0) {
           for (org.vision.protos.Protocol.Vote vote : voteList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("voteAddress", Hex.toHexString(vote.getVoteAddress().toByteArray()));
+            jsonObject.put("voteAddress", StringUtil.encode58Check(vote.getVoteAddress().toByteArray()));
             jsonObject.put("voteCount", vote.getVoteCount());
             voteArray.add(jsonObject);
           }
         }
 
-        String address = Hex.toHexString(accountCapsule.getAddress().toByteArray());
-        logger.info("send votewitness to kafka accountId={}", address);
+        String address = StringUtil.encode58Check(accountCapsule.getAddress().toByteArray());
         itemJsonObject.put("address", address);
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          itemJsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        }
         String jsonStr = itemJsonObject.toJSONString();
         Producer.getInstance().send("VOTEWITNESS", address, jsonStr);
         logger.info("send VOTEWITNESS countVoteAccount start, address:{}", address);

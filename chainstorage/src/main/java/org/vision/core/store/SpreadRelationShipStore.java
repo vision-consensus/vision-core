@@ -24,6 +24,9 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
     super(dbName);
   }
 
+  @Autowired
+  public BalanceTraceStore balanceTraceStore;
+
   @Override
   public SpreadRelationShipCapsule get(byte[] key) {
 
@@ -45,6 +48,9 @@ public class SpreadRelationShipStore extends VisionStoreWithRevoking<SpreadRelat
     if(CommonParameter.PARAMETER.isKafkaEnable()) {
       JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(item.getInstance(), true));
       String type = isUpdate ? "update" : "freeze";
+      if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+        jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      }
       jsonObject.put("type", type);
       jsonObject.put("frozenDuration", frozenDuration);
       Producer.getInstance().send("SPREADRELATIONSHIP", Hex.toHexString(item.getOwner().toByteArray()), jsonObject.toJSONString());

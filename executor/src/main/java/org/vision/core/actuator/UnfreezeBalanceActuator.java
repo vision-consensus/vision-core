@@ -471,6 +471,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
       if (CommonParameter.PARAMETER.isKafkaEnable()) {
         JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(spreadRelationShipCapsule.getInstance(), true));
+        if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
+          jsonObject.putAll(chainBaseManager.getBalanceTraceStore().assembleJsonInfo());
+        }
         jsonObject.put("type", "unfreeze");
         Producer.getInstance().send("SPREADRELATIONSHIP", Hex.toHexString(ownerAddress), jsonObject.toJSONString());
       }
