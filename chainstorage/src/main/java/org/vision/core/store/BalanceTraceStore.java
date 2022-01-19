@@ -192,7 +192,9 @@ public class BalanceTraceStore extends VisionStoreWithRevoking<BlockBalanceTrace
     }
 
     if (isNormal){
-      jsonObject.put("trxId", getCurrentTransactionId().toString());
+      if (getCurrentTransactionId() != null){
+        jsonObject.put("trxId", getCurrentTransactionId().toString());
+      }
     }else{
       jsonObject.put("state", "overrite");
     }
