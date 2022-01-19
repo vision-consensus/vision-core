@@ -735,7 +735,7 @@ public class Manager {
     JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
     // rollback block
     JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
-    jsonBlock.put("state", "delete");
+    jsonBlock.put("state", "delete"); // key: state, value : repair & overrite &  delete
     producer.send("BLOCK", jsonBlock.toJSONString());
 
     if(oldBlock.getTransactions().isEmpty()){
@@ -1499,7 +1499,9 @@ public class Manager {
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
           JSONObject json = JSONObject.parseObject(JsonFormat.printToString(result));
-          json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
+          if (CommonParameter.getInstance().isHistoryBalanceLookup()){
+            json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
+          }
           Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), json.toJSONString());
         }
 
