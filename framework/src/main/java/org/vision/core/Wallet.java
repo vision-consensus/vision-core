@@ -108,23 +108,7 @@ import org.vision.core.db.EntropyProcessor;
 import org.vision.core.db.Manager;
 import org.vision.core.db.PhotonProcessor;
 import org.vision.core.db.TransactionContext;
-import org.vision.core.exception.AccountResourceInsufficientException;
-import org.vision.core.exception.BadItemException;
-import org.vision.core.exception.ContractExeException;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.DupTransactionException;
-import org.vision.core.exception.HeaderNotFound;
-import org.vision.core.exception.ItemNotFoundException;
-import org.vision.core.exception.NonUniqueObjectException;
-import org.vision.core.exception.PermissionException;
-import org.vision.core.exception.SignatureFormatException;
-import org.vision.core.exception.StoreException;
-import org.vision.core.exception.TaposException;
-import org.vision.core.exception.TooBigTransactionException;
-import org.vision.core.exception.TransactionExpirationException;
-import org.vision.core.exception.VMIllegalException;
-import org.vision.core.exception.ValidateSignatureException;
-import org.vision.core.exception.ZksnarkException;
+import org.vision.core.exception.*;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
 import org.vision.core.net.message.TransactionMessage;
@@ -194,6 +178,7 @@ import static org.vision.core.config.Parameter.ChainConstant.QUERY_SPREAD_MINT_P
 import static org.vision.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.MARKET_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
+import static org.vision.core.services.EthereumCompatibleService.EARLIEST_STR;
 
 @Slf4j
 @Component
@@ -711,6 +696,35 @@ public class Wallet {
     }
 
     return count;
+  }
+
+  public Block getByJsonBlockId(String id) throws JsonRpcInvalidParamsException {
+    if (EARLIEST_STR.equalsIgnoreCase(id)) {
+      return getBlockByNum(0);
+    } else if ("latest".equalsIgnoreCase(id)) {
+      return getNowBlock();
+    } else if ("pending".equalsIgnoreCase(id)) {
+      throw new JsonRpcInvalidParamsException("TAG pending not supported");
+    } else {
+      long blockNumber;
+      try {
+        blockNumber = ByteArray.hexToBigInteger(id).longValue();
+      } catch (Exception e) {
+        throw new JsonRpcInvalidParamsException("invalid block number");
+      }
+
+      return getBlockByNum(blockNumber);
+    }
+  }
+
+  public List<Transaction> getTransactionsByJsonBlockId(String id)
+          throws JsonRpcInvalidParamsException {
+    if ("pending".equalsIgnoreCase(id)) {
+      throw new JsonRpcInvalidParamsException("TAG pending not supported");
+    } else {
+      Block block = getByJsonBlockId(id);
+      return block != null ? block.getTransactionsList() : null;
+    }
   }
 
   public WitnessList getWitnessList() {
