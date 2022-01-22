@@ -29,6 +29,7 @@ import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.ItemNotFoundException;
 import org.vision.core.services.http.JsonFormat;
 import org.vision.core.services.http.Util;
+import org.vision.program.Version;
 import org.vision.protos.Protocol;
 import org.vision.protos.contract.SmartContractOuterClass;
 
@@ -51,8 +52,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_chainId() {
         CommonParameter parameter = Args.getInstance();
-        return "0x" + Integer.toHexString(parameter.nodeP2pVersion);
-        // return "0x42";
+        return Constant.ETH_PRE_FIX_STRING_MAINNET + Integer.toHexString(parameter.nodeP2pVersion);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String net_version() {
-        return "1.0.1";
+        return Constant.ETH_PRE_FIX_STRING_MAINNET + toHexString(Version.getVersion().getBytes());
     }
 
     @Override
@@ -402,6 +402,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
         blockResult.totalDifficulty = "0x000000";
         blockResult.timestamp = "0x" + Long.toHexString(rawData.getTimestamp());
+        blockResult.size = Constant.ETH_PRE_FIX_STRING_MAINNET + "0";
         List<Protocol.Transaction> transactionList = reply.getTransactionsList();
         List<String> transHashList = new ArrayList<>();
         List<TransactionResultDTO> tranFullList = new ArrayList<>();
