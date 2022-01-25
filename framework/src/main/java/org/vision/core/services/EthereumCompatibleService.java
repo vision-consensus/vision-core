@@ -462,6 +462,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     private void transferBlock2Ether(BlockResult blockResult, Protocol.Block reply,
                                      Boolean fullTransactionObjects) throws ItemNotFoundException {
+        if (reply == null){
+            logger.info("transferBlock2Ether, reply is null");
+            return;
+        }
+
         Protocol.BlockHeader visionBlockHeader = reply.getBlockHeader();
 
         Protocol.BlockHeader blockHeader = reply.getBlockHeader();
