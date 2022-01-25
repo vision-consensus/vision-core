@@ -2397,7 +2397,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   public void addTotalWitness123PayAssets(long amount) {
     long totalAssets = getTotalWitness123PayAssets();
     totalAssets += amount;
-    saveWitness123PayPerBlock(totalAssets);
+    saveTotalWitness123PayAssets(totalAssets);
   }
 
   public void addTotalSpreadMintPayAssets(long amount) {
