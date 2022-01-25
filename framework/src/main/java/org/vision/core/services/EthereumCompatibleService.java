@@ -106,7 +106,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String net_version() {
-        return Constant.ETH_PRE_FIX_STRING_MAINNET + toHexString(Version.getVersion().getBytes());
+        CommonParameter parameter = Args.getInstance();
+        return Constant.ETH_PRE_FIX_STRING_MAINNET + Integer.toHexString(parameter.nodeP2pVersion);
     }
 
     @Override
