@@ -1246,6 +1246,42 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  public void saveTotalWitnessPayAssets(long totalAssets) {
+    this.put(DynamicResourceProperties.TOTAL_WITNESS_PAY_ASSETS,
+            new BytesCapsule(ByteArray.fromLong(totalAssets)));
+  }
+
+  public long getTotalWitnessPayAssets() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_WITNESS_PAY_ASSETS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveTotalWitness123PayAssets(long totalAssets) {
+    this.put(DynamicResourceProperties.TOTAL_WITNESS123_PAY_ASSETS,
+            new BytesCapsule(ByteArray.fromLong(totalAssets)));
+  }
+
+  public long getTotalWitness123PayAssets() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_WITNESS123_PAY_ASSETS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveTotalSpreadMintPayAssets(long totalAssets) {
+    this.put(DynamicResourceProperties.TOTAL_SPREAD_MINT_PAY_ASSETS,
+            new BytesCapsule(ByteArray.fromLong(totalAssets)));
+  }
+
+  public long getTotalSpreadMintPayAssets() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPREAD_MINT_PAY_ASSETS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void savePledgeRate(long pledgeRate) {
     this.put(DynamicResourceProperties.PLEDGE_RATE,
             new BytesCapsule(ByteArray.fromLong(pledgeRate)));
@@ -2352,6 +2388,24 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     saveTotalAssets(totalAssets);
   }
 
+  public void addTotalWitnessPayAssets(long amount) {
+    long totalAssets = getTotalWitnessPayAssets();
+    totalAssets += amount;
+    saveTotalWitnessPayAssets(totalAssets);
+  }
+
+  public void addTotalWitness123PayAssets(long amount) {
+    long totalAssets = getTotalWitness123PayAssets();
+    totalAssets += amount;
+    saveWitness123PayPerBlock(totalAssets);
+  }
+
+  public void addTotalSpreadMintPayAssets(long amount) {
+    long totalAssets = getTotalSpreadMintPayAssets();
+    totalAssets += amount;
+    saveTotalSpreadMintPayAssets(totalAssets);
+  }
+
   public void addTotalCreateAccountCost(long fee) {
     long newValue = getTotalCreateAccountCost() + fee;
     saveTotalCreateAccountFee(newValue);
@@ -2768,6 +2822,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
     private static final byte[] TOTAL_FVGUARANTEE_WEIGHT = "TOTAL_FVGUARANTEE_WEIGHT".getBytes();
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
+    private static final byte[] TOTAL_WITNESS_PAY_ASSETS = "TOTAL_WITNESS_PAY_ASSETS".getBytes();
+    private static final byte[] TOTAL_WITNESS123_PAY_ASSETS = "TOTAL_WITNESS123_PAY_ASSETS".getBytes();
+    private static final byte[] TOTAL_SPREAD_MINT_PAY_ASSETS = "TOTAL_SPREAD_MINT_PAY_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
