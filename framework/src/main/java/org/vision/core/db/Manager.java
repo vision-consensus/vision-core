@@ -1597,22 +1597,27 @@ public class Manager {
 //      }
     }
     JSONObject reward = new JSONObject();
-    reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock());
-    reward.put("witnessPay", chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock());
+    reward.put("witnessPay", chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
+    reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation());
+    reward.put("witnessPayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalWitnessPayAssets());
+    reward.put("witness123PayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalWitness123PayAssets());
+
     int brokerage = getDelegationStore().getBrokerage(
             chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber(),
             witnessCapsule.getAddress().toByteArray());
     reward.put("brokerageRate", (double) brokerage / 100);
     reward.put("spreadMintPay", 0);
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-      reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-    }
-    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule, getDynamicPropertiesStore());
-
-    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
       mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
       spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation();
     }
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
+      reward.put("spreadMintPayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintPayAssets());
+    }
+    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule, getDynamicPropertiesStore());
+
 
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation();
     long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
