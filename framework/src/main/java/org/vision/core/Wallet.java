@@ -1229,6 +1229,21 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalWitnessPayAssets")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalWitnessPayAssets())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalWitness123PayAssets")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalWitness123PayAssets())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalSpreadMintPayAssets")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalSpreadMintPayAssets())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getEffectEconomyCycle")
             .setValue(dbManager.getDynamicPropertiesStore().getEffectEconomyCycle())
             .build());
