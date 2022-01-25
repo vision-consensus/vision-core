@@ -82,6 +82,7 @@ public class MortgageService {
 
     long voteSum = 0;
     long totalPay = dynamicPropertiesStore.getWitness123PayPerBlockInflation();
+    dynamicPropertiesStore.addTotalWitness123PayAssets(totalPay);
     for (ByteString b : witnessAddressList) {
       WitnessCapsule witnessCapsule = getWitnessByAddress(b);
       voteSum += Math.min(witnessCapsule.getVoteCountWeight(), witnessCapsule.getVoteCountThreshold());
@@ -101,6 +102,7 @@ public class MortgageService {
   public void payBlockReward(byte[] witnessAddress, long value) {
     logger.debug("pay {} block reward {}", Hex.toHexString(witnessAddress), value);
     payReward(witnessAddress, value);
+    dynamicPropertiesStore.addTotalWitnessPayAssets(value);
   }
 
   public void payTransactionFeeReward(byte[] witnessAddress, long value) {
@@ -121,6 +123,7 @@ public class MortgageService {
   public void paySpreadMintReward(long value) {
     long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
     delegationStore.addSpreadMintReward(cycle, value);
+    dynamicPropertiesStore.addTotalSpreadMintPayAssets(value);
   }
 
   public void withdrawSpreadMintReward(byte[] address) {
