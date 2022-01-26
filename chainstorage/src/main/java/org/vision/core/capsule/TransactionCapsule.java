@@ -1294,7 +1294,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
-      build.setCallValue(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue());
+      build.setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000"));
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
       build.setTokenId(0);
@@ -1308,7 +1308,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue());
+      build.setAmount(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000"));
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
@@ -1325,7 +1325,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       smartBuilder
               .setAbi(abiBuilder)
               .setBytecode(ByteString.copyFrom(this.data))
-              .setCallValue(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue()) // transfer to contract
+              .setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000")) // transfer to contract
               .setConsumeUserResourcePercent(100)
               .setOriginEntropyLimit(ByteUtil.byteArrayToLong(gasLimit));
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
