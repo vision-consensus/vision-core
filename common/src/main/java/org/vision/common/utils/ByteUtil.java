@@ -237,6 +237,13 @@ public class ByteUtil {
     return new BigInteger(1, b).longValueExact();
   }
 
+  public static long byteArrayToLongDividePrecision(byte[] b, String precision) {
+    if (b == null || b.length == 0) {
+      return 0;
+    }
+    return new BigInteger(1, b).divide(new BigInteger(precision)).longValueExact();
+  }
+
   public static int firstNonZeroByte(byte[] data) {
     for (int i = 0; i < data.length; ++i) {
       if (data[i] != 0) {
