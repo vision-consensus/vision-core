@@ -651,9 +651,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -665,11 +664,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
@@ -695,9 +694,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -709,11 +707,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         CreateSmartContract contractFromParse = t.rlpParseToDeployContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
@@ -739,9 +737,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               || this.transaction.getRawData().getContractCount() <= 0) {
         throw new ValidateSignatureException("miss sig or contract");
       }
-      if (this.transaction.getSignatureCount() > dynamicPropertiesStore
-              .getTotalSignNum()) {
-        throw new ValidateSignatureException("too many signatures");
+      if (this.transaction.getSignatureCount() != 1) {
+        throw new ValidateSignatureException("eth contract only one signature");
       }
       if (contract.getType() != 1) {
         throw new ValidateSignatureException("not eth contract");
@@ -753,11 +750,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         TransferContract contractFromParse = t.rlpParseToTransferContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
-          throw new ValidateSignatureException("eth sig error");
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
         }
         if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
           isVerified = false;
-          throw new ValidateSignatureException("sig error");
+          throw new ValidateSignatureException("eth sig error");
         }
       } catch (SignatureException | PermissionException | SignatureFormatException e) {
         isVerified = false;
@@ -1297,7 +1294,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
-      build.setCallValue(ByteUtil.byteArrayToLong(this.value));
+      build.setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000"));
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
       build.setTokenId(0);
@@ -1311,7 +1308,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         rlpParse();
       TransferContract.Builder build = TransferContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setAmount(new BigInteger(1, this.value).divide(new BigInteger("1000000000000")).longValue());
+      build.setAmount(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000"));
       build.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
@@ -1328,15 +1325,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       smartBuilder
               .setAbi(abiBuilder)
               .setBytecode(ByteString.copyFrom(this.data))
-              .setCallValue(0) // transfer to contract
+              .setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000")) // transfer to contract
               .setConsumeUserResourcePercent(100)
-              .setOriginEntropyLimit(50000);
+              .setOriginEntropyLimit(ByteUtil.byteArrayToLong(gasLimit));
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
 
       build.setNewContract(smartBuilder);
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
-      build.setCallTokenValue(0l); // default is 0l,this can drop
-      build.setTokenId(0l); // default is 0l,this can drop
+      build.setCallTokenValue(0L); // default is 0l,this can drop
+      build.setTokenId(0L); // default is 0l,this can drop
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
 
@@ -1438,7 +1435,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
 
     isVerified = true;
-    }  
+    }
     return true;
   }
 
