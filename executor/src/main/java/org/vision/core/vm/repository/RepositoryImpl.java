@@ -69,6 +69,8 @@ public class RepositoryImpl implements Repository {
   private MortgageService mortgageService;
   @Getter
   private DelegationStore delegationStore;
+  @Getter
+  private BalanceTraceStore balanceTraceStore;
 
   private Repository parent = null;
 
@@ -108,6 +110,7 @@ public class RepositoryImpl implements Repository {
       votesStore = manager.getVotesStore();
       mortgageService = manager.getMortgageService();
       delegationStore = manager.getDelegationStore();
+      balanceTraceStore = manager.getBalanceTraceStore();
     }
     this.parent = parent;
   }
@@ -442,11 +445,19 @@ public class RepositoryImpl implements Repository {
     }
     storage.put(key, value);
     if (CommonParameter.PARAMETER.isKafkaEnable()) {
-      JSONObject json = new JSONObject();
-      json.put(key.toHexString(), value.bigIntValue());
-      json.put("address", StringUtil.encode58Check(address));
-      json.put("hexAddress", ByteArray.toHexString(address));
-      Producer.getInstance().send("STORAGE", json.toJSONString());
+      try{
+        JSONObject json = new JSONObject();
+        json.put(key.toHexString(), value.bigIntValue());
+        json.put("address", StringUtil.encode58Check(address));
+        json.put("hexAddress", ByteArray.toHexString(address));
+        if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
+          json.putAll(balanceTraceStore.assembleJsonInfo());
+        }
+        Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
+        logger.info("send STORAGE success, address:{}",StringUtil.encode58Check(address));
+      }catch (Exception e){
+        logger.error("send STORAGE fail", e);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 package org.vision.core.store;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.primitives.Bytes;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -174,5 +175,29 @@ public class BalanceTraceStore extends VisionStoreWithRevoking<BlockBalanceTrace
     }
 
     return null;
+  }
+
+  // This is for the function of mongo branch
+  public JSONObject assembleJsonInfo(){
+    return assembleJsonInfo(true);
+  }
+
+  // This is for the function of mongo branch
+  public JSONObject assembleJsonInfo(boolean isNormal){
+    BlockCapsule.BlockId blockId = getCurrentBlockId();
+    JSONObject jsonObject = new JSONObject();
+    if (blockId != null){
+      jsonObject.put("blockNumber", blockId.getNum());
+      jsonObject.put("blockID", blockId.toString());
+    }
+
+    if (isNormal){
+      if (getCurrentTransactionId() != null){
+        jsonObject.put("trxId", getCurrentTransactionId().toString());
+      }
+    }else{
+      jsonObject.put("state", "overrite");
+    }
+    return jsonObject;
   }
 }

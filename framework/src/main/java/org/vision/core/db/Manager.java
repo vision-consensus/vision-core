@@ -1,5 +1,6 @@
 package org.vision.core.db;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -11,6 +12,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,7 @@ import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.TransactionInfo;
 import org.vision.protos.contract.BalanceContract;
+import org.vision.protos.contract.SmartContractOuterClass;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -71,7 +74,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.vision.common.utils.Commons.adjustBalance;
-import static org.vision.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
+import static org.vision.protos.Protocol.Transaction.Contract.ContractType.*;
 import static org.vision.protos.Protocol.Transaction.Result.contractResult.SUCCESS;
 
 
@@ -712,10 +715,165 @@ public class Manager {
       revokingStore.fastPop();
       logger.info("end to erase block:" + oldHeadBlock);
       poppedTransactions.addAll(oldHeadBlock.getTransactions());
-
+      rollbackMongo(oldHeadBlock);
     } catch (ItemNotFoundException | BadItemException e) {
       logger.warn(e.getMessage(), e);
     }
+  }
+
+  // for mongo
+  public void rollbackMongo(BlockCapsule oldBlock){
+    if (!CommonParameter.PARAMETER.isKafkaEnable()) {
+      return;
+    }
+
+    if (!CommonParameter.PARAMETER.isHistoryBalanceLookup()) {
+      return;
+    }
+
+    Producer producer = Producer.getInstance();
+    JSONObject jsonAssemble = chainBaseManager.getBalanceTraceStore().assembleJsonInfo(false);
+    // rollback block
+    JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
+    jsonBlock.put("state", "delete"); // key: state, value : repair & overrite &  delete
+    producer.send("BLOCK", jsonBlock.toJSONString());
+
+    if(oldBlock.getTransactions().isEmpty()){
+      return;
+    }
+    // rollback account
+    oldBlock.getTransactions().forEach(transaction -> {
+      Transaction.Contract contract = transaction.getInstance().getRawData().getContractList().get(0);
+      byte[] owner = TransactionCapsule.getOwner(contract);
+      String address = StringUtil.encode58Check(owner);
+
+      AccountCapsule accountCapsule = accountStore.get(owner);
+      JSONObject jsonAccount = new JSONObject();
+      jsonAccount.putAll(jsonAssemble);
+      if (accountCapsule != null){
+        jsonAccount = JSONObject.parseObject(JsonFormat.printToString(accountCapsule.getInstance()));
+      } else {
+        jsonAccount.put("address", address);
+        jsonAccount.put("state", "delete");
+      }
+      producer.send("ACCOUNT", jsonAccount.toJSONString());
+
+      // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
+      ContractStore contractStore = chainBaseManager.getContractStore();
+      switch(contract.getType()){
+//        case CreateSmartContract:
+//        case TriggerSmartContract:
+//          JSONObject jsonStorage = new JSONObject();
+//          jsonStorage.putAll(jsonAssemble);
+//          try {
+//            byte[] contractAddress;
+//            if (contract.getType() == CreateSmartContract){
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.CreateSmartContract.class).getNewContract().getContractAddress().toByteArray();
+//            } else {
+//              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.TriggerSmartContract.class).getContractAddress().toByteArray();
+//            }
+//
+//            DataWord key = new DataWord(address);
+//            RepositoryImpl repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
+//            DataWord value = repository.getStorageValue(contractAddress, key);
+//            jsonStorage.put(key.toHexString(), value.bigIntValue());
+//            jsonStorage.put("address", StringUtil.encode58Check(contractAddress));
+//            jsonStorage.put("hexAddress", ByteArray.toHexString(contractAddress));
+//            producer.send("STORAGE", jsonStorage.toJSONString());
+//          } catch (InvalidProtocolBufferException e) {
+//            logger.error("send STORAGE TOPIC rollback fail", e);
+//          }
+//          break;
+        case TransferContract:
+          try {
+            byte[] to = contract.getParameter().unpack(BalanceContract.TransferContract.class).getToAddress().toByteArray();
+            AccountCapsule toAccountCapsule = accountStore.get(to);
+            JSONObject jsonToAccount = new JSONObject();
+            jsonToAccount.putAll(jsonAssemble);
+            if (toAccountCapsule != null){
+              jsonToAccount = JSONObject.parseObject(JsonFormat.printToString(toAccountCapsule.getInstance()));
+            } else {
+              jsonToAccount.put("address", StringUtil.encode58Check(to));
+              jsonToAccount.put("state", "delete");
+            }
+            producer.send("ACCOUNT", jsonToAccount.toJSONString());
+          } catch (InvalidProtocolBufferException e) {
+            logger.error("send Account TOPIC toAddress rollback fail", e);
+          }
+          break;
+        case VoteWitnessContract:
+          JSONObject jsonVoteWitness = new JSONObject();
+          jsonVoteWitness.putAll(jsonAssemble);
+          if (accountCapsule == null){
+            jsonVoteWitness.put("address", address);
+            jsonVoteWitness.put("state", "delete");
+          } else {
+            try {
+              List<org.vision.protos.Protocol.Vote> voteList = accountCapsule.getVotesList();
+              JSONArray voteArray = new JSONArray();
+              if (null != voteList && voteList.size() > 0) {
+                for (org.vision.protos.Protocol.Vote vote : voteList) {
+                  JSONObject jsonObject = new JSONObject();
+                  jsonObject.put("voteAddress", Hex.toHexString(vote.getVoteAddress().toByteArray()));
+                  jsonObject.put("voteCount", vote.getVoteCount());
+                  voteArray.add(jsonObject);
+                }
+              }
+              jsonVoteWitness.put("address", address);
+              jsonVoteWitness.put("votesList", voteArray);
+              jsonVoteWitness.put("createTime", Calendar.getInstance().getTimeInMillis());
+            } catch (Exception e) {
+              logger.error("send VOTEWITNESS TOPIC rollback fail", e);
+            }
+          }
+          Producer.getInstance().send("VOTEWITNESS",  jsonVoteWitness.toJSONString());
+          logger.info("send VOTEWITNESS TOPIC rollback, accontId:{}", address);
+          break;
+        case AssetIssueContract:
+          AssetIssueCapsule assetIssueCapsule = chainBaseManager.getAssetIssueStore().get(owner);
+          JSONObject jsonAssetIssue = new JSONObject();
+          jsonAssetIssue.putAll(jsonAssemble);
+          if (assetIssueCapsule == null){
+            jsonAssetIssue.put("address", address);
+            jsonAssetIssue.put("state", "delete");
+          }else{
+            jsonAssetIssue = JSONObject.parseObject(JsonFormat.printToString(assetIssueCapsule.getInstance()));
+          }
+          Producer.getInstance().send("ASSETISSUE", jsonAssetIssue.toJSONString());
+          break;
+        case ClearABIContract:
+        case UpdateSettingContract:
+        case UpdateEntropyLimitContract:
+          JSONObject jsonContract = new JSONObject();
+          jsonContract.putAll(jsonAssemble);
+          try {
+            byte[] contractAddress;
+            if (contract.getType() == ClearABIContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.ClearABIContract.class).getContractAddress().toByteArray();
+            }else if (contract.getType() == UpdateSettingContract){
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateSettingContract.class).getContractAddress().toByteArray();
+            } else {
+              contractAddress = contract.getParameter().unpack(SmartContractOuterClass.UpdateEntropyLimitContract.class).getContractAddress().toByteArray();
+            }
+            ContractCapsule contractCapsule = contractStore.get(contractAddress);
+            if(contractCapsule == null){
+              jsonContract.put("address", address);
+              jsonContract.put("contract_address", StringUtil.encode58Check(contractAddress));
+              jsonContract.put("state", "delete");
+            } else {
+              contractCapsule.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
+              jsonContract = JSONObject
+                      .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
+            }
+            Producer.getInstance().send("CONTRACT", jsonContract.toJSONString());
+          } catch (InvalidProtocolBufferException e) {
+            logger.error("rollBackMongo Contract TOPIC error");
+          }
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   public void pushVerifiedBlock(BlockCapsule block) throws ContractValidateException,
@@ -1340,7 +1498,12 @@ public class Manager {
         TransactionInfo result = processTransaction(transactionCapsule, block);
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
-            Producer.getInstance().send("TRANSACTIONINFO", JsonFormat.printToString(result));
+          JSONObject json = JSONObject.parseObject(JsonFormat.printToString(result));
+          if (CommonParameter.getInstance().isHistoryBalanceLookup() && chainBaseManager.getBalanceTraceStore() != null){
+            json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
+          }
+          Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), json.toJSONString());
+          logger.info("send TRANSACTIONINFO TOPIC success, trxId: {}", transactionCapsule.getTransactionId().toString());
         }
 
         accountStateCallBack.exeTransFinish();
@@ -1421,36 +1584,41 @@ public class Manager {
                         - transactionFeeReward);
       }
       getAccountStore().put(account.createDbKey(), account);
-      if(CommonParameter.PARAMETER.isKafkaEnable()){
-        try {
-          JSONObject itemJsonObject = new JSONObject();
-          itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
-          itemJsonObject.put("allowance",account.getAllowance());
-          itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
-          String jsonStr = itemJsonObject.toJSONString();
-          Producer.getInstance().send("PAYREWARD", jsonStr);
-        } catch (Exception e) {
-          logger.error("send PAYREWARD fail", e);
-        }
-      }
+//      if(CommonParameter.PARAMETER.isKafkaEnable()){
+//        try {
+//          JSONObject itemJsonObject = new JSONObject();
+//          itemJsonObject.put("accountId", Hex.toHexString(account.getAddress().toByteArray()));
+//          itemJsonObject.put("allowance",account.getAllowance());
+//          itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
+//          String jsonStr = itemJsonObject.toJSONString();
+//          Producer.getInstance().send("PAYREWARD", jsonStr);
+//        } catch (Exception e) {
+//          logger.error("send PAYREWARD fail", e);
+//        }
+//      }
     }
     JSONObject reward = new JSONObject();
-    reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlock());
-    reward.put("witnessPay", chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlock());
+    reward.put("witnessPay", chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
+    reward.put("witness123Pay", chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation());
+    reward.put("witnessPayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalWitnessPayAssets());
+    reward.put("witness123PayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalWitness123PayAssets());
+
     int brokerage = getDelegationStore().getBrokerage(
             chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber(),
             witnessCapsule.getAddress().toByteArray());
     reward.put("brokerageRate", (double) brokerage / 100);
     reward.put("spreadMintPay", 0);
     if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-      reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock());
-    }
-    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule, getDynamicPropertiesStore());
-
-    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
       mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
       spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation();
     }
+
+    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
+      reward.put("spreadMintPay", chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
+      reward.put("spreadMintPayTotal", chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintPayAssets());
+    }
+    chainBaseManager.getBlockStore().sendBlockMsg(block, reward, accountStore.get(witnessCapsule.getAddress().toByteArray()), witnessCapsule, getDynamicPropertiesStore());
+
 
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation();
     long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();

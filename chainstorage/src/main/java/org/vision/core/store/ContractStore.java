@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,9 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
     super(dbName);
   }
 
+  @Autowired
+  private BalanceTraceStore balanceTraceStore;
+
   @Override
   public ContractCapsule get(byte[] key) {
     return getUnchecked(key);
@@ -38,7 +42,10 @@ public class ContractStore extends VisionStoreWithRevoking<ContractCapsule> {
         item.setRuntimecode(ByteUtil.ZERO_BYTE_ARRAY);
         JSONObject jsonObject = JSONObject
                 .parseObject(JsonFormat.printToString(item.generateWrapper(), true));
-        Producer.getInstance().send("CONTRACT", jsonObject.toJSONString());
+        if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
+          jsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+        }
+        Producer.getInstance().send("CONTRACT", Hex.toHexString(item.getInstance().getContractAddress().toByteArray()), jsonObject.toJSONString());
       } catch (Exception e) {
         e.printStackTrace();
         logger.error("contract-error:" + e.getMessage());

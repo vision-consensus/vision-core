@@ -222,8 +222,8 @@ public class StakeProcessor {
         itemJsonObject.put("votesList", voteArray);
         itemJsonObject.put("createTime", Calendar.getInstance().getTimeInMillis());
         String jsonStr = itemJsonObject.toJSONString();
-        logger.info("send VOTEWITNESS start");
-        Producer.getInstance().send("VOTEWITNESS", jsonStr);
+        Producer.getInstance().send("VOTEWITNESS", address, jsonStr);
+        logger.info("send VOTEWITNESS executeVote start, address:{}", address);
       } catch (Exception e) {
         logger.error("send VOTEWITNESS fail", e);
       }

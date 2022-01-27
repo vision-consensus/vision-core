@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class Producer {
     private final KafkaProducer<String, String> producer;
+    private static final String PREFIX = "";
     public static Producer instance;
     public static Producer getInstance() {
         if (Objects.isNull(instance)) {
@@ -38,7 +39,80 @@ public class Producer {
 
     public void send(String topic, String message){
         try {
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, UUID.randomUUID().toString(), message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * create a special partition TOPIC to send to kafka
+     * @param topic -
+     * @param partition - The partition to which the record should be sent
+     * @param message -
+     */
+    public void send(String topic, Integer partition, String message){
+        try {
+            topic = PREFIX + topic;
+            producer.send(new ProducerRecord<>(topic, partition, UUID.randomUUID().toString(), message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * create a special key TOPIC to send to kafka
+     * @param topic -
+     * @param key - The key that will be included in the record
+     * @param message-
+     */
+    public void send(String topic, String key, String message){
+        try {
+            if (key == null || key.isEmpty()){
+                key = UUID.randomUUID().toString();
+            }
+            topic = PREFIX + topic;
+            producer.send(new ProducerRecord<>(topic, key, message), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * create a special key TOPIC to send to kafka
+     * @param topic -
+     * @param partition - The partition to which the record should be sent
+     * @param key - The key that will be included in the record
+     * @param message-
+     */
+    public void send(String topic, Integer partition, String key, String message){
+        try {
+            if (key == null || key.isEmpty()){
+                key = UUID.randomUUID().toString();
+            }
+            producer.send(new ProducerRecord<>(topic, partition, key, message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     if (exception != null) {

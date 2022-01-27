@@ -22,6 +22,7 @@ import org.vision.consensus.base.Param;
 import org.vision.consensus.base.Param.Miner;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
+import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.db.BlockStore;
 
@@ -219,7 +220,7 @@ public class DposService implements ConsensusInterface {
         }
       });
       json.put("confirm_witnesses", witnesses);
-      Producer.getInstance().send("SOLIDIFIED", json.toJSONString());
+      Producer.getInstance().send("SOLIDIFIED", 0, String.valueOf(newSolidNum), json.toJSONString());
     }
     logger.info("Update solid block number to {}", newSolidNum);
   }

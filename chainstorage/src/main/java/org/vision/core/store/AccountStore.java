@@ -1,5 +1,6 @@
 package org.vision.core.store;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import com.typesafe.config.ConfigObject;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.OptionalLong;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.JsonFormat;
 import org.vision.common.utils.Producer;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.db.VisionStoreWithRevoking;
@@ -77,7 +80,12 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
       }
     }
     if(CommonParameter.PARAMETER.isKafkaEnable()){
-      Producer.getInstance().send("ACCOUNT", JsonFormat.printToString(item.getInstance()));
+      JSONObject itemJsonObject = JSONObject.parseObject(JsonFormat.printToString(item.getInstance()));
+      if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
+        itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
+      }
+      Producer.getInstance().send("ACCOUNT", Hex.toHexString(item.getAddress().toByteArray()), itemJsonObject.toJSONString());
+      logger.info("send ACCOUNT TOPIC success, address: {}, balance:{}", StringUtil.encode58Check(item.getAddress().toByteArray()), item.getBalance());
     }
     super.put(key, item);
     accountStateCallBackUtils.accountCallBack(key, item);
