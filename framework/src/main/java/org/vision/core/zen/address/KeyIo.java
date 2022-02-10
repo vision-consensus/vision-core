@@ -26,7 +26,7 @@ import org.vision.common.utils.Bech32.Bech32Data;
 public class KeyIo {
 
   private static int CONVERTED_SAPLING_PAYMENT_ADDRESS_SIZE = ((32 + 11) * 8 + 4) / 5;
-  private static String SAPLING_PAYMENT_ADDRESS = "ztron";
+  private static String SAPLING_PAYMENT_ADDRESS = "zvision";
 
   public static PaymentAddress decodePaymentAddress(String str) {
     byte[] data;
