@@ -661,7 +661,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
       t.rlpParse();
       try {
-        TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract();
+        TriggerSmartContract contractFromParse = t.rlpParseToTriggerSmartContract(dynamicPropertiesStore);
         if(!contractFromParse.equals(contract)){
           isVerified = false;
           throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
@@ -704,7 +704,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
       t.rlpParse();
       try {
-        CreateSmartContract contractFromParse = t.rlpParseToDeployContract();
+        CreateSmartContract contractFromParse = t.rlpParseToDeployContract(dynamicPropertiesStore);
         if(!contractFromParse.equals(contract)){
           isVerified = false;
           throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
@@ -1288,13 +1288,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               chainId);
     }
 
-    public synchronized TriggerSmartContract rlpParseToTriggerSmartContract() {
+    public synchronized TriggerSmartContract rlpParseToTriggerSmartContract(DynamicPropertiesStore dynamicPropertiesStore) {
       if (!parsed)
         rlpParse();
       TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
       build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(this.getReceiveAddress()))));
-      build.setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000"));
+
+      long callValue = dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.ethCompatibleRlpDeDupEffectBlockNum ?
+              ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000") : ByteUtil.byteArrayToLong(this.value);
+      build.setCallValue(callValue);
       build.setData(ByteString.copyFrom(this.data));
       build.setCallTokenValue(0);
       build.setTokenId(0);
@@ -1315,19 +1318,23 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       return build.build();
     }
 
-    public synchronized CreateSmartContract rlpParseToDeployContract() {
+    public synchronized CreateSmartContract rlpParseToDeployContract(DynamicPropertiesStore dynamicPropertiesStore) {
       if (!parsed)
         rlpParse();
       CreateSmartContract.Builder build = CreateSmartContract.newBuilder();
 
       SmartContract.Builder smartBuilder = SmartContract.newBuilder();
       ABI.Builder abiBuilder = ABI.newBuilder();
+
+      boolean isEthEffectBlock = dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.ethCompatibleRlpDeDupEffectBlockNum;
+      long callValue = isEthEffectBlock ? ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000") : 0L;
+      long entropyLimit = isEthEffectBlock ? ByteUtil.byteArrayToLong(gasLimit) : 50000;
       smartBuilder
               .setAbi(abiBuilder)
               .setBytecode(ByteString.copyFrom(this.data))
-              .setCallValue(ByteUtil.byteArrayToLongDividePrecision(this.value, "1000000000000")) // transfer to contract
+              .setCallValue(callValue) // transfer to contract
               .setConsumeUserResourcePercent(100)
-              .setOriginEntropyLimit(ByteUtil.byteArrayToLong(gasLimit));
+              .setOriginEntropyLimit(entropyLimit);
       smartBuilder.setOriginAddress(ByteString.copyFrom(ByteArray.fromHexString(ByteArray.toHexString(this.getSender()).replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET))));
 
       build.setNewContract(smartBuilder);
