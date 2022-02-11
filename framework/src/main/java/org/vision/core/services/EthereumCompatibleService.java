@@ -310,10 +310,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 Message message = null;
                 Protocol.Transaction.Contract.ContractType contractType = null;
                 if (isDeployContract) {
-                    message = ethTrx.rlpParseToDeployContract();
+                    message = ethTrx.rlpParseToDeployContract(chainBaseManager.getDynamicPropertiesStore());
                     contractType = Protocol.Transaction.Contract.ContractType.CreateSmartContract;
                 } else {
-                    message = ethTrx.rlpParseToTriggerSmartContract();
+                    message = ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore());
                     contractType = Protocol.Transaction.Contract.ContractType.TriggerSmartContract;
                 }
                 TransactionCapsule trxCap = wallet
@@ -327,7 +327,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 if (isDeployContract) {
                     trx = txBuilder.build();
                 } else {
-                    trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
+                    trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore()), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
                             retBuilder);
                 }
 
@@ -566,8 +566,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                         byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
                         byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
                         // jsonTransaction.put("contract_address", ByteArray.toHexString(contractAddress));
-                        transactionResultDTO.from = "0x" + getAddrNo46(toHexString(ownerAddress));
-                        transactionResultDTO.to = "0x" + getAddrNo46(toHexString(contractAddress));
+                        transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+                        transactionResultDTO.to = ByteArray.toJsonHexAddress(contractAddress);
                         break;
                     default:
                         Class clazz = TransactionFactory.getContract(contract.getType());
@@ -575,8 +575,16 @@ public class EthereumCompatibleService implements EthereumCompatible {
                             contractJson = JSONObject
                                     .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
                         }
-                        transactionResultDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
-                        transactionResultDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
+                        if (contractJson != null && contractJson.getString("owner_address") != null ){
+                            transactionResultDTO.from = ByteArray.toJsonHexAddress(contractJson.getString("owner_address").getBytes());
+                        }else{
+                            transactionResultDTO.from = null;
+                        }
+                        if (contractJson != null && contractJson.getString("account_address") != null ){
+                            transactionResultDTO.to = ByteArray.toJsonHexAddress(contractJson.getString("account_address").getBytes());
+                        }else{
+                            transactionResultDTO.to = null;
+                        }
                         break;
                 }
 
@@ -680,8 +688,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                     .parseObject(JsonFormat.printToString(deployContract, selfType));
                             byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
                             byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                            transactionReceiptDTO.from = "0x" + getAddrNo46(ByteArray.toHexString(ownerAddress));
-                            transactionReceiptDTO.contractAddress =  "0x" + getAddrNo46(ByteArray.toHexString(contractAddress));
+                            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+                            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractAddress);
                             break;
                         default:
                             Class clazz = TransactionFactory.getContract(contract.getType());
@@ -689,8 +697,16 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                 contractJson = JSONObject
                                         .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
                             }
-                            transactionReceiptDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
-                            transactionReceiptDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
+                            if (contractJson != null && contractJson.getString("owner_address") != null ){
+                                transactionReceiptDTO.from = ByteArray.toJsonHexAddress(contractJson.getString("owner_address").getBytes());
+                            }else{
+                                transactionReceiptDTO.from = null;
+                            }
+                            if (contractJson != null && contractJson.getString("account_address") != null ){
+                                transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractJson.getString("account_address").getBytes());
+                            }else{
+                                transactionReceiptDTO.to = null;
+                            }
                             break;
                     }
 

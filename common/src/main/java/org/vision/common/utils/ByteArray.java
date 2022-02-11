@@ -117,7 +117,7 @@ public class ByteArray {
     return x == null || x.length == 0 ? "0x" : "0x" + Hex.toHexString(x);
   }
 
-  // ignore the 41
+  // ignore the 46
   public static String toJsonHexAddress(byte[] x) {
     if (x == null || x.length == 0) {
       return null;
