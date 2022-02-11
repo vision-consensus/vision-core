@@ -689,8 +689,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                 contractJson = JSONObject
                                         .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
                             }
-                            transactionReceiptDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
-                            transactionReceiptDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
+                            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(contractJson.getString("owner_address").getBytes());
+                            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractJson.getString("account_address").getBytes());
                             break;
                     }
 
