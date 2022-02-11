@@ -688,8 +688,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                     .parseObject(JsonFormat.printToString(deployContract, selfType));
                             byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
                             byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                            transactionReceiptDTO.from = "0x" + getAddrNo46(ByteArray.toHexString(ownerAddress));
-                            transactionReceiptDTO.contractAddress =  "0x" + getAddrNo46(ByteArray.toHexString(contractAddress));
+                            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+                            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractAddress);
                             break;
                         default:
                             Class clazz = TransactionFactory.getContract(contract.getType());
@@ -697,8 +697,16 @@ public class EthereumCompatibleService implements EthereumCompatible {
                                 contractJson = JSONObject
                                         .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
                             }
-                            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(contractJson.getString("owner_address").getBytes());
-                            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractJson.getString("account_address").getBytes());
+                            if (contractJson != null && contractJson.getString("owner_address") != null ){
+                                transactionReceiptDTO.from = ByteArray.toJsonHexAddress(contractJson.getString("owner_address").getBytes());
+                            }else{
+                                transactionReceiptDTO.from = null;
+                            }
+                            if (contractJson != null && contractJson.getString("account_address") != null ){
+                                transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractJson.getString("account_address").getBytes());
+                            }else{
+                                transactionReceiptDTO.to = null;
+                            }
                             break;
                     }
 
