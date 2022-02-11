@@ -68,10 +68,10 @@ public class ProposalUtil {
       case EXCHANGE_CREATE_FEE:
         break;
       case MAX_CPU_TIME_OF_ONE_TX:
-//        if (value < 10 || value > 1000) {
-//          throw new ContractValidateException(
-//              "Bad chain parameter value, valid range is [10,1000]");
-//        }
+        if (value < 10 || value > 1000) {
+          throw new ContractValidateException(
+              "Bad chain parameter value, valid range is [10,1000]");
+        }
         break;
       case ALLOW_UPDATE_ACCOUNT_NAME: {
         if (value != 1) {
