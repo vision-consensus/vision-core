@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class Producer {
     private final KafkaProducer<String, String> producer;
-    private static final String PREFIX = "";
+    private static final String PREFIX = "VSCAN-";
     public static Producer instance;
     public static Producer getInstance() {
         if (Objects.isNull(instance)) {
