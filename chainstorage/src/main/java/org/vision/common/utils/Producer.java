@@ -112,6 +112,7 @@ public class Producer {
             if (key == null || key.isEmpty()){
                 key = UUID.randomUUID().toString();
             }
+            topic = PREFIX + topic;
             producer.send(new ProducerRecord<>(topic, partition, key, message), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
