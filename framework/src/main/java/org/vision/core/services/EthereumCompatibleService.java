@@ -737,7 +737,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
             BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
             transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
-            transactionReceiptDTO.root = toHexString(rawData.getTxTrieRoot().toByteArray());
+            transactionReceiptDTO.root = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
         } else {
             transactionReceiptDTO.status = "0x0";
             transactionReceiptDTO.root = null;
