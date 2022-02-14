@@ -171,6 +171,7 @@ public interface EthereumCompatible {
         public String root;  // 32 bytes of post-transaction stateroot (pre Byzantium)
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public String status;  //  either 1 (success) or 0 (failure) (post Byzantium)
+        public String type;
 
         public TransactionReceiptDTO(){
 
