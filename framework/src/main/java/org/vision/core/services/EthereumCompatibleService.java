@@ -671,7 +671,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
             Protocol.Transaction.raw rawData = transaction.getRawData();
             transactionReceiptDTO.cumulativeGasUsed = "0x0";
             transactionReceiptDTO.gasUsed = "0x0";
-            transactionReceiptDTO.logs = null;
+            transactionReceiptDTO.logs = new LogFilterElement[]{};
+            transactionReceiptDTO.type =  "0x0";
             transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             transactionReceiptDTO.transactionHash = transactionHash;
 
@@ -736,7 +737,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
             BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
             transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
-            transactionReceiptDTO.root = toHexString(rawData.getTxTrieRoot().toByteArray());
+            transactionReceiptDTO.root = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
         } else {
             transactionReceiptDTO.status = "0x0";
             transactionReceiptDTO.root = null;
