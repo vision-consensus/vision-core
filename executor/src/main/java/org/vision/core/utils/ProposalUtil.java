@@ -354,6 +354,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case TOTAL_PHOTON_LIMIT:{
+        if (value < 0 || value > 1_000_000_000_000L) {
+          throw new ContractValidateException(
+                  "Bad TOTAL_PHOTON_LIMIT parameter value, valid range is [0, 1_000_000_000_000L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -474,7 +481,8 @@ public class ProposalUtil {
     PLEDGE_RATE_THRESHOLD(47),// [0, 100L]
     SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
-    ALLOW_MODIFY_SPREAD_MINT_PARENT(50);// 0,1
+    ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
+    TOTAL_PHOTON_LIMIT(50);// [0, 1_000_000_000_000L]
 
     private long code;
 
