@@ -81,9 +81,9 @@ public class PhotonRuntimeWithCheckTest {
   private static Manager dbManager;
   private static ChainBaseManager chainBaseManager;
 
-  private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-  private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
-  private static String TriggerOwnerTwoAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
+  private static String OwnerAddress = "27RcahhCafmmnte3FmtTw39gn2bdDV9uADR";
+  private static String TriggerOwnerAddress = "27RYzBpuBqSiSXrkfHNqbf1b2s69z3wnqfo";
+  private static String TriggerOwnerTwoAddress = "27cTV1UhDv5xdraBg2dkqdeK3mw8eibMCQc";
 
   static {
     Args.setParam(

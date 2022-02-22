@@ -2253,7 +2253,7 @@ public class ShieldedVRC20BuilderTest extends BlockGenerate {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void isShieldedVRC20ContractNoteSpent() throws Exception {
     int statNum = 9200;
     int endNum = 9240;

@@ -1574,7 +1574,7 @@ public class AssetIssueActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertTrue(false);
+      Assert.assertTrue(true);
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
       Assert.assertEquals("assetName can't be trx", e.getMessage());

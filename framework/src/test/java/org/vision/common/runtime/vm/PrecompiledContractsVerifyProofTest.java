@@ -44,9 +44,9 @@ import stest.vision.wallet.common.client.WalletClient;
 public class PrecompiledContractsVerifyProofTest {
 
   private static final String dbPath = "output_PrecompiledContracts_VerifyProof_test";
-  private static final String SHIELDED_CONTRACT_ADDRESS_STR = "TGAmX5AqVUoXCf8MoHxbuhQPmhGfWTnEgA";
+  private static final String SHIELDED_CONTRACT_ADDRESS_STR = "VGrnScfH3P7uHppnvPdCLKmKvDZP7TJhSB";
   private static final byte[] SHIELDED_CONTRACT_ADDRESS;
-  private static final String PUBLIC_TO_ADDRESS_STR = "TBaBXpRAeBhs75TZT751LwyhrcR25XeUot";
+  private static final String PUBLIC_TO_ADDRESS_STR = "VCGCTMucC62FCF9zaCjbmaLe18hjjW4Jrw";
   private static final byte[] PUBLIC_TO_ADDRESS;
   private static final byte[] DEFAULT_OVK;
   private static VisionApplicationContext context;

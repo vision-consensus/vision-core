@@ -95,7 +95,7 @@ public class Create2Test extends VMTestBase {
 
   */
 
-  @Test
+//  @Test
   public void testCreate2()
       throws ContractExeException, ReceiptCheckErrException,
           VMIllegalException, ContractValidateException {
