@@ -245,6 +245,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowModifySpreadMintParent(entry.getValue());
           break;
         }
+        case TOTAL_PHOTON_LIMIT: {
+          manager.getDynamicPropertiesStore().saveTotalPhotonLimit(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
