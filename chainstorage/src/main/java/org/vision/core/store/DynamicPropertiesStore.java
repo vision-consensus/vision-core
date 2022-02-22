@@ -358,7 +358,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalPhotonLimit(2_000_000_000L); //43_200_000_000L
+      this.saveTotalPhotonLimit(1_000_000_000L);
     }
 
     try {
