@@ -1132,6 +1132,10 @@ public class Wallet {
             .setKey("getAllowModifySpreadMintParent")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowModifySpreadMintParent())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTotalPhotonLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonLimit())
+            .build());
     return builder.build();
   }
 
