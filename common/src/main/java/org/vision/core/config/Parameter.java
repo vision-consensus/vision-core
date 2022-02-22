@@ -37,8 +37,8 @@ public class Parameter {
   }
 
   public class ChainConstant {
-    public static final int MAX_ACTIVE_WITNESS_NUM = 5;
-    public static final int WITNESS_STANDBY_LENGTH = 105;
+    public static final int MAX_ACTIVE_WITNESS_NUM = 23;
+    public static final int WITNESS_STANDBY_LENGTH = 123;
     public static final long TRANSFER_FEE = 0; // free
     public static final int BLOCK_PRODUCED_INTERVAL = 3000; //ms,produce block period, must be divisible by 60. millisecond
     public static final int MAX_VOTE_NUMBER = 30;
@@ -71,7 +71,7 @@ public class Parameter {
     public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
 
 
-    public static final long FV_FREEZE_LOWEST = 5000_000_000L;
+    public static final long FV_FREEZE_LOWEST = 2000_000_000L;
     public static final int FV_FREEZE_LOWEST_PERCENT = 65;
     public static final int VOTE_PERCENT_PRECISION = 100;
     public static final int FV_FREEZE_LOWEST_PRECISION = 1000;
