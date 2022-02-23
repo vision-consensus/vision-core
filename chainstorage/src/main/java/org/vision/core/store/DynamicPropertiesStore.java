@@ -2585,7 +2585,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(SPREAD_MINT_PAY_PER_BLOCK))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(256000L);
+            .orElse(130000L);
   }
 
   public long getSpreadMintPayPerBlockInflation() {
