@@ -181,6 +181,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     boolean needCheckFrozeTime = CommonParameter.getInstance()
             .getCheckFrozenTime() == 1;
 
+
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
             && !(frozenDuration >= minFrozenTime && frozenDuration <= maxFrozenTime)) {

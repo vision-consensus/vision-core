@@ -1248,6 +1248,7 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+
             .setKey("getEffectEconomyCycle")
             .setValue(dbManager.getDynamicPropertiesStore().getEffectEconomyCycle())
             .build());
