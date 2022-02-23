@@ -354,6 +354,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case TOTAL_PHOTON_LIMIT:{
+        if (value < 0 || value > 1_000_000_000_000L) {
+          throw new ContractValidateException(
+                  "Bad TOTAL_PHOTON_LIMIT parameter value, valid range is [0, 1_000_000_000_000L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -441,9 +448,9 @@ public class ProposalUtil {
     ALLOW_UPDATE_ACCOUNT_NAME(14), // 0, {0, 1}
     ALLOW_SAME_TOKEN_NAME(15), // 1, {0, 1}
     ALLOW_DELEGATE_RESOURCE(16), // 1, {0, 1}
-    TOTAL_ENTROPY_LIMIT(17), // 50,000,000,000, [0, 100000000000000000]
+    TOTAL_ENTROPY_LIMIT(17), // 2,000,000,000, [0, 100000000000000000]
     ALLOW_VVM_TRANSFER_VRC10(18), // 1, {0, 1}
-    TOTAL_CURRENT_ENTROPY_LIMIT(19), // 50,000,000,000, [0, 100000000000000000]
+    TOTAL_CURRENT_ENTROPY_LIMIT(19), // 2,000,000,000, [0, 100000000000000000]
     ALLOW_MULTI_SIGN(20), // 1, {0, 1}
     ALLOW_ADAPTIVE_ENTROPY(21), // 1, {0, 1}
     UPDATE_ACCOUNT_PERMISSION_FEE(22), // 100 VS, [0, 100000] VS
@@ -474,7 +481,8 @@ public class ProposalUtil {
     PLEDGE_RATE_THRESHOLD(47),// [0, 100L]
     SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
-    ALLOW_MODIFY_SPREAD_MINT_PARENT(50);// 0,1
+    ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
+    TOTAL_PHOTON_LIMIT(51);// [0, 1_000_000_000_000L]
 
     private long code;
 

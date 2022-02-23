@@ -59,6 +59,7 @@ public class Parameter {
     public static final long UN_FREEZE_FVGUARANTEE_LIMIT = 23L;
     public static final long FIRST_ECONOMY_CYCLE = 42L;
     public static final int QUERY_SPREAD_MINT_PARENT_LEVEL_MAX = 4;
+    public static final int ETH_TRANSACTION_RLP_VALID_NONCE_SCOPE = 20;
 
 
 
@@ -70,7 +71,7 @@ public class Parameter {
     public static final int VOTE_FREEZE_PERCENT_LEVEL3 = 116;
 
 
-    public static final long FV_FREEZE_LOWEST = 5000_000_000L;
+    public static final long FV_FREEZE_LOWEST = 2000_000_000L;
     public static final int FV_FREEZE_LOWEST_PERCENT = 65;
     public static final int VOTE_PERCENT_PRECISION = 100;
     public static final int FV_FREEZE_LOWEST_PRECISION = 1000;

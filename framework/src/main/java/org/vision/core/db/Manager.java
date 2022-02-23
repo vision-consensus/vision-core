@@ -82,6 +82,7 @@ public class Manager {
   private static final String SAVE_BLOCK = "save block: ";
   private static final int SLEEP_TIME_OUT = 50;
   private static final int TX_ID_CACHE_SIZE = 100_000;
+  private static final int ETH_RLP_DATA_CACHE_SIZE = 100_000;
   private final int shieldedTransInPendingMaxCounts =
       Args.getInstance().getShieldedTransInPendingMaxCounts();
   @Getter
@@ -119,6 +120,9 @@ public class Manager {
   @Getter
   private Cache<Sha256Hash, Boolean> transactionIdCache = CacheBuilder
       .newBuilder().maximumSize(TX_ID_CACHE_SIZE).recordStats().build();
+  @Getter
+  private Cache<Sha256Hash, Boolean> rlpDataCache = CacheBuilder
+          .newBuilder().maximumSize(ETH_RLP_DATA_CACHE_SIZE).recordStats().build();
   @Autowired
   private AccountStateCallBack accountStateCallBack;
   @Autowired
@@ -575,7 +579,16 @@ public class Manager {
   }
 
   private boolean containsTransaction(TransactionCapsule transactionCapsule) {
-    return containsTransaction(transactionCapsule.getTransactionId().getBytes());
+    boolean existTransaction = containsTransaction(transactionCapsule.getTransactionId().getBytes());
+    if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+      if (!existTransaction) {
+        Sha256Hash ethRlpDataHash = transactionCapsule.getEthRlpDataHash();
+        if (ethRlpDataHash != null) {
+          existTransaction = containsEthereumTransaction(ethRlpDataHash.getBytes());
+        }
+      }
+    }
+    return existTransaction;
   }
   private boolean containsTransaction(byte[] transactionId) {
     if (transactionCache != null) {
@@ -585,6 +598,23 @@ public class Manager {
     return chainBaseManager.getTransactionStore()
         .has(transactionId);
   }
+  private boolean containsEthereumTransaction(byte[] ethRlpDataHash){
+    return chainBaseManager.getEthereumCompatibleRlpDedupStore().has(ethRlpDataHash);
+  }
+
+  void validateP2pVersion(TransactionCapsule transactionCapsule) throws P2pVersionException {
+    if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+        byte[] ethRlpData = transactionCapsule.getEthRlpData();
+        if (ethRlpData != null) {
+          TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(ethRlpData);
+          if (ethTrx.getChainId() == null || ethTrx.getChainId() != CommonParameter.PARAMETER.nodeP2pVersion){
+            logger.debug("transaction {}, chainId: {}, p2pVersion: {}",
+                    ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes()),ethTrx.getChainId(), CommonParameter.PARAMETER.nodeP2pVersion);
+            throw new P2pVersionException("p2pVersion not found, p2pVersion: " + ethTrx.getChainId());
+          }
+        }
+    }
+  }
 
   /**
    * push transaction into pending.
@@ -593,7 +623,7 @@ public class Manager {
       throws ValidateSignatureException, ContractValidateException, ContractExeException,
       AccountResourceInsufficientException, DupTransactionException, TaposException,
       TooBigTransactionException, TransactionExpirationException,
-      ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException {
+      ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException, P2pVersionException {
 
     if (isShieldedTransaction(trx.getInstance()) && !Args.getInstance()
         .isFullNodeAllowShieldedTransactionArgs()) {
@@ -692,7 +722,7 @@ public class Manager {
       TransactionExpirationException, TooBigTransactionException, DupTransactionException,
       TaposException, ValidateScheduleException, ReceiptCheckErrException,
       VMIllegalException, TooBigTransactionResultException, UnLinkedBlockException,
-      NonCommonBlockException, BadNumberBlockException, BadBlockException, ZksnarkException {
+      NonCommonBlockException, BadNumberBlockException, BadBlockException, ZksnarkException, P2pVersionException {
     block.generatedByMyself = true;
     long start = System.currentTimeMillis();
     pushBlock(block);
@@ -707,7 +737,7 @@ public class Manager {
       ContractExeException, ValidateSignatureException, AccountResourceInsufficientException,
       TransactionExpirationException, TooBigTransactionException, DupTransactionException,
       TaposException, ValidateScheduleException, ReceiptCheckErrException,
-      VMIllegalException, TooBigTransactionResultException, ZksnarkException, BadBlockException {
+      VMIllegalException, TooBigTransactionResultException, ZksnarkException, BadBlockException, P2pVersionException {
     processBlock(block);
     chainBaseManager.getBlockStore().put(block.getBlockId().getBytes(), block);
     chainBaseManager.getBlockIndexStore().put(block.getBlockId());
@@ -729,7 +759,7 @@ public class Manager {
       ValidateScheduleException, AccountResourceInsufficientException, TaposException,
       TooBigTransactionException, TooBigTransactionResultException, DupTransactionException,
       TransactionExpirationException, NonCommonBlockException, ReceiptCheckErrException,
-      VMIllegalException, ZksnarkException, BadBlockException {
+      VMIllegalException, ZksnarkException, BadBlockException, P2pVersionException {
 
     MetricsUtil.meterMark(MetricsKey.BLOCKCHAIN_FORK_COUNT);
 
@@ -838,7 +868,7 @@ public class Manager {
       TaposException, TooBigTransactionException, TooBigTransactionResultException,
       DupTransactionException, TransactionExpirationException,
       BadNumberBlockException, BadBlockException, NonCommonBlockException,
-      ReceiptCheckErrException, VMIllegalException, ZksnarkException {
+      ReceiptCheckErrException, VMIllegalException, ZksnarkException, P2pVersionException {
     long start = System.currentTimeMillis();
     try (PendingManager pm = new PendingManager(this)) {
 
@@ -1026,10 +1056,10 @@ public class Manager {
    * Process transaction.
    */
   public TransactionInfo processTransaction(final TransactionCapsule trxCap, BlockCapsule blockCap)
-      throws ValidateSignatureException, ContractValidateException, ContractExeException,
-      AccountResourceInsufficientException, TransactionExpirationException,
-      TooBigTransactionException, TooBigTransactionResultException,
-      DupTransactionException, TaposException, ReceiptCheckErrException, VMIllegalException {
+          throws ValidateSignatureException, ContractValidateException, ContractExeException,
+          AccountResourceInsufficientException, TransactionExpirationException,
+          TooBigTransactionException, TooBigTransactionResultException,
+          DupTransactionException, TaposException, ReceiptCheckErrException, VMIllegalException, P2pVersionException {
     if (trxCap == null) {
       return null;
     }
@@ -1046,6 +1076,7 @@ public class Manager {
     }
 
     validateDup(trxCap);
+    validateP2pVersion(trxCap);
 
     if (!trxCap.validateSignature(chainBaseManager.getAccountStore(),
         chainBaseManager.getDynamicPropertiesStore())) {
@@ -1085,6 +1116,14 @@ public class Manager {
       trxCap.setResult(trace.getTransactionContext());
     }
     chainBaseManager.getTransactionStore().put(trxCap.getTransactionId().getBytes(), trxCap);
+    if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+      Sha256Hash ethRlpDataHash = trxCap.getEthRlpDataHash();
+      if (ethRlpDataHash != null) {
+        EthereumCompatibleRlpDedupCapsule ethRlpCap
+                = new EthereumCompatibleRlpDedupCapsule(ethRlpDataHash.getBytes(), trxCap.getTransactionId().getBytes());
+        chainBaseManager.getEthereumCompatibleRlpDedupStore().put(ethRlpDataHash.getBytes(), ethRlpCap);
+      }
+    }
 
     Optional.ofNullable(transactionCache)
         .ifPresent(t -> t.put(trxCap.getTransactionId().getBytes(),
@@ -1267,7 +1306,7 @@ public class Manager {
       AccountResourceInsufficientException, TaposException, TooBigTransactionException,
       DupTransactionException, TransactionExpirationException, ValidateScheduleException,
       ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException,
-      ZksnarkException, BadBlockException {
+      ZksnarkException, BadBlockException, P2pVersionException {
     // todo set revoking db max size.
 
     // checkWitness
@@ -1433,6 +1472,12 @@ public class Manager {
   private void updateTransHashCache(BlockCapsule block) {
     for (TransactionCapsule transactionCapsule : block.getTransactions()) {
       this.transactionIdCache.put(transactionCapsule.getTransactionId(), true);
+      if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
+        Sha256Hash ethRlpDataHash = transactionCapsule.getEthRlpDataHash();
+        if (ethRlpDataHash != null) {
+          this.rlpDataCache.put(ethRlpDataHash, true);
+        }
+      }
     }
   }
 
@@ -1552,6 +1597,8 @@ public class Manager {
       logger.debug("outOfSlotTime transaction");
     } catch (TooBigTransactionResultException e) {
       logger.debug("too big transaction result");
+    } catch (P2pVersionException e){
+      logger.debug("p2pVersion not found");
     }
   }
 

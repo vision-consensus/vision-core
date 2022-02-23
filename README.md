@@ -40,9 +40,8 @@ This guide walks the user through the VISION Quickstart (v1.0.0) image setup.
 [Deployment Guide](https://developers.v.network/docs/deployment-steps)
  walks the user through how to deploy a FullNode and upgrade to be a First Validator.
 
-# Channel
-[Core Developers Community](https://t.me/vision_core_devs) is the Telegram channel for vision-core community developers. If you want to contribute to vision-core, please join this channel.
-
+# Discord
+[Core Developers Community](https://discord.gg/Ay6ChfbPJf) is the Discord Server for vision-core community developers. If you want to contribute to vision-core, please join this server.
 
 # Contribution
 If you'd like to contribute to vision-core, please read the following instructions.

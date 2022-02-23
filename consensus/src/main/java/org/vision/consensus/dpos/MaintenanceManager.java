@@ -10,6 +10,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.args.Witness;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.pbft.PbftManager;
 import org.vision.core.capsule.AccountCapsule;
@@ -104,17 +105,19 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
-    consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
-      AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
-      DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
-      long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
-      if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
-        long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
-        long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
-        witnessCapsule.setVoteCountThreshold(maxVoteCounts);
-        consensusDelegate.saveWitness(witnessCapsule);
-      }
-    });
+    if(consensusDelegate.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.witnessSortEffectBlockNum){
+      consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
+        AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());
+        DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
+        long fvGuaranteeFrozenBalance = account.getFVGuaranteeFrozenBalance();
+        if (fvGuaranteeFrozenBalance > dynamicPropertiesStore.getSrFreezeLowest()) {
+          long fvGuaranteeGain =  (fvGuaranteeFrozenBalance - dynamicPropertiesStore.getSrFreezeLowest()) / VS_PRECISION ;
+          long maxVoteCounts = (long) (fvGuaranteeGain / ((float) dynamicPropertiesStore.getSrFreezeLowestPercent() / Parameter.ChainConstant.FV_FREEZE_LOWEST_PRECISION));
+          witnessCapsule.setVoteCountThreshold(maxVoteCounts);
+          consensusDelegate.saveWitness(witnessCapsule);
+        }
+      });
+    }
 
     Map<ByteString, Protocol.Vote.Builder> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
