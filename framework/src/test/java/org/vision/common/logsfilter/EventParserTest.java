@@ -77,8 +77,8 @@ public class EventParserTest {
     Map<String, String> dataMap = ContractEventParserAbi.parseEventData(data, topicList, entry);
     Map<String, String> topicMap = ContractEventParserAbi.parseTopics(topicList, entry);
 
-    Assert.assertEquals(dataMap.get("0"), "VV6QmkikJPPGyvYmEiAWSSQhsGoGFKFrLC");
-    Assert.assertEquals(dataMap.get("addr"), "VV6QmkikJPPGyvYmEiAWSSQhsGoGFKFrLC");
+    Assert.assertEquals(dataMap.get("0"), "TUQPrDEJkV4ttkrL7cVv1p3mikWYfM7LWt");
+    Assert.assertEquals(dataMap.get("addr"), "TUQPrDEJkV4ttkrL7cVv1p3mikWYfM7LWt");
 
     Assert.assertEquals(dataMap.get("1"), "0109");
     Assert.assertEquals(dataMap.get("random"), "0109");

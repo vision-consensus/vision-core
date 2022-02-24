@@ -78,7 +78,7 @@ public class ExtCodeHashTest extends VMTestBase {
     returnValue = result.getRuntime().getResult().getHReturn();
     // check deployed contract
     Assert.assertEquals(Hex.toHexString(returnValue),
-        "0000000000000000000000000000000000000000000000000000000000000000");
+        "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470");
 
     // trigger deployed contract
     String methodByUint = "getCodeHashByUint(uint256)";

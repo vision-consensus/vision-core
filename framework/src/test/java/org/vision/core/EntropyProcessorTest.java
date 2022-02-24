@@ -26,7 +26,6 @@ public class EntropyProcessorTest {
   private static final String dbPath = "EntropyProcessorTest";
   private static final String ASSET_NAME;
   private static final String CONTRACT_PROVIDER_ADDRESS;
-  private static final String CONTRACT_PROVIDER_ADDRESS2;
   private static final String USER_ADDRESS;
   private static Manager dbManager;
   private static ChainBaseManager chainBaseManager;
@@ -38,8 +37,6 @@ public class EntropyProcessorTest {
     ASSET_NAME = "test_token";
     CONTRACT_PROVIDER_ADDRESS =
         Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    CONTRACT_PROVIDER_ADDRESS2 =
-            Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abd";
     USER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
   }
 
@@ -79,14 +76,6 @@ public class EntropyProcessorTest {
             0L);
     contractProvierCapsule.addAsset(ASSET_NAME.getBytes(), 100L);
 
-    AccountCapsule contractProvierCapsule2 =
-            new AccountCapsule(
-                    ByteString.copyFromUtf8("owner"),
-                    ByteString.copyFrom(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS2)),
-                    AccountType.Normal,
-                    0L);
-    contractProvierCapsule2.addAsset(ASSET_NAME.getBytes(), 100L);
-
     AccountCapsule userCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8("asset"),
@@ -97,8 +86,6 @@ public class EntropyProcessorTest {
     dbManager.getAccountStore().reset();
     dbManager.getAccountStore()
         .put(contractProvierCapsule.getAddress().toByteArray(), contractProvierCapsule);
-    dbManager.getAccountStore()
-            .put(contractProvierCapsule2.getAddress().toByteArray(), contractProvierCapsule2);
     dbManager.getAccountStore().put(userCapsule.getAddress().toByteArray(), userCapsule);
 
   }
@@ -114,18 +101,18 @@ public class EntropyProcessorTest {
         .build();
   }
 
-//  @Test
+  @Test
   public void testUseContractCreatorEntropy() throws Exception {
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
     dbManager.getDynamicPropertiesStore().saveTotalEntropyWeight(10_000_000L);
 
     AccountCapsule ownerCapsule = dbManager.getAccountStore()
-        .get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS2));
+        .get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS));
     dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
     EntropyProcessor processor = new EntropyProcessor(dbManager.getDynamicPropertiesStore(),
         dbManager.getAccountStore());
-    long entropy = 1000;
+    long entropy = 10000;
     long now = 1526647838000L;
 
     boolean result = processor.useEntropy(ownerCapsule, entropy, now);
@@ -136,12 +123,12 @@ public class EntropyProcessorTest {
     Assert.assertEquals(true, result);
 
     AccountCapsule ownerCapsuleNew = dbManager.getAccountStore()
-        .get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS2));
+        .get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS));
 
     Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
     Assert.assertEquals(1526647838000L,
         ownerCapsuleNew.getAccountResource().getLatestConsumeTimeForEntropy());
-    Assert.assertEquals(1000L, ownerCapsuleNew.getAccountResource().getEntropyUsage());
+    Assert.assertEquals(10000L, ownerCapsuleNew.getAccountResource().getEntropyUsage());
 
   }
 

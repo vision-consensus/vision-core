@@ -40,7 +40,7 @@ public class Constant {
 
   public static final byte[] ZVISION_EXPANDSEED_PERSONALIZATION = {'Z', 'v', 'i', 's', 'i', 'o', 'n', '_', 'E',
       'x',
-      'p', 'a', 'n', 'd', 'S', 'e'}; // Zvision_ExpandSeed
+      'p', 'a', 'n', 'd', 'S', 'e', 'e', 'd'};
   public static final int ZC_DIVERSIFIER_SIZE = 11;
   public static final int ZC_OUTPUT_DESC_MAX_SIZE = 10;
 

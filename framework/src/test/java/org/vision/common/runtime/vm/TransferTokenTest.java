@@ -2,8 +2,6 @@ package org.vision.common.runtime.vm;
 
 import com.google.protobuf.ByteString;
 import java.io.File;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -149,22 +147,19 @@ public class TransferTokenTest {
      also test internal transaction transferToken function */
     long triggerCallValue = 100;
     long feeLimit = 100000000;
-    long tokenValue = 9;
+    long tokenValue = 8;
     Transaction transaction = VvmTestUtils
         .generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData,
             triggerCallValue, feeLimit, tokenValue, id);
     runtime = VvmTestUtils.processTransactionAndReturnRuntime(transaction, dbManager, null);
 
-    org.testng.Assert.assertEquals("REVERT opcode executed", runtime.getRuntimeError());
+    org.testng.Assert.assertNull(runtime.getRuntimeError());
     Assert.assertEquals(100 + tokenValue - 9,
         dbManager.getAccountStore().get(contractAddress).getAssetMapV2().get(String.valueOf(id))
             .longValue());
-    Map<String, Long> map = dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2();
-    if (!map.isEmpty()){
-      Assert.assertEquals(9, dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
-              .get(String.valueOf(id)).longValue());
-    }
+    Assert.assertEquals(9, dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
+        .get(String.valueOf(id)).longValue());
 
     /*   suicide test  */
     // create new token: testToken2
@@ -184,7 +179,7 @@ public class TransferTokenTest {
             triggerCallValue, feeLimit, 0, id);
     runtime = VvmTestUtils.processTransactionAndReturnRuntime(transaction2, dbManager, null);
     org.testng.Assert.assertNull(runtime.getRuntimeError());
-    Assert.assertEquals(100,
+    Assert.assertEquals(100 + tokenValue - 9 + 9,
         dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
             .get(String.valueOf(id)).longValue());
     Assert.assertEquals(99, dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()

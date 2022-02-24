@@ -91,16 +91,16 @@ public class EntropyWhenTimeoutStyleTest {
         consumeUserResourcePercent);
 
     if (null != result.getRuntime().getResult().getException()) {
-      long expectEntropyUsageTotal = feeLimit / 5;
+      long expectEntropyUsageTotal = feeLimit / 100;
       Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
       Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-          totalBalance - expectEntropyUsageTotal * 5);
+          totalBalance - expectEntropyUsageTotal * 100);
       return;
     }
     long expectEntropyUsageTotal = 55107;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - expectEntropyUsageTotal * 5);
+        totalBalance - expectEntropyUsageTotal * 100);
 
     byte[] contractAddress = result.getContractAddress();
 
@@ -112,13 +112,13 @@ public class EntropyWhenTimeoutStyleTest {
         .triggerContractAndReturnVvmTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
             triggerData, value, feeLimit, dbManager, null);
 
-    long expectEntropyUsageTotal2 = feeLimit / 5;
+    long expectEntropyUsageTotal2 = feeLimit / 100;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Exception exception = result.getRuntime().getResult().getException();
     Assert.assertTrue((exception instanceof Program.OutOfTimeException)
         || (exception instanceof Program.OutOfEntropyException));
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
+        totalBalance - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   public VVMTestResult deployEndlessLoopContract(long value, long feeLimit,

@@ -18,21 +18,14 @@ package org.vision.common.runtime.vm;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import java.io.File;
-import java.util.Objects;
-
-import org.apache.commons.codec.binary.Hex;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.vision.common.crypto.SignInterface;
-import org.vision.common.crypto.SignUtils;
 import org.vision.common.runtime.VvmTestUtils;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.FileUtil;
-import org.vision.common.utils.StringUtil;
-import org.vision.common.utils.Utils;
 import org.vision.core.Constant;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.BlockCapsule;
@@ -85,8 +78,8 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
   private static AnnotationConfigApplicationContext context;
   private static Manager dbManager;
 
-  private static String OwnerAddress = "27arPR2YYTF8wGLiyWWZYDEGCyKHcV66YnY";
-  private static String TriggerOwnerAddress = "27aCnFu3Tz5vRVDLjGxcSBy9R1j1d48E9qR";
+  private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
+  private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
 
   static {
     Args.setParam(
@@ -101,22 +94,13 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
     context = new VisionApplicationContext(DefaultConfig.class);
   }
 
-  private String trx2ContractAddress = "27ek4vTuvNVMMw1QFoVpzhdHTb2uHgbFFmw";
+  private String trx2ContractAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
 
   /**
    * Init data.
    */
   @BeforeClass
   public static void init() {
-    int i=0;
-    while(i++<4){
-      SignInterface sign = SignUtils.getGeneratedRandomSign(Utils.getRandom(),
-              Args.getInstance().isECKeyCryptoEngine());
-      byte[] address = sign.getAddress();
-      String base58check = StringUtil.encode58Check(address);
-      System.out.println(base58check);
-    }
-
     dbManager = context.getBean(Manager.class);
     //init entropy
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647837000L);
@@ -125,7 +109,7 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
     dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
 
     AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
-        ByteString.copyFrom(Objects.requireNonNull(Commons.decodeFromBase58Check(OwnerAddress))), AccountType.Normal,
+        ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
 
     accountCapsule.setFrozenForEntropy(10_000_000L, 0L);
@@ -153,7 +137,7 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
     FileUtil.deleteDir(new File(dbPath));
   }
 
-//  @Test
+  @Test
   public void testSuccess() {
     try {
       byte[] contractAddress = createContract();
@@ -184,7 +168,7 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
       Assert.assertNotNull(trace.getRuntimeError());
       Assert.assertTrue(trace.getRuntimeError().contains(" timeout "));
       Assert.assertEquals(9950000, trace.getReceipt().getEntropyUsageTotal());
-      Assert.assertEquals(3000, entropy);
+      Assert.assertEquals(50000, entropy);
       Assert.assertEquals(990000000, balance);
       Assert.assertEquals(9950000 * Constant.VDT_PER_ENTROPY,
           balance + entropy * Constant.VDT_PER_ENTROPY);
@@ -246,10 +230,10 @@ public class PhotonRuntimeOutOfTimeWithCheckTest {
         .get(Commons.decodeFromBase58Check(OwnerAddress));
     entropy = owner.getEntropyUsage() - entropy;
     balance = balance - owner.getBalance();
-    Assert.assertEquals(198003000, trace.getReceipt().getEntropyUsageTotal());
-    Assert.assertEquals(3000, entropy);
-    Assert.assertEquals(9900000 * Constant.VDT_PER_ENTROPY, balance);
-    Assert.assertEquals(9903000 * Constant.VDT_PER_ENTROPY, balance + entropy * Constant.VDT_PER_ENTROPY);
+    Assert.assertEquals(88529, trace.getReceipt().getEntropyUsageTotal());
+    Assert.assertEquals(50000, entropy);
+    Assert.assertEquals(3852900, balance);
+    Assert.assertEquals(88529 * 100, balance + entropy * 100);
     if (trace.getRuntimeError() != null) {
       return trace.getRuntimeResult().getContractAddress();
     }

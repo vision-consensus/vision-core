@@ -19,8 +19,6 @@ import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.File;
-import java.util.Objects;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -29,9 +27,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.vision.common.runtime.VvmTestUtils;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Commons;
-import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.FileUtil;
-import org.vision.core.Wallet;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.ContractCapsule;
 import org.vision.core.capsule.TransactionCapsule;
@@ -56,7 +52,6 @@ import org.vision.protos.Protocol.Transaction.raw;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import stest.vision.wallet.common.client.Parameter;
 
 public class TransactionTraceTest {
 
@@ -103,8 +98,8 @@ public class TransactionTraceTest {
    * 0205481565b6000818152602081905260409020555600a165627a7a72305820f9935f89890e51bcf3ea98fa4841c91
    * ac5957a197d99eeb7879a775b30ee9a2d0029   1000000000 40
    * */
-  private static String OwnerAddress = "27RcahhCafmmnte3FmtTw39gn2bdDV9uADR";
-  private static String TriggerOwnerAddress = "27RYzBpuBqSiSXrkfHNqbf1b2s69z3wnqfo";
+  private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
+  private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
   /*
    * triggercontract TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj addVoters(uint256) 113 false 1000000000 0
    * */
@@ -169,9 +164,8 @@ public class TransactionTraceTest {
         + "name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable"
         + "\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"pay"
         + "able\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
-    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     CreateSmartContract smartContract = VvmTestUtils.createSmartContract(
-            Objects.requireNonNull(Commons.decodeFromBase58Check(OwnerAddress)), contractName, abi, code, 0,
+        Commons.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0,
         100);
     Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
         Contract.newBuilder().setParameter(Any.pack(smartContract))
@@ -181,25 +175,10 @@ public class TransactionTraceTest {
   }
 
   @Test
-  public void testUse(){
-    String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":"
-            + "\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"st"
-            + "ateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name"
-            + "\":\"account\",\"type\":\"uint256\"}],\"name\":\"getCoin\",\"outputs\":[{\"name\":\"\""
-            + ",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"funct"
-            + "ion\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"},{\""
-            + "name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable"
-            + "\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"pay"
-            + "able\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
-    System.out.println(abi);
-  }
-
-  @Test
   public void testUseUsage()
       throws VMIllegalException, BalanceInsufficientException,
       ContractValidateException, ContractExeException {
 
-    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
         ByteString.copyFrom(Commons.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
         totalBalance);
@@ -336,7 +315,6 @@ public class TransactionTraceTest {
         + "\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payab"
         + "le\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\""
         + "payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
-    Wallet.setAddressPreFixByte(Parameter.CommonConstant.ADD_PRE_FIX_BYTE_TESTNET);
     CreateSmartContract smartContract = VvmTestUtils.createSmartContract(
         Commons.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0,
         100);
@@ -394,7 +372,7 @@ public class TransactionTraceTest {
     trace.exec();
     trace.pay();
     Assert.assertEquals(0, trace.getReceipt().getEntropyUsage());
-    Assert.assertEquals(10254155L, trace.getReceipt().getEntropyFee());
+    Assert.assertEquals(205083100L, trace.getReceipt().getEntropyFee());
     accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
     Assert.assertEquals(totalBalance,
         trace.getReceipt().getEntropyFee() + accountCapsule

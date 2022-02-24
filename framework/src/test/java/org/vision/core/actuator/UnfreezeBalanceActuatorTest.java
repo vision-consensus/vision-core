@@ -104,11 +104,6 @@ public class UnfreezeBalanceActuatorTest {
         .setResource(ResourceCode.ENTROPY).build());
   }
 
-  private Any getContractForSpread(String ownerAddress) {
-    return Any.pack(UnfreezeBalanceContract.newBuilder()
-            .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-            .setResource(ResourceCode.SPREAD).build());
-  }
   private Any getDelegatedContractForPhoton(String ownerAddress, String receiverAddress) {
     return Any.pack(UnfreezeBalanceContract.newBuilder()
         .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))

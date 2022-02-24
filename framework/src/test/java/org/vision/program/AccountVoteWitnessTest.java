@@ -12,7 +12,6 @@ import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.DefaultConfig;
 import org.vision.core.config.args.Args;
-import org.vision.core.consensus.ConsensusService;
 import org.vision.core.db.Manager;
 import org.vision.common.application.VisionApplicationContext;
 import org.vision.protos.Protocol.AccountType;
@@ -27,7 +26,6 @@ public class AccountVoteWitnessTest {
 
   private static Manager dbManager;
   private static MaintenanceManager maintenanceManager;
-  private static ConsensusService consensusService;
   private static String dbPath = "output_witness_test";
 
   static {
@@ -42,8 +40,6 @@ public class AccountVoteWitnessTest {
   public static void init() {
     dbManager = context.getBean(Manager.class);
     maintenanceManager = context.getBean(MaintenanceManager.class);
-    consensusService = context.getBean(ConsensusService.class);
-    consensusService.start();
     // Args.setParam(new String[]{}, Constant.TEST_CONF);
     //  dbManager = new Manager();
     //  dbManager.init();

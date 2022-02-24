@@ -55,7 +55,7 @@ public class SaplingNoteTest {
         0x14, (byte) 0xc6, (byte) 0xc2, (byte) 0xbc, (byte) 0xc0, 0x18, 0x50, (byte) 0xc9,
         (byte) 0xfe, (byte) 0xd4, 0x4f, (byte) 0xce, 0x08, 0x06, 0x27, (byte) 0x8f, 0x08, 0x3e,
         (byte) 0xf2, (byte) 0xdd, 0x07, 0x64, 0x39};
-    String nf = "9956d2c78e4f45ad9089a4514e7fa4f7e2348b51086d79ec06a03fe686b79ddb";
+    String nf = "b7560da1a2913fb2d873bb3c596a891a4e2e3abd83a852bcdfc9d410e7834117";
 
     // test commit
     Note note = new Note(new DiversifierT(d), pkD, v, r);

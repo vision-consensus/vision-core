@@ -336,7 +336,7 @@ public class ProposalCreateActuatorTest {
       fail("This proposal has no parameter");
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("This proposal has no parameter or string parameter.",
+      Assert.assertEquals("This proposal has no parameter.",
           e.getMessage());
     } catch (ContractExeException e) {
       Assert.assertFalse(e instanceof ContractExeException);
