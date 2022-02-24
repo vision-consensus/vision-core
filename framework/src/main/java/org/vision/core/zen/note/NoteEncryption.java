@@ -124,7 +124,7 @@ public class NoteEncryption {
       System.arraycopy(epk, 0, block, 96, 32);
 
       byte[] personalization = new byte[JLibsodium.CRYPTO_GENERICHASH_BLAKE2B_PERSONALBYTES];
-      byte[] temp = "Zvision_Deriveok".getBytes(); //Zvision_Derive_ock
+      byte[] temp = "Zvision_Derive_ock".getBytes();
       System.arraycopy(temp, 0, personalization, 0, temp.length);
       if (JLibsodium.cryptoGenerichashBlack2bSaltPersonal(new Black2bSaltPersonalParams(
           ock, NOTEENCRYPTION_CIPHER_KEYSIZE,
@@ -146,7 +146,7 @@ public class NoteEncryption {
       System.arraycopy(sharedsecret, 0, block, 0, 32);
       System.arraycopy(epk, 0, block, 32, 32);
       byte[] personalization = new byte[JLibsodium.CRYPTO_GENERICHASH_BLAKE2B_PERSONALBYTES];
-      byte[] temp = "Zvision_SapleKDF".getBytes();
+      byte[] temp = "Zvision_SaplingKDF".getBytes();
       System.arraycopy(temp, 0, personalization, 0, temp.length);
       if (JLibsodium.cryptoGenerichashBlack2bSaltPersonal(new Black2bSaltPersonalParams(
           kEnc, NOTEENCRYPTION_CIPHER_KEYSIZE,

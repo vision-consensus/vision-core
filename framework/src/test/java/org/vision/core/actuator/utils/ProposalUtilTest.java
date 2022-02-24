@@ -257,13 +257,13 @@ public class ProposalUtilTest {
       Assert.assertTrue(false);
     } catch (ContractValidateException e) {
       Assert.assertEquals(
-          "Bad chain parameter value, valid range is [10,1000]", e.getMessage());
+          "Bad chain parameter value, valid range is [10,100]", e.getMessage());
     }
 
     try {
       actuatorUtil.validator(dynamicPropertiesStore, forkUtils,
           ProposalUtil.ProposalType.MAX_CPU_TIME_OF_ONE_TX.getCode(), 101);
-      Assert.assertTrue(true);
+      Assert.assertTrue(false);
     } catch (ContractValidateException e) {
       Assert.assertEquals(
           "Bad chain parameter value, valid range is [10,100]", e.getMessage());

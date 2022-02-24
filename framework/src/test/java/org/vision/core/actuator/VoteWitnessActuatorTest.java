@@ -1,20 +1,19 @@
 package org.vision.core.actuator;
 
 import static junit.framework.TestCase.fail;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import java.io.File;
-import java.lang.reflect.Method;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.*;
-import org.junit.rules.TestName;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.FileUtil;
 import org.vision.common.utils.StringUtil;
-import org.vision.consensus.ConsensusDelegate;
 import org.vision.consensus.dpos.MaintenanceManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
@@ -23,20 +22,17 @@ import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.DefaultConfig;
-import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.consensus.ConsensusService;
 import org.vision.core.db.Manager;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.common.application.VisionApplicationContext;
-import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Block;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.AssetIssueContractOuterClass;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
-import org.vision.protos.contract.Common;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
@@ -106,13 +102,12 @@ public class VoteWitnessActuatorTest {
             StringUtil.hexString2ByteString(WITNESS_ADDRESS),
             10L,
             URL);
-    ownerCapsule.setVoteCountWeight(ownerCapsule.getVoteCount());
     AccountCapsule witnessAccountSecondCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(WITNESS_NAME),
             StringUtil.hexString2ByteString(WITNESS_ADDRESS),
             AccountType.Normal,
-            300_000_000_000L);
+            300L);
     AccountCapsule ownerAccountFirstCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(ACCOUNT_NAME),
@@ -144,16 +139,6 @@ public class VoteWitnessActuatorTest {
             .setFrozenBalance(frozenBalance)
             .setFrozenDuration(duration)
             .build());
-  }
-
-  private Any getContract(String ownerAddress, long frozenBalance, long duration, Common.ResourceCode resourceCode) {
-    return Any.pack(
-            FreezeBalanceContract.newBuilder()
-                    .setOwnerAddress(StringUtil.hexString2ByteString(ownerAddress))
-                    .setResource(resourceCode)
-                    .setFrozenBalance(frozenBalance)
-                    .setFrozenDuration(duration)
-                    .build());
   }
 
   private Any getRepeateContract(String address, String voteaddress, Long value, int times) {
@@ -193,7 +178,7 @@ public class VoteWitnessActuatorTest {
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
               .get(0).getVoteAddress().toByteArray());
       Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.doMaintenance();
+      maintenanceManager.applyBlock(new BlockCapsule(Block.newBuilder().build()));
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
           .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
       Assert.assertEquals(10 + 1, witnessCapsule.getVoteCount());
@@ -203,175 +188,6 @@ public class VoteWitnessActuatorTest {
       Assert.assertFalse(e instanceof ContractExeException);
     }
   }
-
-  /**
-   * voteWitness with weight,result is success.
-   * 1000-10000  voteCount*1.08
-   */
-  @Test
-  public void voteWitnessLevel1() {
-    long frozenBalance = 2_000_000_000L;
-    long duration = 3;
-    FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator();
-    freezeBalanceActuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, frozenBalance, duration));
-    VoteWitnessActuator actuator = new VoteWitnessActuator();
-    actuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, WITNESS_ADDRESS, 100L));
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      freezeBalanceActuator.validate();
-      freezeBalanceActuator.execute(ret);
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.assertEquals(100,
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteCount());
-      Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteAddress().toByteArray());
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.doMaintenance();
-      WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
-              .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
-      Assert.assertEquals(10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel1() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
-
-  /**
-   * voteWitness with weight,result is success.
-   * 10000-100000  voteCount*1.13
-   */
-  @Test
-  public void voteWitnessLevel2() {
-    long frozenBalance = 20_000_000_000L;
-    long duration = 3;
-    FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator();
-    freezeBalanceActuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, frozenBalance, duration));
-    VoteWitnessActuator actuator = new VoteWitnessActuator();
-    actuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, WITNESS_ADDRESS, 100L));
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      freezeBalanceActuator.validate();
-      freezeBalanceActuator.execute(ret);
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.assertEquals(100,
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteCount());
-      Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteAddress().toByteArray());
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.doMaintenance();
-      WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
-              .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
-      Assert.assertEquals(10 + 113, 10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel2() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
-
-  /**
-   * voteWitness with weight,result is success.
-   * >100000  voteCount*1.16
-   */
-  @Test
-  public void voteWitnessLevel3() {
-    long frozenBalance = 200_000_000_000L;
-    long duration = 3;
-    FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator();
-    freezeBalanceActuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, frozenBalance, duration));
-    VoteWitnessActuator actuator = new VoteWitnessActuator();
-    actuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, WITNESS_ADDRESS, 100L));
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      freezeBalanceActuator.validate();
-      freezeBalanceActuator.execute(ret);
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.assertEquals(100,
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteCount());
-      Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteAddress().toByteArray());
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.doMaintenance();
-      WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
-              .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
-      Assert.assertEquals(10 + 116, 10 + (long) (100L * ((float) dbManager.getDynamicPropertiesStore().getVoteFreezePercentLevel3() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION)), witnessCapsule.getVoteCountWeight());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
-
-  /**
-   * voteWitness with weight,result is success.
-   * 1000-10000  voteCount*1.08
-   */
-  @Test
-  public void voteWitnessThresHold() {
-    long frozenBalance = 2_000_000_000L;
-    long duration = 3;
-    FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator();
-    freezeBalanceActuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, frozenBalance, duration));
-    long frozenBalanceWitness = 6_000_000_000l;
-    FreezeBalanceActuator freezeBalanceActuatorWitness = new FreezeBalanceActuator();
-    freezeBalanceActuatorWitness.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(WITNESS_ADDRESS, frozenBalanceWitness, duration, Common.ResourceCode.SRGUARANTEE));
-    VoteWitnessActuator actuator = new VoteWitnessActuator();
-    actuator.setChainBaseManager(dbManager.getChainBaseManager())
-            .setAny(getContract(OWNER_ADDRESS, WITNESS_ADDRESS, 100L));
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      freezeBalanceActuator.validate();
-      freezeBalanceActuator.execute(ret);
-      freezeBalanceActuatorWitness.validate();
-      freezeBalanceActuatorWitness.execute(ret);
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.assertEquals(100,
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteCount());
-      Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-              dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-                      .get(0).getVoteAddress().toByteArray());
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
-      maintenanceManager.doMaintenance();
-      WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
-              .get(StringUtil.hexString2ByteString(WITNESS_ADDRESS).toByteArray());
-      AccountCapsule account = dbManager.getAccountStore().get(ByteArray.fromHexString(WITNESS_ADDRESS));
-      long sRGuaranteeFrozenBalance = account.getSRGuaranteeFrozenBalance();
-      long maxVoteCounts = 0;
-      if (sRGuaranteeFrozenBalance > dbManager.getDynamicPropertiesStore().getSrFreezeLowest()) {
-        maxVoteCounts = (long) ((sRGuaranteeFrozenBalance - dbManager.getDynamicPropertiesStore().getSrFreezeLowest())
-                /((float) dbManager.getDynamicPropertiesStore().getSrFreezeLowestPercent() / Parameter.ChainConstant.SR_FREEZE_LOWEST_PRECISION));
-        maxVoteCounts /= VS_PRECISION;
-      }
-
-      Assert.assertEquals(maxVoteCounts, witnessCapsule.getVoteCountThreshold());
-    } catch (ContractValidateException e) {
-      e.printStackTrace();
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
-
 
   /**
    * use Invalid ownerAddress voteWitness,result is failed,exception is "Invalid address".

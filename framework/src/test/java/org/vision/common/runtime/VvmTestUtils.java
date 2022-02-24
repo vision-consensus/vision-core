@@ -619,7 +619,7 @@ public class VvmTestUtils {
 
   public static CreateSmartContract createSmartContract(byte[] owner, String contractName,
       String abiString, String code, long value, long consumeUserResourcePercent) {
-    //Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
+    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
 
     SmartContract.ABI abi = PublicMethed.jsonStr2Abi(abiString);
     if (abi == null) {

@@ -51,13 +51,13 @@ public class ArgsTest {
 
     Assert.assertEquals("database", parameter.getStorage().getDbDirectory());
 
-    Assert.assertEquals(0, parameter.getSeedNode().getIpList().size());
+    Assert.assertEquals(11, parameter.getSeedNode().getIpList().size());
 
     GenesisBlock genesisBlock = parameter.getGenesisBlock();
 
-    Assert.assertEquals(3, genesisBlock.getAssets().size());
+    Assert.assertEquals(4, genesisBlock.getAssets().size());
 
-    Assert.assertEquals(1, genesisBlock.getWitnesses().size());
+    Assert.assertEquals(11, genesisBlock.getWitnesses().size());
 
     Assert.assertEquals("0", genesisBlock.getTimestamp());
 
@@ -65,7 +65,7 @@ public class ArgsTest {
         genesisBlock.getParentHash());
 
     Assert.assertEquals(
-        Lists.newArrayList("b7c2a186ad04fee26d374907e9357f36e4f6a5b35b82b3781455207b6cb77669"),
+        Lists.newArrayList("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"),
         Args.getLocalWitnesses().getPrivateKeys());
 
     Assert.assertTrue(parameter.isNodeDiscoveryEnable());
@@ -91,9 +91,9 @@ public class ArgsTest {
     Assert.assertEquals(GrpcUtil.DEFAULT_MAX_HEADER_LIST_SIZE, parameter.getMaxHeaderListSize());
     Assert.assertEquals(1L, parameter.getAllowCreationOfContracts());
 
-    Assert.assertEquals("b7c2a186ad04fee26d374907e9357f36e4f6a5b35b82b3781455207b6cb77669",
+    Assert.assertEquals("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62",
         Args.getLocalWitnesses().getPrivateKey());
-    Assert.assertEquals("a09f35db98b6787922c86035114a2f14ea012297d3",
+    Assert.assertEquals("a0299f3db80a24b20a254b89ce639d59132f157f13",
         ByteArray.toHexString(Args.getLocalWitnesses()
             .getWitnessAccountAddress(CommonParameter.getInstance().isECKeyCryptoEngine())));
   }

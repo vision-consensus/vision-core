@@ -2503,7 +2503,7 @@ public class ShieldedReceiveTest extends BlockGenerate {
   @Test
   public void decodePaymentAddressIgnoreCase() {
     String addressLower =
-    "zvision1j6w08mhx6u2vut24unf2kvqr2m0wh3xr469zhkwawsf57p28yddllg4nw5n0wln6jd0yvx0w6uu";
+        "ztron1975m0wyg8f30cgf2l5fgndhzqzkzgkgnxge8cwx2wr7m3q7chsuwewh2e6u24yykum0hq8ue99u";
     String addressUpper = addressLower.toUpperCase();
 
     PaymentAddress paymentAddress1 = KeyIo.decodePaymentAddress(addressLower);

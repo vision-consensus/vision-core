@@ -102,7 +102,7 @@ public class EntropyWhenSendAndTransferTest {
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEntropyUsageTotal * 5);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL simpleCall() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("simpleCall()", null);
@@ -113,7 +113,7 @@ public class EntropyWhenSendAndTransferTest {
     long expectEntropyUsageTotal2 = 7370;
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal2);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
 
     /* =================================== CALL complexCall() =================================== */
     triggerData = VvmTestUtils.parseAbi("complexCall()", null);
@@ -125,7 +125,7 @@ public class EntropyWhenSendAndTransferTest {
     Assert.assertEquals(result.getReceipt().getEntropyUsageTotal(), expectEntropyUsageTotal3);
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(), totalBalance - value
-        - (expectEntropyUsageTotal + expectEntropyUsageTotal2 + expectEntropyUsageTotal3) * 5);
+        - (expectEntropyUsageTotal + expectEntropyUsageTotal2 + expectEntropyUsageTotal3) * 100);
   }
 
   // solidity for sendTest and transferTest
@@ -178,7 +178,7 @@ public class EntropyWhenSendAndTransferTest {
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEntropyUsageTotal * 5);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL doSend() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("doSend()", null);
@@ -192,7 +192,7 @@ public class EntropyWhenSendAndTransferTest {
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   @Test
@@ -213,7 +213,7 @@ public class EntropyWhenSendAndTransferTest {
     byte[] contractAddress = result.getContractAddress();
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - expectEntropyUsageTotal * 5);
+        totalBalance - value - expectEntropyUsageTotal * 100);
 
     /* =================================== CALL doSend() =================================== */
     byte[] triggerData = VvmTestUtils.parseAbi("doTransfer()", null);
@@ -227,7 +227,7 @@ public class EntropyWhenSendAndTransferTest {
     Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
     Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
     Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 5);
+        totalBalance - value - (expectEntropyUsageTotal + expectEntropyUsageTotal2) * 100);
   }
 
   public VVMTestResult deployCallValueTestContract(long value, long feeLimit,

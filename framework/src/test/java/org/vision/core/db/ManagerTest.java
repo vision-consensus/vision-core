@@ -11,7 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.vision.common.crypto.ECKey;
 import org.vision.common.utils.*;
 import org.vision.consensus.dpos.DposSlot;
@@ -51,7 +54,6 @@ import org.vision.protos.contract.ShieldContract;
 public class ManagerTest extends BlockGenerate {
 
   private static final int SHIELDED_TRANS_IN_BLOCK_COUNTS = 1;
-  private static final long AMOUNT = 100000000L;
   private static Manager dbManager;
   private static ChainBaseManager chainManager;
   private static ConsensusService consensusService;
@@ -63,8 +65,8 @@ public class ManagerTest extends BlockGenerate {
   private static String accountAddress =
       Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
 
-  @BeforeClass
-  public static void init() {
+  @Before
+  public void init() {
     Args.setParam(new String[]{"-d", dbPath, "-w"}, Constant.TEST_CONF);
     Args.getInstance().setNodeListenPort(10000 + port.incrementAndGet());
     context = new VisionApplicationContext(DefaultConfig.class);
@@ -99,7 +101,7 @@ public class ManagerTest extends BlockGenerate {
     FileUtil.deleteDir(new File(dbPath));
   }
 
-//  @Test
+  @Test
   public void setBlockReference()
           throws ContractExeException, UnLinkedBlockException, ValidateScheduleException,
           BadBlockException, ContractValidateException, ValidateSignatureException,
@@ -150,7 +152,7 @@ public class ManagerTest extends BlockGenerate {
         ByteArray.toInt(trx.getInstance().getRawData().getRefBlockBytes().toByteArray()));
   }
 
-//  @Test
+  @Test
   public void pushBlock() {
     boolean isUnlinked = false;
     try {
@@ -178,7 +180,7 @@ public class ManagerTest extends BlockGenerate {
     Assert.assertTrue("hasBlocks is error", chainManager.hasBlocks());
   }
 
-//  @Test
+  @Test
   public void GetterInstanceTest() {
 
     Assert.assertTrue(chainManager.getTransactionStore() instanceof TransactionStore);
@@ -202,7 +204,7 @@ public class ManagerTest extends BlockGenerate {
   }
 
 
-//  @Test
+  @Test
   public void pushBlockInvalidSignature() {
     // invalid witness address cause invalid signature
     String invalidWitness = "bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f";
@@ -218,7 +220,7 @@ public class ManagerTest extends BlockGenerate {
   }
 
 
-//  @Test
+  @Test
   public void getHeadTest() {
     try {
       BlockCapsule head = chainManager.getHead();
@@ -238,7 +240,7 @@ public class ManagerTest extends BlockGenerate {
     }
   }
 
-//  @Test
+  @Test
   public void adjustBalanceTest() {
 
     byte[] ownerAddress = accountAddress.getBytes();
@@ -344,7 +346,7 @@ public class ManagerTest extends BlockGenerate {
 
   }
 
-//  @Test
+  @Test
   public void pushBlockInvalidMerkelRoot() {
     Transaction trx = Transaction.newBuilder().build();
     TransactionCapsule moreTrans = new TransactionCapsule(trx);
@@ -362,9 +364,8 @@ public class ManagerTest extends BlockGenerate {
     }
   }
 
-//  @Test
+  @Test
   public void adjustTotalShieldPoolValueTest() {
-    chainManager.getDynamicPropertiesStore().saveTotalShieldedPoolValue(AMOUNT);
     long valueBalance = chainManager.getDynamicPropertiesStore().getTotalShieldedPoolValue() + 1;
     try {
       Commons.adjustTotalShieldedPoolValue(valueBalance, chainManager.getDynamicPropertiesStore());
@@ -388,7 +389,7 @@ public class ManagerTest extends BlockGenerate {
 
   }
 
-//  @Test
+  @Test
   public void pushBlockTooMuchShieldedTransactions() {
     ShieldContract.ShieldedTransferContract trx1 = ShieldContract.ShieldedTransferContract
         .newBuilder()
@@ -419,7 +420,7 @@ public class ManagerTest extends BlockGenerate {
     }
   }
 
-//  @Test
+  @Test
   public void pushSwitchFork()
           throws UnLinkedBlockException, NonCommonBlockException, ContractValidateException,
           ValidateScheduleException, ZksnarkException, BadBlockException, VMIllegalException,
@@ -524,7 +525,7 @@ public class ManagerTest extends BlockGenerate {
         2, sizeTis - sizePrv);
   }
 
-//  @Test
+  @Test
   public void fork()
           throws ValidateSignatureException, ContractValidateException, ContractExeException,
           UnLinkedBlockException, ValidateScheduleException, BadItemException,
@@ -600,7 +601,7 @@ public class ManagerTest extends BlockGenerate {
         chainManager.getDynamicPropertiesStore().getLatestBlockHeaderHash());
   }
 
-//  @Test
+  @Test
   public void doNotSwitch()
           throws ValidateSignatureException, ContractValidateException, ContractExeException,
           UnLinkedBlockException, ValidateScheduleException, BadItemException,
@@ -704,7 +705,7 @@ public class ManagerTest extends BlockGenerate {
             .getBlockId());
   }
 
-//  @Test
+  @Test
   public void switchBack()
           throws ValidateSignatureException, ContractValidateException, ContractExeException,
           UnLinkedBlockException, ValidateScheduleException, BadItemException,

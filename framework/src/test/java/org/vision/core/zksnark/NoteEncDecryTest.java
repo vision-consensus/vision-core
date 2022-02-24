@@ -105,7 +105,7 @@ public class NoteEncDecryTest {
     dbManager.getAssetIssueV2Store().put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
   }
 
-//  @Test
+  @Test
   public void testDecryptWithOvk() throws ZksnarkException {
     //input
     NoteEncryption.Encryption.OutCiphertext outCiphertext = new NoteEncryption.Encryption.OutCiphertext();
@@ -139,7 +139,7 @@ public class NoteEncDecryTest {
     Assert.assertArrayEquals(result.getEsk(), esk);
   }
 
-//  @Test
+  @Test
   public void testDecryptEncWithEpk() throws ZksnarkException {
     //input
     NoteEncryption.Encryption.EncCiphertext enc = new NoteEncryption.Encryption.EncCiphertext();

@@ -131,14 +131,14 @@ public class RuntimeImplTest {
     repository = RepositoryImpl.createRoot(StoreFactory.getInstance());
     AccountCapsule creatorAccount = repository.getAccount(creatorAddress);
 
-    long expectEntropyLimit1 = 200000000;//10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
         expectEntropyLimit1);
 
-    value = 5_000_000L;
-    long expectEntropyLimit2 = 200_000_000L;
+    value = 2_500_000_000L;
+    long expectEntropyLimit2 = 5_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -146,7 +146,7 @@ public class RuntimeImplTest {
 
     value = 10L;
     feeLimit = 1_000_000L;
-    long expectEntropyLimit3 = 200_000L;
+    long expectEntropyLimit3 = 10_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -160,7 +160,7 @@ public class RuntimeImplTest {
     repository.commit();
 
     feeLimit = 1_000_000_000L;
-    long expectEntropyLimit4 = 200_000_000L;
+    long expectEntropyLimit4 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -168,7 +168,7 @@ public class RuntimeImplTest {
 
     feeLimit = 3_000_000_000L;
     value = 10L;
-    long expectEntropyLimit5 = 400_000_598L;
+    long expectEntropyLimit5 = 20_009_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -176,7 +176,7 @@ public class RuntimeImplTest {
 
     feeLimit = 3_000L;
     value = 10L;
-    long expectEntropyLimit6 = 600L;
+    long expectEntropyLimit6 = 30L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getAccountEntropyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -231,7 +231,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit1 = 200_000_000L;//10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -247,7 +247,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit2 = 200_000_600L;//10_005_000L;
+    long expectEntropyLimit2 = 10_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -255,7 +255,7 @@ public class RuntimeImplTest {
         expectEntropyLimit2);
 
     value = 3_500_000_000L;
-    long expectEntropyLimit3 = 100_000_600L;//5_005_000L;
+    long expectEntropyLimit3 = 5_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -264,7 +264,7 @@ public class RuntimeImplTest {
 
     value = 10L;
     feeLimit = 5_000_000_000L;
-    long expectEntropyLimit4 = 800_000_598L;//40_004_999L;
+    long expectEntropyLimit4 = 40_004_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -279,7 +279,7 @@ public class RuntimeImplTest {
 
     value = 10L;
     feeLimit = 5_000_000_000L;
-    long expectEntropyLimit5 = 600001198;//30_014_999L;
+    long expectEntropyLimit5 = 30_014_999L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -335,7 +335,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit1 = 200_000_000L; //10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -351,7 +351,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit2 = 200_000_600L;//10_005_000L;
+    long expectEntropyLimit2 = 10_005_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -359,7 +359,7 @@ public class RuntimeImplTest {
         expectEntropyLimit2);
 
     value = 3_999_950_000L;
-    long expectEntropyLimit3 = 10_600L;
+    long expectEntropyLimit3 = 1_250L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -415,7 +415,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit1 = 200_000_000L;;//10_000_000L;
+    long expectEntropyLimit1 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -431,7 +431,7 @@ public class RuntimeImplTest {
 
     feeLimit = 1_000_000_000L;
     value = 0L;
-    long expectEntropyLimit2 = 200_000_000L;
+    long expectEntropyLimit2 = 10_000_000L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
@@ -439,7 +439,7 @@ public class RuntimeImplTest {
         expectEntropyLimit2);
 
     value = 3_999_950_000L;
-    long expectEntropyLimit3 = 10000L;
+    long expectEntropyLimit3 = 500L;
     Assert.assertEquals(
         ((VMActuator) runtimeImpl.getActuator2())
             .getTotalEntropyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit,
