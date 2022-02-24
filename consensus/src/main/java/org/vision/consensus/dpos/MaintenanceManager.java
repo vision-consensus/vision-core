@@ -105,7 +105,6 @@ public class MaintenanceManager {
 
     tryRemoveThePowerOfTheGr();
 
-    //TODO only for test
     if(consensusDelegate.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.witnessSortEffectBlockNum){
       consensusDelegate.getAllWitnesses().forEach(witnessCapsule -> {
         AccountCapsule account = consensusDelegate.getAccount(witnessCapsule.getAddress().toByteArray());

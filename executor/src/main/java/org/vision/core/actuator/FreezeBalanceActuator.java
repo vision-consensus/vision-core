@@ -179,7 +179,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long maxFrozenTime = dynamicStore.getMaxFrozenTime();
 
     boolean needCheckFrozeTime = CommonParameter.getInstance()
-            .getCheckFrozenTime() == 1;//for test
+            .getCheckFrozenTime() == 1;
+
 
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
