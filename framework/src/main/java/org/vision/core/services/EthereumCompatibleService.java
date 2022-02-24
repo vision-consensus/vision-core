@@ -601,6 +601,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionResultDTO.input = ByteArray.toJsonHex(transaction.getRawData().getData().toByteArray());
 
         if (transactionInfo == null){
+            transactionResultDTO.nonce = "0x0";
+            transactionResultDTO.gas = "0x0";
             return;
         }
         Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
