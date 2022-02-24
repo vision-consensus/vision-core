@@ -569,40 +569,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
     private void transferTransactionInfoToEther(TransactionResultDTO transactionResultDTO,
                                                 Protocol.Transaction transaction,
                                                 Protocol.TransactionInfo transactionInfo) {
-        if (transactionInfo == null || transaction == null){
+        if (transaction == null){
             return;
         }
 
-        Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
-        BlockCapsule blockCapsule = new BlockCapsule(block);
-        transactionResultDTO.blockHash = ByteArray.toJsonHex(blockCapsule.getBlockId().getBytes());
-        transactionResultDTO.blockNumber = ByteArray.toJsonHex(blockCapsule.getNum());
         transactionResultDTO.chainId = eth_chainId();
         transactionResultDTO.condition = null;
         transactionResultDTO.creates = null;
-        // compatible remix
-        transactionResultDTO.gasPrice = eth_gasPrice();
-        transactionResultDTO.from = null;
-        transactionResultDTO.to = null;
-
-        if (!transaction.getRawData().getContractList().isEmpty()) {
-            Contract contract = transaction.getRawData().getContract(0);
-            byte[] ownerAddress = TransactionCapsule.getOwner(contract);
-            byte[] toAddress = getToAddress(transaction);
-            transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
-            transactionResultDTO.to =  ByteArray.toJsonHexAddress(toAddress);
-        }
-
-        String txID = ByteArray.toHexString(Sha256Hash
-                .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
-                        transaction.getRawData().toByteArray()));
-        transactionResultDTO.hash =  "0x" + txID;
-        transactionResultDTO.input = ByteArray.toJsonHex(transaction.getRawData().getData().toByteArray());
-        try {
-            transactionResultDTO.nonce = eth_getTransactionCount(transactionResultDTO.from, blockCapsule.getBlockId().toString());
-        }catch (Exception exception){
-            transactionResultDTO.nonce = "0x";
-        }
         transactionResultDTO.publicKey = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         transactionResultDTO.r = "0x0000000000000000000000000000000000000000000000000000000000000000";
         transactionResultDTO.raw = ByteArray.toJsonHex(transaction.getRawData().toByteArray());
@@ -611,6 +584,37 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionResultDTO.transactionIndex = "0x0";
         transactionResultDTO.v = "0x00";
         transactionResultDTO.value = "0x0";
+        transactionResultDTO.gasPrice = eth_gasPrice();
+        transactionResultDTO.from = null;
+        transactionResultDTO.to = null;
+        if (!transaction.getRawData().getContractList().isEmpty()) {
+            Contract contract = transaction.getRawData().getContract(0);
+            byte[] ownerAddress = TransactionCapsule.getOwner(contract);
+            byte[] toAddress = getToAddress(transaction);
+            transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+            transactionResultDTO.to =  ByteArray.toJsonHexAddress(toAddress);
+        }
+        String txID = ByteArray.toHexString(Sha256Hash
+                .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
+                        transaction.getRawData().toByteArray()));
+        transactionResultDTO.hash =  "0x" + txID;
+        transactionResultDTO.input = ByteArray.toJsonHex(transaction.getRawData().getData().toByteArray());
+
+        if (transactionInfo == null){
+            return;
+        }
+        Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
+        BlockCapsule blockCapsule = new BlockCapsule(block);
+        transactionResultDTO.blockHash = ByteArray.toJsonHex(blockCapsule.getBlockId().getBytes());
+        transactionResultDTO.blockNumber = ByteArray.toJsonHex(blockCapsule.getNum());
+        long entropyUsageTotal = transactionInfo.getReceipt().getEntropyUsageTotal();
+        transactionResultDTO.gas = ByteArray.toJsonHex(entropyUsageTotal);
+
+        try {
+            transactionResultDTO.nonce = eth_getTransactionCount(transactionResultDTO.from, blockCapsule.getBlockId().toString());
+        }catch (Exception exception){
+            transactionResultDTO.nonce = "0x";
+        }
     }
 
     private void transferTransaction2Ether(TransactionResultDTO transactionResultDTO,
