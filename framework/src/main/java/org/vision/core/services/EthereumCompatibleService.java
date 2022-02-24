@@ -36,7 +36,30 @@ import org.vision.program.Version;
 import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Block;
 import org.vision.protos.Protocol.Transaction;
+import org.vision.protos.Protocol.Transaction.Contract;
+import org.vision.protos.Protocol.Transaction.Contract.ContractType;
+import org.vision.protos.contract.Common;
 import org.vision.protos.contract.SmartContractOuterClass;
+import org.vision.protos.contract.AccountContract.AccountCreateContract;
+import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
+import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract.FrozenSupply;
+import org.vision.protos.contract.AssetIssueContractOuterClass.ParticipateAssetIssueContract;
+import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
+import org.vision.protos.contract.AssetIssueContractOuterClass.UnfreezeAssetContract;
+import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+import org.vision.protos.contract.BalanceContract.TransferContract;
+import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
+import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
+import org.vision.protos.contract.ExchangeContract.ExchangeTransactionContract;
+import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
+import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
+import org.vision.protos.contract.SmartContractOuterClass.ClearABIContract;
+import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateEntropyLimitContract;
+import org.vision.protos.contract.SmartContractOuterClass.UpdateSettingContract;
+import org.vision.protos.contract.VoteAssetContractOuterClass.VoteAssetContract;
+import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
+import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -543,6 +566,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     private void transferTransaction2Ether(TransactionResultDTO transactionResultDTO,
                                            Protocol.Transaction transaction) {
+        if (transaction ==null){
+            return;
+        }
         Protocol.Transaction.raw rawData = transaction.getRawData();
         // Protocol.Transaction.Contract contract = rawData.getContract(0);
         transactionResultDTO.blockHash = "0x" + toHexString(rawData.getRefBlockHash().toByteArray());
@@ -552,46 +578,17 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionResultDTO.creates = null;
         // compatible remix
         transactionResultDTO.gasPrice = eth_gasPrice();
-        boolean selfType = false;
-        transaction.getRawData().getContractList().stream().forEach(contract -> {
-            try {
-                JSONObject contractJson = null;
-                Any contractParameter = contract.getParameter();
-                switch (contract.getType()) {
-                    case CreateSmartContract:
-                        SmartContractOuterClass.CreateSmartContract deployContract = contractParameter
-                                .unpack(SmartContractOuterClass.CreateSmartContract.class);
-                        contractJson = JSONObject
-                                .parseObject(JsonFormat.printToString(deployContract, selfType));
-                        byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
-                        byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                        // jsonTransaction.put("contract_address", ByteArray.toHexString(contractAddress));
-                        transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
-                        transactionResultDTO.to = ByteArray.toJsonHexAddress(contractAddress);
-                        break;
-                    default:
-                        Class clazz = TransactionFactory.getContract(contract.getType());
-                        if (clazz != null) {
-                            contractJson = JSONObject
-                                    .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
-                        }
-                        if (contractJson != null && contractJson.getString("owner_address") != null ){
-                            transactionResultDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
-                        }else{
-                            transactionResultDTO.from = null;
-                        }
-                        if (contractJson != null && contractJson.getString("account_address") != null ){
-                            transactionResultDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
-                        }else{
-                            transactionResultDTO.to = null;
-                        }
-                        break;
-                }
+        transactionResultDTO.from = null;
+        transactionResultDTO.to = null;
 
-            } catch (InvalidProtocolBufferException e) {
-                logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
-            }
-        });
+        if (!transaction.getRawData().getContractList().isEmpty()) {
+            Contract contract = transaction.getRawData().getContract(0);
+            byte[] ownerAddress = TransactionCapsule.getOwner(contract);
+            byte[] toAddress = getToAddress(transaction);
+            transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+            transactionResultDTO.to =  ByteArray.toJsonHexAddress(toAddress);
+        }
+
         String txID = ByteArray.toHexString(Sha256Hash
                 .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
                         transaction.getRawData().toByteArray()));
@@ -675,46 +672,22 @@ public class EthereumCompatibleService implements EthereumCompatible {
             transactionReceiptDTO.type =  "0x0";
             transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             transactionReceiptDTO.transactionHash = transactionHash;
+            transactionReceiptDTO.from = null;
+            transactionReceiptDTO.to = null;
+            transactionReceiptDTO.contractAddress = null;
 
-            boolean selfType = false;
-            rawData.getContractList().stream().forEach(contract -> {
-                try {
-                    JSONObject contractJson = null;
-                    Any contractParameter = contract.getParameter();
-                    switch (contract.getType()) {
-                        case CreateSmartContract:
-                            SmartContractOuterClass.CreateSmartContract deployContract = contractParameter
-                                    .unpack(SmartContractOuterClass.CreateSmartContract.class);
-                            contractJson = JSONObject
-                                    .parseObject(JsonFormat.printToString(deployContract, selfType));
-                            byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
-                            byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
-                            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(contractAddress);
-                            break;
-                        default:
-                            Class clazz = TransactionFactory.getContract(contract.getType());
-                            if (clazz != null) {
-                                contractJson = JSONObject
-                                        .parseObject(JsonFormat.printToString(contractParameter.unpack(clazz), selfType));
-                            }
-                            if (contractJson != null && contractJson.getString("owner_address") != null ){
-                                transactionReceiptDTO.from = "0x" + getAddrNo46(contractJson.getString("owner_address"));
-                            }else{
-                                transactionReceiptDTO.from = null;
-                            }
-                            if (contractJson != null && contractJson.getString("account_address") != null ){
-                                transactionReceiptDTO.to = "0x" + getAddrNo46(contractJson.getString("account_address"));
-                            }else{
-                                transactionReceiptDTO.to = null;
-                            }
-                            break;
-                    }
+            if (!transaction.getRawData().getContractList().isEmpty()) {
+                Contract contract = transaction.getRawData().getContract(0);
+                byte[] ownerAddress = TransactionCapsule.getOwner(contract);
+                byte[] toAddress = getToAddress(transaction);
+                transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+                transactionReceiptDTO.to =  ByteArray.toJsonHexAddress(toAddress);
 
-                } catch (InvalidProtocolBufferException e) {
-                    logger.debug("InvalidProtocolBufferException: {}", e.getMessage());
+                if (contract.getType() == ContractType.CreateSmartContract) {
+                    byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
+                    transactionReceiptDTO.contractAddress = ByteArray.toJsonHexAddress(contractAddress);
                 }
-            });
+            }
         }
 
         return transactionReceiptDTO;
@@ -737,7 +710,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
             BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
             transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
-            transactionReceiptDTO.root = toHexString(rawData.getTxTrieRoot().toByteArray());
+            transactionReceiptDTO.root = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
         } else {
             transactionReceiptDTO.status = "0x0";
             transactionReceiptDTO.root = null;
@@ -789,4 +762,89 @@ public class EthereumCompatibleService implements EthereumCompatible {
 //
 //        return blockResult;
 //    }
+
+    public static byte[] getToAddress(Transaction transaction) {
+        List<ByteString> toAddressList = getTo(transaction);
+        if (!toAddressList.isEmpty()) {
+            return toAddressList.get(0).toByteArray();
+        } else {
+            return null;
+        }
+    }
+
+    public static List<ByteString> getTo(Transaction transaction) {
+        Transaction.Contract contract = transaction.getRawData().getContract(0);
+        List<ByteString> list = new ArrayList<>();
+        try {
+            Any contractParameter = contract.getParameter();
+            switch (contract.getType()) {
+                case AccountCreateContract:
+                    list.add(contractParameter.unpack(AccountCreateContract.class).getAccountAddress());
+                    break;
+                case TransferContract:
+                    list.add(contractParameter.unpack(TransferContract.class).getToAddress());
+                    break;
+                case TransferAssetContract:
+                    list.add(contractParameter.unpack(TransferAssetContract.class).getToAddress());
+                    break;
+                case VoteAssetContract:
+                    list.addAll(contractParameter.unpack(VoteAssetContract.class).getVoteAddressList());
+                    break;
+                case VoteWitnessContract:
+                    for (Vote vote : contractParameter.unpack(VoteWitnessContract.class).getVotesList()) {
+                        list.add(vote.getVoteAddress());
+                    }
+                    break;
+                case ParticipateAssetIssueContract:
+                    list.add(contractParameter.unpack(ParticipateAssetIssueContract.class).getToAddress());
+                    break;
+                case FreezeBalanceContract:
+                    FreezeBalanceContract freezeBalanceContract = contractParameter.unpack(FreezeBalanceContract.class);
+                    ByteString receiverAddress;
+                    if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
+                        receiverAddress = freezeBalanceContract.getParentAddress();
+                    }else {
+                        receiverAddress = contractParameter.unpack(FreezeBalanceContract.class)
+                                .getReceiverAddress();
+                    }
+                    if (!receiverAddress.isEmpty()) {
+                        list.add(receiverAddress);
+                    }
+                    break;
+                case UnfreezeBalanceContract:
+                    receiverAddress = contractParameter.unpack(UnfreezeBalanceContract.class)
+                            .getReceiverAddress();
+                    if (!receiverAddress.isEmpty()) {
+                        list.add(receiverAddress);
+                    }
+                    break;
+                case TriggerSmartContract:
+                    list.add(contractParameter.unpack(TriggerSmartContract.class).getContractAddress());
+                    break;
+                case UpdateSettingContract:
+                    list.add(contractParameter.unpack(UpdateSettingContract.class).getContractAddress());
+                    break;
+                case UpdateEntropyLimitContract:
+                    list.add(contractParameter.unpack(UpdateEntropyLimitContract.class).getContractAddress());
+                    break;
+                case ClearABIContract:
+                    list.add(contractParameter.unpack(ClearABIContract.class).getContractAddress());
+                    break;
+                case ShieldedTransferContract:
+                    ShieldedTransferContract shieldedTransferContract = contract.getParameter()
+                            .unpack(ShieldedTransferContract.class);
+                    if (!shieldedTransferContract.getTransparentToAddress().isEmpty()) {
+                        list.add(shieldedTransferContract.getTransparentToAddress());
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return list;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
 }
+
