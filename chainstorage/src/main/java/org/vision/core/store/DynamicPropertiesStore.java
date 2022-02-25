@@ -1378,6 +1378,66 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  public void savePrivateSaleInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.PRIVATE_SALE_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getPrivateSaleInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PRIVATE_SALE_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveTeamInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.TEAM_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getTeamInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TEAM_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveDAOInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.DAO_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getDAOInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.DAO_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveDevInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.DEV_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getDevInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.DEV_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void savePromotionInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.PROMOTION_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getPromotionInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PROMOTION_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void saveLatestEconomyEndCycle(long latestEconomyEndCycle) {
     this.put(DynamicResourceProperties.LATEST_ECONOMY_END_CYCLE,
             new BytesCapsule(ByteArray.fromLong(latestEconomyEndCycle)));
@@ -2834,6 +2894,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
     private static final byte[] LATEST_ECONOMY_END_CYCLE = "LATEST_ECONOMY_END_CYCLE".getBytes();
     private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
+    private static final byte[] PRIVATE_SALE_INITIAL_AMOUNT = "PRIVATE_SALE_INITIAL_AMOUNT".getBytes();
+    private static final byte[] TEAM_INITIAL_AMOUNT = "TEAM_INITIAL_AMOUNT".getBytes();
+    private static final byte[] DAO_INITIAL_AMOUNT = "DAO_INITIAL_AMOUNT".getBytes();
+    private static final byte[] DEV_INITIAL_AMOUNT = "DEV_INITIAL_AMOUNT".getBytes();
+    private static final byte[] PROMOTION_INITIAL_AMOUNT = "PROMOTION_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();
