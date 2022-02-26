@@ -307,55 +307,119 @@ public class MaintenanceManager {
     BigDecimal bigTotalPhoton = new BigDecimal(dynamicPropertiesStore.getTotalPhotonWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalEntropy = new BigDecimal(dynamicPropertiesStore.getTotalEntropyWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalFVGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalFVGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
-    BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
     BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
-    long galaxyBalance = accountStore.getGalaxy().getBalance();
-    BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
-    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
-    if (0 == galaxyInitialAmount) {
-      dynamicPropertiesStore.saveGalaxyInitialAmount(galaxyBalance);
-      galaxyInitialAmount = galaxyBalance;
-    }
-    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
-    long avalonBalance = accountStore.getAvalon().getBalance();
-    BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
-    long avalonInitialAmount = dynamicPropertiesStore.getAvalonInitialAmount();
-    if (0 == avalonInitialAmount) {
-      dynamicPropertiesStore.saveAvalonInitialAmount(avalonBalance);
-      avalonInitialAmount = avalonBalance;
-    }
-    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
-    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
-            .add(bigGalaxyInitialAmount).add(bigAvalonInitialAmount).subtract(bigGalaxyBalance).subtract(bigAvalonBalance);
 
-    dynamicPropertiesStore.saveGenesisVoteSum(0);
-    if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
-      BigDecimal bigGenesisVoteSum = new BigDecimal(0);
-      for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
-        WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
-        bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
+    BigDecimal bigGalaxyLiquidityAmount = getBigGalaxyLiquidityAmount();
+    BigDecimal bigAvalonLiquidityAmount = getBigAvalonLiquidityAmount();
+    BigDecimal bigPrivateSaleLiquidityAmount = getBigPrivateSaleLiquidityAmount();
+    BigDecimal bigTeamLiquidityAmount = getBigTeamLiquidityAmount();
+    BigDecimal bigDAOLiquidityAmount = getBigDAOLiquidityAmount();
+    BigDecimal bigDevLiquidityAmount = getBigDevLiquidityAmount();
+    BigDecimal bigPromotionLiquidityAmount = getBigPromotionLiquidityAmount();
+
+    BigDecimal assets = bigTotalAssets.add(bigGalaxyLiquidityAmount).add(bigAvalonLiquidityAmount)
+            .add(bigPrivateSaleLiquidityAmount).add(bigTeamLiquidityAmount)
+            .add(bigDAOLiquidityAmount).add(bigDevLiquidityAmount).add(bigPromotionLiquidityAmount);
+
+    long cyclePledgeRate = 0;
+    if (assets.longValue() > 0){
+      cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
+      if (0 > cyclePledgeRate) {
+        cyclePledgeRate = 0;
+      } else if (100 < cyclePledgeRate) {
+        cyclePledgeRate = 100;
       }
-      assets = assets.subtract(bigGenesisVoteSum);
-      dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
-    }
-    long cyclePledgeRate = totalPledgeAmount.divide(assets,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).longValue();
-    if (0 > cyclePledgeRate) {
-      cyclePledgeRate = 0;
-    } else if (100 < cyclePledgeRate) {
-      cyclePledgeRate = 100;
     }
 
+    logger.info("calculationCyclePledgeRate result, cycle: {} , pledge: {}, totalPledgeAmount: {}, totalAssets: {}", cycle, cyclePledgeRate, totalPledgeAmount, assets);
     dynamicPropertiesStore.saveCyclePledgeRateNumerator(totalPledgeAmount.toString());
     dynamicPropertiesStore.saveCyclePledgeRateDenominator(assets.toString());
     consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle, cyclePledgeRate);
-    consensusDelegate.getDelegationStore().addCyclePledgeRate(cycle,cyclePledgeRate);
-    logger.info("PledgeRate cycle:{} ", cycle);
-    logger.info("PledgeRate bigTotalPhoton:{} bigTotalEntropy:{} bigTotalSRGuarantee:{}", bigTotalPhoton, bigTotalEntropy, bigTotalFVGuarantee);
-    logger.info("PledgeRate bigGalaxyBalance:{} bigGalaxyInitialAmount:{}", bigGalaxyBalance, bigGalaxyInitialAmount);
-    logger.info("PledgeRate bigAvalonBalance:{} bigAvalonInitialAmount:{}", bigAvalonBalance, bigAvalonInitialAmount);
-    logger.info("PledgeRate totalPledgeAmount:{} bigTotalAssets:{} assets:{}", totalPledgeAmount, bigTotalAssets, assets);
-    logger.info("cyclePledgeRate:{}", cyclePledgeRate);
+  }
+
+  private BigDecimal getBigAvalonLiquidityAmount(){
+    long avalonBalance = accountStore.getAvalon().getBalance();
+    BigDecimal bigAvalonBalance = new BigDecimal(avalonBalance);
+    long avalonInitialAmount = consensusDelegate.getDynamicPropertiesStore().getAvalonInitialAmount();
+    if (0 == avalonInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
+      avalonInitialAmount = avalonBalance;
+    }
+    BigDecimal bigAvalonInitialAmount = new BigDecimal(avalonInitialAmount);
+    return bigAvalonInitialAmount.subtract(bigAvalonBalance);
+  }
+
+  private BigDecimal getBigGalaxyLiquidityAmount(){
+    long galaxyBalance = accountStore.getGalaxy().getBalance();
+    BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
+    long galaxyInitialAmount = consensusDelegate.getDynamicPropertiesStore().getGalaxyInitialAmount();
+    if (0 == galaxyInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+      galaxyInitialAmount = galaxyBalance;
+    }
+    BigDecimal bigGalaxyInitialAmount = new BigDecimal(galaxyInitialAmount);
+    return bigGalaxyInitialAmount.subtract(bigGalaxyBalance);
+  }
+
+  private BigDecimal getBigPrivateSaleLiquidityAmount(){
+    long privateSaleBalance = accountStore.getPrivateSale().getBalance();
+    BigDecimal bigPrivateSaleBalance = new BigDecimal(privateSaleBalance);
+    long privateSaleInitialAmount = consensusDelegate.getDynamicPropertiesStore().getPrivateSaleInitialAmount();
+    if (0 == privateSaleInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().savePrivateSaleInitialAmount(privateSaleBalance);
+      privateSaleInitialAmount = privateSaleBalance;
+    }
+    BigDecimal bigPrivateSaleInitialAmount = new BigDecimal(privateSaleInitialAmount);
+    return bigPrivateSaleInitialAmount.subtract(bigPrivateSaleBalance);
+  }
+
+  private BigDecimal getBigTeamLiquidityAmount(){
+    long teamBalance = accountStore.getTeam().getBalance();
+    BigDecimal bigTeamBalance = new BigDecimal(teamBalance);
+    long teamInitialAmount = consensusDelegate.getDynamicPropertiesStore().getTeamInitialAmount();
+    if (0 == teamInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().saveTeamInitialAmount(teamBalance);
+      teamInitialAmount = teamBalance;
+    }
+    BigDecimal bigTeamInitialAmount = new BigDecimal(teamInitialAmount);
+    return bigTeamInitialAmount.subtract(bigTeamBalance);
+  }
+
+  private BigDecimal getBigDAOLiquidityAmount(){
+    long daoBalance = accountStore.getDAO().getBalance();
+    BigDecimal bigDAOBalance = new BigDecimal(daoBalance);
+    long daoInitialAmount = consensusDelegate.getDynamicPropertiesStore().getDAOInitialAmount();
+    if (0 == daoInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().saveDAOInitialAmount(daoBalance);
+      daoInitialAmount = daoBalance;
+    }
+    BigDecimal bigDAOInitialAmount = new BigDecimal(daoInitialAmount);
+    return bigDAOInitialAmount.subtract(bigDAOBalance);
+  }
+
+  private BigDecimal getBigDevLiquidityAmount(){
+    long devBalance = accountStore.getDev().getBalance();
+    BigDecimal bigDevBalance = new BigDecimal(devBalance);
+    long devInitialAmount = consensusDelegate.getDynamicPropertiesStore().getDevInitialAmount();
+    if (0 == devInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().saveDevInitialAmount(devInitialAmount);
+      devInitialAmount = devBalance;
+    }
+    BigDecimal bigDevInitialAmount = new BigDecimal(devInitialAmount);
+    return bigDevInitialAmount.subtract(bigDevBalance);
+  }
+
+  private BigDecimal getBigPromotionLiquidityAmount(){
+    long promotionBalance = accountStore.getPromotion().getBalance();
+    BigDecimal bigPromotionBalance = new BigDecimal(promotionBalance);
+    long promotionInitialAmount = consensusDelegate.getDynamicPropertiesStore().getPromotionInitialAmount();
+    if (0 == promotionInitialAmount) {
+      consensusDelegate.getDynamicPropertiesStore().savePromotionInitialAmount(promotionInitialAmount);
+      promotionInitialAmount = promotionBalance;
+    }
+    BigDecimal bigDevInitialAmount = new BigDecimal(promotionInitialAmount);
+    return bigDevInitialAmount.subtract(bigPromotionBalance);
   }
 
   private void saveInflationRate(long pledgeRate) {
