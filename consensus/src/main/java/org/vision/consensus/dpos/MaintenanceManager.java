@@ -307,7 +307,6 @@ public class MaintenanceManager {
     BigDecimal bigTotalPhoton = new BigDecimal(dynamicPropertiesStore.getTotalPhotonWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalEntropy = new BigDecimal(dynamicPropertiesStore.getTotalEntropyWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalFVGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalFVGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
-    BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
     BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
 
@@ -319,21 +318,9 @@ public class MaintenanceManager {
     BigDecimal bigDevLiquidityAmount = getBigDevLiquidityAmount();
     BigDecimal bigPromotionLiquidityAmount = getBigPromotionLiquidityAmount();
 
-    BigDecimal assets = bigTotalAssets.add(bigVoteSum).subtract(bigTotalPhoton).subtract(bigTotalEntropy)
-            .add(bigGalaxyLiquidityAmount).add(bigAvalonLiquidityAmount)
+    BigDecimal assets = bigTotalAssets.add(bigGalaxyLiquidityAmount).add(bigAvalonLiquidityAmount)
             .add(bigPrivateSaleLiquidityAmount).add(bigTeamLiquidityAmount)
             .add(bigDAOLiquidityAmount).add(bigDevLiquidityAmount).add(bigPromotionLiquidityAmount);
-
-    dynamicPropertiesStore.saveGenesisVoteSum(0);
-    if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
-      BigDecimal bigGenesisVoteSum = new BigDecimal(0);
-      for (Witness witness : dposService.getGenesisBlock().getWitnesses()) {
-        WitnessCapsule witnessCapsule = consensusDelegate.getWitness(witness.getAddress());
-        bigGenesisVoteSum = bigGenesisVoteSum.add(new BigDecimal(witnessCapsule.getVoteCount()).multiply(new BigDecimal(VS_PRECISION)));
-      }
-      assets = assets.subtract(bigGenesisVoteSum);
-      dynamicPropertiesStore.saveGenesisVoteSum(bigGenesisVoteSum.longValue());
-    }
 
     long cyclePledgeRate = 0;
     if (assets.longValue() > 0){
