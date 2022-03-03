@@ -473,6 +473,10 @@ public class CommonParameter {
 
   @Getter
   @Setter
+  public long spreadMintUnfreezeClearRelationShipEffectBlockNum;
+
+  @Getter
+  @Setter
   public long witnessSortEffectBlockNum;
 
   @Getter

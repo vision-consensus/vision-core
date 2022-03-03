@@ -6,6 +6,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.vision.common.parameter.CommonParameter;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
@@ -469,6 +470,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
       long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
+      if (dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
+        spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
+      }
       if (CommonParameter.PARAMETER.isKafkaEnable()) {
         JSONObject jsonObject= JSONObject.parseObject(JsonFormat.printToString(spreadRelationShipCapsule.getInstance(), true));
         if (CommonParameter.getInstance().isHistoryBalanceLookup() && chainBaseManager.getBalanceTraceStore() != null) {
