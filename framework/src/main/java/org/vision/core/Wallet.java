@@ -1208,6 +1208,31 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPrivateSaleInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getPrivateSaleInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getTeamInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getTeamInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getDAOInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getDAOInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getDevInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getDevInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getPromotionInitialAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getPromotionInitialAmount())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getWitnessStandbyAllowanceInflation")
             .setValue(dbManager.getDynamicPropertiesStore().getWitnessStandbyAllowanceInflation())
             .build());
@@ -1248,6 +1273,7 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+
             .setKey("getEffectEconomyCycle")
             .setValue(dbManager.getDynamicPropertiesStore().getEffectEconomyCycle())
             .build());
