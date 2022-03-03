@@ -742,6 +742,10 @@ public class Args extends CommonParameter {
             config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE) ? config
                     .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE) : 0L;
 
+    PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum =
+            config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNFREEZE_CLEAR_RELATIONSHIP) ? config
+                    .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNFREEZE_CLEAR_RELATIONSHIP) : 70000L;
+
     PARAMETER.witnessSortEffectBlockNum =
             config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) ? config
                     .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT) : 0L;
