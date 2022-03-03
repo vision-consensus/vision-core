@@ -465,7 +465,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
       long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
-      if (CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum >= dynamicPropertiesStore.getLatestBlockHeaderNumber()){
+      if (dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
         spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
       }
     }
