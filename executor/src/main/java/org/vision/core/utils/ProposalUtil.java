@@ -361,6 +361,20 @@ public class ProposalUtil {
         }
         break;
       }
+      case SPECIAL_FREEZE_PERIOD_LIMIT:{
+        if (value < 1 || value > 365L) {
+          throw new ContractValidateException(
+                  "Bad SPECIAL_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,365L]");
+        }
+        break;
+      }
+      case FVGUARANTEE_FREEZE_PERIOD_LIMIT: {
+        if (value < 1 || value > 365L) {
+          throw new ContractValidateException(
+                  "Bad FVGUARANTEE_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,365L]");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -482,7 +496,9 @@ public class ProposalUtil {
     SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
     ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
-    TOTAL_PHOTON_LIMIT(51);// [0, 1_000_000_000_000L]
+    TOTAL_PHOTON_LIMIT(51),// [0, 1_000_000_000_000L]
+    SPECIAL_FREEZE_PERIOD_LIMIT(52),// [0, 100L]
+    FVGUARANTEE_FREEZE_PERIOD_LIMIT(53);// [0, 100L]
 
     private long code;
 
