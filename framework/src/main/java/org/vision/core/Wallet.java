@@ -1125,6 +1125,14 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getFvGuaranteeFreezePeriodLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getFvGuaranteeFreezePeriodLimit())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpecialFreezePeriodLimit")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpecialFreezePeriodLimit())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowEthereumCompatibleTransaction")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction())
             .build());
