@@ -257,6 +257,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveFvGuaranteeFreezePeriodLimit(entry.getValue());
           break;
         }
+        case ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE: {
+          manager.getDynamicPropertiesStore().saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
