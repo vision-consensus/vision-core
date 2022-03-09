@@ -1144,6 +1144,10 @@ public class Wallet {
             .setKey("getTotalPhotonLimit")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonLimit())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowUnfreezeSpreadOrFvGuaranteeClearVote")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowUnfreezeSpreadOrFvGuaranteeClearVote())
+            .build());
     return builder.build();
   }
 
