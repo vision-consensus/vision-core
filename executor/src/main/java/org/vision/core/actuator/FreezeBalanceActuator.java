@@ -175,18 +175,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     long frozenDuration = freezeBalanceContract.getFrozenDuration();
-    long minFrozenTime = dynamicStore.getMinFrozenTime();
-    long maxFrozenTime = dynamicStore.getMaxFrozenTime();
 
     boolean needCheckFrozeTime = CommonParameter.getInstance()
-            .getCheckFrozenTime() == 1;//for test
+            .getCheckFrozenTime() == 1;
 
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
-            && !(frozenDuration >= minFrozenTime && frozenDuration <= maxFrozenTime)) {
+            && frozenDuration != dynamicStore.getSpecialFreezePeriodLimit()) {
       throw new ContractValidateException(
-              "[PHOTON、ENTROPY] frozenDuration must be less than " + maxFrozenTime + " days "
-                      + "and more than " + minFrozenTime + " days");
+              "[PHOTON、ENTROPY] frozenDuration must be " + dynamicStore.getSpecialFreezePeriodLimit() + " days");
     }
 
     if (needCheckFrozeTime
@@ -198,9 +195,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     if (needCheckFrozeTime
             && freezeBalanceContract.getResource() == Common.ResourceCode.FVGUARANTEE
-            && frozenDuration != UN_FREEZE_FVGUARANTEE_LIMIT) {
+            && frozenDuration != dynamicStore.getFvGuaranteeFreezePeriodLimit()) {
       throw new ContractValidateException(
-              "[FVGUARANTEE] frozenDuration must be " + UN_FREEZE_FVGUARANTEE_LIMIT + " days");
+              "[FVGUARANTEE] frozenDuration must be " + dynamicStore.getFvGuaranteeFreezePeriodLimit() + " days");
     }
 
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
