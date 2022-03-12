@@ -222,6 +222,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
     }
 
+    boolean clearVote = true;
     switch (unfreezeBalanceContract.getResource()) {
       case PHOTON:
         dynamicStore
@@ -233,29 +234,33 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         break;
       case SPREAD:
         dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
+        clearVote = dynamicStore.getAllowUnfreezeSpreadOrFvGuaranteeClearVote() == 1;
         break;
       case FVGUARANTEE:
         dynamicStore
                 .addTotalFVGuaranteeWeight(-unfreezeBalance / VS_PRECISION);
+        clearVote = dynamicStore.getAllowUnfreezeSpreadOrFvGuaranteeClearVote() == 1;
         break;
       default:
         //this should never happen
         break;
     }
 
-    VotesCapsule votesCapsule;
-    if (!votesStore.has(ownerAddress)) {
-      votesCapsule = new VotesCapsule(unfreezeBalanceContract.getOwnerAddress(),
-          accountCapsule.getVotesList());
-    } else {
-      votesCapsule = votesStore.get(ownerAddress);
+    if (clearVote) {
+      VotesCapsule votesCapsule;
+      if (!votesStore.has(ownerAddress)) {
+        votesCapsule = new VotesCapsule(unfreezeBalanceContract.getOwnerAddress(),
+                accountCapsule.getVotesList());
+      } else {
+        votesCapsule = votesStore.get(ownerAddress);
+      }
+      accountCapsule.clearVotes();
+      votesCapsule.clearNewVotes();
+
+      votesStore.put(ownerAddress, votesCapsule);
     }
-    accountCapsule.clearVotes();
-    votesCapsule.clearNewVotes();
 
     accountStore.put(ownerAddress, accountCapsule);
-
-    votesStore.put(ownerAddress, votesCapsule);
 
     ret.setUnfreezeAmount(unfreezeBalance);
     ret.setStatus(fee, code.SUCESS);

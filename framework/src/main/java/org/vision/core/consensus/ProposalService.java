@@ -249,6 +249,18 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveTotalPhotonLimit(entry.getValue());
           break;
         }
+        case SPECIAL_FREEZE_PERIOD_LIMIT: {
+          manager.getDynamicPropertiesStore().saveSpecialFreezePeriodLimit(entry.getValue());
+          break;
+        }
+        case FVGUARANTEE_FREEZE_PERIOD_LIMIT: {
+          manager.getDynamicPropertiesStore().saveFvGuaranteeFreezePeriodLimit(entry.getValue());
+          break;
+        }
+        case ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE: {
+          manager.getDynamicPropertiesStore().saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;

@@ -1330,6 +1330,30 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
+  public void saveSpecialFreezePeriodLimit(long freezePeriodLimit) {
+    this.put(DynamicResourceProperties.SPECIAL_FREEZE_PERIOD_LIMIT,
+            new BytesCapsule(ByteArray.fromLong(freezePeriodLimit)));
+  }
+
+  public long getSpecialFreezePeriodLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SPECIAL_FREEZE_PERIOD_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(3L);
+  }
+
+  public void saveFvGuaranteeFreezePeriodLimit(long freezePeriodLimit) {
+    this.put(DynamicResourceProperties.FVGUARANTEE_FREEZE_PERIOD_LIMIT,
+            new BytesCapsule(ByteArray.fromLong(freezePeriodLimit)));
+  }
+
+  public long getFvGuaranteeFreezePeriodLimit() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FVGUARANTEE_FREEZE_PERIOD_LIMIT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(23L);
+  }
+
   public void saveLowInflationRate(long lowInflationRate) {
     this.put(DynamicResourceProperties.LOW_INFLATION_RATE,
             new BytesCapsule(ByteArray.fromLong(lowInflationRate)));
@@ -2765,6 +2789,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
+  public void saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(long allowModifySpreadMintParent) {
+    this.put(DynamicResourceProperties.ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE,
+            new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
+  }
+
+  public long getAllowUnfreezeSpreadOrFvGuaranteeClearVote() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
   public void saveGenesisVoteSum(long voteSum) {
     this.put(TOTAL_GENESIS_VOTE_SUM,
             new BytesCapsule(ByteArray.fromLong(voteSum)));
@@ -2829,7 +2865,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
     private static final byte[] SPREAD_FREEZE_PERIOD_LIMIT = "SPREAD_FREEZE_PERIOD_LIMIT".getBytes();
-    private static final byte[] ALLOW_METAMASK_SENDRAWTRANSACTION = "ALLOW_METAMASK_SENDRAWTRANSACTION".getBytes();
+    private static final byte[] SPECIAL_FREEZE_PERIOD_LIMIT = "SPECIAL_FREEZE_PERIOD_LIMIT".getBytes();
+    private static final byte[] FVGUARANTEE_FREEZE_PERIOD_LIMIT = "FVGUARANTEE_FREEZE_PERIOD_LIMIT".getBytes();
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
     private static final byte[] HIGH_INFLATION_RATE = "HIGH_INFLATION_RATE".getBytes();
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
@@ -2844,6 +2881,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
     public static final byte[] ALLOW_MODIFY_SPREAD_MINT_PARENT = "ALLOW_MODIFY_SPREAD_MINT_PARENT".getBytes();
+    public static final byte[] ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE = "ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE".getBytes();
   }
 
 }
