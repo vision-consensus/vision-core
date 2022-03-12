@@ -297,7 +297,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getWitnessPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveWitnessPayPerBlock(144000L);//0.144000VS
+      this.saveWitnessPayPerBlock(120000L);//0.120000VS
     }
 
     try {
@@ -316,7 +316,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAccountUpgradeCost();
     } catch (IllegalArgumentException e) {
-      this.saveAccountUpgradeCost(2_000_000_000L); // burn vs 9_999_000_000L --> 2_000_000_000L
+      this.saveAccountUpgradeCost(900_000_000L); // apply for fv account
     }
 
     try {
@@ -358,7 +358,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalPhotonLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalPhotonLimit(2_000_000_000L); //43_200_000_000L
+      this.saveTotalPhotonLimit(1_000_000_000L);
     }
 
     try {
@@ -449,19 +449,19 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getTotalEntropyLimit();
     } catch (IllegalArgumentException e) {
-      this.saveTotalEntropyLimit(3_000_000_000L); //50_000_000_000L
+      this.saveTotalEntropyLimit(2_000_000_000L); //2_000_000_000L
     }
 
     try {
       this.getEntropyFee();
     } catch (IllegalArgumentException e) {
-      this.saveEntropyFee(5L);// 100 vdt per entropy
+      this.saveEntropyFee(5L);// 5 vdt per entropy
     }
 
     try {
       this.getMaxCpuTimeOfOneTx();
     } catch (IllegalArgumentException e) {
-      this.saveMaxCpuTimeOfOneTx(50L);
+      this.saveMaxCpuTimeOfOneTx(200L);
     }
 
     try {
@@ -509,13 +509,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAssetIssueFee();
     } catch (IllegalArgumentException e) {
-      this.saveAssetIssueFee(1024000000L);
+      this.saveAssetIssueFee(50000000L);
     }
 
     try {
       this.getUpdateAccountPermissionFee();
     } catch (IllegalArgumentException e) {
-      this.saveUpdateAccountPermissionFee(100000000L);
+      this.saveUpdateAccountPermissionFee(20000000L);
     }
 
     try {
@@ -527,7 +527,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getExchangeCreateFee();
     } catch (IllegalArgumentException e) {
-      this.saveExchangeCreateFee(1024000000L);
+      this.saveExchangeCreateFee(50000000L);
     }
 
     try {
@@ -682,7 +682,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAllowUpdateAccountName();
     } catch (IllegalArgumentException e) {
-      this.saveAllowUpdateAccountName(0);
+      this.saveAllowUpdateAccountName(1);
     }
 
     try {
@@ -763,7 +763,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getAdaptiveResourceLimitMultiplier();
     } catch (IllegalArgumentException e) {
-      this.saveAdaptiveResourceLimitMultiplier(1000);
+      this.saveAdaptiveResourceLimitMultiplier(10);
     }
 
     try {
@@ -879,7 +879,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getSpreadMintPayPerBlock();
     } catch (IllegalArgumentException e) {
-      this.saveSpreadMintPayPerBlock(256000L);//0.256vs
+      this.saveSpreadMintPayPerBlock(130000L);//0.13vs
     }
 
     try {
@@ -1099,7 +1099,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(WITNESS_123_PAY_PER_BLOCK))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(1200000L);
+        .orElse(600000L);
   }
 
   public long getWitness123PayPerBlockInflation() {
@@ -1397,6 +1397,66 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public long getAvalonInitialAmount() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.AVALON_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void savePrivateSaleInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.PRIVATE_SALE_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getPrivateSaleInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PRIVATE_SALE_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveTeamInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.TEAM_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getTeamInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TEAM_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveDAOInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.DAO_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getDAOInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.DAO_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveDevInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.DEV_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getDevInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.DEV_INITIAL_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void savePromotionInitialAmount(long initialAmount) {
+    this.put(DynamicResourceProperties.PROMOTION_INITIAL_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(initialAmount)));
+  }
+
+  public long getPromotionInitialAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PROMOTION_INITIAL_AMOUNT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(0L);
@@ -2609,7 +2669,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(SPREAD_MINT_PAY_PER_BLOCK))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(256000L);
+            .orElse(130000L);
   }
 
   public long getSpreadMintPayPerBlockInflation() {
@@ -2786,7 +2846,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(1L);
+            .orElse(0L);
   }
 
   public void saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(long allowModifySpreadMintParent) {
@@ -2872,6 +2932,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] GALAXY_INITIAL_AMOUNT = "GALAXY_INITIAL_AMOUNT".getBytes();
     private static final byte[] LATEST_ECONOMY_END_CYCLE = "LATEST_ECONOMY_END_CYCLE".getBytes();
     private static final byte[] AVALON_INITIAL_AMOUNT = "AVALON_INITIAL_AMOUNT".getBytes();
+    private static final byte[] PRIVATE_SALE_INITIAL_AMOUNT = "PRIVATE_SALE_INITIAL_AMOUNT".getBytes();
+    private static final byte[] TEAM_INITIAL_AMOUNT = "TEAM_INITIAL_AMOUNT".getBytes();
+    private static final byte[] DAO_INITIAL_AMOUNT = "DAO_INITIAL_AMOUNT".getBytes();
+    private static final byte[] DEV_INITIAL_AMOUNT = "DEV_INITIAL_AMOUNT".getBytes();
+    private static final byte[] PROMOTION_INITIAL_AMOUNT = "PROMOTION_INITIAL_AMOUNT".getBytes();
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER =
         "ADAPTIVE_RESOURCE_LIMIT_MULTIPLIER"
             .getBytes();
