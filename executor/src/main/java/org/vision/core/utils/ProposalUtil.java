@@ -361,6 +361,27 @@ public class ProposalUtil {
         }
         break;
       }
+      case SPECIAL_FREEZE_PERIOD_LIMIT:{
+        if (value < 1 || value > 365L) {
+          throw new ContractValidateException(
+                  "Bad SPECIAL_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,365L]");
+        }
+        break;
+      }
+      case FVGUARANTEE_FREEZE_PERIOD_LIMIT: {
+        if (value < 1 || value > 365L) {
+          throw new ContractValidateException(
+                  "Bad FVGUARANTEE_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,365L]");
+        }
+        break;
+      }
+      case ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -482,7 +503,10 @@ public class ProposalUtil {
     SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
     ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
-    TOTAL_PHOTON_LIMIT(51);// [0, 1_000_000_000_000L]
+    TOTAL_PHOTON_LIMIT(51),// [0, 1_000_000_000_000L]
+    SPECIAL_FREEZE_PERIOD_LIMIT(52),// [0, 365L]
+    FVGUARANTEE_FREEZE_PERIOD_LIMIT(53),
+    ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54);// 0,1
 
     private long code;
 
