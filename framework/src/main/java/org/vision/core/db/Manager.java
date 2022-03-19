@@ -736,7 +736,7 @@ public class Manager {
     // rollback block
     JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
     jsonBlock.put("state", "delete"); // key: state, value : repair & overrite &  delete
-    producer.send("BLOCK", 0, jsonBlock.toJSONString());
+    producer.send("BLOCK", 0, String.valueOf(oldBlock.getNum()), jsonBlock.toJSONString());
     logger.info("block rollback. {}", jsonBlock.toJSONString());
 
     if(oldBlock.getTransactions().isEmpty()){
