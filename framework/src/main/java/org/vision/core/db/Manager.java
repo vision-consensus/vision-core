@@ -736,7 +736,8 @@ public class Manager {
     // rollback block
     JSONObject jsonBlock = JSONObject.parseObject(Util.printBlock(oldBlock.getInstance(), true));
     jsonBlock.put("state", "delete"); // key: state, value : repair & overrite &  delete
-    producer.send("BLOCK", jsonBlock.toJSONString());
+    producer.send("BLOCK", 0, String.valueOf(oldBlock.getNum()), jsonBlock.toJSONString());
+    logger.info("block rollback. {}", jsonBlock.toJSONString());
 
     if(oldBlock.getTransactions().isEmpty()){
       return;
@@ -756,7 +757,7 @@ public class Manager {
         jsonAccount.put("address", address);
         jsonAccount.put("state", "delete");
       }
-      producer.send("ACCOUNT", jsonAccount.toJSONString());
+      producer.send("ACCOUNT",  Hex.toHexString(owner), jsonAccount.toJSONString());
 
       // rollback other TOPIC: STORAGE, VOTEWITNESS, ASSETISSUE, CONTRACT
       ContractStore contractStore = chainBaseManager.getContractStore();
@@ -796,7 +797,7 @@ public class Manager {
               jsonToAccount.put("address", StringUtil.encode58Check(to));
               jsonToAccount.put("state", "delete");
             }
-            producer.send("ACCOUNT", jsonToAccount.toJSONString());
+            producer.send("ACCOUNT", Hex.toHexString(owner), jsonToAccount.toJSONString());
           } catch (InvalidProtocolBufferException e) {
             logger.error("send Account TOPIC toAddress rollback fail", e);
           }
@@ -826,7 +827,7 @@ public class Manager {
               logger.error("send VOTEWITNESS TOPIC rollback fail", e);
             }
           }
-          Producer.getInstance().send("VOTEWITNESS",  jsonVoteWitness.toJSONString());
+          Producer.getInstance().send("VOTEWITNESS", address, jsonVoteWitness.toJSONString());
           logger.info("send VOTEWITNESS TOPIC rollback, accontId:{}", address);
           break;
         case AssetIssueContract:
@@ -839,7 +840,7 @@ public class Manager {
           }else{
             jsonAssetIssue = JSONObject.parseObject(JsonFormat.printToString(assetIssueCapsule.getInstance()));
           }
-          Producer.getInstance().send("ASSETISSUE", jsonAssetIssue.toJSONString());
+          Producer.getInstance().send("ASSETISSUE", Hex.toHexString(owner), jsonAssetIssue.toJSONString());
           break;
         case ClearABIContract:
         case UpdateSettingContract:
@@ -865,7 +866,7 @@ public class Manager {
               jsonContract = JSONObject
                       .parseObject(JsonFormat.printToString(contractCapsule.generateWrapper(), true));
             }
-            Producer.getInstance().send("CONTRACT", jsonContract.toJSONString());
+            Producer.getInstance().send("CONTRACT", Hex.toHexString(contractAddress),jsonContract.toJSONString());
           } catch (InvalidProtocolBufferException e) {
             logger.error("rollBackMongo Contract TOPIC error");
           }
@@ -1498,10 +1499,13 @@ public class Manager {
         TransactionInfo result = processTransaction(transactionCapsule, block);
 
         if (CommonParameter.PARAMETER.isKafkaEnable()){
+          List<TransactionInfo.Log> newLogList = Util.convertLogAddressToVisionAddress(result);
+          result = result.toBuilder().clearLog().addAllLog(newLogList).build();
           JSONObject json = JSONObject.parseObject(JsonFormat.printToString(result));
           if (CommonParameter.getInstance().isHistoryBalanceLookup() && chainBaseManager.getBalanceTraceStore() != null){
             json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
           }
+          json.put("ownerAddress", TransactionCapsule.getOwner(transactionCapsule.getInstance().getRawData().getContract(0)));
           Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), json.toJSONString());
           logger.info("send TRANSACTIONINFO TOPIC success, trxId: {}", transactionCapsule.getTransactionId().toString());
         }
