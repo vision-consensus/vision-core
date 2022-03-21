@@ -4,13 +4,25 @@ import static java.lang.System.arraycopy;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.Producer;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.StorageRowCapsule;
+import org.vision.core.store.BalanceTraceStore;
 import org.vision.core.store.StorageRowStore;
 import org.vision.common.crypto.Hash;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteUtil;
 
+
+@Slf4j(topic = "Storage")
 public class Storage {
 
   private static final int PREFIX_BYTES = 16;
@@ -22,6 +34,9 @@ public class Storage {
   private StorageRowStore store;
   @Getter
   private byte[] address;
+
+  @Autowired
+  private BalanceTraceStore balanceTraceStore;
 
   public Storage(byte[] address, StorageRowStore store) {
     addrHash = addrHash(address);
@@ -89,11 +104,30 @@ public class Storage {
   public void commit() {
     rowCache.forEach((DataWord rowKey, StorageRowCapsule row) -> {
       if (row.isDirty()) {
+        String rawValue = DataWord.bigIntValue(row.getRowValue());
         if (new DataWord(row.getValue()).isZero()) {
           this.store.delete(row.getRowKey());
         } else {
           this.store.put(row.getRowKey(), row);
         }
+
+        if (CommonParameter.PARAMETER.isKafkaEnable()) {
+          try{
+            JSONObject json = new JSONObject();
+            json.put(rowKey.toHexString(), rawValue);
+            json.put("address", StringUtil.encode58Check(address));
+            json.put("hexAddress", ByteArray.toHexString(address));
+            json.put("source", "storage");
+            if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
+              json.putAll(balanceTraceStore.assembleJsonInfo());
+            }
+            Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
+            logger.info("commit send STORAGE success, address:{}", StringUtil.encode58Check(address));
+          }catch (Exception e){
+            logger.error("commit send STORAGE fail", e);
+          }
+        }
+
       }
     });
   }
