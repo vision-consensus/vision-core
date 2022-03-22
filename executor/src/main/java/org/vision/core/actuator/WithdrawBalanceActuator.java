@@ -63,6 +63,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     long spreadAllowance = accountCapsule.getSpreadMintAllowance();
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
+    long withdrawAmount = allowance;
     if (withdrawBalanceContract.getType() == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
       accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + spreadAllowance)
@@ -70,6 +71,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               .setSpreadMintAllowance(0L)
               .setLatestWithdrawTime(now)
               .build());
+      withdrawAmount = spreadAllowance;
     } else {
       accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + allowance)
@@ -79,8 +81,13 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               .build());
     }
 
+    if (dynamicStore.getAllowWithdrawTransactionInfoSeparateAmount() == 1){
+      ret.setWithdrawAmount(withdrawAmount);
+    }else{
+      ret.setWithdrawAmount(allowance);
+    }
+
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
-    ret.setWithdrawAmount(allowance);
     ret.setStatus(fee, code.SUCESS);
 
     if(CommonParameter.PARAMETER.isKafkaEnable()){
@@ -171,7 +178,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 
     long latestWithdrawTime = accountCapsule.getLatestWithdrawTime();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
-    long witnessAllowanceFrozenTime =  180000L;// dynamicStore.getWitnessAllowanceFrozenTime() * FROZEN_PERIOD; // for vtest
+    long witnessAllowanceFrozenTime = 180000L;// dynamicStore.getWitnessAllowanceFrozenTime() * FROZEN_PERIOD; // for vtest
 
     if (now - latestWithdrawTime < witnessAllowanceFrozenTime) {
       throw new ContractValidateException("The last withdraw time is "
