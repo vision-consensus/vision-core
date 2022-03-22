@@ -382,6 +382,20 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT: {
+        if (value != 1) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT] is only allowed to be 1");
+        }
+        break;
+      }
+      case ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -506,7 +520,9 @@ public class ProposalUtil {
     TOTAL_PHOTON_LIMIT(51),// [0, 1_000_000_000_000L]
     SPECIAL_FREEZE_PERIOD_LIMIT(52),// [0, 365L]
     FVGUARANTEE_FREEZE_PERIOD_LIMIT(53),
-    ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54);// 0,1
+    ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
+    ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
+    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56);// 0,1
 
     private long code;
 

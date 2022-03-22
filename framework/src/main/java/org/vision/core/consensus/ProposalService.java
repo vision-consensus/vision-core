@@ -261,6 +261,14 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(entry.getValue());
           break;
         }
+        case ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT: {
+          manager.getDynamicPropertiesStore().saveAllowWithdrawTransactionInfoSeparateAmount(entry.getValue());
+          break;
+        }
+        case ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE: {
+          manager.getDynamicPropertiesStore().saveAllowSpreadMintParticipatePledgeRate(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
