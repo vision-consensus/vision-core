@@ -2801,6 +2801,30 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
+  public void saveAllowWithdrawTransactionInfoSeparateAmount(long separate) {
+    this.put(DynamicResourceProperties.ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT,
+            new BytesCapsule(ByteArray.fromLong(separate)));
+  }
+
+  public long getAllowWithdrawTransactionInfoSeparateAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveAllowSpreadMintParticipatePledgeRate(long participate) {
+    this.put(DynamicResourceProperties.ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE,
+            new BytesCapsule(ByteArray.fromLong(participate)));
+  }
+
+  public long getAllowSpreadMintParticipatePledgeRate() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void saveGenesisVoteSum(long voteSum) {
     this.put(TOTAL_GENESIS_VOTE_SUM,
             new BytesCapsule(ByteArray.fromLong(voteSum)));
@@ -2882,6 +2906,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
     public static final byte[] ALLOW_MODIFY_SPREAD_MINT_PARENT = "ALLOW_MODIFY_SPREAD_MINT_PARENT".getBytes();
     public static final byte[] ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE = "ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE".getBytes();
+    public static final byte[] ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT = "ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT".getBytes();
+    public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
   }
 
 }
