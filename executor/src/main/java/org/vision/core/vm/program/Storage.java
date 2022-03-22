@@ -34,9 +34,9 @@ public class Storage {
   private StorageRowStore store;
   @Getter
   private byte[] address;
-
-  @Autowired
-  private BalanceTraceStore balanceTraceStore;
+//
+//  @Autowired
+//  private BalanceTraceStore balanceTraceStore;
 
   public Storage(byte[] address, StorageRowStore store) {
     addrHash = addrHash(address);
@@ -118,9 +118,9 @@ public class Storage {
             json.put("address", StringUtil.encode58Check(address));
             json.put("hexAddress", ByteArray.toHexString(address));
             json.put("source", "storage");
-            if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
-              json.putAll(balanceTraceStore.assembleJsonInfo());
-            }
+//            if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
+//              json.putAll(balanceTraceStore.assembleJsonInfo());
+//            }
             Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
             logger.info("commit send STORAGE success, address:{}", StringUtil.encode58Check(address));
           }catch (Exception e){
