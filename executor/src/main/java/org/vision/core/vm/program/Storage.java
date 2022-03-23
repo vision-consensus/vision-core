@@ -9,7 +9,6 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Producer;
