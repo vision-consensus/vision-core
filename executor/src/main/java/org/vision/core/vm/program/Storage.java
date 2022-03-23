@@ -15,7 +15,6 @@ import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.StorageRowCapsule;
-import org.vision.core.store.BalanceTraceStore;
 import org.vision.core.store.StorageRowStore;
 import org.vision.common.crypto.Hash;
 import org.vision.common.runtime.vm.DataWord;
@@ -34,9 +33,6 @@ public class Storage {
   private StorageRowStore store;
   @Getter
   private byte[] address;
-//
-//  @Autowired
-//  private BalanceTraceStore balanceTraceStore;
 
   public Storage(byte[] address, StorageRowStore store) {
     addrHash = addrHash(address);
@@ -118,9 +114,6 @@ public class Storage {
             json.put("address", StringUtil.encode58Check(address));
             json.put("hexAddress", ByteArray.toHexString(address));
             json.put("source", "storage");
-//            if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
-//              json.putAll(balanceTraceStore.assembleJsonInfo());
-//            }
             Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
             logger.info("commit send STORAGE success, address:{}", StringUtil.encode58Check(address));
           }catch (Exception e){
