@@ -69,6 +69,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.vision.core.db.TransactionTrace.convertToVisionAddress;
+
 
 @Slf4j
 @Component
@@ -701,79 +703,102 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception {
-        TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
-
-        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
-        Protocol.Transaction transaction = wallet.getTransactionById(transactionId);
-        if (null != transaction) {
-            int retCount = transaction.getRetCount();
-            logger.info("retCount={}", retCount);
-            if (retCount > 0) {
-                Protocol.Transaction.Result.contractResult result = transaction.getRet(0).getContractRet();
-                if (result == Protocol.Transaction.Result.contractResult.DEFAULT) {
-                    return null;
-                } else if (result == Protocol.Transaction.Result.contractResult.SUCCESS) {
-                    setTransactionReceipt(transactionReceiptDTO, transactionId);
-                } else {
-                    transactionReceiptDTO.status = "0x0";
-                    transactionReceiptDTO.root = null;
-                }
-
-            } else {
-                return null;
-            }
-
-
-            Protocol.Transaction.raw rawData = transaction.getRawData();
-            transactionReceiptDTO.cumulativeGasUsed = "0x0";
-            transactionReceiptDTO.gasUsed = "0x0";
-            transactionReceiptDTO.logs = new LogFilterElement[]{};
-            transactionReceiptDTO.type =  "0x0";
-            transactionReceiptDTO.logsBloom = "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-            transactionReceiptDTO.transactionHash = transactionHash;
-            transactionReceiptDTO.from = null;
-            transactionReceiptDTO.to = null;
-            transactionReceiptDTO.contractAddress = null;
-
-            if (!transaction.getRawData().getContractList().isEmpty()) {
-                Contract contract = transaction.getRawData().getContract(0);
-                byte[] ownerAddress = TransactionCapsule.getOwner(contract);
-                byte[] toAddress = getToAddress(transaction);
-                transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
-                transactionReceiptDTO.to =  ByteArray.toJsonHexAddress(toAddress);
-
-                if (contract.getType() == ContractType.CreateSmartContract) {
-                    byte[] contractAddress = Util.generateContractAddress(transaction, ownerAddress);
-                    transactionReceiptDTO.contractAddress = ByteArray.toJsonHexAddress(contractAddress);
-                }
-            }
+        ByteString transactionId = ByteString.copyFrom(hashToByteArray(transactionHash));
+        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
+        if (transactionInfo == null){
+            return null;
         }
 
-        return transactionReceiptDTO;
+        Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
+        if (block == null){
+            return null;
+        }
+
+        return getTransactionReceipt(transactionInfo, block);
     }
 
-    private void setTransactionReceipt(TransactionReceiptDTO transactionReceiptDTO, ByteString transactionId) throws ItemNotFoundException {
-        Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
+    private TransactionReceiptDTO getTransactionReceipt(Protocol.TransactionInfo transactionInfo, Block block){
+        BlockCapsule blockCapsule = new BlockCapsule(block);
+        String trxId = ByteArray.toHexString(transactionInfo.getId().toByteArray());
+        TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
+        transactionReceiptDTO.blockHash = ByteArray.toJsonHex(blockCapsule.getBlockId().getBytes());
+        transactionReceiptDTO.blockNumber = ByteArray.toJsonHex(blockCapsule.getNum());
+        transactionReceiptDTO.transactionHash = ByteArray.toJsonHex(transactionInfo.getId().toByteArray());
+        transactionReceiptDTO.logsBloom = ByteArray.toJsonHex(new byte[256]); // no value
+        transactionReceiptDTO.root = null;
+        transactionReceiptDTO.type = "0x0";
 
-        if (null != transactionInfo) {
-            transactionReceiptDTO.blockNumber = Constant.ETH_PRE_FIX_STRING_MAINNET + Long.toHexString(transactionInfo.getBlockNumber()).toLowerCase();
-            transactionReceiptDTO.status = "0x1";
-            // transactionReceiptDTO.root = "0x2b5ca80d30787fcc6c1c5bc221f3f0a08fd676480c5803b5c472a83acfcb0345";
-            transactionReceiptDTO.gasUsed = "0x" + Long.toHexString(transactionInfo.getFee());
+        transactionReceiptDTO.transactionIndex = "0x0";
+        transactionReceiptDTO.cumulativeGasUsed = "0x0";
+        transactionReceiptDTO.gasUsed = "0x0";
+        transactionReceiptDTO.status = "0x0";
 
-            transactionReceiptDTO.transactionIndex = "0x2";
+        Transaction transaction = null;
+        long cumulativeGas = 0;
+        long cumulativeLogCount = 0;
+        GrpcAPI.TransactionInfoList infoList = wallet.getTransactionInfoByBlockNum(blockCapsule.getNum());
+        for (int index = 0; index < infoList.getTransactionInfoCount(); index++) {
+            Protocol.TransactionInfo info = infoList.getTransactionInfo(index);
+            Protocol.ResourceReceipt resourceReceipt = info.getReceipt();
 
-            Protocol.Block block = wallet.getBlockByNum(transactionInfo.getBlockNumber());
-            Protocol.BlockHeader blockHeader = block.getBlockHeader();
-            org.vision.protos.Protocol.BlockHeader.raw rawData = blockHeader.getRawData();
-            BlockIndexStore blockIndexStore = chainBaseManager.getBlockIndexStore();
-            BlockCapsule.BlockId blockId = blockIndexStore.get(blockHeader.getRawData().getNumber());
-            transactionReceiptDTO.blockHash = "0x" + toHexString(blockId.getByteString().toByteArray());
-            transactionReceiptDTO.root = "0x" + toHexString(rawData.getTxTrieRoot().toByteArray());
-        } else {
-            transactionReceiptDTO.status = "0x0";
-            transactionReceiptDTO.root = null;
+            long energyUsage = resourceReceipt.getEntropyUsageTotal();
+            cumulativeGas += energyUsage;
+
+            if (ByteArray.toHexString(info.getId().toByteArray()).equals(trxId)) {
+                transactionReceiptDTO.transactionIndex = ByteArray.toJsonHex(index);
+                transactionReceiptDTO.cumulativeGasUsed = ByteArray.toJsonHex(cumulativeGas);
+                transactionReceiptDTO.gasUsed = ByteArray.toJsonHex(energyUsage);
+                transactionReceiptDTO.status = resourceReceipt.getResultValue() <= 1 ? "0x1" : "0x0";
+
+                transaction = block.getTransactions(index);
+                break;
+            } else {
+                cumulativeLogCount += info.getLogCount();
+            }
         }
+
+        transactionReceiptDTO.from = null;
+        transactionReceiptDTO.to = null;
+        transactionReceiptDTO.contractAddress = null;
+        if (transaction != null && !transaction.getRawData().getContractList().isEmpty()) {
+            Contract contract = transaction.getRawData().getContract(0);
+            byte[] ownerAddress = TransactionCapsule.getOwner(contract);
+            byte[] toAddress = getToAddress(transaction);
+            transactionReceiptDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
+            transactionReceiptDTO.to = ByteArray.toJsonHexAddress(toAddress);
+
+            if (contract.getType() == ContractType.CreateSmartContract) {
+                transactionReceiptDTO.contractAddress = ByteArray.toJsonHexAddress(transactionInfo.getContractAddress().toByteArray());
+            }
+        }
+
+        // logs
+        List<LogFilterElement> logList = new ArrayList<>();
+        for (int index = 0; index < transactionInfo.getLogCount(); index++) {
+            Protocol.TransactionInfo.Log log = transactionInfo.getLogList().get(index);
+
+            LogFilterElement transactionLog = new LogFilterElement();
+            // index is the index in the block
+            transactionLog.logIndex = ByteArray.toJsonHex(index + cumulativeLogCount);
+            transactionLog.transactionHash = transactionReceiptDTO.transactionHash;
+            transactionLog.transactionIndex = transactionReceiptDTO.transactionIndex;
+            transactionLog.blockHash = transactionReceiptDTO.blockHash;
+            transactionLog.blockNumber = transactionReceiptDTO.blockNumber;
+            byte[] addressByte = convertToVisionAddress(log.getAddress().toByteArray());
+            transactionLog.address = ByteArray.toJsonHexAddress(addressByte);
+            transactionLog.data = ByteArray.toJsonHex(log.getData().toByteArray());
+
+            String[] topics = new String[log.getTopicsCount()];
+            for (int i = 0; i < log.getTopicsCount(); i++) {
+                topics[i] = ByteArray.toJsonHex(log.getTopics(i).toByteArray());
+            }
+            transactionLog.topics = topics;
+
+            logList.add(transactionLog);
+        }
+
+        transactionReceiptDTO.logs = logList.toArray(new LogFilterElement[0]);
+        return transactionReceiptDTO;
     }
 
     private String getAddrNo46(String addr) {

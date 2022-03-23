@@ -61,6 +61,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     long spreadAllowance = accountCapsule.getSpreadMintAllowance();
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
+    long withdrawAmount = allowance;
     if (withdrawBalanceContract.getType() == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
       accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + spreadAllowance)
@@ -68,6 +69,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               .setSpreadMintAllowance(0L)
               .setLatestWithdrawTime(now)
               .build());
+      withdrawAmount = spreadAllowance;
     } else {
       accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + allowance)
@@ -77,9 +79,13 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               .build());
     }
 
+    if (dynamicStore.getAllowWithdrawTransactionInfoSeparateAmount() == 1){
+      ret.setWithdrawAmount(withdrawAmount);
+    }else{
+      ret.setWithdrawAmount(allowance);
+    }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
-    ret.setWithdrawAmount(allowance);
     ret.setStatus(fee, code.SUCESS);
 
     return true;

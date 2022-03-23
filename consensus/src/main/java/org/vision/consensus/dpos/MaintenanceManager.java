@@ -311,6 +311,11 @@ public class MaintenanceManager {
     BigDecimal bigVoteSum = new BigDecimal(mortgageService.getVoteSum()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
     BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
+    if (dynamicPropertiesStore.getAllowSpreadMintParticipatePledgeRate() == 1){
+      BigDecimal bigTotalSpreadMint = new BigDecimal(dynamicPropertiesStore.getTotalSpreadMintWeight()).multiply(new BigDecimal(VS_PRECISION));
+      totalPledgeAmount = totalPledgeAmount.add(bigTotalSpreadMint);
+    }
+
     long galaxyBalance = accountStore.getGalaxy().getBalance();
     BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
     long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
