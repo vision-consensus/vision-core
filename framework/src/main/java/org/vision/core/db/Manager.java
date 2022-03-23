@@ -1505,7 +1505,8 @@ public class Manager {
           if (CommonParameter.getInstance().isHistoryBalanceLookup() && chainBaseManager.getBalanceTraceStore() != null){
             json.put("blockID", chainBaseManager.getBalanceTraceStore().getCurrentBlockId().toString());
           }
-          json.put("ownerAddress", TransactionCapsule.getOwner(transactionCapsule.getInstance().getRawData().getContract(0)));
+          byte[] owner = TransactionCapsule.getOwner(transactionCapsule.getInstance().getRawData().getContract(0));
+          json.put("ownerAddress", StringUtil.encode58Check(owner));
           Producer.getInstance().send("TRANSACTIONINFO", transactionCapsule.getTransactionId().toString(), json.toJSONString());
           logger.info("send TRANSACTIONINFO TOPIC success, trxId: {}", transactionCapsule.getTransactionId().toString());
         }
