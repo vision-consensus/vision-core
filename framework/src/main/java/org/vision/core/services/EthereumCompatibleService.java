@@ -725,7 +725,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionReceiptDTO.blockNumber = ByteArray.toJsonHex(blockCapsule.getNum());
         transactionReceiptDTO.transactionHash = ByteArray.toJsonHex(transactionInfo.getId().toByteArray());
         transactionReceiptDTO.logsBloom = ByteArray.toJsonHex(new byte[256]); // no value
-        transactionReceiptDTO.root = null;
+        transactionReceiptDTO.root = ByteArray.toJsonHex(block.getBlockHeader().getRawData().getTxTrieRoot().toByteArray());
         transactionReceiptDTO.type = "0x0";
 
         transactionReceiptDTO.transactionIndex = "0x0";
