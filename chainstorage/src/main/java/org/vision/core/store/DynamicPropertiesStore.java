@@ -2861,18 +2861,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
-  public void saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(long allowModifySpreadMintParent) {
-    this.put(DynamicResourceProperties.ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE,
-            new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
-  }
-
-  public long getAllowUnfreezeSpreadOrFvGuaranteeClearVote() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(1L);
-  }
-
   public void saveAllowWithdrawTransactionInfoSeparateAmount(long separate) {
     this.put(DynamicResourceProperties.ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT,
             new BytesCapsule(ByteArray.fromLong(separate)));
