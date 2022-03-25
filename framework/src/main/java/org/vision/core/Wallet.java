@@ -1148,6 +1148,14 @@ public class Wallet {
             .setKey("getAllowUnfreezeSpreadOrFvGuaranteeClearVote")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowUnfreezeSpreadOrFvGuaranteeClearVote())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowWithdrawTransactionInfoSeparateAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowWithdrawTransactionInfoSeparateAmount())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowSpreadMintParticipatePledgeRate")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintParticipatePledgeRate())
+            .build());
     return builder.build();
   }
 
