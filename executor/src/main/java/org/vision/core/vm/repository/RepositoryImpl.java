@@ -444,21 +444,6 @@ public class RepositoryImpl implements Repository {
       storageCache.put(addressKey, storage);
     }
     storage.put(key, value);
-    if (CommonParameter.PARAMETER.isKafkaEnable()) {
-      try{
-        JSONObject json = new JSONObject();
-        json.put(key.toHexString(), value.bigIntValue());
-        json.put("address", StringUtil.encode58Check(address));
-        json.put("hexAddress", ByteArray.toHexString(address));
-        if (CommonParameter.getInstance().isHistoryBalanceLookup() && balanceTraceStore != null) {
-          json.putAll(balanceTraceStore.assembleJsonInfo());
-        }
-        Producer.getInstance().send("STORAGE", Hex.toHexString(address), json.toJSONString());
-        logger.info("send STORAGE success, address:{}",StringUtil.encode58Check(address));
-      }catch (Exception e){
-        logger.error("send STORAGE fail", e);
-      }
-    }
   }
 
   @Override

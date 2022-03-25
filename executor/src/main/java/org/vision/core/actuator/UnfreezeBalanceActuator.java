@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.vision.common.parameter.CommonParameter;
 import org.spongycastle.util.encoders.Hex;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.JsonFormat;
 import org.vision.common.utils.Producer;
