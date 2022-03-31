@@ -108,6 +108,7 @@ import org.vision.core.db.EntropyProcessor;
 import org.vision.core.db.Manager;
 import org.vision.core.db.PhotonProcessor;
 import org.vision.core.db.TransactionContext;
+import org.vision.core.db2.core.Chainbase;
 import org.vision.core.exception.*;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
@@ -4057,6 +4058,10 @@ public class Wallet {
     if (accountIdentifier.getAddress().isEmpty()) {
       throw new IllegalArgumentException("account_identifier address is null");
     }
+  }
+
+  public Chainbase.Cursor getCursor() {
+    return chainBaseManager.getBlockStore().getRevokingDB().getCursor();
   }
 }
 

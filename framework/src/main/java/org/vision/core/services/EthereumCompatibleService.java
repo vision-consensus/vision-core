@@ -1,9 +1,7 @@
 package org.vision.core.services;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,17 +19,15 @@ import org.vision.common.utils.Sha256Hash;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Constant;
 import org.vision.core.Wallet;
-import org.vision.core.actuator.TransactionFactory;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
-import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
-import org.vision.core.exception.ContractValidateException;
-import org.vision.core.exception.ItemNotFoundException;
-import org.vision.core.exception.JsonRpcInvalidParamsException;
-import org.vision.core.services.http.JsonFormat;
-import org.vision.core.services.http.Util;
+import org.vision.core.db2.core.Chainbase;
+import org.vision.core.exception.*;
+import org.vision.core.services.jsonrpc.filters.LogBlockQuery;
+import org.vision.core.services.jsonrpc.filters.LogFilterWrapper;
+import org.vision.core.services.jsonrpc.filters.LogMatch;
 import org.vision.program.Version;
 import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Block;
@@ -41,17 +37,11 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.contract.Common;
 import org.vision.protos.contract.SmartContractOuterClass;
 import org.vision.protos.contract.AccountContract.AccountCreateContract;
-import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
-import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract.FrozenSupply;
 import org.vision.protos.contract.AssetIssueContractOuterClass.ParticipateAssetIssueContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
-import org.vision.protos.contract.AssetIssueContractOuterClass.UnfreezeAssetContract;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
-import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
-import org.vision.protos.contract.ExchangeContract.ExchangeTransactionContract;
-import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.SmartContractOuterClass.ClearABIContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
@@ -65,12 +55,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.vision.core.db.TransactionTrace.convertToVisionAddress;
-
 
 @Slf4j
 @Component
@@ -87,15 +79,22 @@ public class EthereumCompatibleService implements EthereumCompatible {
     private static final String TAG_NOT_SUPPORT_ERROR = "TAG [earliest | pending] not supported";
     private static final String QUANTITY_NOT_SUPPORT_ERROR =
             "QUANTITY not supported, just support TAG as latest";
+    public static final int EXPIRE_SECONDS = 5 * 60;
 
-    @Autowired
     private Wallet wallet;
-
-    @Autowired
     private ChainBaseManager chainBaseManager;
-
-    @Autowired
+    private ExecutorService executorService;
     private NodeInfoService nodeInfoService;
+
+    public EthereumCompatibleService() {
+    }
+
+    public EthereumCompatibleService(NodeInfoService nodeInfoService, Wallet wallet, ChainBaseManager manager) {
+        this.nodeInfoService = nodeInfoService;
+        this.wallet = wallet;
+        this.chainBaseManager = manager;
+        this.executorService = Executors.newFixedThreadPool(5);
+    }
 
     @Override
     public String eth_chainId() {
@@ -715,6 +714,59 @@ public class EthereumCompatibleService implements EthereumCompatible {
         }
 
         return getTransactionReceipt(transactionInfo, block);
+    }
+
+    @Override
+    public LogFilterElement[] eth_getLogs(FilterRequest fr) throws JsonRpcInvalidParamsException,
+            ExecutionException, InterruptedException, BadItemException, ItemNotFoundException,
+            JsonRpcMethodNotFoundException, JsonRpcTooManyResultException {
+        disableInPBFT("eth_getLogs");
+
+        long currentMaxBlockNum = wallet.getNowBlock().getBlockHeader().getRawData().getNumber();
+        //convert FilterRequest to LogFilterWrapper
+        LogFilterWrapper logFilterWrapper = new LogFilterWrapper(fr, currentMaxBlockNum, wallet);
+
+        return getLogsByLogFilterWrapper(logFilterWrapper, currentMaxBlockNum);
+    }
+
+    private LogFilterElement[] getLogsByLogFilterWrapper(LogFilterWrapper logFilterWrapper,
+                                                         long currentMaxBlockNum) throws JsonRpcTooManyResultException, ExecutionException,
+            InterruptedException, BadItemException, ItemNotFoundException {
+        //query possible block
+        LogBlockQuery logBlockQuery = new LogBlockQuery(logFilterWrapper, chainBaseManager
+                .getSectionBloomStore(), currentMaxBlockNum, executorService);
+        List<Long> possibleBlockList = logBlockQuery.getPossibleBlock();
+
+        //match event from block one by one exactly
+        LogMatch logMatch =
+                new LogMatch(logFilterWrapper, possibleBlockList, chainBaseManager);
+        return logMatch.matchBlockOneByOne();
+    }
+
+
+    public RequestSource getSource() {
+        Chainbase.Cursor cursor = wallet.getCursor();
+        switch (cursor) {
+            case SOLIDITY:
+                return RequestSource.SOLIDITY;
+            case PBFT:
+                return RequestSource.PBFT;
+            default:
+                return RequestSource.FULLNODE;
+        }
+    }
+
+    public void disableInPBFT(String method) throws JsonRpcMethodNotFoundException {
+        if (getSource() == RequestSource.PBFT) {
+            String msg = String.format("the method %s does not exist/is not available in PBFT", method);
+            throw new JsonRpcMethodNotFoundException(msg);
+        }
+    }
+
+    public enum RequestSource {
+        FULLNODE,
+        SOLIDITY,
+        PBFT
     }
 
     private TransactionReceiptDTO getTransactionReceipt(Protocol.TransactionInfo transactionInfo, Block block){

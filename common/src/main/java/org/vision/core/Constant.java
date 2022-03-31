@@ -275,6 +275,7 @@ public class Constant {
   public static final String HISTORY_BALANCE_LOOKUP = "storage.balance.history.lookup";
   public static final String LOCAL_HOST = "127.0.0.1";
   public static final String ETH_GAS_PRICE = "eth.gasPrice";
+  public static final String ETH_JSON_RPC_FILTER_ENABLED = "eth.jsonRpcFilterEnabled";
   public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNLIMITEDPLEDGE = "debug.feature.effectBlockNum.spreadMint.unlimitedPledge";
   public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_SPREADMINT_UNFREEZE_CLEAR_RELATIONSHIP = "debug.feature.effectBlockNum.spreadMint.unfreezeClearRelationShip";
   public static final String DEBUG_FEATURE_EFFECT_BLOCKNUM_WITNESS_SORT = "debug.feature.effectBlockNum.witness.sort";
