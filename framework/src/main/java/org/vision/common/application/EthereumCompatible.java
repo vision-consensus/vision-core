@@ -1,14 +1,18 @@
 package org.vision.common.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
+import org.springframework.stereotype.Component;
+import org.vision.common.runtime.vm.DataWord;
+import org.vision.common.utils.ByteArray;
+import org.vision.core.exception.*;
 import org.vision.protos.Protocol;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+@Component
 public interface EthereumCompatible {
     @Value
     @AllArgsConstructor
@@ -102,20 +106,27 @@ public interface EthereumCompatible {
         public String address;
         public String data;
         public String[] topics;
+        public boolean removed;
 
-//        public LogFilterElement(LogInfo logInfo, Block b, Integer txIndex, Transaction tx, int logIdx) {
-//            logIndex = toJsonHex(logIdx);
-//            blockNumber = b == null ? null : toJsonHex(b.getNumber());
-//            blockHash = b == null ? null : toJsonHex(b.getHash());
-//            transactionIndex = b == null ? null : toJsonHex(txIndex);
-//            transactionHash = toJsonHex(tx.getHash());
-//            address = toJsonHex(tx.getReceiveAddress());
-//            data = toJsonHex(logInfo.getData());
-//            topics = new String[logInfo.getTopics().size()];
-//            for (int i = 0; i < topics.length; i++) {
-//                topics[i] = toJsonHex(logInfo.getTopics().get(i).getData());
-//            }
-//        }
+        public LogFilterElement() {
+        }
+
+        public LogFilterElement(String blockHash, Long blockNum, String txId, Integer txIndex,
+                                String contractAddress, List<DataWord> topicList, String logData, int logIdx,
+                                boolean removed) {
+            logIndex = ByteArray.toJsonHex(logIdx);
+            this.blockNumber = blockNum == null ? null : ByteArray.toJsonHex(blockNum);
+            this.blockHash = blockHash == null ? null : ByteArray.toJsonHex(blockHash);
+            transactionIndex = txIndex == null ? null : ByteArray.toJsonHex(txIndex);
+            transactionHash = ByteArray.toJsonHex(txId);
+            address = ByteArray.toJsonHex(contractAddress);
+            data = logData == null ? "0x" : ByteArray.toJsonHex(logData);
+            topics = new String[topicList.size()];
+            for (int i = 0; i < topics.length; i++) {
+                topics[i] = ByteArray.toJsonHex(topicList.get(i).getData());
+            }
+            this.removed = removed;
+        }
 
         @Override
         public String toString() {
@@ -181,6 +192,28 @@ public interface EthereumCompatible {
         }
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class FilterRequest {
+
+        @Getter
+        @Setter
+        private String fromBlock;
+        @Getter
+        @Setter
+        private String toBlock;
+        @Getter
+        @Setter
+        private Object address;
+        @Getter
+        @Setter
+        private Object[] topics;
+        @Getter
+        @Setter
+        private String blockHash;  // EIP-234: makes fromBlock = toBlock = blockHash
+
+    }
+
     String eth_chainId();
     String web3_clientVersion();
     String web3_sha3(String data) throws Exception;
@@ -219,4 +252,8 @@ public interface EthereumCompatible {
     TransactionResultDTO eth_getTransactionByBlockHashAndIndex(String blockHash, String index) throws Exception;
     TransactionResultDTO eth_getTransactionByBlockNumberAndIndex(String bnOrId, String index) throws Exception;
     TransactionReceiptDTO eth_getTransactionReceipt(String transactionHash) throws Exception;
+
+    LogFilterElement[] eth_getLogs(FilterRequest fr) throws JsonRpcInvalidParamsException,
+            ExecutionException, InterruptedException, BadItemException, ItemNotFoundException,
+            JsonRpcTooManyResultException, JsonRpcMethodNotFoundException;
 }

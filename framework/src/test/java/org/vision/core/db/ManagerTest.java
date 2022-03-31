@@ -108,7 +108,7 @@ public class ManagerTest extends BlockGenerate {
           AccountResourceInsufficientException, TransactionExpirationException,
           TooBigTransactionException, DupTransactionException, TaposException, BadNumberBlockException,
           NonCommonBlockException, ReceiptCheckErrException, VMIllegalException,
-          TooBigTransactionResultException, ZksnarkException, P2pVersionException {
+          TooBigTransactionResultException, ZksnarkException, P2pVersionException, EventBloomException {
 
     BlockCapsule blockCapsule =
         new BlockCapsule(
@@ -427,7 +427,7 @@ public class ManagerTest extends BlockGenerate {
           BadNumberBlockException, DupTransactionException, ContractExeException,
           ValidateSignatureException, TooBigTransactionResultException, TransactionExpirationException,
           TaposException, ReceiptCheckErrException, TooBigTransactionException,
-          AccountResourceInsufficientException, P2pVersionException {
+          AccountResourceInsufficientException, P2pVersionException, EventBloomException {
 
     String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
     byte[] privateKey = ByteArray.fromHexString(key);
@@ -533,7 +533,7 @@ public class ManagerTest extends BlockGenerate {
           TransactionExpirationException, TooBigTransactionException, DupTransactionException,
           BadBlockException, TaposException, BadNumberBlockException, NonCommonBlockException,
           ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException,
-          ZksnarkException, P2pVersionException {
+          ZksnarkException, P2pVersionException, EventBloomException {
     Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
     long size = chainManager.getBlockStore().size();
     //  System.out.print("block store size:" + size + "\n");
@@ -610,7 +610,7 @@ public class ManagerTest extends BlockGenerate {
           DupTransactionException, BadBlockException,
           TaposException, BadNumberBlockException, NonCommonBlockException,
           ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException,
-          ZksnarkException, P2pVersionException {
+          ZksnarkException, P2pVersionException, EventBloomException {
     Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
     long size = chainManager.getBlockStore().size();
     System.out.print("block store size:" + size + "\n");
@@ -713,7 +713,7 @@ public class ManagerTest extends BlockGenerate {
           TransactionExpirationException, TooBigTransactionException, DupTransactionException,
           BadBlockException, TaposException, BadNumberBlockException, NonCommonBlockException,
           ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException,
-          ZksnarkException, P2pVersionException {
+          ZksnarkException, P2pVersionException, EventBloomException {
     Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
     long size = chainManager.getBlockStore().size();
     System.out.print("block store size:" + size + "\n");

@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.vision.common.bloom.Bloom;
 import org.vision.core.capsule.utils.MerkleTree;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -57,6 +58,10 @@ public class BlockCapsule implements ProtoCapsule<Block> {
   private List<TransactionCapsule> transactions = new ArrayList<>();
   private StringBuilder toStringBuff = new StringBuilder();
   private boolean isSwitch;
+
+  @Getter
+  @Setter
+  private Bloom bloom;
 
   public boolean isSwitch() {
     return isSwitch;
