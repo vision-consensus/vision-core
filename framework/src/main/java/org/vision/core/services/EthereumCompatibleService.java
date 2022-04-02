@@ -8,7 +8,6 @@ import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
 import org.vision.api.GrpcAPI.BytesMessage;
@@ -71,8 +70,7 @@ import java.util.regex.Pattern;
 import static org.vision.core.db.TransactionTrace.convertToVisionAddress;
 import static org.vision.core.services.http.Util.setTransactionExtraData;
 import static org.vision.core.services.http.Util.setTransactionPermissionId;
-import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.addressCompatibleToByteArray;
-import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.triggerCallContract;
+import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.*;
 
 @Slf4j
 @Component
@@ -669,13 +667,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
 
     @Override
-    public TransactionResultDTO eth_getTransactionByHash(String transactionHash) throws Exception {
+    public TransactionResultDTO eth_getTransactionByHash(String txId) throws Exception {
         TransactionResultDTO transactionResultDTO = new TransactionResultDTO();
-        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
+        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(txId.substring(2, txId.length())));
         Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
         Transaction transaction = wallet.getTransactionById(transactionId);
         transferTransactionInfoToEther(transactionResultDTO, transaction, transactionInfo);
-
         return transactionResultDTO;
     }
 
@@ -685,6 +682,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         if (transaction == null){
             return;
         }
+        byte[] txId = new TransactionCapsule(transaction).getTransactionId().getBytes();
+        String hash = ByteArray.toJsonHex(txId);
 
         transactionResultDTO.chainId = eth_chainId();
         transactionResultDTO.condition = null;
@@ -700,12 +699,14 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionResultDTO.gasPrice = eth_gasPrice();
         transactionResultDTO.from = null;
         transactionResultDTO.to = null;
+
         if (!transaction.getRawData().getContractList().isEmpty()) {
             Contract contract = transaction.getRawData().getContract(0);
             byte[] ownerAddress = TransactionCapsule.getOwner(contract);
             byte[] toAddress = getToAddress(transaction);
             transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
             transactionResultDTO.to =  ByteArray.toJsonHexAddress(toAddress);
+            transactionResultDTO.value = ByteArray.toJsonHex(getTransactionAmount(contract, hash, wallet, chainBaseManager));
         }
         String txID = ByteArray.toHexString(Sha256Hash
                 .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
@@ -730,6 +731,42 @@ public class EthereumCompatibleService implements EthereumCompatible {
         }catch (Exception exception){
             transactionResultDTO.nonce = "0x";
         }
+
+        int transactionIndex = -1;
+
+        List<Transaction> txList = block.getTransactionsList();
+        for (int index = 0; index < txList.size(); index++) {
+            transaction = txList.get(index);
+            if (getTxID(transaction).equals(txId)) {
+                transactionIndex = index;
+                break;
+            }
+        }
+
+        if (transactionIndex == -1) {
+            return;
+        }
+
+        transactionResultDTO.transactionIndex = ByteArray.toJsonHex(transactionIndex);
+
+        if (transaction.getSignatureCount() == 0) {
+            transactionResultDTO.v = null;
+            transactionResultDTO.r = null;
+            transactionResultDTO.s = null;
+            return;
+        }
+
+        ByteString signature = transaction.getSignature(0); // r[32] + s[32] + v[1]
+        byte[] signData = signature.toByteArray();
+        byte[] rByte = Arrays.copyOfRange(signData, 0, 32);
+        byte[] sByte = Arrays.copyOfRange(signData, 32, 64);
+        byte vByte = signData[64];
+        if (vByte < 27) {
+            vByte += 27;
+        }
+        transactionResultDTO.v = ByteArray.toJsonHex(vByte);
+        transactionResultDTO.r = ByteArray.toJsonHex(rByte);
+        transactionResultDTO.s = ByteArray.toJsonHex(sByte);
     }
 
     private void transferTransaction2Ether(TransactionResultDTO transactionResultDTO,

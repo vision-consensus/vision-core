@@ -1,13 +1,32 @@
 package org.vision.core.services.jsonrpc;
 
+import com.google.common.base.Throwables;
+import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.vision.api.GrpcAPI;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
+import org.vision.core.ChainBaseManager;
+import org.vision.core.Wallet;
 import org.vision.core.exception.JsonRpcInvalidParamsException;
 import org.vision.core.services.EthereumCompatibleService;
+import org.vision.protos.Protocol.Transaction;
+import org.vision.protos.Protocol.Transaction.Contract.ContractType;
+import org.vision.protos.Protocol.TransactionInfo;
+import org.vision.protos.contract.AssetIssueContractOuterClass;
+import org.vision.protos.contract.AssetIssueContractOuterClass.UnfreezeAssetContract;
+import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
+import org.vision.protos.contract.BalanceContract.*;
+import org.vision.protos.contract.ExchangeContract;
+import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
+import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
+import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
+
+import java.util.List;
 
 @Slf4j(topic = "API")
 public class JsonRpcApiUtil {
@@ -110,6 +129,171 @@ public class JsonRpcApiUtil {
     }
 
     return builder.build();
+  }
+
+  public static long getTransactionAmount(Transaction.Contract contract, String hash,
+                                          Wallet wallet, ChainBaseManager manager) {
+    long amount = 0;
+    try {
+      switch (contract.getType()) {
+        case UnfreezeBalanceContract:
+        case WithdrawBalanceContract:
+          TransactionInfo transactionInfo = wallet
+                  .getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(hash)));
+          amount = getAmountFromTransactionInfo(hash, contract.getType(), transactionInfo);
+          break;
+        default:
+          amount = getTransactionAmount(contract, hash, 0, null, wallet, manager);
+          break;
+      }
+    } catch (Exception e) {
+      logger.error("Exception happens when get amount. Exception = [{}]",
+              Throwables.getStackTraceAsString(e));
+    }
+
+    return amount;
+  }
+
+  public static long getTransactionAmount(Transaction.Contract contract, String hash,
+                                          long blockNum, TransactionInfo transactionInfo,
+                                          Wallet wallet, ChainBaseManager manager) {
+    long amount = 0;
+    try {
+      Any contractParameter = contract.getParameter();
+      switch (contract.getType()) {
+        case TransferContract:
+          amount = contractParameter.unpack(TransferContract.class).getAmount();
+          break;
+        case TransferAssetContract:
+          amount = contractParameter.unpack(TransferAssetContract.class).getAmount();
+          break;
+        case VoteWitnessContract:
+          List<VoteWitnessContract.Vote> votesList = contractParameter.unpack(VoteWitnessContract.class).getVotesList();
+          long voteNumber = 0L;
+          for (VoteWitnessContract.Vote vote : votesList) {
+            voteNumber += vote.getVoteCount();
+          }
+          amount = voteNumber;
+          break;
+        case WitnessCreateContract:
+          amount = manager.getDynamicPropertiesStore().getAccountUpgradeCost();
+          break;
+        case AssetIssueContract:
+        case ExchangeCreateContract:
+          amount = manager.getDynamicPropertiesStore().getExchangeCreateFee();
+          break;
+        case ParticipateAssetIssueContract:
+          break;
+        case FreezeBalanceContract:
+          amount = contractParameter.unpack(FreezeBalanceContract.class).getFrozenBalance();
+          break;
+        case TriggerSmartContract:
+          amount = contractParameter.unpack(TriggerSmartContract.class).getCallValue();
+          break;
+        case ExchangeInjectContract:
+          amount = contractParameter.unpack(ExchangeInjectContract.class).getQuant();
+          break;
+        case ExchangeWithdrawContract:
+          amount = contractParameter.unpack(ExchangeWithdrawContract.class).getQuant();
+          break;
+        case ExchangeTransactionContract:
+          amount = contractParameter.unpack(ExchangeContract.ExchangeTransactionContract.class).getQuant();
+          break;
+        case AccountPermissionUpdateContract:
+          amount = manager.getDynamicPropertiesStore().getUpdateAccountPermissionFee();
+          break;
+        case ShieldedTransferContract:
+          ShieldedTransferContract shieldedTransferContract = contract.getParameter()
+                  .unpack(ShieldedTransferContract.class);
+          if (shieldedTransferContract.getFromAmount() > 0L) {
+            amount = shieldedTransferContract.getFromAmount();
+          } else if (shieldedTransferContract.getToAmount() > 0L) {
+            amount = shieldedTransferContract.getToAmount();
+          }
+          break;
+        case UnfreezeBalanceContract:
+        case WithdrawBalanceContract:
+          amount = getAmountFromTransactionInfo(hash, contract.getType(), transactionInfo);
+          break;
+        case UnfreezeAssetContract:
+          amount = getUnfreezeAssetAmount(contractParameter.unpack(UnfreezeAssetContract.class)
+                  .getOwnerAddress().toByteArray(), wallet);
+          break;
+        default:
+      }
+    } catch (Exception e) {
+      logger.error("Exception happens when get amount. Exception = [{}]",
+              Throwables.getStackTraceAsString(e));
+    }
+    return amount;
+  }
+
+  public static long getUnfreezeAssetAmount(byte[] addressBytes, Wallet wallet) {
+    long amount = 0L;
+    try {
+      if (addressBytes == null) {
+        return amount;
+      }
+
+      GrpcAPI.AssetIssueList assetIssueList = wallet
+              .getAssetIssueByAccount(ByteString.copyFrom(addressBytes));
+      if (assetIssueList != null) {
+        if (assetIssueList.getAssetIssueCount() != 1) {
+          return amount;
+        } else {
+          AssetIssueContractOuterClass.AssetIssueContract assetIssue = assetIssueList.getAssetIssue(0);
+          for (AssetIssueContractOuterClass.AssetIssueContract.FrozenSupply frozenSupply : assetIssue.getFrozenSupplyList()) {
+            amount += frozenSupply.getFrozenAmount();
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.warn("Exception happens when get token10 frozenAmount. Exception = [{}]",
+              Throwables.getStackTraceAsString(e));
+    }
+    return amount;
+  }
+
+  public static long getAmountFromTransactionInfo(String hash, ContractType contractType,
+                                                  TransactionInfo transactionInfo) {
+    long amount = 0L;
+    try {
+
+      if (transactionInfo != null) {
+
+        switch (contractType) {
+          case UnfreezeBalanceContract:
+            amount = transactionInfo.getUnfreezeAmount();
+            break;
+          case WithdrawBalanceContract:
+            amount = transactionInfo.getWithdrawAmount();
+            break;
+          case ExchangeInjectContract:
+            amount = transactionInfo.getExchangeInjectAnotherAmount();
+            break;
+          case ExchangeWithdrawContract:
+            amount = transactionInfo.getExchangeWithdrawAnotherAmount();
+            break;
+          case ExchangeTransactionContract:
+            amount = transactionInfo.getExchangeReceivedAmount();
+            break;
+          default:
+            break;
+        }
+      } else {
+        logger.error("Can't find transaction {} ", hash);
+      }
+    } catch (Exception e) {
+      logger.warn("Exception happens when get amount from transactionInfo. Exception = [{}]",
+              Throwables.getStackTraceAsString(e));
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+    return amount;
+  }
+
+  public static String getTxID(Transaction transaction) {
+    return ByteArray.toHexString(Sha256Hash.hash(true, transaction.getRawData().toByteArray()));
   }
 
 }
