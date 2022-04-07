@@ -78,8 +78,10 @@ public class AccountStateCallBack extends AccountStateCallBackUtils {
     ByteString oldRoot = blockCapsule.getInstance().getBlockHeader().getRawData()
         .getAccountStateRoot();
     execute = false;
+    logger.info("accountStateRoot oldRoot: {}",ByteArray.toHexString(oldRoot.toByteArray())); // show origin accountStateRoot
     //
     byte[] newRoot = trie.getRootHash();
+    logger.info("accountStateRoot newRoot: {}",ByteArray.toHexString(newRoot));  // log the new accountStateRoot
     if (ArrayUtils.isEmpty(newRoot)) {
       newRoot = Hash.EMPTY_TRIE_HASH;
     }
