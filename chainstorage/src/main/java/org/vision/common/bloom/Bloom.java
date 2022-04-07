@@ -74,7 +74,7 @@ public class Bloom {
       }
 
       for (Protocol.TransactionInfo.Log log : transactionInfo.getLogList()) {
-        //log.address doesn't have "41" ahead
+        //log.address doesn't have "46" ahead
         Bloom bloom = Bloom.create(Hash.sha3(log.getAddress().toByteArray()));
         blockBloom.or(bloom);
 
