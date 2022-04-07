@@ -138,6 +138,10 @@ public class JsonRpcApiUtil {
       switch (contract.getType()) {
         case UnfreezeBalanceContract:
         case WithdrawBalanceContract:
+        case WitnessCreateContract:
+        case AssetIssueContract:
+        case ExchangeCreateContract:
+        case AccountPermissionUpdateContract:
           TransactionInfo transactionInfo = wallet
                   .getTransactionInfoById(ByteString.copyFrom(ByteArray.fromHexString(hash)));
           amount = getAmountFromTransactionInfo(hash, contract.getType(), transactionInfo);
@@ -175,13 +179,6 @@ public class JsonRpcApiUtil {
           }
           amount = voteNumber;
           break;
-        case WitnessCreateContract:
-          amount = manager.getDynamicPropertiesStore().getAccountUpgradeCost();
-          break;
-        case AssetIssueContract:
-        case ExchangeCreateContract:
-          amount = manager.getDynamicPropertiesStore().getExchangeCreateFee();
-          break;
         case ParticipateAssetIssueContract:
           break;
         case FreezeBalanceContract:
@@ -198,9 +195,6 @@ public class JsonRpcApiUtil {
           break;
         case ExchangeTransactionContract:
           amount = contractParameter.unpack(ExchangeContract.ExchangeTransactionContract.class).getQuant();
-          break;
-        case AccountPermissionUpdateContract:
-          amount = manager.getDynamicPropertiesStore().getUpdateAccountPermissionFee();
           break;
         case ShieldedTransferContract:
           ShieldedTransferContract shieldedTransferContract = contract.getParameter()
@@ -276,6 +270,12 @@ public class JsonRpcApiUtil {
             break;
           case ExchangeTransactionContract:
             amount = transactionInfo.getExchangeReceivedAmount();
+            break;
+          case WitnessCreateContract:
+          case AssetIssueContract:
+          case ExchangeCreateContract:
+          case AccountPermissionUpdateContract:
+            amount = transactionInfo.getFee();
             break;
           default:
             break;
