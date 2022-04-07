@@ -1,12 +1,13 @@
 package org.vision.core.services;
 
+import com.alibaba.fastjson.JSON;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
 import org.vision.api.GrpcAPI.BytesMessage;
@@ -25,6 +26,7 @@ import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.db2.core.Chainbase;
 import org.vision.core.exception.*;
+import org.vision.core.services.http.Util;
 import org.vision.core.services.jsonrpc.filters.LogBlockQuery;
 import org.vision.core.services.jsonrpc.filters.LogFilterWrapper;
 import org.vision.core.services.jsonrpc.filters.LogMatch;
@@ -34,6 +36,9 @@ import org.vision.protos.Protocol.Block;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
+import org.vision.api.GrpcAPI.TransactionExtention;
+import org.vision.api.GrpcAPI.Return;
+import org.vision.api.GrpcAPI.Return.response_code;
 import org.vision.protos.contract.Common;
 import org.vision.protos.contract.SmartContractOuterClass;
 import org.vision.protos.contract.AccountContract.AccountCreateContract;
@@ -63,6 +68,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.vision.core.db.TransactionTrace.convertToVisionAddress;
+import static org.vision.core.services.http.Util.setTransactionExtraData;
+import static org.vision.core.services.http.Util.setTransactionPermissionId;
+import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.*;
 
 @Slf4j
 @Component
@@ -390,8 +398,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         GrpcAPI.TransactionExtention.Builder trxExtBuilder = GrpcAPI.TransactionExtention.newBuilder();
         GrpcAPI.Return.Builder retBuilder = GrpcAPI.Return.newBuilder();
         try {
-            build.setData(ByteString.copyFrom(ByteArray.fromHexString(args.data)));
-            build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.to.replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase())));
+            build.setData(ByteString.copyFrom(ByteArray.fromHexString(args.getData())));
+            build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.getTo().replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase())));
             build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString("460000000000000000000000000000000000000000")));
             TransactionCapsule trxCap = wallet
                     .createTransactionCapsule(build.build(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);
@@ -426,7 +434,109 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_estimateGas(CallArguments args) throws Exception {
-        return "0x5208";
+        byte[] ownerAddress = addressCompatibleToByteArray(args.getFrom());
+
+        ContractType contractType = args.getContractType(wallet);
+        if (contractType == ContractType.TransferContract) {
+            buildTransferContractTransaction(ownerAddress, new BuildArguments(args));
+            return "0x0";
+        }
+
+        TransactionExtention.Builder trxExtBuilder = TransactionExtention.newBuilder();
+        Return.Builder retBuilder = Return.newBuilder();
+
+        try {
+            byte[] contractAddress;
+
+            if (contractType == ContractType.TriggerSmartContract) {
+                contractAddress = addressCompatibleToByteArray(args.getTo());
+            } else {
+                contractAddress = new byte[0];
+            }
+
+            callTriggerConstantContract(ownerAddress,
+                    contractAddress,
+                    args.parseValue(),
+                    ByteArray.fromHexString(args.getData()),
+                    trxExtBuilder,
+                    retBuilder);
+
+            return ByteArray.toJsonHex(Math.max(trxExtBuilder.getEntropyUsed(), 21000L));
+        } catch (ContractValidateException e) {
+            String errString = "invalid contract";
+            if (e.getMessage() != null) {
+                errString = e.getMessage();
+            }
+
+            throw new JsonRpcInvalidRequestException(errString);
+        } catch (Exception e) {
+            String errString = JSON_ERROR;
+            if (e.getMessage() != null) {
+                errString = e.getMessage().replaceAll("[\"]", "'");
+            }
+
+            throw new JsonRpcInternalException(errString);
+        }
+    }
+
+    private void callTriggerConstantContract(byte[] ownerAddressByte, byte[] contractAddressByte,
+                                             long value, byte[] data, TransactionExtention.Builder trxExtBuilder,
+                                             Return.Builder retBuilder)
+            throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
+
+        TriggerSmartContract triggerContract = triggerCallContract(
+                ownerAddressByte,
+                contractAddressByte,
+                value,
+                data,
+                0,
+                null
+        );
+
+        TransactionCapsule trxCap = wallet.createTransactionCapsule(triggerContract,
+                ContractType.TriggerSmartContract);
+        Transaction trx =
+                wallet.triggerConstantContract(triggerContract, trxCap, trxExtBuilder, retBuilder);
+
+        trxExtBuilder.setTransaction(trx);
+        trxExtBuilder.setTxid(trxCap.getTransactionId().getByteString());
+        trxExtBuilder.setResult(retBuilder);
+        retBuilder.setResult(true).setCode(response_code.SUCCESS);
+    }
+
+    private TransactionJson buildTransferContractTransaction(byte[] ownerAddress,
+                                                             BuildArguments args) throws JsonRpcInvalidParamsException, JsonRpcInvalidRequestException,
+            JsonRpcInternalException {
+        long amount = args.parseValue();
+
+        TransferContract.Builder build = TransferContract.newBuilder();
+        build.setOwnerAddress(ByteString.copyFrom(ownerAddress))
+                .setToAddress(ByteString.copyFrom(addressCompatibleToByteArray(args.getTo())))
+                .setAmount(amount);
+
+        return createTransactionJson(build, ContractType.TransferContract, args);
+    }
+
+    private TransactionJson createTransactionJson(GeneratedMessageV3.Builder<?> build,
+                                                  ContractType contractTyp, BuildArguments args)
+            throws JsonRpcInvalidRequestException, JsonRpcInternalException {
+        try {
+            Transaction tx = wallet
+                    .createTransactionCapsule(build.build(), contractTyp)
+                    .getInstance();
+            tx = setTransactionPermissionId(args.getPermissionId(), tx);
+            tx = setTransactionExtraData(args.getExtraData(), tx, args.isVisible());
+
+            TransactionJson transactionJson = new TransactionJson();
+            transactionJson
+                    .setTransaction(JSON.parseObject(Util.printCreateTransaction(tx, args.isVisible())));
+
+            return transactionJson;
+        } catch (ContractValidateException e) {
+            throw new JsonRpcInvalidRequestException(e.getMessage());
+        } catch (Exception e) {
+            throw new JsonRpcInternalException(e.getMessage());
+        }
     }
 
     @Override
@@ -557,13 +667,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
 
     @Override
-    public TransactionResultDTO eth_getTransactionByHash(String transactionHash) throws Exception {
+    public TransactionResultDTO eth_getTransactionByHash(String txId) throws Exception {
         TransactionResultDTO transactionResultDTO = new TransactionResultDTO();
-        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(transactionHash.substring(2, transactionHash.length())));
+        ByteString transactionId = ByteString.copyFrom(ByteArray.fromHexString(txId.substring(2, txId.length())));
         Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(transactionId);
         Transaction transaction = wallet.getTransactionById(transactionId);
         transferTransactionInfoToEther(transactionResultDTO, transaction, transactionInfo);
-
         return transactionResultDTO;
     }
 
@@ -573,6 +682,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
         if (transaction == null){
             return;
         }
+        byte[] txId = new TransactionCapsule(transaction).getTransactionId().getBytes();
+        String hash = ByteArray.toJsonHex(txId);
 
         transactionResultDTO.chainId = eth_chainId();
         transactionResultDTO.condition = null;
@@ -588,12 +699,14 @@ public class EthereumCompatibleService implements EthereumCompatible {
         transactionResultDTO.gasPrice = eth_gasPrice();
         transactionResultDTO.from = null;
         transactionResultDTO.to = null;
+
         if (!transaction.getRawData().getContractList().isEmpty()) {
             Contract contract = transaction.getRawData().getContract(0);
             byte[] ownerAddress = TransactionCapsule.getOwner(contract);
             byte[] toAddress = getToAddress(transaction);
             transactionResultDTO.from = ByteArray.toJsonHexAddress(ownerAddress);
             transactionResultDTO.to =  ByteArray.toJsonHexAddress(toAddress);
+            transactionResultDTO.value = ByteArray.toJsonHex(getTransactionAmount(contract, hash, wallet, chainBaseManager));
         }
         String txID = ByteArray.toHexString(Sha256Hash
                 .hash(CommonParameter.getInstance().isECKeyCryptoEngine(),
@@ -618,6 +731,42 @@ public class EthereumCompatibleService implements EthereumCompatible {
         }catch (Exception exception){
             transactionResultDTO.nonce = "0x";
         }
+
+        int transactionIndex = -1;
+
+        List<Transaction> txList = block.getTransactionsList();
+        for (int index = 0; index < txList.size(); index++) {
+            transaction = txList.get(index);
+            if (getTxID(transaction).equals(txId)) {
+                transactionIndex = index;
+                break;
+            }
+        }
+
+        if (transactionIndex == -1) {
+            return;
+        }
+
+        transactionResultDTO.transactionIndex = ByteArray.toJsonHex(transactionIndex);
+
+        if (transaction.getSignatureCount() == 0) {
+            transactionResultDTO.v = null;
+            transactionResultDTO.r = null;
+            transactionResultDTO.s = null;
+            return;
+        }
+
+        ByteString signature = transaction.getSignature(0); // r[32] + s[32] + v[1]
+        byte[] signData = signature.toByteArray();
+        byte[] rByte = Arrays.copyOfRange(signData, 0, 32);
+        byte[] sByte = Arrays.copyOfRange(signData, 32, 64);
+        byte vByte = signData[64];
+        if (vByte < 27) {
+            vByte += 27;
+        }
+        transactionResultDTO.v = ByteArray.toJsonHex(vByte);
+        transactionResultDTO.r = ByteArray.toJsonHex(rByte);
+        transactionResultDTO.s = ByteArray.toJsonHex(sByte);
     }
 
     private void transferTransaction2Ether(TransactionResultDTO transactionResultDTO,

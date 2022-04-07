@@ -1,16 +1,25 @@
 package org.vision.common.application;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.protobuf.ByteString;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteArray;
+import org.vision.core.Wallet;
 import org.vision.core.exception.*;
 import org.vision.protos.Protocol;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import org.vision.protos.Protocol.Transaction.Contract.ContractType;
+import org.vision.api.GrpcAPI.BytesMessage;
+import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
+
+import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.*;
 
 @Component
 public interface EthereumCompatible {
@@ -25,28 +34,197 @@ public interface EthereumCompatible {
 
     @NoArgsConstructor
     @AllArgsConstructor
+    @Getter
     class CallArguments {
-        public String from;
-        public String to;
-        public String gas;
-        public String gasPrice;
-        public String value;
-        public String data; // compiledCode
-        public String nonce;
-        public long timestamp;
+        @Getter
+        @Setter
+        private String from = "0x0000000000000000000000000000000000000000";
+        @Getter
+        @Setter
+        private String to;
+        @Getter
+        @Setter
+        private String gas = ""; //not used
+        @Getter
+        @Setter
+        private String gasPrice = ""; //not used
+        @Getter
+        @Setter
+        private String value = "";
+        @Getter
+        @Setter
+        private String data;
+        @Getter
+        @Setter
+        private String nonce; // not used
 
-        @Override
-        public String toString() {
-            return "CallArguments{" +
-                    "from='" + from + '\'' +
-                    ", to='" + to + '\'' +
-                    ", gas='" + gas + '\'' +
-                    ", gasPrice='" + gasPrice + '\'' +
-                    ", value='" + value + '\'' +
-                    ", data='" + data + '\'' +
-                    ", nonce='" + nonce + '\'' +
-                    '}';
+        /**
+         * just support TransferContract, CreateSmartContract and TriggerSmartContract
+         * */
+        public ContractType getContractType(Wallet wallet) throws JsonRpcInvalidRequestException,
+                JsonRpcInvalidParamsException {
+            ContractType contractType;
+
+            // from or to is null
+            if (paramStringIsNull(from)) {
+                throw new JsonRpcInvalidRequestException("invalid json request");
+            } else if (paramStringIsNull(to)) {
+                // data is null
+                if (paramStringIsNull(data)) {
+                    throw new JsonRpcInvalidRequestException("invalid json request");
+                }
+
+                contractType = ContractType.CreateSmartContract;
+            } else {
+                byte[] contractAddressData = addressCompatibleToByteArray(to);
+                BytesMessage.Builder build = BytesMessage.newBuilder();
+                BytesMessage bytesMessage =
+                        build.setValue(ByteString.copyFrom(contractAddressData)).build();
+                SmartContract smartContract = wallet.getContract(bytesMessage);
+
+                // check if to is smart contract
+                if (smartContract != null) {
+                    contractType = ContractType.TriggerSmartContract;
+                } else {
+                    if (StringUtils.isNotEmpty(value)) {
+                        contractType = ContractType.TransferContract;
+                    } else {
+                        throw new JsonRpcInvalidRequestException("invalid json request: invalid value");
+                    }
+                }
+            }
+            return contractType;
         }
+
+        public long parseValue() throws JsonRpcInvalidParamsException {
+            return parseQuantityValue(value);
+        }
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    class BuildArguments {
+
+        @Getter
+        @Setter
+        private String from;
+        @Getter
+        @Setter
+        private String to;
+        @Getter
+        @Setter
+        private String gas = "0x0";
+        @Getter
+        @Setter
+        private String gasPrice = ""; //not used
+        @Getter
+        @Setter
+        private String value;
+        @Getter
+        @Setter
+        private String data;
+        @Getter
+        @Setter
+        private String nonce = ""; //not used
+
+        @Getter
+        @Setter
+        private Long tokenId = 0L;
+        @Getter
+        @Setter
+        private Long tokenValue = 0L;
+        @Getter
+        @Setter
+        private String abi = "";
+        @Getter
+        @Setter
+        private Long consumeUserResourcePercent = 0L;
+        @Getter
+        @Setter
+        private Long originEnergyLimit = 0L;
+        @Getter
+        @Setter
+        private String name = "";
+
+        @Getter
+        @Setter
+        private Integer permissionId = 0;
+        @Getter
+        @Setter
+        private String extraData = "";
+
+        @Getter
+        @Setter
+        private boolean visible = false;
+
+        public BuildArguments(CallArguments args) {
+            from = args.getFrom();
+            to = args.getTo();
+            gas = args.getGas();
+            gasPrice = args.getGasPrice();
+            value = args.getValue();
+            data = args.getData();
+        }
+
+        public ContractType getContractType(Wallet wallet) throws JsonRpcInvalidRequestException,
+                JsonRpcInvalidParamsException {
+            ContractType contractType;
+
+            // to is null
+            if (paramStringIsNull(to)) {
+                // data is null
+                if (paramStringIsNull(data)) {
+                    throw new JsonRpcInvalidRequestException("invalid json request");
+                }
+
+                contractType = ContractType.CreateSmartContract;
+            } else {
+                // to is not null
+                byte[] contractAddressData = addressCompatibleToByteArray(to);
+                BytesMessage.Builder build = BytesMessage.newBuilder();
+                BytesMessage bytesMessage = build.setValue(ByteString.copyFrom(contractAddressData)).build();
+                SmartContract smartContract = wallet.getContract(bytesMessage);
+
+                // check if to is smart contract
+                if (smartContract != null) {
+                    contractType = ContractType.TriggerSmartContract;
+                } else {
+                    // tokenId and tokenValue: trc10, value: TRX
+                    if (availableTransferAsset()) {
+                        contractType = ContractType.TransferAssetContract;
+                    } else {
+                        if (StringUtils.isNotEmpty(value)) {
+                            contractType = ContractType.TransferContract;
+                        } else {
+                            throw new JsonRpcInvalidRequestException("invalid json request");
+                        }
+                    }
+                }
+            }
+
+            return contractType;
+        }
+
+        public long parseValue() throws JsonRpcInvalidParamsException {
+            return parseQuantityValue(value);
+        }
+
+        public long parseGas() throws JsonRpcInvalidParamsException {
+            return parseQuantityValue(gas);
+        }
+
+        private boolean availableTransferAsset() {
+            return tokenId > 0 && tokenValue > 0 && paramQuantityIsNull(value);
+        }
+
+    }
+
+    class TransactionJson {
+
+        @Getter
+        @Setter
+        private JSONObject transaction;
     }
 
     class BlockResult {

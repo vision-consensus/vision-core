@@ -34,12 +34,14 @@ import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.TransactionSignWeight;
 import org.vision.api.GrpcAPI.TransactionSignWeight.Result;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.runtime.InternalTransaction;
 import org.vision.common.utils.Sha256Hash;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.exception.PermissionException;
 import org.vision.core.exception.SignatureFormatException;
+import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Permission;
 import org.vision.protos.Protocol.Permission.PermissionType;
 import org.vision.protos.Protocol.Transaction;
@@ -258,4 +260,33 @@ public class TransactionUtil {
     return tswBuilder.build();
   }
 
+  public static Protocol.InternalTransaction buildInternalTransaction(InternalTransaction it) {
+    Protocol.InternalTransaction.Builder itBuilder = Protocol.InternalTransaction
+            .newBuilder();
+    // set hash
+    itBuilder.setHash(ByteString.copyFrom(it.getHash()));
+    // set caller
+    itBuilder.setCallerAddress(ByteString.copyFrom(it.getSender()));
+    // set TransferTo
+    itBuilder.setTransferToAddress(ByteString.copyFrom(it.getTransferToAddress()));
+    //TODO: "for loop" below in future for multiple token case, we only have one for now.
+    Protocol.InternalTransaction.CallValueInfo.Builder callValueInfoBuilder =
+            Protocol.InternalTransaction.CallValueInfo.newBuilder();
+    // trx will not be set token name
+    callValueInfoBuilder.setCallValue(it.getValue());
+    // Just one transferBuilder for now.
+    itBuilder.addCallValueInfo(callValueInfoBuilder);
+    it.getTokenInfo().forEach((tokenId, amount) ->
+            itBuilder.addCallValueInfo(
+                    Protocol.InternalTransaction.CallValueInfo.newBuilder()
+                            .setTokenId(tokenId)
+                            .setCallValue(amount)
+            )
+    );
+    // Token for loop end here
+    itBuilder.setNote(ByteString.copyFrom(it.getNote().getBytes()));
+    itBuilder.setRejected(it.isRejected());
+    itBuilder.setExtra(it.getExtra());
+    return itBuilder.build();
+  }
 }
