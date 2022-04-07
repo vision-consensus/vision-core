@@ -1233,6 +1233,9 @@ message TransactionExtention {
   bytes txid = 2; //transaction id =  sha256(transaction.rowdata)
   repeated bytes constant_result = 3;
   Return result = 4;
+  int64 entropy_used = 5;
+  repeated TransactionInfo.Log logs = 6;
+  repeated InternalTransaction internal_transactions = 7;
 }
 
 message BlockExtention {
