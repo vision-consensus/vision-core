@@ -72,6 +72,7 @@ import static org.vision.core.services.http.Util.setTransactionExtraData;
 import static org.vision.core.services.http.Util.setTransactionPermissionId;
 import static org.vision.core.services.jsonrpc.JsonRpcApiUtil.*;
 
+
 @Slf4j
 @Component
 public class EthereumCompatibleService implements EthereumCompatible {
@@ -950,7 +951,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 transactionReceiptDTO.cumulativeGasUsed = ByteArray.toJsonHex(cumulativeGas);
                 transactionReceiptDTO.gasUsed = ByteArray.toJsonHex(entropyUsage);
                 transactionReceiptDTO.status = resourceReceipt.getResultValue() <= 1 ? "0x1" : "0x0";
-
                 transaction = block.getTransactions(index);
                 break;
             } else {
