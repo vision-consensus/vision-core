@@ -756,6 +756,8 @@ public class Args extends CommonParameter {
             config.hasPath(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_ETH_COMPATIBLE_RLP_DEDUP) ? config
                     .getLong(Constant.DEBUG_FEATURE_EFFECT_BLOCKNUM_ETH_COMPATIBLE_RLP_DEDUP) : 0L;
 
+    PARAMETER.jsonRpcFilterEnabled = config.hasPath(Constant.ETH_JSON_RPC_FILTER_ENABLED)
+            && config.getBoolean(Constant.ETH_JSON_RPC_FILTER_ENABLED);
     logConfig();
   }
 
