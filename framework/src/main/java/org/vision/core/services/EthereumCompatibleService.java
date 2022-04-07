@@ -942,13 +942,13 @@ public class EthereumCompatibleService implements EthereumCompatible {
             Protocol.TransactionInfo info = infoList.getTransactionInfo(index);
             Protocol.ResourceReceipt resourceReceipt = info.getReceipt();
 
-            long energyUsage = resourceReceipt.getEntropyUsageTotal();
-            cumulativeGas += energyUsage;
+            long entropyUsage = resourceReceipt.getEntropyUsageTotal();
+            cumulativeGas += entropyUsage;
 
             if (ByteArray.toHexString(info.getId().toByteArray()).equals(trxId)) {
                 transactionReceiptDTO.transactionIndex = ByteArray.toJsonHex(index);
                 transactionReceiptDTO.cumulativeGasUsed = ByteArray.toJsonHex(cumulativeGas);
-                transactionReceiptDTO.gasUsed = ByteArray.toJsonHex(energyUsage);
+                transactionReceiptDTO.gasUsed = ByteArray.toJsonHex(entropyUsage);
                 transactionReceiptDTO.status = resourceReceipt.getResultValue() <= 1 ? "0x1" : "0x0";
 
                 transaction = block.getTransactions(index);
