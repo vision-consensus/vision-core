@@ -861,7 +861,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
         if (block == null){
             return null;
         }
-
         return getTransactionReceipt(transactionInfo, block);
     }
 

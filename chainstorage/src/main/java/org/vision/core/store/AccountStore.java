@@ -116,6 +116,41 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
     return getUnchecked(assertsAddress.get("Avalon"));
   }
 
+  /**
+   * Get finance account info
+   */
+  public AccountCapsule getPrivateSale() {
+    return getUnchecked(assertsAddress.get("PrivateSale"));
+  }
+
+  /**
+   * Get Team account info
+   */
+  public AccountCapsule getTeam() {
+    return getUnchecked(assertsAddress.get("Team"));
+  }
+
+  /**
+   * Get DAO community account info
+   */
+  public AccountCapsule getDAO() {
+    return getUnchecked(assertsAddress.get("DAO"));
+  }
+
+  /**
+   * Get Developer account info
+   */
+  public AccountCapsule getDev() {
+    return getUnchecked(assertsAddress.get("Dev"));
+  }
+
+  /**
+   * Get Promotion account info
+   */
+  public AccountCapsule getPromotion() {
+    return getUnchecked(assertsAddress.get("Promotion"));
+  }
+
   private void recordBalance(AccountCapsule accountCapsule, long diff) {
     TransactionBalanceTrace transactionBalanceTrace = balanceTraceStore.getCurrentTransactionBalanceTrace();
     if (transactionBalanceTrace == null) {

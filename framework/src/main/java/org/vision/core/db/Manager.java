@@ -1385,10 +1385,7 @@ public class Manager {
 
   private void payReward(BlockCapsule block) {
     if (1 == block.getNum()) {
-      long avalonBalance = accountStore.getAvalon().getBalance();
-      long galaxyBalance = accountStore.getGalaxy().getBalance();
-      chainBaseManager.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
-      chainBaseManager.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+      saveGenisisAccountInitAmount();
     }
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
@@ -1436,6 +1433,24 @@ public class Manager {
     long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
     chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
   }
+
+  private void saveGenisisAccountInitAmount(){
+    long avalonBalance = accountStore.getAvalon().getBalance();
+    long galaxyBalance = accountStore.getGalaxy().getBalance();
+    long privateSaleBalance = accountStore.getPrivateSale().getBalance();
+    long teamBalance = accountStore.getTeam().getBalance();
+    long daoBalance = accountStore.getDAO().getBalance();
+    long devBalance = accountStore.getDev().getBalance();
+    long promotionBalance = accountStore.getPromotion().getBalance();
+    chainBaseManager.getDynamicPropertiesStore().saveAvalonInitialAmount(avalonBalance);
+    chainBaseManager.getDynamicPropertiesStore().saveGalaxyInitialAmount(galaxyBalance);
+    chainBaseManager.getDynamicPropertiesStore().savePrivateSaleInitialAmount(privateSaleBalance);
+    chainBaseManager.getDynamicPropertiesStore().saveTeamInitialAmount(teamBalance);
+    chainBaseManager.getDynamicPropertiesStore().saveDAOInitialAmount(daoBalance);
+    chainBaseManager.getDynamicPropertiesStore().saveDevInitialAmount(devBalance);
+    chainBaseManager.getDynamicPropertiesStore().savePromotionInitialAmount(promotionBalance);
+  }
+
 
   private void postSolidityLogContractTrigger(Long blockNum, Long lastSolidityNum) {
     if (blockNum > lastSolidityNum) {
