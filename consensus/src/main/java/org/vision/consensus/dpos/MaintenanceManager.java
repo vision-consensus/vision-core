@@ -314,6 +314,14 @@ public class MaintenanceManager {
       totalPledgeAmount = totalPledgeAmount.add(bigTotalSpreadMint);
     }
 
+    long galaxyBalance = accountStore.getGalaxy().getBalance();
+    BigDecimal bigGalaxyBalance = new BigDecimal(galaxyBalance);
+    long galaxyInitialAmount = dynamicPropertiesStore.getGalaxyInitialAmount();
+    if (0 == galaxyInitialAmount) {
+      dynamicPropertiesStore.saveGalaxyInitialAmount(galaxyBalance);
+      galaxyInitialAmount = galaxyBalance;
+    }
+
     BigDecimal bigGalaxyLiquidityAmount = getBigGalaxyLiquidityAmount();
     BigDecimal bigAvalonLiquidityAmount = getBigAvalonLiquidityAmount();
     BigDecimal bigPrivateSaleLiquidityAmount = getBigPrivateSaleLiquidityAmount();

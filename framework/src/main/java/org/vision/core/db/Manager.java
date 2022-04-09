@@ -18,6 +18,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vision.common.args.GenesisBlock;
+import org.vision.common.bloom.Bloom;
 import org.vision.common.logsfilter.EventPluginLoader;
 import org.vision.common.logsfilter.FilterQuery;
 import org.vision.common.logsfilter.capsule.*;
@@ -722,7 +723,7 @@ public class Manager {
       TransactionExpirationException, TooBigTransactionException, DupTransactionException,
       TaposException, ValidateScheduleException, ReceiptCheckErrException,
       VMIllegalException, TooBigTransactionResultException, UnLinkedBlockException,
-      NonCommonBlockException, BadNumberBlockException, BadBlockException, ZksnarkException, P2pVersionException {
+      NonCommonBlockException, BadNumberBlockException, BadBlockException, ZksnarkException, P2pVersionException, EventBloomException {
     block.generatedByMyself = true;
     long start = System.currentTimeMillis();
     pushBlock(block);
@@ -737,7 +738,8 @@ public class Manager {
       ContractExeException, ValidateSignatureException, AccountResourceInsufficientException,
       TransactionExpirationException, TooBigTransactionException, DupTransactionException,
       TaposException, ValidateScheduleException, ReceiptCheckErrException,
-      VMIllegalException, TooBigTransactionResultException, ZksnarkException, BadBlockException, P2pVersionException {
+      VMIllegalException, TooBigTransactionResultException, ZksnarkException,
+          BadBlockException, P2pVersionException, EventBloomException {
     processBlock(block);
     chainBaseManager.getBlockStore().put(block.getBlockId().getBytes(), block);
     chainBaseManager.getBlockIndexStore().put(block.getBlockId());
@@ -759,7 +761,7 @@ public class Manager {
       ValidateScheduleException, AccountResourceInsufficientException, TaposException,
       TooBigTransactionException, TooBigTransactionResultException, DupTransactionException,
       TransactionExpirationException, NonCommonBlockException, ReceiptCheckErrException,
-      VMIllegalException, ZksnarkException, BadBlockException, P2pVersionException {
+      VMIllegalException, ZksnarkException, BadBlockException, P2pVersionException, EventBloomException {
 
     MetricsUtil.meterMark(MetricsKey.BLOCKCHAIN_FORK_COUNT);
 
@@ -868,7 +870,7 @@ public class Manager {
       TaposException, TooBigTransactionException, TooBigTransactionResultException,
       DupTransactionException, TransactionExpirationException,
       BadNumberBlockException, BadBlockException, NonCommonBlockException,
-      ReceiptCheckErrException, VMIllegalException, ZksnarkException, P2pVersionException {
+      ReceiptCheckErrException, VMIllegalException, ZksnarkException, P2pVersionException, EventBloomException {
     long start = System.currentTimeMillis();
     try (PendingManager pm = new PendingManager(this)) {
 
@@ -1306,7 +1308,7 @@ public class Manager {
       AccountResourceInsufficientException, TaposException, TooBigTransactionException,
       DupTransactionException, TransactionExpirationException, ValidateScheduleException,
       ReceiptCheckErrException, VMIllegalException, TooBigTransactionResultException,
-      ZksnarkException, BadBlockException, P2pVersionException {
+      ZksnarkException, BadBlockException, P2pVersionException, EventBloomException{
     // todo set revoking db max size.
 
     // checkWitness
@@ -1372,6 +1374,13 @@ public class Manager {
     updateRecentBlock(block);
     updateDynamicProperties(block);
     chainBaseManager.getBalanceTraceStore().resetCurrentBlockTrace();
+
+    if (CommonParameter.getInstance().isJsonRpcFilterEnabled()) {
+      Bloom blockBloom = chainBaseManager.getSectionBloomStore()
+              .initBlockSection(transactionRetCapsule);
+      chainBaseManager.getSectionBloomStore().write(block.getNum());
+      block.setBloom(blockBloom);
+    }
   }
 
   private void payReward(BlockCapsule block) {

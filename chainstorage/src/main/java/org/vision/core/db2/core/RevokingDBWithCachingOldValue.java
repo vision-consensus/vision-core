@@ -119,6 +119,12 @@ public class RevokingDBWithCachingOldValue implements IRevokingDB {
 
   }
 
+  @Override
+  public Chainbase.Cursor getCursor() {
+    logger.error("RevokingDBWithCachingOldValue getCursor is called, this should not be happened");
+    return Chainbase.Cursor.HEAD;
+  }
+
   /**
    * This should be called just after an object is created
    */

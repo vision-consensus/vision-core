@@ -173,6 +173,10 @@ public class ChainBaseManager {
 
   @Autowired
   @Getter
+  private SectionBloomStore sectionBloomStore;
+
+  @Autowired
+  @Getter
   @Setter
   private TreeBlockIndexStore merkleTreeIndexStore;
 
@@ -219,6 +223,7 @@ public class ChainBaseManager {
     closeOneStore(commonStore);
     closeOneStore(commonDataBase);
     closeOneStore(pbftSignDataStore);
+    closeOneStore(sectionBloomStore);
   }
 
   // for test only
