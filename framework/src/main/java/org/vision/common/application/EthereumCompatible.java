@@ -142,7 +142,7 @@ public interface EthereumCompatible {
         private Long consumeUserResourcePercent = 0L;
         @Getter
         @Setter
-        private Long originEnergyLimit = 0L;
+        private Long originEntropyLimit = 0L;
         @Getter
         @Setter
         private String name = "";
