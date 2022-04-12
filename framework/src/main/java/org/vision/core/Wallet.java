@@ -81,6 +81,7 @@ import org.vision.common.overlay.discover.node.NodeManager;
 import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.ProgramResult;
+import org.vision.common.runtime.vm.LogInfo;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.DecodeUtil;
@@ -108,6 +109,7 @@ import org.vision.core.db.EntropyProcessor;
 import org.vision.core.db.Manager;
 import org.vision.core.db.PhotonProcessor;
 import org.vision.core.db.TransactionContext;
+import org.vision.core.db2.core.Chainbase;
 import org.vision.core.exception.*;
 import org.vision.core.net.VisionNetDelegate;
 import org.vision.core.net.VisionNetService;
@@ -2865,6 +2867,11 @@ public class Wallet {
     TransactionResultCapsule ret = new TransactionResultCapsule();
 
     builder.addConstantResult(ByteString.copyFrom(result.getHReturn()));
+    builder.setEntropyUsed(result.getEntropyUsed());
+    result.getLogInfoList().forEach(logInfo ->
+            builder.addLogs(LogInfo.buildLog(logInfo)));
+    result.getInternalTransactions().forEach(it ->
+            builder.addInternalTransactions(TransactionUtil.buildInternalTransaction(it)));
     ret.setStatus(0, code.SUCESS);
     if (StringUtils.isNoneEmpty(result.getRuntimeError())) {
       ret.setStatus(0, code.FAILED);
@@ -4082,6 +4089,33 @@ public class Wallet {
     }
     if (accountIdentifier.getAddress().isEmpty()) {
       throw new IllegalArgumentException("account_identifier address is null");
+    }
+  }
+
+  public Chainbase.Cursor getCursor() {
+    return chainBaseManager.getBlockStore().getRevokingDB().getCursor();
+  }
+
+  public TransactionCapsule getTransactionCapsuleById(ByteString transactionId) {
+    if (Objects.isNull(transactionId)) {
+      return null;
+    }
+    TransactionCapsule transactionCapsule;
+    try {
+      transactionCapsule = chainBaseManager.getTransactionStore()
+              .get(transactionId.toByteArray());
+    } catch (StoreException e) {
+      return null;
+    }
+    return transactionCapsule;
+  }
+
+  public BlockCapsule getBlockCapsuleByNum(long blockNum) {
+    try {
+      return chainBaseManager.getBlockByNum(blockNum);
+    } catch (StoreException e) {
+      logger.info(e.getMessage());
+      return null;
     }
   }
 }

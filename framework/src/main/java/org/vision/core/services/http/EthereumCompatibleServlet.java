@@ -1,10 +1,14 @@
 package org.vision.core.services.http;
 
 import com.googlecode.jsonrpc4j.JsonRpcServer;
+import com.googlecode.jsonrpc4j.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.vision.core.ChainBaseManager;
+import org.vision.core.Wallet;
 import org.vision.core.services.EthereumCompatibleService;
+import org.vision.core.services.NodeInfoService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 public class EthereumCompatibleServlet extends RateLimiterServlet {
 
     @Autowired
-    private EthereumCompatibleService ethereumCompatibleService;
+    private NodeInfoService nodeInfoService;
+    @Autowired
+    private Wallet wallet;
+    @Autowired
+    private ChainBaseManager chainBaseManager;
 
     private JsonRpcServer jsonRpcServer;
 
@@ -34,6 +42,7 @@ public class EthereumCompatibleServlet extends RateLimiterServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        this.jsonRpcServer = new JsonRpcServer(this.ethereumCompatibleService, EthereumCompatibleService.class);
+        EthereumCompatibleService service = new EthereumCompatibleService(nodeInfoService, wallet, chainBaseManager);
+        this.jsonRpcServer = new JsonRpcServer(service, EthereumCompatibleService.class);
     }
 }

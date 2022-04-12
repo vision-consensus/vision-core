@@ -56,6 +56,16 @@ public class ByteArray {
     return Hex.decode(data);
   }
 
+  public static String fromHex(String x) {
+    if (x.startsWith("0x")) {
+      x = x.substring(2);
+    }
+    if (x.length() % 2 != 0) {
+      x = "0" + x;
+    }
+    return x;
+  }
+
   /**
    * get long data from bytes data.
    */
