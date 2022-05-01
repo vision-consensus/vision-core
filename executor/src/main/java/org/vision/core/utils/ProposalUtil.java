@@ -7,6 +7,10 @@ import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class ProposalUtil {
 
   protected static final long LONG_VALUE = 100_000_000_000_000_000L;
@@ -396,6 +400,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
+        if (value != 1 ) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_VP_FREEZE_STAGE_WEIGHT] is only allowed to be 1");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -460,6 +471,46 @@ public class ProposalUtil {
         }
         break;
       }
+      case VP_FREEZE_STAGE_WEIGHT: {
+        String[] stageWeights = value.split(";");
+        int stageLen = 4;
+        if (stageWeights.length != stageLen) {
+          throw new ContractValidateException(
+                  "Bad VP_FREEZE_STAGE_WEIGHT parameter value, only allowed four positive strings like [stage2,weight2;stage3,weight3;stage4,weight4;stage5,weight5]");
+        }
+
+        Integer[] stage = new Integer[stageLen];
+        Integer[] weight = new Integer[stageLen];
+        for (int j = 0; j < stageWeights.length; j++){
+          String sw = stageWeights[j];
+          String[] stageWeight = sw.split(",");
+          if (stageWeight.length != 2) {
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, only allowed two positive integers in items like [stage2,weight2;stage3,weight3;stage4,weight4;stage5,weight5]");
+          }
+          for (String s : stageWeight) {
+            String tmp = s.trim();
+            if (!NumberUtils.isNumber(tmp)) {
+              throw new ContractValidateException(
+                      "Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage and weight must be a Number");
+            }
+          }
+          stage[j] = Integer.parseInt(stageWeight[0]);
+          weight[j] = Integer.parseInt(stageWeight[1]);
+        }
+        for (int i = 0; i < stage.length-1; i++) {
+          if(stage[i] > stage[i+1]){
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage must be ordered by ase");
+          }
+        }
+        for (int i = 0; i < weight.length-1; i++) {
+          if(weight[i] > weight[i+1]){
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, weight must be ordered by ase");
+          }
+        }
+      }
       default:
         break;
     }
@@ -522,7 +573,9 @@ public class ProposalUtil {
     FVGUARANTEE_FREEZE_PERIOD_LIMIT(53),
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
-    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56);// 0,1
+    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
+    ALLOW_VP_FREEZE_STAGE_WEIGHT(57), // 0,1
+    VP_FREEZE_STAGE_WEIGHT(58); // 60,110;180,120;360,130;720,150
 
     private long code;
 

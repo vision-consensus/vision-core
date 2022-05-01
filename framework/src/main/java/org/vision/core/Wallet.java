@@ -1158,6 +1158,10 @@ public class Wallet {
             .setKey("getAllowSpreadMintParticipatePledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintParticipatePledgeRate())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getVPFreezeStageWeight")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getVPFreezeStageWeight())
+            .build());
     return builder.build();
   }
 

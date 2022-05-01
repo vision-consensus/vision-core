@@ -15,7 +15,6 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -179,6 +178,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
   private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
   private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
+  private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
 
 
   @Autowired
@@ -899,6 +899,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     } catch (IllegalArgumentException e) {
       this.saveAllowModifySpreadMintParent(1L);
     }
+
+    try {
+      this.getVPFreezeStageWeight();
+    } catch (IllegalArgumentException e) {
+      this.saveVPFreezeStageWeight("60,110;180,120;360,130;720,150");
+    }
+
   }
 
   public String intArrayToString(int[] a) {
@@ -2857,6 +2864,28 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(BytesCapsule::getData)
             .map(ByteArray::toStr)
             .orElse("");
+  }
+
+  public void saveVPFreezeStageWeight(String value) {
+    this.put(VP_FREEZE_STAGE_WEIGHT, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getVPFreezeStageWeight(){
+    return Optional.ofNullable(getUnchecked(VP_FREEZE_STAGE_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElseThrow(
+                    () -> new IllegalArgumentException("not found VP_FREEZE_STAGE_WEIGHT"));
+  }
+
+  public Integer[][] getVPFreezeStageWeights(){
+    String[] vpFreezeStageWeight = getVPFreezeStageWeight().split(";");
+    Integer[][] result = new Integer[vpFreezeStageWeight.length][];
+    for (int i = 0; i < vpFreezeStageWeight.length; i++) {
+      String[] item = vpFreezeStageWeight[i].split(",");
+      result[i] = new Integer[]{Integer.parseInt(item[0].trim()), Integer.parseInt(item[1].trim())};
+    }
+    return result;// [[60,110],[180,120],[360,130],[720,150]]
   }
 
   private static class DynamicResourceProperties {

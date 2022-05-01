@@ -294,6 +294,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveHighInflationRate(highInflationRate);
           break;
         }
+        case VP_FREEZE_STAGE_WEIGHT: {
+          manager.getDynamicPropertiesStore().saveVPFreezeStageWeight(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
