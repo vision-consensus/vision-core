@@ -178,7 +178,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
   private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
   private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
-  private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
 
 
   @Autowired
@@ -2866,12 +2865,24 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse("");
   }
 
+  public void saveAllowVPFreezeStageWeight(Long value) {
+    this.put(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowVPFreezeStageWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(1L);
+  }
+
   public void saveVPFreezeStageWeight(String value) {
-    this.put(VP_FREEZE_STAGE_WEIGHT, new BytesCapsule(ByteArray.fromString(value)));
+    this.put(DynamicResourceProperties.VP_FREEZE_STAGE_WEIGHT, new BytesCapsule(ByteArray.fromString(value)));
   }
 
   public String getVPFreezeStageWeight(){
-    return Optional.ofNullable(getUnchecked(VP_FREEZE_STAGE_WEIGHT))
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.VP_FREEZE_STAGE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toStr)
             .orElseThrow(
@@ -2885,7 +2896,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       String[] item = vpFreezeStageWeight[i].split(",");
       result[i] = new Integer[]{Integer.parseInt(item[0].trim()), Integer.parseInt(item[1].trim())};
     }
-    return result;// [[60,110],[180,120],[360,130],[720,150]]
+    return result;// [[1,35,100],[2,60,110],[3,180,120],[4,360,130],[5,720,150]]
   }
 
   private static class DynamicResourceProperties {
@@ -2937,6 +2948,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE = "ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE".getBytes();
     public static final byte[] ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT = "ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT".getBytes();
     public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
+    private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
+    private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
   }
 
 }
