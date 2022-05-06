@@ -15,8 +15,7 @@ import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
@@ -2889,14 +2888,22 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException("not found VP_FREEZE_STAGE_WEIGHT"));
   }
 
-  public Integer[][] getVPFreezeStageWeights(){
+  public Map<Long, List<Long>> getVPFreezeStageWeights(){
+    Map<Long, List<Long>> map = new HashMap<>();
     String[] vpFreezeStageWeight = getVPFreezeStageWeight().split(";");
-    Integer[][] result = new Integer[vpFreezeStageWeight.length][];
-    for (int i = 0; i < vpFreezeStageWeight.length; i++) {
-      String[] item = vpFreezeStageWeight[i].split(",");
-      result[i] = new Integer[]{Integer.parseInt(item[0].trim()), Integer.parseInt(item[1].trim())};
+    for (String s : vpFreezeStageWeight) {
+      String[] item = s.split(",");
+      map.put(Long.parseLong(item[0].trim()), new ArrayList<>(Arrays.asList(Long.parseLong(item[1].trim()), Long.parseLong(item[2].trim()))));
     }
-    return result;// [[1,35,100],[2,60,110],[3,180,120],[4,360,130],[5,720,150]]
+    return map;//[stage,duration,weight] [[1,35,100],[2,60,110],[3,180,120],[4,360,130],[5,720,150]]
+  }
+
+  public long getVPFreezeDurationByStage(long stage) {
+    return getVPFreezeStageWeights().get(stage).get(0);
+  }
+
+  public long getVPFreezeWeightByStage(long stage) {
+    return getVPFreezeStageWeights().get(stage).get(1);
   }
 
   private static class DynamicResourceProperties {

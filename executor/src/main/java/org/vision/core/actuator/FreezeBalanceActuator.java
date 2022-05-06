@@ -12,19 +12,16 @@ import org.vision.common.utils.Time;
 import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
-import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+import org.vision.protos.contract.BalanceContract.FreezeBalanceStage;
 import org.vision.protos.contract.Common;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.config.Parameter.ChainConstant.*;
@@ -47,6 +44,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     final FreezeBalanceContract freezeBalanceContract;
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     try {
       freezeBalanceContract = any.unpack(FreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
@@ -65,10 +63,22 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
-
     long newBalance = accountCapsule.getBalance() - freezeBalanceContract.getFrozenBalance();
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1){
+      switch (freezeBalanceContract.getResource()) {
+        case PHOTON:
+        case ENTROPY:
+          List<FreezeBalanceStage> stages = freezeBalanceContract.getFreezeBalanceStageList();
+          stages = stages.stream().sorted(Comparator.comparing(FreezeBalanceStage::getStage)).collect(Collectors.toList());
+          for(FreezeBalanceStage stage : stages){
+            duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage());
+            frozenBalance += stage.getFrozenBalance();
+          }
+          break;
+      }
+    }
     long expireTime = now + 180000L;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
@@ -166,7 +176,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (!DecodeUtil.addressValid(ownerAddress)) {
       throw new ContractValidateException("Invalid address");
     }
-
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
@@ -178,12 +187,26 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     boolean needCheckFrozeTime = CommonParameter.getInstance()
             .getCheckFrozenTime() == 1;
-
+    long days = dynamicStore.getSpecialFreezePeriodLimit();
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      if (freezeBalanceContract.getFreezeBalanceStageCount() > 5) {
+        throw new ContractValidateException(
+                "[PHOTON、ENTROPY] frozen stage's length must be less than 5");
+      }
+      List<Long> stages = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+      for(FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+        if(!stages.contains(stage.getStage())){
+          throw new ContractValidateException(
+                  "[PHOTON、ENTROPY] frozen stage must be one of 1,2,3,4,5");
+        }
+      }
+      days = dynamicStore.getVPFreezeDurationByStage(1L);
+    }
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
-            && frozenDuration != dynamicStore.getSpecialFreezePeriodLimit()) {
+            && frozenDuration != days) {
       throw new ContractValidateException(
-              "[PHOTON、ENTROPY] frozenDuration must be " + dynamicStore.getSpecialFreezePeriodLimit() + " days");
+              "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
     }
 
     if (needCheckFrozeTime
@@ -202,6 +225,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
+
     boolean isUnlimitedPledge = dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnlimitedPledgeEffectBlockNum;
     if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
       if (!dynamicStore.supportSpreadMint()){
@@ -264,6 +288,19 @@ public class FreezeBalanceActuator extends AbstractActuator {
         throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
       }
     }else{
+      if ((freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY
+              || freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON)
+              && dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+        for(FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+          if (stage.getFrozenBalance() <= 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
+          }
+          if (stage.getFrozenBalance() < VS_PRECISION) {
+            throw new ContractValidateException("frozenBalance must be more than 1VS");
+          }
+          frozenBalance += stage.getFrozenBalance();
+        }
+      }
       if (frozenBalance <= 0) {
         throw new ContractValidateException("frozenBalance must be positive");
       }

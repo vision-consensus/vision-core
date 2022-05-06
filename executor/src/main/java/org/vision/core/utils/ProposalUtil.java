@@ -8,6 +8,7 @@ import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -486,6 +487,7 @@ public class ProposalUtil {
         Integer[] stage = new Integer[stageLen];
         Integer[] duration = new Integer[stageLen];
         Integer[] weight = new Integer[stageLen];
+        List<Integer> stages = Arrays.asList(1, 2, 3, 4, 5);
         for (int j = 0; j < stageWeights.length; j++){
           String sw = stageWeights[j];
           String[] stageWeight = sw.split(",");
@@ -502,7 +504,7 @@ public class ProposalUtil {
           }
 
           stage[j] = Integer.parseInt(stageWeight[0]);
-          if (stage[j] != j+1){
+          if (!stages.contains(stage[j])){
             throw new ContractValidateException("Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage must be 1,2,3,4,5");
           }
           duration[j] = Integer.parseInt(stageWeight[1]);
