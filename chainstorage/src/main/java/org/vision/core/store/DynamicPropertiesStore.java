@@ -14,6 +14,7 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
+import org.vision.protos.contract.BalanceContract;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -2906,6 +2907,226 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getVPFreezeStageWeights().get(stage).get(1);
   }
 
+  public void addTotalStagePhotonWeight(List<BalanceContract.FreezeBalanceStage> stages, long amount) {
+    for(BalanceContract.FreezeBalanceStage stage : stages) {
+      if (stage.getStage() == 1L){
+        addTotalStage1PhotonWeight(amount);
+      }
+      if (stage.getStage() == 2L){
+        addTotalStage2PhotonWeight(amount);
+      }
+      if (stage.getStage() == 3L){
+        addTotalStage3PhotonWeight(amount);
+      }
+      if (stage.getStage() == 4L){
+        addTotalStage4PhotonWeight(amount);
+      }
+      if (stage.getStage() == 5L){
+        addTotalStage5PhotonWeight(amount);
+      }
+    }
+  }
+
+  private void addTotalStage1PhotonWeight(long amount) {
+    long totalStage1PhotonWeight = getTotalStage1PhotonWeight();
+    totalStage1PhotonWeight += amount;
+    saveTotalStage1PhotonWeight(totalStage1PhotonWeight);
+  }
+
+  public long getTotalStage1PhotonWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage1PhotonWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage2PhotonWeight(long amount) {
+    long totalStage2PhotonWeight = getTotalStage2PhotonWeight();
+    totalStage2PhotonWeight += amount;
+    saveTotalStage2PhotonWeight(totalStage2PhotonWeight);
+  }
+
+  public long getTotalStage2PhotonWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE2_PHOTON_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage2PhotonWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE2_PHOTON_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage3PhotonWeight(long amount) {
+    long totalStage3PhotonWeight = getTotalStage3PhotonWeight();
+    totalStage3PhotonWeight += amount;
+    saveTotalStage3PhotonWeight(totalStage3PhotonWeight);
+  }
+
+  public long getTotalStage3PhotonWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE3_PHOTON_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage3PhotonWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE3_PHOTON_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage4PhotonWeight(long amount) {
+    long totalStage4PhotonWeight = getTotalStage4PhotonWeight();
+    totalStage4PhotonWeight += amount;
+    saveTotalStage4PhotonWeight(totalStage4PhotonWeight);
+  }
+
+  public long getTotalStage4PhotonWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE4_PHOTON_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage4PhotonWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE4_PHOTON_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage5PhotonWeight(long amount) {
+    long totalStage5PhotonWeight = getTotalStage5PhotonWeight();
+    totalStage5PhotonWeight += amount;
+    saveTotalStage5PhotonWeight(totalStage5PhotonWeight);
+  }
+
+  public long getTotalStage5PhotonWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE5_PHOTON_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage5PhotonWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE5_PHOTON_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  public void addTotalStageEntropyWeight(List<BalanceContract.FreezeBalanceStage> stages, long amount) {
+    for(BalanceContract.FreezeBalanceStage stage : stages) {
+      if (stage.getStage() == 1L){
+        addTotalStage1EntropyWeight(amount);
+      }
+      if (stage.getStage() == 2L){
+        addTotalStage2EntropyWeight(amount);
+      }
+      if (stage.getStage() == 3L){
+        addTotalStage3EntropyWeight(amount);
+      }
+      if (stage.getStage() == 4L){
+        addTotalStage4EntropyWeight(amount);
+      }
+      if (stage.getStage() == 5L){
+        addTotalStage5EntropyWeight(amount);
+      }
+    }
+  }
+
+  private void addTotalStage1EntropyWeight(long amount) {
+    long totalStage1EntropyWeight = getTotalStage1EntropyWeight();
+    totalStage1EntropyWeight += amount;
+    saveTotalStage1EntropyWeight(totalStage1EntropyWeight);
+  }
+
+  public long getTotalStage1EntropyWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE1_ENTROPY_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage1EntropyWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE1_ENTROPY_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage2EntropyWeight(long amount) {
+    long totalStage2EntropyWeight = getTotalStage2EntropyWeight();
+    totalStage2EntropyWeight += amount;
+    saveTotalStage2EntropyWeight(totalStage2EntropyWeight);
+  }
+
+  public long getTotalStage2EntropyWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE2_ENTROPY_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage2EntropyWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE2_ENTROPY_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage3EntropyWeight(long amount) {
+    long totalStage3EntropyWeight = getTotalStage3EntropyWeight();
+    totalStage3EntropyWeight += amount;
+    saveTotalStage3EntropyWeight(totalStage3EntropyWeight);
+  }
+
+  public long getTotalStage3EntropyWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage3EntropyWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage4EntropyWeight(long amount) {
+    long totalStage4EntropyWeight = getTotalStage4EntropyWeight();
+    totalStage4EntropyWeight += amount;
+    saveTotalStage4EntropyWeight(totalStage4EntropyWeight);
+  }
+
+  public long getTotalStage4EntropyWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage4EntropyWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
+  private void addTotalStage5EntropyWeight(long amount) {
+    long totalStage5EntropyWeight = getTotalStage5EntropyWeight();
+    totalStage5EntropyWeight += amount;
+    saveTotalStage5EntropyWeight(totalStage5EntropyWeight);
+  }
+
+  public long getTotalStage5EntropyWeight() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
+  private void saveTotalStage5EntropyWeight(long amount) {
+    this.put(DynamicResourceProperties.TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT,
+        new BytesCapsule(ByteArray.fromLong(amount)));
+  }
+
   private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
     //public free photon
@@ -2957,6 +3178,17 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
     private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
     private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE2_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE2_PHOTON_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE3_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE3_PHOTON_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE4_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE4_PHOTON_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE5_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE5_PHOTON_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE1_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE1_ENTROPY_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE2_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE2_ENTROPY_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT".getBytes();
+    public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
+
   }
 
 }

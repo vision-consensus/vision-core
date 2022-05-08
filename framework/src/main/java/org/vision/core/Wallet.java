@@ -1448,6 +1448,18 @@ public class Wallet {
     long totalFVGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
     long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
 
+    long totalStage1PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1PhotonWeight();
+    long totalStage2PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2PhotonWeight();
+    long totalStage3PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3PhotonWeight();
+    long totalStage4PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4PhotonWeight();
+    long totalStage5PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5PhotonWeight();
+
+    long totalStage1EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1EntropyWeight();
+    long totalStage2EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2EntropyWeight();
+    long totalStage3EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3EntropyWeight();
+    long totalStage4EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4EntropyWeight();
+    long totalStage5EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5EntropyWeight();
+
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
 
@@ -1466,6 +1478,16 @@ public class Wallet {
         .setTotalEntropyWeight(totalEntropyWeight)
         .setTotalFVGuaranteeWeight(totalFVGuaranteeWeight)
         .setTotalSpreadWeight(totalSpreadWeight)
+        .setTotalStage1PhotonWeight(totalStage1PhotonWeight)
+        .setTotalStage2PhotonWeight(totalStage2PhotonWeight)
+        .setTotalStage3PhotonWeight(totalStage3PhotonWeight)
+        .setTotalStage4PhotonWeight(totalStage4PhotonWeight)
+        .setTotalStage5PhotonWeight(totalStage5PhotonWeight)
+        .setTotalStage1EntropyWeight(totalStage1EntropyWeight)
+        .setTotalStage2EntropyWeight(totalStage2EntropyWeight)
+        .setTotalStage3EntropyWeight(totalStage3EntropyWeight)
+        .setTotalStage4EntropyWeight(totalStage4EntropyWeight)
+        .setTotalStage5EntropyWeight(totalStage5EntropyWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)

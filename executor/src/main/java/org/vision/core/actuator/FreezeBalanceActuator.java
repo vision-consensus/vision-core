@@ -98,6 +98,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         dynamicStore
                 .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        dynamicStore.addTotalStagePhotonWeight(stages, frozenBalance / VS_PRECISION);
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -115,6 +116,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        dynamicStore.addTotalStageEntropyWeight(stages, frozenBalance / VS_PRECISION);
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =

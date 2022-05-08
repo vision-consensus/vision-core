@@ -1163,6 +1163,11 @@ message AccountPhotonMessage {
   map<string, int64> assetPhotonLimit = 6;
   int64 TotalPhotonLimit = 7;
   int64 TotalPhotonWeight = 8;
+  int64 totalStage1PhotonWeight = 9;
+  int64 totalStage2PhotonWeight = 10;
+  int64 totalStage3PhotonWeight = 11;
+  int64 totalStage4PhotonWeight = 12;
+  int64 totalStage5PhotonWeight = 13;
 }
 message AccountResourceMessage {
   int64 freePhotonUsed = 1;
@@ -1184,6 +1189,17 @@ message AccountResourceMessage {
 
   int64 TotalFVGuaranteeWeight = 27;
   int64 TotalSpreadWeight = 32;
+  int64 totalStage1PhotonWeight = 33;
+  int64 totalStage2PhotonWeight = 34;
+  int64 totalStage3PhotonWeight = 35;
+  int64 totalStage4PhotonWeight = 36;
+  int64 totalStage5PhotonWeight = 37;
+  int64 totalStage1EntropyWeight = 38;
+  int64 totalStage2EntropyWeight = 39;
+  int64 totalStage3EntropyWeight = 40;
+  int64 totalStage4EntropyWeight = 41;
+  int64 totalStage5EntropyWeight = 42;
+
 }
 
 message PaginatedMessage {
