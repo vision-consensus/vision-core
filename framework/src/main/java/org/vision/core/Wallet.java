@@ -1400,6 +1400,12 @@ public class Wallet {
     long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
     long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
+    long totalStage1PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1PhotonWeight();
+    long totalStage2PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2PhotonWeight();
+    long totalStage3PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3PhotonWeight();
+    long totalStage4PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4PhotonWeight();
+    long totalStage5PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5PhotonWeight();
+
     Map<String, Long> assetPhotonLimitMap = new HashMap<>();
     Map<String, Long> allFreeAssetPhotonUsage = setAssetPhotonLimit(assetPhotonLimitMap, accountCapsule);
 
@@ -1409,6 +1415,11 @@ public class Wallet {
         .setPhotonLimit(photonLimit)
         .setTotalPhotonLimit(totalPhotonLimit)
         .setTotalPhotonWeight(totalPhotonWeight)
+        .setTotalStage1PhotonWeight(totalStage1PhotonWeight)
+        .setTotalStage2PhotonWeight(totalStage2PhotonWeight)
+        .setTotalStage3PhotonWeight(totalStage3PhotonWeight)
+        .setTotalStage4PhotonWeight(totalStage4PhotonWeight)
+        .setTotalStage5PhotonWeight(totalStage5PhotonWeight)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
         .putAllAssetPhotonLimit(assetPhotonLimitMap);
     return builder.build();
