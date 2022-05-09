@@ -79,4 +79,30 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
         .setExpireTimeForEntropy(expireTime)
         .build();
   }
+
+  public void setDelegatedFrozenBalanceForPhoton(long balance) {
+    this.accountFrozenStageResource = this.accountFrozenStageResource.toBuilder()
+        .setDelegatedFrozenBalanceForPhoton(balance)
+        .build();
+  }
+
+  public void setDelegatedFrozenBalanceForEntropy(long balance) {
+    this.accountFrozenStageResource = this.accountFrozenStageResource.toBuilder()
+        .setDelegatedFrozenBalanceForEntropy(balance)
+        .build();
+  }
+
+  public void addDelegatedFrozenBalanceForPhoton(long balance) {
+    this.accountFrozenStageResource = this.accountFrozenStageResource.toBuilder()
+        .setDelegatedFrozenBalanceForPhoton(
+            this.accountFrozenStageResource.getDelegatedFrozenBalanceForPhoton() + balance)
+        .build();
+  }
+
+  public void addDelegatedFrozenBalanceForEntropy(long balance) {
+    this.accountFrozenStageResource = this.accountFrozenStageResource.toBuilder()
+        .setDelegatedFrozenBalanceForEntropy(
+            this.accountFrozenStageResource.getDelegatedFrozenBalanceForEntropy() + balance)
+        .build();
+  }
 }
