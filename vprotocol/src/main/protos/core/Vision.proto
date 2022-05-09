@@ -253,6 +253,8 @@ message AccountFrozenStageResource {
   int64 frozen_balance_for_entropy = 4;
   int64 expire_time_for_photon = 5;
   int64 expire_time_for_entropy = 6;
+  int64 delegated_frozen_balance_for_photon = 7;
+  int64 delegated_frozen_balance_for_entropy = 8;
 }
 
 message SpreadRelationShip {
