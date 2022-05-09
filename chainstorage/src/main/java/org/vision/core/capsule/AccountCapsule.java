@@ -1072,4 +1072,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     }
     return balance;
   }
+
+  public void setFrozenStageWeightMerge(long weightMerge) {
+    this.account = this.account.toBuilder()
+        .setFrozenStageWeightMerge(weightMerge)
+        .build();
+  }
 }

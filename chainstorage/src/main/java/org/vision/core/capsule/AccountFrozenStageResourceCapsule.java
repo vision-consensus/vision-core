@@ -4,7 +4,6 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
-import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.AccountFrozenStageResource;
 
 @Slf4j(topic = "capsule")
