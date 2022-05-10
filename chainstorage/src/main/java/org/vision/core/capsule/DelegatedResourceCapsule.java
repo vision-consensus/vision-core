@@ -5,14 +5,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.DelegatedResource;
-import org.vision.protos.Protocol.DelegatedStage;
-import org.vision.protos.contract.BalanceContract.FreezeBalanceStage;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 @Slf4j(topic = "capsule")
 public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource> {
@@ -106,28 +98,6 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
     } else {
       return this.delegatedResource.getExpireTimeForEntropy();
     }
-  }
-
-  public void setDelegateStagePhoton(List<DelegatedStage> delegatedStages) {
-    this.delegatedResource = this.delegatedResource
-        .toBuilder()
-        .addAllDelegateStagePhoton(delegatedStages)
-        .build();
-  }
-
-  public void setDelegateStageEntropy(List<DelegatedStage> delegatedStages) {
-    this.delegatedResource = this.delegatedResource
-        .toBuilder()
-        .addAllDelegateStageEntropy(delegatedStages)
-        .build();
-  }
-
-  public List<DelegatedStage> getDelegatedStagePhoton() {
-    return this.delegatedResource.getDelegateStagePhotonList();
-  }
-
-  public List<DelegatedStage> getDelegatedStageEntropy() {
-    return this.delegatedResource.getDelegateStageEntropyList();
   }
 
   public byte[] createDbKey() {

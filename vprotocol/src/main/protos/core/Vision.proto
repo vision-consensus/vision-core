@@ -236,14 +236,6 @@ message DelegatedResource {
   int64 frozen_balance_for_entropy = 4;
   int64 expire_time_for_photon = 5;
   int64 expire_time_for_entropy = 6;
-  repeated DelegatedStage delegate_stage_photon = 7;
-  repeated DelegatedStage delegate_stage_entropy = 8;
-}
-
-message DelegatedStage {
-  int64 stage = 1;
-  int64 frozen_balance = 2;
-  int64 expire_time = 3;
 }
 
 message AccountFrozenStageResource {
@@ -253,8 +245,6 @@ message AccountFrozenStageResource {
   int64 frozen_balance_for_entropy = 4;
   int64 expire_time_for_photon = 5;
   int64 expire_time_for_entropy = 6;
-  int64 delegated_frozen_balance_for_photon = 7;
-  int64 delegated_frozen_balance_for_entropy = 8;
 }
 
 message SpreadRelationShip {
