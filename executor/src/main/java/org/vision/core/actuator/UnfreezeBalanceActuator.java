@@ -18,6 +18,7 @@ import org.vision.protos.Protocol.Account.Frozen;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
+import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.Common;
 
@@ -274,6 +275,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
     DelegatedResourceStore delegatedResourceStore = chainBaseManager.getDelegatedResourceStore();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     if (!this.any.is(UnfreezeBalanceContract.class)) {
       throw new ContractValidateException(
           "contract type error, expected type [UnfreezeBalanceContract], real type[" + any
@@ -301,6 +303,20 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
     //otherwise,unfreeze delegated frozen balance provided this account.
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
+      Set<Long> stages = new HashSet<>();
+      for (Long stage : unfreezeBalanceContract.getStagesList()) {
+        if (!stageWeight.containsKey(stage)) {
+          throw new ContractValidateException("stages must be on of " + stageWeight.keySet());
+        }
+        stages.add(stage);
+      }
+      if (stages.size() != unfreezeBalanceContract.getStagesCount()) {
+        throw new ContractValidateException("stages must be not repeated");
+      }
+    }
+
     if (!ArrayUtils.isEmpty(receiverAddress) && dynamicStore.supportDR()) {
       if (Arrays.equals(receiverAddress, ownerAddress)) {
         throw new ContractValidateException(
@@ -410,6 +426,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (allowedUnfreezeCount <= 0) {
             throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
           }
+
+          for (Long stage : unfreezeBalanceContract.getStagesList()) {
+            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
+            AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
+            if (stageCapsule == null) {
+              throw new ContractValidateException("no frozenBalance(PHOTON) stage:"+stage);
+            }
+            if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+".");
+            }
+          }
           break;
         case ENTROPY:
           Frozen frozenBalanceForEntropy = accountCapsule.getAccountResource()
@@ -419,6 +446,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           }
           if (frozenBalanceForEntropy.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
+          }
+
+          for (Long stage : unfreezeBalanceContract.getStagesList()) {
+            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
+            AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
+            if (stageCapsule == null) {
+              throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
+            }
+            if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ".");
+            }
           }
           break;
         case FVGUARANTEE:

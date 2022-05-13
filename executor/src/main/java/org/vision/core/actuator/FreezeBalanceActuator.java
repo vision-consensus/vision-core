@@ -70,7 +70,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     switch (freezeBalanceContract.getResource()) {
       case PHOTON:
       case ENTROPY:
-        stages = stages.stream().sorted(Comparator.comparing(FreezeBalanceStage::getStage)).collect(Collectors.toList());
+        stages = stages.stream().sorted(Comparator.comparingLong(FreezeBalanceStage::getStage)).collect(Collectors.toList());
         for(FreezeBalanceStage stage : stages){
           duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage());
           frozenBalance += stage.getFrozenBalance();
@@ -196,14 +196,18 @@ public class FreezeBalanceActuator extends AbstractActuator {
         throw new ContractValidateException(
                 "[PHOTON、ENTROPY] frozen stage's length must be less than 5");
       }
-      List<Long> stages = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+      Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
+      Set<Long> stages = new HashSet<>();
       for(FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
-        if(!stages.contains(stage.getStage())){
+        if(!stageWeight.containsKey(stage.getStage())){
           throw new ContractValidateException(
-                  "[PHOTON、ENTROPY] frozen stage must be one of [1,2,3,4,5]");
+                  "[PHOTON、ENTROPY] frozen stage must be one of " + stageWeight.keySet());
         }
+        stages.add(stage.getStage());
       }
-      days = dynamicStore.getVPFreezeDurationByStage(1L);
+      if (stages.size() != freezeBalanceContract.getFreezeBalanceStageCount()) {
+        throw new ContractValidateException("[PHOTON、ENTROPY] frozen stage must be not repeated");
+      }
     }
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)

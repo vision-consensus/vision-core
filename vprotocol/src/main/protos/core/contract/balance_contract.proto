@@ -28,11 +28,7 @@ message UnfreezeBalanceContract {
 
   ResourceCode resource = 10;
   bytes receiver_address = 15;
-  repeated StageIndex stage = 17;
-}
-
-message StageIndex {
-  int64 stage = 1;
+  repeated int64 stages = 16;
 }
 
 message WithdrawBalanceContract {
