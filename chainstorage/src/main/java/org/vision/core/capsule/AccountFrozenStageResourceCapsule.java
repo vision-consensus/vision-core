@@ -30,7 +30,6 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
         .build();
   }
 
-
   public static byte[] createDbKey(byte[] ownerAddress, long stage) {
     byte[] stageKey = ByteArray.fromLong(stage);
     byte[] key = new byte[ownerAddress.length + stageKey.length];

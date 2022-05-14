@@ -97,8 +97,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
         long weightMerge = accountFrozenStageResource(ownerAddress, stages, true, accountCapsule);
         accountCapsule.setFrozenStageWeightMerge(weightMerge);
         dynamicStore
-                .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
-        dynamicStore.addTotalStagePhotonWeight(stages, frozenBalance / VS_PRECISION);
+            .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        dynamicStore
+            .addTotalStagePhotonWeight(stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toList()), frozenBalance / VS_PRECISION);
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -117,7 +118,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
         accountCapsule.setFrozenStageWeightMerge(weightMerge);
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
-        dynamicStore.addTotalStageEntropyWeight(stages, frozenBalance / VS_PRECISION);
+        dynamicStore
+            .addTotalStageEntropyWeight(stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toList()), frozenBalance / VS_PRECISION);
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =
@@ -621,7 +623,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, 1L);
     AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
     if (capsule != null) {
-      balance += capsule.getInstance().getFrozenBalanceForEntropy();
+      balance += capsule.getInstance().getFrozenBalanceForPhoton();
       balance += capsule.getInstance().getFrozenBalanceForEntropy();
     }
     long defaultFrozen = account.getEntropyFrozenBalance() + account.getFrozenBalance() - totalBalance;

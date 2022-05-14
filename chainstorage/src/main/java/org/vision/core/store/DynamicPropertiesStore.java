@@ -2907,21 +2907,21 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getVPFreezeStageWeights().get(stage).get(1);
   }
 
-  public void addTotalStagePhotonWeight(List<BalanceContract.FreezeBalanceStage> stages, long amount) {
-    for(BalanceContract.FreezeBalanceStage stage : stages) {
-      if (stage.getStage() == 1L){
+  public void addTotalStagePhotonWeight(List<Long> stages, long amount) {
+    for(Long stage : stages) {
+      if (stage == 1L){
         addTotalStage1PhotonWeight(amount);
       }
-      if (stage.getStage() == 2L){
+      if (stage == 2L){
         addTotalStage2PhotonWeight(amount);
       }
-      if (stage.getStage() == 3L){
+      if (stage == 3L){
         addTotalStage3PhotonWeight(amount);
       }
-      if (stage.getStage() == 4L){
+      if (stage == 4L){
         addTotalStage4PhotonWeight(amount);
       }
-      if (stage.getStage() == 5L){
+      if (stage == 5L){
         addTotalStage5PhotonWeight(amount);
       }
     }
@@ -3017,21 +3017,21 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         new BytesCapsule(ByteArray.fromLong(amount)));
   }
 
-  public void addTotalStageEntropyWeight(List<BalanceContract.FreezeBalanceStage> stages, long amount) {
-    for(BalanceContract.FreezeBalanceStage stage : stages) {
-      if (stage.getStage() == 1L){
+  public void addTotalStageEntropyWeight(List<Long> stages, long amount) {
+    for(Long stage : stages) {
+      if (stage == 1L){
         addTotalStage1EntropyWeight(amount);
       }
-      if (stage.getStage() == 2L){
+      if (stage == 2L){
         addTotalStage2EntropyWeight(amount);
       }
-      if (stage.getStage() == 3L){
+      if (stage == 3L){
         addTotalStage3EntropyWeight(amount);
       }
-      if (stage.getStage() == 4L){
+      if (stage == 4L){
         addTotalStage4EntropyWeight(amount);
       }
-      if (stage.getStage() == 5L){
+      if (stage == 5L){
         addTotalStage5EntropyWeight(amount);
       }
     }
