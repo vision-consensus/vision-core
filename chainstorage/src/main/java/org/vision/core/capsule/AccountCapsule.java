@@ -1078,4 +1078,14 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
         .setFrozenStageWeightMerge(weightMerge)
         .build();
   }
+
+  public long getFrozenStageWeightMerge() {
+    long merge = 100L;
+    try {
+      merge = this.account.getFrozenStageWeightMerge();
+    }catch (Exception e){
+      logger.debug(e.getMessage());
+    }
+    return merge;
+  }
 }
