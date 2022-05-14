@@ -2890,7 +2890,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public Map<Long, List<Long>> getVPFreezeStageWeights(){
-    Map<Long, List<Long>> map = new HashMap<>();
+    Map<Long, List<Long>> map = new LinkedHashMap<>();
     String[] vpFreezeStageWeight = getVPFreezeStageWeight().split(";");
     for (String s : vpFreezeStageWeight) {
       String[] item = s.split(",");

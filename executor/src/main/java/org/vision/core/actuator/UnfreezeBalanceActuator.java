@@ -18,7 +18,6 @@ import org.vision.protos.Protocol.Account.Frozen;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
-import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.Common;
 
@@ -160,9 +159,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         delegatedResourceStore.put(key, delegatedResourceCapsule);
       }
     } else {
+      AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
-
           List<Frozen> frozenList = Lists.newArrayList();
           frozenList.addAll(accountCapsule.getFrozenList());
           Iterator<Frozen> iterator = frozenList.iterator();
@@ -175,6 +174,43 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             }
           }
 
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            for (Long stage : unfreezeBalanceContract.getStagesList()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              capsule.setFrozenBalanceForPhoton(0, 0);
+              accountFrozenStageResourceStore.put(key, capsule);
+            }
+
+            Frozen newFrozen = null;
+            long totalStage = 0L;
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0L) {
+                continue;
+              }
+              totalStage += capsule.getInstance().getFrozenBalanceForPhoton();
+              if (newFrozen == null) {
+                newFrozen = Frozen.newBuilder()
+                    .setFrozenBalance(0L)
+                    .setExpireTime(0L)
+                    .build();
+              } else {
+                newFrozen
+                    .toBuilder()
+                    .setFrozenBalance(newFrozen.getFrozenBalance()
+                        + capsule.getInstance().getFrozenBalanceForPhoton())
+                    .setExpireTime(capsule.getInstance().getExpireTimeForPhoton())
+                    .build();
+              }
+            }
+            unfreezeBalance = unfreezeBalance - totalStage;
+            if (newFrozen !=null ){
+              frozenList.add(newFrozen);
+            }
+          }
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + unfreezeBalance)
               .clearFrozen().addAllFrozen(frozenList).build());
@@ -186,6 +222,36 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
           AccountResource newAccountResource = accountCapsule.getAccountResource().toBuilder()
               .clearFrozenBalanceForEntropy().build();
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            for (Long stage : unfreezeBalanceContract.getStagesList()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              capsule.setFrozenBalanceForEntropy(0, 0);
+              accountFrozenStageResourceStore.put(key, capsule);
+            }
+
+            long totalStage = 0L;
+            Frozen newFrozenForEntropy = null;
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {
+                continue;
+              }
+              totalStage += capsule.getInstance().getFrozenBalanceForEntropy();
+              newFrozenForEntropy = Frozen.newBuilder()
+                  .setFrozenBalance(capsule.getInstance().getFrozenBalanceForEntropy())
+                  .setExpireTime(capsule.getInstance().getExpireTimeForEntropy())
+                  .build();
+            }
+            if (newFrozenForEntropy != null) {
+              newAccountResource = accountCapsule.getAccountResource().toBuilder()
+                  .setFrozenBalanceForEntropy(newFrozenForEntropy).build();
+            }
+            unfreezeBalance = unfreezeBalance - totalStage;
+          }
+
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + unfreezeBalance)
               .setAccountResource(newAccountResource).build());
@@ -303,7 +369,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
     //otherwise,unfreeze delegated frozen balance provided this account.
-    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1 &&
+        (unfreezeBalanceContract.getResource() == Common.ResourceCode.PHOTON
+            || unfreezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)) {
       Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
       Set<Long> stages = new HashSet<>();
       for (Long stage : unfreezeBalanceContract.getStagesList()) {
