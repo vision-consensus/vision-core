@@ -159,6 +159,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         delegatedResourceStore.put(key, delegatedResourceCapsule);
       }
     } else {
+      Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
       AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
@@ -184,7 +185,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
             Frozen newFrozen = null;
             long totalStage = 0L;
-            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
@@ -232,7 +233,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
             long totalStage = 0L;
             Frozen newFrozenForEntropy = null;
-            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
@@ -282,6 +282,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           break;
       }
 
+      for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+        byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+        AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+        if (capsule == null) {
+          continue;
+        }
+        if (capsule.getInstance().getFrozenBalanceForPhoton() == 0L
+            && capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {
+          accountFrozenStageResourceStore.delete(key);
+        }
+      }
     }
 
     boolean clearVote = true;
