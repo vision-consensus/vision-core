@@ -277,6 +277,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowVPFreezeStageWeight(entry.getValue());
           break;
         }
+        case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
+          manager.getDynamicPropertiesStore().saveSpreadRefreezeConsiderationPeriod(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;

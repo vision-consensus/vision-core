@@ -1163,6 +1163,10 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getRefreezeConsiderationPeriod())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadRefreezeConsiderationPeriod")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadRefreezeConsiderationPeriod())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowVPFreezeStageWeight")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowVPFreezeStageWeight())
             .build());
