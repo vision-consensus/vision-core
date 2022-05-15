@@ -405,6 +405,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case REFREEZE_CONSIDERATION_PERIOD: {
+        if (value <= 0 || value > 30) {
+          throw new ContractValidateException(
+              "Bad REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
+        }
+        break;
+      }
       case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
         if (value != 1 ) {
           throw new ContractValidateException(
@@ -594,8 +601,9 @@ public class ProposalUtil {
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
     ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
-    ALLOW_VP_FREEZE_STAGE_WEIGHT(57), // 0,1
-    VP_FREEZE_STAGE_WEIGHT(58); // 60,110;180,120;360,130;720,150
+    REFREEZE_CONSIDERATION_PERIOD(57),
+    ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
+    VP_FREEZE_STAGE_WEIGHT(59); //1,100,30;2,60,110;3,180,120;4,360,130;5,720,150
 
     private long code;
 

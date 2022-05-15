@@ -2865,6 +2865,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse("");
   }
 
+  public void saveRefreezeConsiderationPeriod(Long value) {
+    this.put(DynamicResourceProperties.REFREEZE_CONSIDERATION_PERIOD,
+        new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public Long getRefreezeConsiderationPeriod() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.REFREEZE_CONSIDERATION_PERIOD))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(7L);
+  }
+
   public void saveAllowVPFreezeStageWeight(Long value) {
     this.put(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT,
             new BytesCapsule(ByteArray.fromLong(value)));
@@ -2874,7 +2886,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(1L);
+            .orElse(0L);
   }
 
   public void saveVPFreezeStageWeight(String value) {
@@ -3176,6 +3188,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE = "ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE".getBytes();
     public static final byte[] ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT = "ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT".getBytes();
     public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
+    public static final byte[] REFREEZE_CONSIDERATION_PERIOD = "REFREEZE_CONSIDERATION_PERIOD".getBytes();
     private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
     private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT".getBytes();
