@@ -1557,3 +1557,14 @@ message ShieldedVRC20TriggerContractParameters {
   string amount = 3;
   bytes transparent_to_address = 4;
 }
+
+message AccountFrozenStageResourceMessage {
+  message FrozenStage {
+    int64 stage = 1;
+    int64 frozen_balance_for_photon = 3;
+    int64 frozen_balance_for_entropy = 4;
+    int64 expire_time_for_photon = 5;
+    int64 expire_time_for_entropy = 6;
+  }
+  repeated FrozenStage stages = 1;
+}

@@ -73,6 +73,8 @@ import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
 import org.vision.api.GrpcAPI.SpreadRelationShipList;
+import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage;
+import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage.FrozenStage;
 import org.vision.common.crypto.Hash;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -4140,6 +4142,39 @@ public class Wallet {
       logger.info(e.getMessage());
       return null;
     }
+  }
+
+  public AccountFrozenStageResourceMessage getAccountFrozenStageResource(ByteString address) {
+    if (address == null || address.isEmpty()) {
+      return null;
+    }
+
+    AccountCapsule accountCapsule =
+        chainBaseManager.getAccountStore().get(address.toByteArray());
+    if (accountCapsule == null) {
+      return null;
+    }
+
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+
+    AccountFrozenStageResourceMessage.Builder result = AccountFrozenStageResourceMessage.newBuilder();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(address.toByteArray(), entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      FrozenStage.Builder builder = FrozenStage.newBuilder()
+          .setStage(entry.getKey())
+          .setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy())
+          .setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton())
+          .setExpireTimeForEntropy(capsule.getInstance().getExpireTimeForEntropy())
+          .setExpireTimeForPhoton(capsule.getInstance().getExpireTimeForPhoton());
+      result.addStages(builder.build());
+    }
+    return result.build();
   }
 }
 
