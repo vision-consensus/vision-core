@@ -8,22 +8,22 @@ import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.VotesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.VotesStore;
-import org.vision.core.store.WitnessStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.*;
@@ -183,6 +183,8 @@ public class VoteWitnessActuator extends AbstractActuator {
         voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
       }
       if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
+        long merge = calcAccountFrozenStageWeightMerge(ownerAddress, accountCapsule);
+        accountCapsule.setFrozenStageWeightMerge(merge);
         voteCount = voteCount * accountCapsule.getFrozenStageWeightMerge() / 100L;
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
@@ -204,4 +206,47 @@ public class VoteWitnessActuator extends AbstractActuator {
     return 0;
   }
 
+  private long calcAccountFrozenStageWeightMerge(byte[] ownerAddress, AccountCapsule account) {
+    DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicPropertiesStore.getVPFreezeStageWeights();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    long totalBalance = 0;
+    long totalRate = 0;
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      if (entry.getKey() == 1L) {
+        continue;
+      }
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      long balance = capsule.getInstance().getFrozenBalanceForPhoton();
+      balance += capsule.getInstance().getFrozenBalanceForEntropy();
+      totalRate += balance / VS_PRECISION * entry.getValue().get(1);
+      totalBalance += balance;
+    }
+
+    long balance = account.getDelegatedFrozenBalanceForEntropy()
+        + account.getDelegatedFrozenBalanceForPhoton();
+    byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, 1L);
+    AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+    if (capsule != null) {
+      balance += capsule.getInstance().getFrozenBalanceForPhoton();
+      balance += capsule.getInstance().getFrozenBalanceForEntropy();
+    }
+    long defaultFrozen = account.getEntropyFrozenBalance() + account.getFrozenBalance() - totalBalance;
+    if (defaultFrozen > 0) {
+      balance += defaultFrozen;
+    }
+
+    totalRate += balance / VS_PRECISION * stageWeights.get(1L).get(1);
+    totalBalance += balance;
+
+    if (totalBalance > 0) {
+      return Math.max(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
+    } else {
+      return 100L;
+    }
+  }
 }
