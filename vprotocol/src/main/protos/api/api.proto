@@ -68,6 +68,16 @@ service Wallet {
     };
   };
 
+  rpc GetAccountFrozenStageResource (AccountFrozenStageResourceParameter) returns (AccountFrozenStageResourceMessage) {
+    option (google.api.http) = {
+      post: "/wallet/getaccountfrozenstageresource"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/getaccountfrozenstageresource"
+      }
+    };
+  };
+
   //Please use CreateTransaction2 instead of this function.
   rpc CreateTransaction (TransferContract) returns (Transaction) {
     option (google.api.http) = {
@@ -789,6 +799,7 @@ service Wallet {
 
   rpc GetBurnVs (EmptyMessage) returns (NumberMessage) {
   }
+
 };
 
 service WalletSolidity {
@@ -1558,6 +1569,9 @@ message ShieldedVRC20TriggerContractParameters {
   bytes transparent_to_address = 4;
 }
 
+message AccountFrozenStageResourceParameter {
+  bytes address = 1;
+}
 message AccountFrozenStageResourceMessage {
   message FrozenStage {
     int64 stage = 1;
