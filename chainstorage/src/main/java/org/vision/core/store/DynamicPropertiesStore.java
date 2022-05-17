@@ -902,7 +902,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getVPFreezeStageWeight();
     } catch (IllegalArgumentException e) {
-      this.saveVPFreezeStageWeight("60,110;180,120;360,130;720,150");
+      this.saveVPFreezeStageWeight("1,35,100;2,60,110;3,180,120;4,360,130;5,720,150");
     }
 
   }
@@ -2886,7 +2886,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(0L);
+            .orElse(1L);
   }
 
   public void saveVPFreezeStageWeight(String value) {
@@ -2942,7 +2942,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private void addTotalStage1PhotonWeight(long amount) {
     long totalStage1PhotonWeight = getTotalStage1PhotonWeight();
     totalStage1PhotonWeight += amount;
-    saveTotalStage1PhotonWeight(totalStage1PhotonWeight);
+    saveTotalStage1PhotonWeight(Math.max(totalStage1PhotonWeight, 0));
   }
 
   public long getTotalStage1PhotonWeight() {
@@ -3052,7 +3052,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private void addTotalStage1EntropyWeight(long amount) {
     long totalStage1EntropyWeight = getTotalStage1EntropyWeight();
     totalStage1EntropyWeight += amount;
-    saveTotalStage1EntropyWeight(totalStage1EntropyWeight);
+    saveTotalStage1EntropyWeight(Math.max(totalStage1EntropyWeight, 0));
   }
 
   public long getTotalStage1EntropyWeight() {

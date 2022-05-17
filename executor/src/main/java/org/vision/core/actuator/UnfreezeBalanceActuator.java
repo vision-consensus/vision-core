@@ -206,6 +206,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                     .setExpireTime(capsule.getInstance().getExpireTimeForPhoton())
                     .build();
               }
+              dynamicStore
+                  .addTotalStagePhotonWeight(Collections.singletonList(entry.getKey()),
+                      -capsule.getInstance().getExpireTimeForPhoton() / VS_PRECISION);
             }
             unfreezeBalance = unfreezeBalance - totalStage;
             if (newFrozen !=null ){
@@ -246,6 +249,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   .setFrozenBalance(capsule.getInstance().getFrozenBalanceForEntropy())
                   .setExpireTime(capsule.getInstance().getExpireTimeForEntropy())
                   .build();
+              dynamicStore
+                  .addTotalStageEntropyWeight(Collections.singletonList(entry.getKey()),
+                      -capsule.getInstance().getFrozenBalanceForEntropy() / VS_PRECISION);
             }
             if (newFrozenForEntropy != null) {
               newAccountResource = accountCapsule.getAccountResource().toBuilder()
@@ -302,14 +308,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       case PHOTON:
         dynamicStore
             .addTotalPhotonWeight(-unfreezeBalance / VS_PRECISION);
-        dynamicStore
-            .addTotalStagePhotonWeight(unfreezeBalanceContract.getStagesList(), -unfreezeBalance / VS_PRECISION);
         break;
       case ENTROPY:
         dynamicStore
             .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
-        dynamicStore
-            .addTotalStageEntropyWeight(unfreezeBalanceContract.getStagesList(), -unfreezeBalance / VS_PRECISION);
         break;
       case SPREAD:
         dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);

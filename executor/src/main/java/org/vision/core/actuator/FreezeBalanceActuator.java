@@ -72,7 +72,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       case ENTROPY:
         stages = stages.stream().sorted(Comparator.comparingLong(FreezeBalanceStage::getStage)).collect(Collectors.toList());
         for(FreezeBalanceStage stage : stages){
-          duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage());
+          duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage()) * FROZEN_PERIOD;
           frozenBalance += stage.getFrozenBalance();
         }
         break;
@@ -99,7 +99,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
             .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
         dynamicStore
-            .addTotalStagePhotonWeight(stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toList()), frozenBalance / VS_PRECISION);
+            .addTotalStagePhotonWeight(Collections.singletonList(1L),
+                freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+        for(FreezeBalanceStage stage : stages){
+          dynamicStore
+              .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
+        }
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -119,7 +124,13 @@ public class FreezeBalanceActuator extends AbstractActuator {
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
         dynamicStore
-            .addTotalStageEntropyWeight(stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toList()), frozenBalance / VS_PRECISION);
+            .addTotalStageEntropyWeight(Collections.singletonList(1L),
+                freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+        for(FreezeBalanceStage stage : stages){
+          dynamicStore
+              .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
+                  stage.getFrozenBalance() / VS_PRECISION);
+        }
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =
@@ -581,7 +592,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
     AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     for (FreezeBalanceStage stage : stages) {
       byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage.getStage());
-      long expireTime = stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
+      long expireTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
+          + stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
       AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
       if (capsule == null) {
         capsule = new AccountFrozenStageResourceCapsule(ownerAddress, stage.getStage());
@@ -615,7 +627,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       long balance = capsule.getInstance().getFrozenBalanceForPhoton();
       balance += capsule.getInstance().getFrozenBalanceForEntropy();
       totalRate += balance / VS_PRECISION * entry.getValue().get(1);
-      totalBalance += balance;
+      totalBalance += balance / VS_PRECISION;
     }
 
     long balance = account.getDelegatedFrozenBalanceForEntropy()
@@ -632,10 +644,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     totalRate += balance / VS_PRECISION * stageWeights.get(1L).get(1);
-    totalBalance += balance;
+    totalBalance += balance / VS_PRECISION;
 
     if (totalBalance > 0) {
-      return Math.max(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
+      return Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
     } else {
       return 100L;
     }
