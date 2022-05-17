@@ -221,6 +221,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       if (stages.size() != freezeBalanceContract.getFreezeBalanceStageCount()) {
         throw new ContractValidateException("[PHOTON、ENTROPY] frozen stage must be not repeated");
       }
+      days = dynamicStore.getVPFreezeDurationByStage(1L);
     }
     if (needCheckFrozeTime
             && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
