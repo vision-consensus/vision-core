@@ -223,9 +223,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
       days = dynamicStore.getVPFreezeDurationByStage(1L);
     }
+
     if (needCheckFrozeTime
-            && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
-            && frozenDuration != days) {
+        && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
+        && frozenDuration != days
+        && freezeBalanceContract.getFrozenBalance() > 0) {
       throw new ContractValidateException(
               "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
     }
@@ -308,25 +310,43 @@ public class FreezeBalanceActuator extends AbstractActuator {
       if (isUnlimitedPledge && Arrays.equals(ownerAddress, parentAddress)){
         throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
       }
-    }else{
-      if ((freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY
-              || freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON)
-              && dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-        for(FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
-          if (stage.getFrozenBalance() <= 0) {
+    } else {
+      switch (freezeBalanceContract.getResource()) {
+        case PHOTON:
+        case ENTROPY:
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            if (frozenBalance < 0) {
+              throw new ContractValidateException("frozenBalance must be positive");
+            }
+            if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+              throw new ContractValidateException("frozenBalance must be more than 1VS");
+            }
+            for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+              if (stage.getFrozenBalance() <= 0) {
+                throw new ContractValidateException("frozenBalance must be positive");
+              }
+              if (stage.getFrozenBalance() < VS_PRECISION) {
+                throw new ContractValidateException("frozenBalance must be more than 1VS");
+              }
+              frozenBalance += stage.getFrozenBalance();
+            }
+          } else {
+            if (frozenBalance <= 0) {
+              throw new ContractValidateException("frozenBalance must be positive");
+            }
+            if (frozenBalance < VS_PRECISION) {
+              throw new ContractValidateException("frozenBalance must be more than 1VS");
+            }
+          }
+          break;
+        case FVGUARANTEE:
+          if (frozenBalance <= 0) {
             throw new ContractValidateException("frozenBalance must be positive");
           }
-          if (stage.getFrozenBalance() < VS_PRECISION) {
+          if (frozenBalance < VS_PRECISION) {
             throw new ContractValidateException("frozenBalance must be more than 1VS");
           }
-          frozenBalance += stage.getFrozenBalance();
-        }
-      }
-      if (frozenBalance <= 0) {
-        throw new ContractValidateException("frozenBalance must be positive");
-      }
-      if (frozenBalance < VS_PRECISION) {
-        throw new ContractValidateException("frozenBalance must be more than 1VS");
+          break;
       }
     }
 
