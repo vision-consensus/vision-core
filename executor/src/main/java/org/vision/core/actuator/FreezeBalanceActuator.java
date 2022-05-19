@@ -667,10 +667,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
     totalRate += balance / VS_PRECISION * stageWeights.get(1L).get(1);
     totalBalance += balance / VS_PRECISION;
 
-    if (totalBalance > 0) {
-      return Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
-    } else {
-      return 100L;
-    }
+    return Math.max(100L, Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L)));
   }
 }

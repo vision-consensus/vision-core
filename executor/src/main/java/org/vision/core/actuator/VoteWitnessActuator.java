@@ -224,7 +224,7 @@ public class VoteWitnessActuator extends AbstractActuator {
       long balance = capsule.getInstance().getFrozenBalanceForPhoton();
       balance += capsule.getInstance().getFrozenBalanceForEntropy();
       totalRate += balance / VS_PRECISION * entry.getValue().get(1);
-      totalBalance += balance;
+      totalBalance += balance / VS_PRECISION;
     }
 
     long balance = account.getDelegatedFrozenBalanceForEntropy()
@@ -241,12 +241,8 @@ public class VoteWitnessActuator extends AbstractActuator {
     }
 
     totalRate += balance / VS_PRECISION * stageWeights.get(1L).get(1);
-    totalBalance += balance;
+    totalBalance += balance/ VS_PRECISION;
 
-    if (totalBalance > 0) {
-      return Math.max(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
-    } else {
-      return 100L;
-    }
+    return Math.max(100L, Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L)));
   }
 }
