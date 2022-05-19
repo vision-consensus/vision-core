@@ -380,7 +380,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     totalBalance += balance;
 
     if (totalBalance > 0) {
-      return Math.max(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
+      return Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L));
     } else {
       return 100L;
     }
