@@ -179,13 +179,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : unfreezeBalanceContract.getStagesList()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              dynamicStore
+                  .addTotalStagePhotonWeight(Collections.singletonList(stage),
+                      -capsule.getInstance().getFrozenBalanceForPhoton() / VS_PRECISION);
               capsule.setFrozenBalanceForPhoton(0, 0);
               accountFrozenStageResourceStore.put(key, capsule);
             }
 
-            Frozen newFrozen = null;
             long totalStage = 0L;
-
+            long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
@@ -193,30 +195,19 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 continue;
               }
               totalStage += capsule.getInstance().getFrozenBalanceForPhoton();
-              if (newFrozen == null) {
-                newFrozen = Frozen.newBuilder()
-                    .setFrozenBalance(0L)
-                    .setExpireTime(0L)
-                    .build();
-              } else {
-                newFrozen
-                    .toBuilder()
-                    .setFrozenBalance(newFrozen.getFrozenBalance()
-                        + capsule.getInstance().getFrozenBalanceForPhoton())
-                    .setExpireTime(capsule.getInstance().getExpireTimeForPhoton())
-                    .build();
-              }
-              dynamicStore
-                  .addTotalStagePhotonWeight(Collections.singletonList(entry.getKey()),
-                      -capsule.getInstance().getExpireTimeForPhoton() / VS_PRECISION);
+              expireTime = capsule.getInstance().getExpireTimeForPhoton();
             }
-            unfreezeBalance = unfreezeBalance - totalStage;
-            if (newFrozen !=null ){
+            if (totalStage > 0) {
+              Frozen newFrozen = Frozen.newBuilder()
+                  .setFrozenBalance(totalStage)
+                  .setExpireTime(expireTime)
+                  .build();
+              unfreezeBalance = unfreezeBalance - totalStage;
               frozenList.add(newFrozen);
             }
+            long merge = calcAccountFrozenStageWeightMerge(ownerAddress, accountCapsule);
+            accountCapsule.setFrozenStageWeightMerge(merge);
           }
-          long merge = calcAccountFrozenStageWeightMerge(ownerAddress, accountCapsule);
-          accountCapsule.setFrozenStageWeightMerge(merge);
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + unfreezeBalance)
               .clearFrozen().addAllFrozen(frozenList).build());
@@ -232,12 +223,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : unfreezeBalanceContract.getStagesList()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              dynamicStore
+                  .addTotalStageEntropyWeight(Collections.singletonList(stage),
+                      -capsule.getInstance().getFrozenBalanceForEntropy() / VS_PRECISION);
               capsule.setFrozenBalanceForEntropy(0, 0);
               accountFrozenStageResourceStore.put(key, capsule);
             }
 
             long totalStage = 0L;
-            Frozen newFrozenForEntropy = null;
+            long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
@@ -245,22 +239,21 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 continue;
               }
               totalStage += capsule.getInstance().getFrozenBalanceForEntropy();
-              newFrozenForEntropy = Frozen.newBuilder()
-                  .setFrozenBalance(capsule.getInstance().getFrozenBalanceForEntropy())
-                  .setExpireTime(capsule.getInstance().getExpireTimeForEntropy())
-                  .build();
-              dynamicStore
-                  .addTotalStageEntropyWeight(Collections.singletonList(entry.getKey()),
-                      -capsule.getInstance().getFrozenBalanceForEntropy() / VS_PRECISION);
+              expireTime = capsule.getInstance().getExpireTimeForEntropy();
             }
-            if (newFrozenForEntropy != null) {
+            if (totalStage > 0) {
+              Frozen newFrozenForEntropy = Frozen.newBuilder()
+                  .setFrozenBalance(totalStage)
+                  .setExpireTime(expireTime)
+                  .build();
               newAccountResource = accountCapsule.getAccountResource().toBuilder()
                   .setFrozenBalanceForEntropy(newFrozenForEntropy).build();
+              unfreezeBalance = unfreezeBalance - totalStage;
             }
-            unfreezeBalance = unfreezeBalance - totalStage;
+            long merge = calcAccountFrozenStageWeightMerge(ownerAddress, accountCapsule);
+            accountCapsule.setFrozenStageWeightMerge(merge);
           }
-          merge = calcAccountFrozenStageWeightMerge(ownerAddress, accountCapsule);
-          accountCapsule.setFrozenStageWeightMerge(merge);
+
           accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + unfreezeBalance)
               .setAccountResource(newAccountResource).build());
