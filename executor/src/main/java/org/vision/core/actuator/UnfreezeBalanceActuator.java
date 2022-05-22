@@ -24,6 +24,7 @@ import org.vision.protos.contract.Common;
 import java.util.*;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
+import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "actuator")
@@ -420,6 +421,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       throw new ContractValidateException(
           ACCOUNT_EXCEPTION_STR + readableOwnerAddress + "] does not exist");
     }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() != 1
+        && unfreezeBalanceContract.getStagesCount() > 0) {
+      throw new ContractValidateException("unfreeze stages is not allowed yet");
+    }
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
@@ -559,6 +565,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
               throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+".");
             }
+            //TODO REFREEZE
+            long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+
           }
           break;
         case ENTROPY:

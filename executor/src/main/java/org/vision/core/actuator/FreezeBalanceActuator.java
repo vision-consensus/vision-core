@@ -222,14 +222,29 @@ public class FreezeBalanceActuator extends AbstractActuator {
         throw new ContractValidateException("[PHOTON、ENTROPY] frozen stage must be not repeated");
       }
       days = dynamicStore.getVPFreezeDurationByStage(1L);
+    } else {
+      if (freezeBalanceContract.getFreezeBalanceStageCount() > 0) {
+        throw new ContractValidateException("freeze stages is not allowed yet");
+      }
     }
 
     if (needCheckFrozeTime
         && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
-        && frozenDuration != days
-        && freezeBalanceContract.getFrozenBalance() > 0) {
-      throw new ContractValidateException(
+        && frozenDuration != days) {
+      if (dynamicStore.getAllowVPFreezeStageWeight() != 1){
+        throw new ContractValidateException(
+            "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
+      } else {
+        if (freezeBalanceContract.getFrozenBalance() > 0) {
+          throw new ContractValidateException(
               "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
+        } else {
+          if (freezeBalanceContract.getFreezeBalanceStageCount() <=0 ){
+            throw new ContractValidateException(
+                "[PHOTON、ENTROPY] freeze stages must not by empty when freeze balance is zero");
+          }
+        }
+      }
     }
 
     if (needCheckFrozeTime
