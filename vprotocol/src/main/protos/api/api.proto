@@ -78,6 +78,16 @@ service Wallet {
     };
   };
 
+  rpc GetAccountFrozenShowStageResource (AccountFrozenStageResourceParameter) returns (AccountFrozenStageResourceMessage) {
+    option (google.api.http) = {
+      post: "/wallet/getaccountfrozenshowstageresource"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/getaccountfrozenshowstageresource"
+      }
+    };
+  };
+
   //Please use CreateTransaction2 instead of this function.
   rpc CreateTransaction (TransferContract) returns (Transaction) {
     option (google.api.http) = {
@@ -1581,4 +1591,8 @@ message AccountFrozenStageResourceMessage {
     int64 expire_time_for_entropy = 6;
   }
   repeated FrozenStage stages = 1;
+  int64 frozen_balance_for_photon = 2;
+  int64 frozen_balance_for_entropy = 3;
+  int64 delegated_frozen_balance_for_photon = 4;
+  int64 delegated_frozen_balance_for_entropy = 5;
 }

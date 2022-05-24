@@ -287,6 +287,9 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private GetAccountFrozenStageResourceServlet accountFrozenStageResourceServlet;
 
+  @Autowired
+  private GetAccountFrozenShowStageResourceServlet getAccountFrozenShowStageResourceServlet;
+
   private static String getParamsFile(String fileName) {
     InputStream in = Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("params" + File.separator + fileName);
@@ -531,7 +534,10 @@ public class FullNodeHttpApiService implements Service {
       context.addServlet(new ServletHolder(getBurnVsServlet), "/wallet/getburnvs");
 
       context.addServlet(new ServletHolder(ethereumCompatible), "/ethereum/compatible");
-      context.addServlet(new ServletHolder(accountFrozenStageResourceServlet), "/wallet/getaccountfrozenstageresource");
+      context.addServlet(new ServletHolder(accountFrozenStageResourceServlet),
+          "/wallet/getaccountfrozenstageresource");
+      context.addServlet(new ServletHolder(getAccountFrozenShowStageResourceServlet),
+          "/wallet/getaccountfrozenshowstageresource");
 
       int maxHttpConnectNumber = Args.getInstance().getMaxHttpConnectNumber();
       if (maxHttpConnectNumber > 0) {

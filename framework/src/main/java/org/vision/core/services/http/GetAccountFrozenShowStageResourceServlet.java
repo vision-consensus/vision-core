@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 @Slf4j(topic = "API")
-public class GetAccountFrozenStageResourceServlet extends RateLimiterServlet {
+public class GetAccountFrozenShowStageResourceServlet extends RateLimiterServlet {
 
   @Autowired
   private Wallet wallet;
@@ -45,7 +45,7 @@ public class GetAccountFrozenStageResourceServlet extends RateLimiterServlet {
 
   private void fillResponse(boolean visible, ByteString address, HttpServletResponse response)
       throws Exception {
-    AccountFrozenStageResourceMessage reply = wallet.getAccountFrozenStageResource(address);
+    AccountFrozenStageResourceMessage reply = wallet.getAccountFrozenShowStageResource(address);
     if (reply != null) {
       response.getWriter().println(JsonFormat.printToString(reply, visible));
     } else {

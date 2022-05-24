@@ -1892,6 +1892,13 @@ public class RpcApiService implements Service {
     }
 
     @Override
+    public void getAccountFrozenShowStageResource(AccountFrozenStageResourceParameter request,
+                                                  StreamObserver<AccountFrozenStageResourceMessage> responseObserver) {
+      responseObserver.onNext(wallet.getAccountFrozenShowStageResource(request.getAddress()));
+      responseObserver.onCompleted();
+    }
+
+    @Override
     public void getPaginatedProposalList(PaginatedMessage request,
         StreamObserver<ProposalList> responseObserver) {
       responseObserver

@@ -4176,5 +4176,47 @@ public class Wallet {
     }
     return result.build();
   }
+
+  public AccountFrozenStageResourceMessage getAccountFrozenShowStageResource(ByteString address) {
+    if (address == null || address.isEmpty()) {
+      return null;
+    }
+
+    AccountCapsule accountCapsule =
+        chainBaseManager.getAccountStore().get(address.toByteArray());
+    if (accountCapsule == null) {
+      return null;
+    }
+
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+
+    long totalStagePhoton = 0L;
+    long totalStageEntropy = 0L;
+    AccountFrozenStageResourceMessage.Builder result = AccountFrozenStageResourceMessage.newBuilder();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(address.toByteArray(), entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      FrozenStage.Builder builder = FrozenStage.newBuilder()
+          .setStage(entry.getKey())
+          .setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy())
+          .setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton())
+          .setExpireTimeForEntropy(capsule.getInstance().getExpireTimeForEntropy())
+          .setExpireTimeForPhoton(capsule.getInstance().getExpireTimeForPhoton());
+      result.addStages(builder.build());
+      totalStagePhoton += capsule.getInstance().getFrozenBalanceForPhoton();
+      totalStageEntropy += capsule.getInstance().getFrozenBalanceForEntropy();
+    }
+    
+    result.setFrozenBalanceForPhoton(accountCapsule.getFrozenBalance() - totalStagePhoton);
+    result.setFrozenBalanceForEntropy(accountCapsule.getEntropyFrozenBalance() - totalStageEntropy);
+    result.setDelegatedFrozenBalanceForPhoton(accountCapsule.getDelegatedFrozenBalanceForPhoton());
+    result.setDelegatedFrozenBalanceForEntropy(accountCapsule.getDelegatedFrozenBalanceForEntropy());
+    return result.build();
+  }
 }
 
