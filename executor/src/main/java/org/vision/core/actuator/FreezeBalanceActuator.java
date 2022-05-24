@@ -94,16 +94,18 @@ public class FreezeBalanceActuator extends AbstractActuator {
                   frozenBalance + accountCapsule.getFrozenBalance();
           accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
         }
-        long weightMerge = accountFrozenStageResource(ownerAddress, stages, true, accountCapsule);
-        accountCapsule.setFrozenStageWeightMerge(weightMerge);
         dynamicStore
             .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
-        dynamicStore
-            .addTotalStagePhotonWeight(Collections.singletonList(1L),
-                freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
-        for(FreezeBalanceStage stage : stages){
+        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+          long weightMerge = accountFrozenStageResource(ownerAddress, stages, true, accountCapsule);
+          accountCapsule.setFrozenStageWeightMerge(weightMerge);
           dynamicStore
-              .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
+              .addTotalStagePhotonWeight(Collections.singletonList(1L),
+                  freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+          for (FreezeBalanceStage stage : stages) {
+            dynamicStore
+                .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
+          }
         }
         break;
       case ENTROPY:
@@ -119,17 +121,19 @@ public class FreezeBalanceActuator extends AbstractActuator {
                           .getFrozenBalance();
           accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
         }
-        weightMerge = accountFrozenStageResource(ownerAddress, stages, false, accountCapsule);
-        accountCapsule.setFrozenStageWeightMerge(weightMerge);
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
-        dynamicStore
-            .addTotalStageEntropyWeight(Collections.singletonList(1L),
-                freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
-        for(FreezeBalanceStage stage : stages){
+        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+          long weightMerge = accountFrozenStageResource(ownerAddress, stages, false, accountCapsule);
+          accountCapsule.setFrozenStageWeightMerge(weightMerge);
           dynamicStore
-              .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
-                  stage.getFrozenBalance() / VS_PRECISION);
+              .addTotalStageEntropyWeight(Collections.singletonList(1L),
+                  freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+          for(FreezeBalanceStage stage : stages){
+            dynamicStore
+                .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
+                    stage.getFrozenBalance() / VS_PRECISION);
+          }
         }
         break;
       case FVGUARANTEE:
