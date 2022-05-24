@@ -707,6 +707,15 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return frozenBalance[0];
   }
 
+  public long getFrozenExpireTime() {
+    List<Frozen> frozenList = getFrozenList();
+    final long[] frozenExpireTime = {0};
+    frozenList.forEach(frozen -> frozenExpireTime[0] = Math.max(frozenExpireTime[0],
+        frozen.getExpireTime()));
+    return frozenExpireTime[0];
+  }
+
+
   public long getAllFrozenBalanceForPhoton() {
     return getFrozenBalance() + getAcquiredDelegatedFrozenBalanceForPhoton();
   }
@@ -849,6 +858,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
   public long getEntropyFrozenBalance() {
     return this.account.getAccountResource().getFrozenBalanceForEntropy().getFrozenBalance();
+  }
+
+  public long getEntropyFrozenExpireTime() {
+    return this.account.getAccountResource().getFrozenBalanceForEntropy().getExpireTime();
   }
 
   public long getEntropyUsage() {

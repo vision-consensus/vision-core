@@ -13,6 +13,7 @@ import org.vision.core.capsule.*;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.*;
+import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
@@ -77,6 +78,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         break;
     }
+
     long expireTime = now + 180000L;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
@@ -106,6 +108,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
             dynamicStore
                 .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
           }
+          Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+          for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+            AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+            if (capsule == null) {
+              continue;
+            }
+            expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
+          }
         }
         break;
       case ENTROPY:
@@ -133,6 +144,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
             dynamicStore
                 .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
                     stage.getFrozenBalance() / VS_PRECISION);
+          }
+          Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+          for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+            AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+            if (capsule == null) {
+              continue;
+            }
+            expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
           }
         }
         break;
@@ -668,6 +688,28 @@ public class FreezeBalanceActuator extends AbstractActuator {
       balance += capsule.getInstance().getFrozenBalanceForEntropy();
       totalRate += balance / VS_PRECISION * entry.getValue().get(1);
       totalBalance += balance / VS_PRECISION;
+
+      long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+      long consider = dynamicPropertiesStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+      if(isPhoton) {
+        if (capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
+          long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
+              / entry.getValue().get(0) * FROZEN_PERIOD;
+          capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(),
+              capsule.getInstance().getExpireTimeForPhoton() +
+                  (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
+          accountFrozenStageResourceStore.put(key, capsule);
+        }
+      } else {
+        if (capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
+          long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
+              / entry.getValue().get(0)  * FROZEN_PERIOD;
+          capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(),
+              capsule.getInstance().getExpireTimeForEntropy() +
+                  (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
+          accountFrozenStageResourceStore.put(key, capsule);
+        }
+      }
     }
 
     long balance = account.getDelegatedFrozenBalanceForEntropy()

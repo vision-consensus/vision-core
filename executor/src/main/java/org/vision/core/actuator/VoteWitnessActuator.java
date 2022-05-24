@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.*;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
+import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
@@ -184,6 +184,39 @@ public class VoteWitnessActuator extends AbstractActuator {
       }
       if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
         voteCount = voteCount * accountCapsule.getFrozenStageWeightMerge() / 100L;
+
+        AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+        Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+        long now = dynamicStore.getLatestBlockHeaderTimestamp();
+        long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+        for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+          byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+          AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+          if (capsule == null) {
+            continue;
+          }
+          if (capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
+            long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
+                / entry.getValue().get(0) * FROZEN_PERIOD;
+            long tmp = capsule.getInstance().getExpireTimeForPhoton() +
+                (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+            capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
+            accountFrozenStageResourceStore.put(key, capsule);
+            accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
+                Math.max(accountCapsule.getFrozenExpireTime(), tmp));
+          }
+          if (capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
+            long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
+                / entry.getValue().get(0) * FROZEN_PERIOD;
+            long tmp = capsule.getInstance().getExpireTimeForEntropy() +
+                (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+            capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
+            accountFrozenStageResourceStore.put(key, capsule);
+            accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),
+                Math.max(accountCapsule.getEntropyFrozenExpireTime(), tmp));
+          }
+        }
+
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
       accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);

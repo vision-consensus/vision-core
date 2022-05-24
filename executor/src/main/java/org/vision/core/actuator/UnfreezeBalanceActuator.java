@@ -195,8 +195,19 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0L) {
                 continue;
               }
+
+              long current = dynamicStore.getLatestBlockHeaderTimestamp();
+              long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+              if (capsule.getInstance().getExpireTimeForEntropy() < current - consider) {
+                long cycle = (current - capsule.getInstance().getExpireTimeForEntropy())
+                    / entry.getValue().get(0) * FROZEN_PERIOD;
+                capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(),
+                    capsule.getInstance().getExpireTimeForEntropy() +
+                        (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
+                accountFrozenStageResourceStore.put(key, capsule);
+              }
               totalStage += capsule.getInstance().getFrozenBalanceForPhoton();
-              expireTime = capsule.getInstance().getExpireTimeForPhoton();
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
             }
             if (totalStage > 0) {
               Frozen newFrozen = Frozen.newBuilder()
@@ -239,8 +250,20 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {
                 continue;
               }
+
+              long current = dynamicStore.getLatestBlockHeaderTimestamp();
+              long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+              if (capsule.getInstance().getExpireTimeForEntropy() < current - consider) {
+                long cycle = (current - capsule.getInstance().getExpireTimeForEntropy())
+                    / entry.getValue().get(0) * FROZEN_PERIOD;
+                capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(),
+                    capsule.getInstance().getExpireTimeForEntropy() +
+                        (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
+                accountFrozenStageResourceStore.put(key, capsule);
+              }
+
               totalStage += capsule.getInstance().getFrozenBalanceForEntropy();
-              expireTime = capsule.getInstance().getExpireTimeForEntropy();
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
             }
             if (totalStage > 0) {
               Frozen newFrozenForEntropy = Frozen.newBuilder()

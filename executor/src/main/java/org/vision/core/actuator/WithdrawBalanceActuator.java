@@ -9,16 +9,19 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
+import org.vision.core.store.AccountFrozenStageResourceStore;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
@@ -83,6 +86,41 @@ public class WithdrawBalanceActuator extends AbstractActuator {
       ret.setWithdrawAmount(withdrawAmount);
     }else{
       ret.setWithdrawAmount(allowance);
+    }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+      Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+      AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+      long expirePhoton = accountCapsule.getFrozenExpireTime();
+      long expireEntropy = accountCapsule.getEntropyFrozenExpireTime();
+      for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+        byte[] key = AccountFrozenStageResourceCapsule.createDbKey(withdrawBalanceContract.getOwnerAddress().toByteArray(), entry.getKey());
+        AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+        if (capsule == null) {
+          continue;
+        }
+
+        if (capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
+          long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
+              / entry.getValue().get(0) * FROZEN_PERIOD;
+          long tmp = capsule.getInstance().getExpireTimeForPhoton() +
+              (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+          capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
+          accountFrozenStageResourceStore.put(key, capsule);
+          accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(), Math.max(expirePhoton, tmp));
+        }
+        if (capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
+          long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
+              / entry.getValue().get(0) * FROZEN_PERIOD;
+          long tmp = capsule.getInstance().getExpireTimeForEntropy() +
+              (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+          capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
+          accountFrozenStageResourceStore.put(key, capsule);
+          accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),
+              Math.max(expireEntropy, tmp));
+        }
+      }
     }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
