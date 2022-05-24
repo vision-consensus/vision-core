@@ -562,12 +562,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (stageCapsule == null) {
               throw new ContractValidateException("no frozenBalance(PHOTON) stage:"+stage);
             }
-            if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
-              throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+".");
-            }
-            //TODO REFREEZE
-            long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
 
+            long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+            if (stageCapsule.getInstance().getExpireTimeForPhoton() > now + period) {
+              throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+", or out of the refreeze consideration period");
+            }
           }
           break;
         case ENTROPY:
@@ -586,8 +585,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (stageCapsule == null) {
               throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
             }
-            if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
-              throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ".");
+            long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+            if (stageCapsule.getInstance().getExpireTimeForEntropy() > now + period) {
+              throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ", or out of the refreeze consideration period");
             }
           }
           break;
