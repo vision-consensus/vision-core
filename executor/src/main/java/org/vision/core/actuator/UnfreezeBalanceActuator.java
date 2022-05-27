@@ -202,7 +202,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               if (expireTimeForPhoton <= current - consider) {
                 long cycle = (current - expireTimeForPhoton) / FROZEN_PERIOD / entry.getValue().get(0);
                 capsule.setFrozenBalanceForPhoton(
-                    capsule.getInstance().getFrozenBalanceForEntropy(),
+                    capsule.getInstance().getFrozenBalanceForPhoton(),
                     expireTimeForPhoton + (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
                 accountFrozenStageResourceStore.put(key, capsule);
               }
@@ -587,7 +587,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             }
 
             long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-            if (stageCapsule.getInstance().getExpireTimeForPhoton() > now + period) {
+            if (stageCapsule.getInstance().getExpireTimeForPhoton() < now - period) {
               throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+", or out of the refreeze consideration period");
             }
           }
@@ -609,7 +609,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
             }
             long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-            if (stageCapsule.getInstance().getExpireTimeForEntropy() > now + period) {
+            if (stageCapsule.getInstance().getExpireTimeForEntropy() < now - period) {
               throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ", or out of the refreeze consideration period");
             }
           }
