@@ -75,6 +75,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         for(FreezeBalanceStage stage : stages){
           duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage()) * FROZEN_PERIOD;
           frozenBalance += stage.getFrozenBalance();
+          newBalance -= stage.getFrozenBalance();
         }
         break;
     }
@@ -654,6 +655,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
       byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage.getStage());
       long expireTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
           + stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
+//      long expireTime = dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
+//          - dynamicPropertiesStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
       AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
       if (capsule == null) {
         capsule = new AccountFrozenStageResourceCapsule(ownerAddress, stage.getStage());
