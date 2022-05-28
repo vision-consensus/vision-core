@@ -72,6 +72,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
     //otherwise,unfreeze delegated frozen balance provided this account.
+    boolean refreeze = true;
     if (!ArrayUtils.isEmpty(receiverAddress) && dynamicStore.supportDR()) {
       byte[] key = DelegatedResourceCapsule
           .createDbKey(unfreezeBalanceContract.getOwnerAddress().toByteArray(),
@@ -203,6 +204,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
               long expireTimeForPhoton = capsule.getInstance().getExpireTimeForPhoton();
               if (expireTimeForPhoton <= current - consider) {
+                refreeze = false;
                 long cycle = (current - expireTimeForPhoton) / FROZEN_PERIOD / entry.getValue().get(0);
                 capsule.setFrozenBalanceForPhoton(
                     capsule.getInstance().getFrozenBalanceForPhoton(),
@@ -261,6 +263,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
               long expTimeEntropy = capsule.getInstance().getExpireTimeForEntropy();
               if (expTimeEntropy < current - consider) {
+                refreeze = false;
                 long cycle = (current - expTimeEntropy) / FROZEN_PERIOD / entry.getValue().get(0);
                 capsule.setFrozenBalanceForEntropy(
                     capsule.getInstance().getFrozenBalanceForEntropy(),
@@ -299,14 +302,36 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           break;
         case SPREAD:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
-                  .getFrozenBalance();
-          AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
+              .getFrozenBalance();
+          if (dynamicStore.getAllowVPFreezeStageWeight() != 1) {
+            AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
+                .clearFrozenBalanceForSpread().build();
+            accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+                .setBalance(oldBalance + unfreezeBalance)
+                .setAccountResource(newSpread).build());
+
+            clearSpreadRelationShip(ownerAddress);
+          } else {
+            long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
+            long consider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+            long current = dynamicStore.getLatestBlockHeaderTimestamp();
+            if (spreadExpireTime < current - consider) {
+              refreeze = false;
+              long cycle = (current - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
+              spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
+              long balance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+              resetSpreadRelationShip(ownerAddress, balance, spreadExpireTime);
+              accountCapsule.setFrozenForSpread(balance, spreadExpireTime);
+            } else {
+              AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
                   .clearFrozenBalanceForSpread().build();
-          accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+              accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
                   .setBalance(oldBalance + unfreezeBalance)
                   .setAccountResource(newSpread).build());
 
-          clearSpreadRelationShip(ownerAddress);
+              clearSpreadRelationShip(ownerAddress);
+            }
+          }
           break;
         default:
           //this should never happen
@@ -329,16 +354,22 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     boolean clearVote = true;
     switch (unfreezeBalanceContract.getResource()) {
       case PHOTON:
-        dynamicStore
-            .addTotalPhotonWeight(-unfreezeBalance / VS_PRECISION);
+        if (refreeze) {
+          dynamicStore
+              .addTotalPhotonWeight(-unfreezeBalance / VS_PRECISION);
+        }
         break;
       case ENTROPY:
-        dynamicStore
-            .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
+        if (refreeze) {
+          dynamicStore
+              .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
+        }
         break;
       case SPREAD:
-        dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
-        clearVote = dynamicStore.getAllowUnfreezeSpreadOrFvGuaranteeClearVote() == 1;
+        if (refreeze) {
+          dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
+          clearVote = dynamicStore.getAllowUnfreezeSpreadOrFvGuaranteeClearVote() == 1;
+        }
         break;
       case FVGUARANTEE:
         dynamicStore
@@ -636,10 +667,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
-          if (frozenBalanceForSpread.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+          long consider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+          if (frozenBalanceForSpread.getExpireTime() > now - consider) {
+            throw new ContractValidateException("It's not time to unfreeze(SpreadMint), or out of the refreeze consideration period");
           }
-
           break;
         default:
           throw new ContractValidateException(
@@ -669,6 +700,19 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
       long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
       spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
+      if (dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
+        spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
+      }
+    }
+  }
+
+  private void resetSpreadRelationShip(byte[] ownerAddress, long balance, long expireTime){
+    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
+    if (spreadRelationShipCapsule != null) {
+      DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+      long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
+      spreadRelationShipCapsule.setFrozenBalanceForSpread(balance, expireTime, cycle);
       if (dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
         spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
       }

@@ -17,6 +17,7 @@ import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
+import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -24,6 +25,7 @@ import org.vision.core.service.MortgageService;
 import org.vision.core.store.AccountFrozenStageResourceStore;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.SpreadRelationShipStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
@@ -94,11 +96,12 @@ public class WithdrawBalanceActuator extends AbstractActuator {
       AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
       long expirePhoton = accountCapsule.getFrozenExpireTime();
       long expireEntropy = accountCapsule.getEntropyFrozenExpireTime();
+      byte[] ownerAddress = withdrawBalanceContract.getOwnerAddress().toByteArray();
       for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
         if (entry.getKey() == 1L) {
           continue;
         }
-        byte[] key = AccountFrozenStageResourceCapsule.createDbKey(withdrawBalanceContract.getOwnerAddress().toByteArray(), entry.getKey());
+        byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
         AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
         if (capsule == null) {
           continue;
@@ -123,6 +126,24 @@ public class WithdrawBalanceActuator extends AbstractActuator {
               Math.max(expireEntropy, tmp));
         }
       }
+
+      long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+      long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+      long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
+      if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
+        long cycle = (now - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
+        spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
+        accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
+
+        SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
+        if (spreadRelationShipCapsule != null) {
+          spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
+          if (dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
+            spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
+          }
+        }
+      } //end spread
     }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);

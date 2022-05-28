@@ -4,13 +4,11 @@ import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
-import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
-import org.vision.core.capsule.TransactionResultCapsule;
-import org.vision.core.capsule.VotesCapsule;
+import org.vision.core.capsule.*;
 import org.vision.core.config.Parameter;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
@@ -223,6 +221,23 @@ public class VoteWitnessActuator extends AbstractActuator {
           }
         }
 
+        long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+        long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+        long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
+        if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
+          long cycle = (now - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
+          spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
+          accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
+
+          SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
+          SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
+          if (spreadRelationShipCapsule != null) {
+            spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
+            if (dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
+              spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
+            }
+          }
+        } //end spread
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
       accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);

@@ -3152,6 +3152,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void burnSpreadAmount(long amount) {
+    if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
     burn += amount;
     this.put(DynamicPropertiesStore.BURN_SPREAD_AMOUNT, new BytesCapsule(ByteArray.fromLong(burn)));
