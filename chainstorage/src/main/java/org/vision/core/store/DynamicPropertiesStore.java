@@ -14,12 +14,11 @@ import org.vision.core.capsule.BytesCapsule;
 import org.vision.core.config.Parameter;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.db.VisionStoreWithRevoking;
-import org.vision.protos.contract.BalanceContract;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static org.vision.core.config.Parameter.ChainConstant.FIRST_ECONOMY_CYCLE;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "DB")
 @Component
@@ -178,6 +177,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
   private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
   private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
+  private static final byte[] BURN_SPREAD_AMOUNT = "BURN_SPREAD_AMOUNT".getBytes();
 
 
   @Autowired
@@ -3150,6 +3150,20 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .map(ByteArray::toLong)
         .orElse(3L);
   }
+
+  public void burnSpreadAmount(long amount) {
+    long burn = getBurnSpreadAmount();
+    burn += amount;
+    this.put(DynamicPropertiesStore.BURN_SPREAD_AMOUNT, new BytesCapsule(ByteArray.fromLong(burn)));
+  }
+
+  public long getBurnSpreadAmount() {
+    return Optional.ofNullable(getUnchecked(DynamicPropertiesStore.BURN_SPREAD_AMOUNT))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
+
 
   private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();

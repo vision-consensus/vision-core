@@ -431,6 +431,7 @@ public class MortgageService {
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
+      long burnReward = 0L;
       for (int i = 1; i < props.length; i++) {
         SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
         if (spreadRelationShipCapsule == null){
@@ -446,6 +447,11 @@ public class MortgageService {
         long spreadAmount = (long)(props[i] / 100.0 * spreadReward * minSpreadMintProp(parentCapsule, accountSpreadFreezeVdt));
         adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
         adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
+        burnReward += spreadAmount;
+      }
+
+      if (spreadReward - burnReward > 0) {
+        dynamicPropertiesStore.burnSpreadAmount(spreadReward - burnReward);
       }
     }catch (Exception e){
       logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
