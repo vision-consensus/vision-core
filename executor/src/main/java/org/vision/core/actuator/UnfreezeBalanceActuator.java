@@ -190,6 +190,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              if (entry.getKey() == 1L) {
+                continue;
+              }
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0L) {
@@ -245,6 +248,9 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              if (entry.getKey() == 1L) {
+                continue;
+              }
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {

@@ -694,7 +694,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
       long consider = dynamicPropertiesStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
       if(isPhoton) {
         long expireTimeForPhoton = capsule.getInstance().getExpireTimeForPhoton();
-        if (expireTimeForPhoton < now - consider) {
+        if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
+            && expireTimeForPhoton < now - consider) {
           long cycle = (now - expireTimeForPhoton) / entry.getValue().get(0) / FROZEN_PERIOD;
           capsule.setFrozenBalanceForPhoton(
               capsule.getInstance().getFrozenBalanceForPhoton(),
@@ -703,7 +704,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
       } else {
         long expireTimeForEntropy = capsule.getInstance().getExpireTimeForEntropy();
-        if (expireTimeForEntropy < now - consider) {
+        if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
+            && expireTimeForEntropy < now - consider) {
           long cycle = (now - expireTimeForEntropy) / entry.getValue().get(0) / FROZEN_PERIOD;
           capsule.setFrozenBalanceForEntropy(
               capsule.getInstance().getFrozenBalanceForEntropy(),

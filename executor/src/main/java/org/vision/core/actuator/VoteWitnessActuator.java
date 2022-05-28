@@ -190,14 +190,19 @@ public class VoteWitnessActuator extends AbstractActuator {
         long now = dynamicStore.getLatestBlockHeaderTimestamp();
         long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
         for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+          if (entry.getKey() == 1L) {
+            continue;
+          }
           byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
           AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
           if (capsule == null) {
             continue;
           }
-          if (capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
+
+          if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
+              && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
             long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
-                / entry.getValue().get(0) * FROZEN_PERIOD;
+                / entry.getValue().get(0) / FROZEN_PERIOD;
             long tmp = capsule.getInstance().getExpireTimeForPhoton() +
                 (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
             capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
@@ -205,9 +210,10 @@ public class VoteWitnessActuator extends AbstractActuator {
             accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
                 Math.max(accountCapsule.getFrozenExpireTime(), tmp));
           }
-          if (capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
+          if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
+              && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
             long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
-                / entry.getValue().get(0) * FROZEN_PERIOD;
+                / entry.getValue().get(0) / FROZEN_PERIOD;
             long tmp = capsule.getInstance().getExpireTimeForEntropy() +
                 (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
             capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
