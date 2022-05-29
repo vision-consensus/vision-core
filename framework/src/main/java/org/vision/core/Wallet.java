@@ -1321,6 +1321,11 @@ public class Wallet {
             .setStringValue(dbManager.getDynamicPropertiesStore().getCyclePledgeRateDenominator())
             .build());
 
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getBurnSpreadAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getBurnSpreadAmount())
+            .build());
+
     return builder.build();
   }
 
