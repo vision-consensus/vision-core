@@ -93,32 +93,34 @@ public class FreezeBalanceActuator extends AbstractActuator {
                   frozenBalance, expireTime);
           accountCapsule.addDelegatedFrozenBalanceForPhoton(frozenBalance);
         } else {
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            long weightMerge = accountFrozenStageResource(ownerAddress, stages, true, accountCapsule);
+            accountCapsule.setFrozenStageWeightMerge(weightMerge);
+            dynamicStore
+                .addTotalStagePhotonWeight(Collections.singletonList(1L),
+                    freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+            for (FreezeBalanceStage stage : stages) {
+              dynamicStore
+                  .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
+            }
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null && capsule.getInstance().getFrozenBalanceForPhoton() == 0) {
+                continue;
+              }
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
+            }
+          }
+
           long newFrozenBalanceForPhoton =
                   frozenBalance + accountCapsule.getFrozenBalance();
           accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
         }
         dynamicStore
             .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
-        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-          long weightMerge = accountFrozenStageResource(ownerAddress, stages, true, accountCapsule);
-          accountCapsule.setFrozenStageWeightMerge(weightMerge);
-          dynamicStore
-              .addTotalStagePhotonWeight(Collections.singletonList(1L),
-                  freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
-          for (FreezeBalanceStage stage : stages) {
-            dynamicStore
-                .addTotalStagePhotonWeight(Collections.singletonList(stage.getStage()), stage.getFrozenBalance() / VS_PRECISION);
-          }
-          Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
-          for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
-            AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-            if (capsule == null) {
-              continue;
-            }
-            expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
-          }
-        }
+
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -127,6 +129,27 @@ public class FreezeBalanceActuator extends AbstractActuator {
                   frozenBalance, expireTime);
           accountCapsule.addDelegatedFrozenBalanceForEntropy(frozenBalance);
         } else {
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            long weightMerge = accountFrozenStageResource(ownerAddress, stages, false, accountCapsule);
+            accountCapsule.setFrozenStageWeightMerge(weightMerge);
+            dynamicStore
+                .addTotalStageEntropyWeight(Collections.singletonList(1L),
+                    freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
+            for(FreezeBalanceStage stage : stages){
+              dynamicStore
+                  .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
+                      stage.getFrozenBalance() / VS_PRECISION);
+            }
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null && capsule.getInstance().getFrozenBalanceForEntropy() == 0) {
+                continue;
+              }
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
+            }
+          }
           long newFrozenBalanceForEntropy =
                   frozenBalance + accountCapsule.getAccountResource()
                           .getFrozenBalanceForEntropy()
@@ -135,27 +158,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
-        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-          long weightMerge = accountFrozenStageResource(ownerAddress, stages, false, accountCapsule);
-          accountCapsule.setFrozenStageWeightMerge(weightMerge);
-          dynamicStore
-              .addTotalStageEntropyWeight(Collections.singletonList(1L),
-                  freezeBalanceContract.getFrozenBalance() / VS_PRECISION);
-          for(FreezeBalanceStage stage : stages){
-            dynamicStore
-                .addTotalStageEntropyWeight(Collections.singletonList(stage.getStage()),
-                    stage.getFrozenBalance() / VS_PRECISION);
-          }
-          Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
-          for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-            byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
-            AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-            if (capsule == null) {
-              continue;
-            }
-            expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
-          }
-        }
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =
