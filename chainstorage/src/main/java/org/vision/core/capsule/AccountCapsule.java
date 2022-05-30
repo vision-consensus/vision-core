@@ -21,6 +21,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
+import org.vision.core.store.AccountFrozenStageResourceStore;
 import org.vision.core.store.AssetIssueStore;
 import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.*;
@@ -33,6 +34,8 @@ import org.vision.protos.contract.AccountContract.AccountUpdateContract;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "capsule")
 public class AccountCapsule implements ProtoCapsule<Account>, Comparable<AccountCapsule> {
@@ -225,6 +228,48 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
   public static Permission getDefaultPermission(ByteString owner) {
     return createDefaultOwnerPermission(owner);
+  }
+
+  public static long calcAccountFrozenStageWeightMerge(AccountCapsule account, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicPropertiesStore) {
+    Map<Long, List<Long>> stageWeights = dynamicPropertiesStore.getVPFreezeStageWeights();
+    byte[] ownerAddress = account.getAddress().toByteArray();
+    long totalBalance = 0;
+    long totalRate = 0;
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      if (entry.getKey() == 1L) {
+        continue;
+      }
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      long balance = capsule.getInstance().getFrozenBalanceForPhoton();
+      balance += capsule.getInstance().getFrozenBalanceForEntropy();
+      totalRate += balance / VS_PRECISION * entry.getValue().get(1);
+      totalBalance += balance / VS_PRECISION;
+    }
+
+    long balance = account.getDelegatedFrozenBalanceForEntropy()
+        + account.getDelegatedFrozenBalanceForPhoton();
+    byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, 1L);
+    AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+    if (capsule != null) {
+      balance += capsule.getInstance().getFrozenBalanceForPhoton();
+      balance += capsule.getInstance().getFrozenBalanceForEntropy();
+    }
+    long defaultFrozen = account.getEntropyFrozenBalance() + account.getFrozenBalance() - totalBalance;
+    if (defaultFrozen > 0) {
+      balance += defaultFrozen;
+    }
+
+    totalRate += balance / VS_PRECISION * stageWeights.get(1L).get(1);
+    totalBalance += balance / VS_PRECISION;
+
+    if (totalBalance == 0) {
+      return 100L;
+    }
+    return Math.max(100L, Math.min(totalRate / totalBalance, dynamicPropertiesStore.getVPFreezeWeightByStage(5L)));
   }
 
   @Override
