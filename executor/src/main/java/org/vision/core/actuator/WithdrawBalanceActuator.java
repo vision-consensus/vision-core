@@ -91,59 +91,11 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-      long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-      Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
-      AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
-      long expirePhoton = accountCapsule.getFrozenExpireTime();
-      long expireEntropy = accountCapsule.getEntropyFrozenExpireTime();
-      byte[] ownerAddress = withdrawBalanceContract.getOwnerAddress().toByteArray();
-      for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-        if (entry.getKey() == 1L) {
-          continue;
-        }
-        byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
-        AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-        if (capsule == null) {
-          continue;
-        }
-        long expireTimeForPhoton = capsule.getInstance().getExpireTimeForPhoton();
-        if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
-            && expireTimeForPhoton < now - consider) {
-          long cycle = (now - expireTimeForPhoton) / entry.getValue().get(0) / FROZEN_PERIOD;
-          long tmp = expireTimeForPhoton + (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
-          capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
-          accountFrozenStageResourceStore.put(key, capsule);
-          accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(), Math.max(expirePhoton, tmp));
-        }
-        long expireTimeForEntropy = capsule.getInstance().getExpireTimeForEntropy();
-        if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
-            && expireTimeForEntropy < now - consider) {
-          long cycle = (now - expireTimeForEntropy) / entry.getValue().get(0) / FROZEN_PERIOD;
-          long tmp = expireTimeForEntropy + (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
-          capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
-          accountFrozenStageResourceStore.put(key, capsule);
-          accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),
-              Math.max(expireEntropy, tmp));
-        }
-      }
+      AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+          accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
 
-      long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-      long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
-      long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
-      if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
-        long cycle = (now - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
-        spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
-        accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
-
-        SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
-        if (spreadRelationShipCapsule != null) {
-          spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
-          if (dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
-            spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
-          }
-        }
-      } //end spread
+      SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
+          accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
     }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);

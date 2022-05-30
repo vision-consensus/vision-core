@@ -4,7 +4,14 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
+import org.vision.core.store.AccountFrozenStageResourceStore;
+import org.vision.core.store.DynamicPropertiesStore;
 import org.vision.protos.Protocol.AccountFrozenStageResource;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 @Slf4j(topic = "capsule")
 public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFrozenStageResource> {
@@ -36,6 +43,50 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
     System.arraycopy(ownerAddress, 0, key, 0, ownerAddress.length);
     System.arraycopy(stageKey, 0, key, ownerAddress.length, stageKey.length);
     return key;
+  }
+
+  public static boolean dealReFreezeConsideration(AccountCapsule accountCapsule, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
+    boolean refreeze = false;
+    byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+    long now = dynamicStore.getLatestBlockHeaderTimestamp();
+    long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      if (entry.getKey() == 1L) {
+        continue;
+      }
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+
+      if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
+          && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
+        refreeze = true;
+        long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
+            / entry.getValue().get(0) / FROZEN_PERIOD;
+        long tmp = capsule.getInstance().getExpireTimeForPhoton() +
+            (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+        capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
+        accountFrozenStageResourceStore.put(key, capsule);
+        accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
+            Math.max(accountCapsule.getFrozenExpireTime(), tmp));
+      }
+      if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
+          && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
+        refreeze = true;
+        long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
+            / entry.getValue().get(0) / FROZEN_PERIOD;
+        long tmp = capsule.getInstance().getExpireTimeForEntropy() +
+            (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+        capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
+        accountFrozenStageResourceStore.put(key, capsule);
+        accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),
+            Math.max(accountCapsule.getEntropyFrozenExpireTime(), tmp));
+      }
+    }
+    return refreeze;
   }
 
   @Override

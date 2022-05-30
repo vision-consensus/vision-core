@@ -677,41 +677,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
       accountFrozenStageResourceStore.put(key, capsule);
     }
 
-    Map<Long, List<Long>> stageWeights = dynamicPropertiesStore.getVPFreezeStageWeights();
-    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-      if (entry.getKey() == 1L) {
-        continue;
-      }
-      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
-      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-      if (capsule == null) {
-        continue;
-      }
-
-      long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
-      long consider = dynamicPropertiesStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-      if(isPhoton) {
-        long expireTimeForPhoton = capsule.getInstance().getExpireTimeForPhoton();
-        if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
-            && expireTimeForPhoton < now - consider) {
-          long cycle = (now - expireTimeForPhoton) / entry.getValue().get(0) / FROZEN_PERIOD;
-          capsule.setFrozenBalanceForPhoton(
-              capsule.getInstance().getFrozenBalanceForPhoton(),
-              expireTimeForPhoton + (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
-          accountFrozenStageResourceStore.put(key, capsule);
-        }
-      } else {
-        long expireTimeForEntropy = capsule.getInstance().getExpireTimeForEntropy();
-        if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
-            && expireTimeForEntropy < now - consider) {
-          long cycle = (now - expireTimeForEntropy) / entry.getValue().get(0) / FROZEN_PERIOD;
-          capsule.setFrozenBalanceForEntropy(
-              capsule.getInstance().getFrozenBalanceForEntropy(),
-              expireTimeForEntropy + (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD);
-          accountFrozenStageResourceStore.put(key, capsule);
-        }
-      }
-    }
-
+    AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+        account, accountFrozenStageResourceStore, dynamicPropertiesStore);
   }
 }

@@ -4,7 +4,6 @@ import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
-import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
@@ -20,13 +19,10 @@ import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.*;
 import static org.vision.core.config.Parameter.ChainConstant.*;
-import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
@@ -183,61 +179,12 @@ public class VoteWitnessActuator extends AbstractActuator {
       if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
         voteCount = (long) (voteCount * (accountCapsule.getFrozenStageWeightMerge() * 1.0 / 100L));
 
-        AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
-        Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
-        long now = dynamicStore.getLatestBlockHeaderTimestamp();
-        long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-        for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-          if (entry.getKey() == 1L) {
-            continue;
-          }
-          byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
-          AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-          if (capsule == null) {
-            continue;
-          }
+        AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+            accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
 
-          if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
-              && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
-            long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
-                / entry.getValue().get(0) / FROZEN_PERIOD;
-            long tmp = capsule.getInstance().getExpireTimeForPhoton() +
-                (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
-            capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
-            accountFrozenStageResourceStore.put(key, capsule);
-            accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
-                Math.max(accountCapsule.getFrozenExpireTime(), tmp));
-          }
-          if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
-              && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
-            long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
-                / entry.getValue().get(0) / FROZEN_PERIOD;
-            long tmp = capsule.getInstance().getExpireTimeForEntropy() +
-                (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
-            capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
-            accountFrozenStageResourceStore.put(key, capsule);
-            accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),
-                Math.max(accountCapsule.getEntropyFrozenExpireTime(), tmp));
-          }
-        }
+        SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
+            accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
 
-        long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-        long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
-        long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
-        if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
-          long cycle = (now - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
-          spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
-          accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
-
-          SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-          SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
-          if (spreadRelationShipCapsule != null) {
-            spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
-            if (dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
-              spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
-            }
-          }
-        } //end spread
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
       accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
