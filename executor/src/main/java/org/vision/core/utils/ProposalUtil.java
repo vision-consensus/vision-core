@@ -501,7 +501,6 @@ public class ProposalUtil {
         Integer[] stage = new Integer[stageLen];
         Integer[] duration = new Integer[stageLen];
         Integer[] weight = new Integer[stageLen];
-        List<Integer> stages = Arrays.asList(1, 2, 3, 4, 5);
         for (int j = 0; j < stageWeights.length; j++){
           String sw = stageWeights[j];
           String[] stageWeight = sw.split(",");
@@ -518,26 +517,30 @@ public class ProposalUtil {
           }
 
           stage[j] = Integer.parseInt(stageWeight[0]);
-          if (!stages.contains(stage[j])){
+          if (stage[j] != j + 1){
             throw new ContractValidateException("Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage must be 1,2,3,4,5");
           }
           duration[j] = Integer.parseInt(stageWeight[1]);
+          if (duration[j] <= 0) {
+            throw new ContractValidateException("Bad VP_FREEZE_STAGE_WEIGHT parameter value, duration must be great than 0");
+          }
           weight[j] = Integer.parseInt(stageWeight[2]);
         }
+
         for (int i = 0; i < duration.length-1; i++) {
-          if(duration[i] > duration[i+1]){
+          if(duration[i] >= duration[i+1]){
             throw new ContractValidateException(
-                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, duration must be ordered by ase");
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, duration must be ordered by asc");
           }
         }
         for (int i = 0; i < weight.length-1; i++) {
-          if(i==0 && weight[i] > 100){
+          if(i==0 && weight[i] != 100){
             throw new ContractValidateException(
                     "Bad VP_FREEZE_STAGE_WEIGHT parameter value, first stage weight must be 100");
           }
-          if(weight[i] > weight[i+1]){
+          if(weight[i] >= weight[i+1]){
             throw new ContractValidateException(
-                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, weight must be ordered by ase");
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, weight must be ordered by asc");
           }
         }
         if(weight[stageLen-1] >= 200){
@@ -608,9 +611,9 @@ public class ProposalUtil {
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
     ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
-    REFREEZE_CONSIDERATION_PERIOD(57),//[1,30]
-    ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
-    VP_FREEZE_STAGE_WEIGHT(59), //1,100,30;2,60,110;3,180,120;4,360,130;5,720,150
+    ALLOW_VP_FREEZE_STAGE_WEIGHT(57), // 0,1
+    VP_FREEZE_STAGE_WEIGHT(58), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
+    REFREEZE_CONSIDERATION_PERIOD(59),//[1,30]
     SPREAD_REFREEZE_CONSIDERATION_PERIOD(60);
 
     private long code;

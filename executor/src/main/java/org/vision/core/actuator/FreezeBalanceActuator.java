@@ -120,7 +120,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
         }
         dynamicStore
             .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
-
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -234,7 +233,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
       if (freezeBalanceContract.getFreezeBalanceStageCount() > 5) {
         throw new ContractValidateException(
-                "[PHOTON、ENTROPY] frozen stage's length must be less than 5");
+                "[PHOTON、ENTROPY] frozen stage's length must be lte 5");
       }
       Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
       Set<Long> stages = new HashSet<>();
@@ -292,104 +291,103 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
 
     boolean isUnlimitedPledge = dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnlimitedPledgeEffectBlockNum;
-    if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
-      if (!dynamicStore.supportSpreadMint()){
-        throw new ContractValidateException("It's not support SPREAD type of frozen.");
-      }
-
-      if (ArrayUtils.isEmpty(parentAddress)){
-        throw new ContractValidateException("parentAddress can not be empty");
-      }
-      if (!DecodeUtil.addressValid(parentAddress)) {
-        throw new ContractValidateException("Invalid parentAddress");
-      }
-
-      if (frozenBalance < 0) {
-        throw new ContractValidateException("frozenBalance must be positive");
-      } else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
-        throw new ContractValidateException("frozenBalance must be more than 1VS");
-      }
-
-      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
-      String oldParent = "";
-      String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
-      if(spreadRelationShipCapsule != null){
-        oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
-      }
-
-      if (!dynamicStore.supportModifySpreadMintParent()){
-        if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
-          throw new ContractValidateException("It's not allowed to modify the parentAddress");
-        }
-        if (frozenBalance == 0){
-          throw new ContractValidateException("frozenBalance must be more than 1VS");
-        }
-      } else { // supportModifySpreadMintParent == true
-        if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
-          if (spreadRelationShipCapsule == null){
-            throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+    switch (freezeBalanceContract.getResource()) {
+      case PHOTON:
+      case ENTROPY:
+        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+          if (frozenBalance < 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
           }
-          if (!oldParent.isEmpty() && oldParent.equals(newParent)) {
-            throw new ContractValidateException("The new and old parentAddress cannot be the same address");
+          if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+            throw new ContractValidateException("frozenBalance must be more than 1VS");
           }
-        }
-      }
-
-      if (spreadRelationShipCapsule != null){
-        if (isUnlimitedPledge){
-          if (!oldParent.equals(newParent) && spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to modify parentAddress. Time left: "+
-                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
-          }
-        }else{
-          if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to re-freeze. Time left: "+
-                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
-          }
-        }
-      }
-
-      if (isUnlimitedPledge && Arrays.equals(ownerAddress, parentAddress)){
-        throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
-      }
-    } else {
-      switch (freezeBalanceContract.getResource()) {
-        case PHOTON:
-        case ENTROPY:
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            if (frozenBalance < 0) {
+          for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+            if (stage.getFrozenBalance() <= 0) {
               throw new ContractValidateException("frozenBalance must be positive");
             }
-            if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+            if (stage.getFrozenBalance() < VS_PRECISION) {
               throw new ContractValidateException("frozenBalance must be more than 1VS");
             }
-            for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
-              if (stage.getFrozenBalance() <= 0) {
-                throw new ContractValidateException("frozenBalance must be positive");
-              }
-              if (stage.getFrozenBalance() < VS_PRECISION) {
-                throw new ContractValidateException("frozenBalance must be more than 1VS");
-              }
-              frozenBalance += stage.getFrozenBalance();
-            }
-          } else {
-            if (frozenBalance <= 0) {
-              throw new ContractValidateException("frozenBalance must be positive");
-            }
-            if (frozenBalance < VS_PRECISION) {
-              throw new ContractValidateException("frozenBalance must be more than 1VS");
-            }
+            frozenBalance += stage.getFrozenBalance();
           }
-          break;
-        case FVGUARANTEE:
+        } else {
           if (frozenBalance <= 0) {
             throw new ContractValidateException("frozenBalance must be positive");
           }
           if (frozenBalance < VS_PRECISION) {
             throw new ContractValidateException("frozenBalance must be more than 1VS");
           }
-          break;
-      }
+        }
+        break;
+      case FVGUARANTEE:
+        if (frozenBalance <= 0) {
+          throw new ContractValidateException("frozenBalance must be positive");
+        }
+        if (frozenBalance < VS_PRECISION) {
+          throw new ContractValidateException("frozenBalance must be more than 1VS");
+        }
+        break;
+      case SPREAD:
+        if (!dynamicStore.supportSpreadMint()){
+          throw new ContractValidateException("It's not support SPREAD type of frozen.");
+        }
+
+        if (ArrayUtils.isEmpty(parentAddress)){
+          throw new ContractValidateException("parentAddress can not be empty");
+        }
+        if (!DecodeUtil.addressValid(parentAddress)) {
+          throw new ContractValidateException("Invalid parentAddress");
+        }
+
+        if (frozenBalance < 0) {
+          throw new ContractValidateException("frozenBalance must be positive");
+        } else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+          throw new ContractValidateException("frozenBalance must be more than 1VS");
+        }
+
+        SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+        String oldParent = "";
+        String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
+        if(spreadRelationShipCapsule != null){
+          oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
+        }
+
+        if (!dynamicStore.supportModifySpreadMintParent()){
+          if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
+            throw new ContractValidateException("It's not allowed to modify the parentAddress");
+          }
+          if (frozenBalance == 0){
+            throw new ContractValidateException("frozenBalance must be more than 1VS");
+          }
+        } else { // supportModifySpreadMintParent == true
+          if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
+            if (spreadRelationShipCapsule == null){
+              throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+            }
+            if (!oldParent.isEmpty() && oldParent.equals(newParent)) {
+              throw new ContractValidateException("The new and old parentAddress cannot be the same address");
+            }
+          }
+        }
+
+        if (spreadRelationShipCapsule != null){
+          if (isUnlimitedPledge){
+            if (!oldParent.equals(newParent) && spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
+              throw new ContractValidateException("It's not time to modify parentAddress. Time left: "+
+                  Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+            }
+          }else{
+            if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
+              throw new ContractValidateException("It's not time to re-freeze. Time left: "+
+                  Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+            }
+          }
+        }
+
+        if (isUnlimitedPledge && Arrays.equals(ownerAddress, parentAddress)){
+          throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
+        }
+        break;
     }
 
     int frozenCount = accountCapsule.getFrozenCount();

@@ -269,12 +269,12 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowSpreadMintParticipatePledgeRate(entry.getValue());
           break;
         }
-        case REFREEZE_CONSIDERATION_PERIOD: {
-          manager.getDynamicPropertiesStore().saveRefreezeConsiderationPeriod(entry.getValue());
-          break;
-        }
         case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
           manager.getDynamicPropertiesStore().saveAllowVPFreezeStageWeight(entry.getValue());
+          break;
+        }
+        case REFREEZE_CONSIDERATION_PERIOD: {
+          manager.getDynamicPropertiesStore().saveRefreezeConsiderationPeriod(entry.getValue());
           break;
         }
         case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {

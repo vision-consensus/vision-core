@@ -262,7 +262,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               long current = dynamicStore.getLatestBlockHeaderTimestamp();
               long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
               long expTimeEntropy = capsule.getInstance().getExpireTimeForEntropy();
-              if (expTimeEntropy < current - consider) {
+              if (expTimeEntropy <= current - consider) {
                 refreeze = false;
                 long cycle = (current - expTimeEntropy) / FROZEN_PERIOD / entry.getValue().get(0);
                 capsule.setFrozenBalanceForEntropy(
@@ -315,7 +315,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
             long consider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
             long current = dynamicStore.getLatestBlockHeaderTimestamp();
-            if (spreadExpireTime < current - consider) {
+            if (spreadExpireTime <= current - consider) {
               refreeze = false;
               long cycle = (current - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
               spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
@@ -619,8 +619,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           for (Long stage : unfreezeBalanceContract.getStagesList()) {
             byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
             AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
-            if (stageCapsule == null) {
+            if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForPhoton() == 0) {
               throw new ContractValidateException("no frozenBalance(PHOTON) stage:"+stage);
+            }
+
+            if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage);
             }
 
             long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
@@ -642,9 +646,14 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           for (Long stage : unfreezeBalanceContract.getStagesList()) {
             byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
             AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
-            if (stageCapsule == null) {
+            if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForEntropy() == 0) {
               throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
             }
+
+            if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage);
+            }
+
             long period = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
             if (stageCapsule.getInstance().getExpireTimeForEntropy() < now - period) {
               throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ", or out of the refreeze consideration period");
@@ -667,8 +676,13 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
+
+          if (frozenBalanceForSpread.getExpireTime() > now) {
+            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+          }
+
           long consider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-          if (frozenBalanceForSpread.getExpireTime() > now - consider) {
+          if (frozenBalanceForSpread.getExpireTime() < now - consider) {
             throw new ContractValidateException("It's not time to unfreeze(SpreadMint), or out of the refreeze consideration period");
           }
           break;

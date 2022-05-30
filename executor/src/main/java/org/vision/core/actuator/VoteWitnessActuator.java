@@ -181,7 +181,7 @@ public class VoteWitnessActuator extends AbstractActuator {
         voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
       }
       if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
-        voteCount = voteCount * accountCapsule.getFrozenStageWeightMerge() / 100L;
+        voteCount = (long) (voteCount * (accountCapsule.getFrozenStageWeightMerge() * 1.0 / 100L));
 
         AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
         Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();

@@ -100,6 +100,12 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
     }
   }
 
+  public void setExpireTimeForEntropy(long ExpireTime) {
+    this.delegatedResource = this.delegatedResource.toBuilder()
+        .setExpireTimeForEntropy(ExpireTime)
+        .build();
+  }
+
   public byte[] createDbKey() {
     return createDbKey(this.delegatedResource.getFrom().toByteArray(),
         this.delegatedResource.getTo().toByteArray());

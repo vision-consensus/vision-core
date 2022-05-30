@@ -431,7 +431,7 @@ public class MortgageService {
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
-      long burnReward = 0L;
+      long burnReward = 0L;//TODO rename
       for (int i = 1; i < props.length; i++) {
         SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
         if (spreadRelationShipCapsule == null){
@@ -449,7 +449,7 @@ public class MortgageService {
         adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
         burnReward += spreadAmount;
       }
-
+      //TODO proposal or blockNum check
       if (spreadReward - burnReward > 0) {
         dynamicPropertiesStore.burnSpreadAmount(spreadReward - burnReward);
       }
