@@ -252,13 +252,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
     long balance = account.getDelegatedFrozenBalanceForEntropy()
         + account.getDelegatedFrozenBalanceForPhoton();
-    byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, 1L);
-    AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
-    if (capsule != null) {
-      balance += capsule.getInstance().getFrozenBalanceForPhoton();
-      balance += capsule.getInstance().getFrozenBalanceForEntropy();
-    }
-    long defaultFrozen = account.getEntropyFrozenBalance() + account.getFrozenBalance() - totalBalance;
+    long defaultFrozen = account.getEntropyFrozenBalance() + account.getFrozenBalance() - totalBalance * VS_PRECISION;
     if (defaultFrozen > 0) {
       balance += defaultFrozen;
     }

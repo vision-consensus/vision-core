@@ -2877,6 +2877,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(10L);
   }
 
+  public Long getRefreezeConsiderationPeriodResult() {
+    //return getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+    return 600_000L;
+  }
+
   public void saveAllowVPFreezeStageWeight(Long value) {
     this.put(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT,
             new BytesCapsule(ByteArray.fromLong(value)));

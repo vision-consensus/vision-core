@@ -50,7 +50,7 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
     byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
     Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
-    long consider = dynamicStore.getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+    long consider = dynamicStore.getRefreezeConsiderationPeriodResult();
     for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
       if (entry.getKey() == 1L) {
         continue;
@@ -87,6 +87,26 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
       }
     }
     return refreeze;
+  }
+
+  public static void freezeBalance(byte[] ownerAddress, long stage, long balance, long expireTime, boolean isPhoton, AccountFrozenStageResourceStore accountFrozenStageResourceStore) {
+    byte[] key = createDbKey(ownerAddress, stage);
+    AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+    if (capsule == null) {
+      capsule = new AccountFrozenStageResourceCapsule(ownerAddress, stage);
+      if(isPhoton){
+        capsule.setFrozenBalanceForPhoton(balance, expireTime);
+      } else {
+        capsule.setFrozenBalanceForEntropy(balance, expireTime);
+      }
+    } else {
+      if(isPhoton) {
+        capsule.addFrozenBalanceForPhoton(balance, expireTime);
+      } else {
+        capsule.addFrozenBalanceForEntropy(balance, expireTime);
+      }
+    }
+    accountFrozenStageResourceStore.put(key, capsule);
   }
 
   @Override
