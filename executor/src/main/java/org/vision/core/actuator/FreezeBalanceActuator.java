@@ -667,7 +667,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
       expireTime = now + stage.getStage() * 180000L;
       long balance = stage.getFrozenBalance();
       if (stage.getStage() == 1L) {
-        balance += frozenBalance + account.getFrozenBalance();
+        if (isPhoton) {
+          balance += frozenBalance + account.getFrozenBalance();
+        } else {
+          balance += frozenBalance + account.getEntropyFrozenBalance();
+        }
       }
       AccountFrozenStageResourceCapsule.freezeBalance(
           ownerAddress,
@@ -679,17 +683,26 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     Set<Long> stagesKey = stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toSet());
-    if (!stagesKey.contains(1L) && (account.getFrozenBalance() + frozenBalance) > 0) {
+    if (!stagesKey.contains(1L)) {
       long expireTime = account.getFrozenExpireTime();
+      if (!isPhoton) {
+        expireTime = account.getEntropyFrozenExpireTime();
+      }
       if (frozenBalance > 0) {
         expireTime = now + stageWeight.get(1L).get(0) * FROZEN_PERIOD;
         expireTime = now + 180000L;
       }
 
+      long balance = frozenBalance;
+      if (isPhoton) {
+        balance += account.getFrozenBalance();
+      } else {
+        balance += account.getEntropyFrozenBalance();
+      }
       AccountFrozenStageResourceCapsule.freezeBalance(
           ownerAddress,
           1L,
-          account.getFrozenBalance() + frozenBalance,
+          balance,
           expireTime,
           isPhoton,
           accountFrozenStageResourceStore);

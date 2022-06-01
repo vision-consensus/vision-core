@@ -109,6 +109,40 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
     accountFrozenStageResourceStore.put(key, capsule);
   }
 
+  public static long getTotalStageBalanceForPhoton(byte[] ownerAddress, long ignoreStage, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
+    long result = 0L;
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      if (entry.getKey() == ignoreStage) {
+        continue;
+      }
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0) {
+        continue;
+      }
+      result += capsule.getInstance().getFrozenBalanceForPhoton();
+    }
+    return result;
+  }
+
+  public static long getTotalStageBalanceForEntropy(byte[] ownerAddress, long ignoreStage, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
+    long result = 0L;
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      if (entry.getKey() == ignoreStage) {
+        continue;
+      }
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0) {
+        continue;
+      }
+      result += capsule.getInstance().getFrozenBalanceForEntropy();
+    }
+    return result;
+  }
+
   @Override
   public byte[] getData() {
     return this.accountFrozenStageResource.toByteArray();

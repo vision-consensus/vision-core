@@ -552,7 +552,18 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             }
           }
 
-          for (Long stage : unfreezeBalanceContract.getStagesList()) {
+          List<Long> stageList = new ArrayList<>();
+          if (unfreezeBalanceContract.getStagesCount() == 0) {
+            long totalStageBalance = AccountFrozenStageResourceCapsule.getTotalStageBalanceForPhoton(ownerAddress, 1L, accountFrozenStageResourceStore, dynamicStore);
+            if (accountCapsule.getFrozenBalance() - totalStageBalance == 0) {
+              throw new ContractValidateException("no frozenBalance(PHOTON)");
+            }
+            stageList.add(1L);
+          } else {
+            stageList.addAll(unfreezeBalanceContract.getStagesList());
+          }
+
+          for (Long stage : stageList) {
             byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
             AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
             if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForPhoton() == 0) {
