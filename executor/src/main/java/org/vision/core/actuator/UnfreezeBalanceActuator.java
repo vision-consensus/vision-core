@@ -607,7 +607,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (unfreezeBalanceContract.getStagesCount() == 0) {
             long totalStageBalance = AccountFrozenStageResourceCapsule.getTotalStageBalanceForEntropy(ownerAddress, 1L, accountFrozenStageResourceStore, dynamicStore);
             if (accountCapsule.getEntropyFrozenBalance() - totalStageBalance == 0) {
-              throw new ContractValidateException("no frozenBalance(PHOTON)");
+              throw new ContractValidateException("no frozenBalance(Entropy)");
             }
             stageList.add(1L);
           } else {
