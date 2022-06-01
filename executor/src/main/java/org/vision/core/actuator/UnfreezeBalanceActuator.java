@@ -178,7 +178,13 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           }
 
           if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            for (Long stage : unfreezeBalanceContract.getStagesList()) {
+            List<Long> stageList = new ArrayList<>();
+            if (unfreezeBalanceContract.getStagesCount() == 0) {
+              stageList.add(1L);
+            } else {
+              stageList.addAll(unfreezeBalanceContract.getStagesList());
+            }
+            for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               dynamicStore
@@ -230,7 +236,13 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           AccountResource newAccountResource = accountCapsule.getAccountResource().toBuilder()
               .clearFrozenBalanceForEntropy().build();
           if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            for (Long stage : unfreezeBalanceContract.getStagesList()) {
+            List<Long> stageList = new ArrayList<>();
+            if (unfreezeBalanceContract.getStagesCount() == 0) {
+              stageList.add(1L);
+            } else {
+              stageList.addAll(unfreezeBalanceContract.getStagesList());
+            }
+            for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               dynamicStore
@@ -591,7 +603,18 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(Entropy).");
           }
 
-          for (Long stage : unfreezeBalanceContract.getStagesList()) {
+          stageList = new ArrayList<>();
+          if (unfreezeBalanceContract.getStagesCount() == 0) {
+            long totalStageBalance = AccountFrozenStageResourceCapsule.getTotalStageBalanceForEntropy(ownerAddress, 1L, accountFrozenStageResourceStore, dynamicStore);
+            if (accountCapsule.getEntropyFrozenBalance() - totalStageBalance == 0) {
+              throw new ContractValidateException("no frozenBalance(PHOTON)");
+            }
+            stageList.add(1L);
+          } else {
+            stageList.addAll(unfreezeBalanceContract.getStagesList());
+          }
+
+          for (Long stage : stageList) {
             byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
             AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
             if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForEntropy() == 0) {
