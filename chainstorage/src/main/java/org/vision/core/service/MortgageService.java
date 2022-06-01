@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
+import org.vision.common.utils.Commons;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.SpreadRelationShipCapsule;
@@ -452,6 +453,8 @@ public class MortgageService {
 
       if (dynamicPropertiesStore.getSMBurnOptimization() == 1L) {
         dynamicPropertiesStore.burnSpreadAmount(spreadReward - reallyReward);
+      } else {
+        Commons.adjustBalance(accountStore, accountStore.getSingularity(), Math.max(spreadReward - reallyReward, 0));
       }
     }catch (Exception e){
       logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
