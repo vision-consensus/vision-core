@@ -3170,6 +3170,16 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(0L);
   }
 
+  public void saveSMBurnOptimization(Long value) {
+    this.put(DynamicResourceProperties.SM_BURN_OPTIMIZATION, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getSMBurnOptimization() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SM_BURN_OPTIMIZATION))
+        .map(BytesCapsule::getData)
+        .map(ByteArray::toLong)
+        .orElse(0L);
+  }
 
   private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
@@ -3222,6 +3232,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
     public static final byte[] REFREEZE_CONSIDERATION_PERIOD = "REFREEZE_CONSIDERATION_PERIOD".getBytes();
     public static final byte[] SPREAD_REFREEZE_CONSIDERATION_PERIOD = "SPREAD_REFREEZE_CONSIDERATION_PERIOD".getBytes();
+    public static byte[] SM_BURN_OPTIMIZATION = "SM_BURN_OPTIMIZATION".getBytes();
     private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
     private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT".getBytes();
@@ -3234,7 +3245,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE3_ENTROPY_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
-
   }
 
 }

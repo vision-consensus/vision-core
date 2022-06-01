@@ -269,6 +269,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowSpreadMintParticipatePledgeRate(entry.getValue());
           break;
         }
+        case SM_BURN_OPTIMIZATION: {
+          manager.getDynamicPropertiesStore().saveSMBurnOptimization(entry.getValue());
+          break;
+        }
         case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
           manager.getDynamicPropertiesStore().saveAllowVPFreezeStageWeight(entry.getValue());
           break;

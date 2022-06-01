@@ -405,6 +405,13 @@ public class ProposalUtil {
         }
         break;
       }
+      case SM_BURN_OPTIMIZATION: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+              "This value[SM_BURN_OPTIMIZATION] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       case REFREEZE_CONSIDERATION_PERIOD: {
         if (value <= 0 || value > 30) {
           throw new ContractValidateException(
@@ -611,10 +618,11 @@ public class ProposalUtil {
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
     ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
-    ALLOW_VP_FREEZE_STAGE_WEIGHT(57), // 0,1
-    VP_FREEZE_STAGE_WEIGHT(58), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
-    REFREEZE_CONSIDERATION_PERIOD(59),//[1,30]
-    SPREAD_REFREEZE_CONSIDERATION_PERIOD(60);
+    SM_BURN_OPTIMIZATION(57),// 0,1
+    ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
+    VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
+    REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
+    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61);
 
     private long code;
 
