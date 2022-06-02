@@ -453,8 +453,9 @@ public class MortgageService {
 
       if (dynamicPropertiesStore.getSMBurnOptimization() == 1L) {
         dynamicPropertiesStore.burnSpreadAmount(spreadReward - reallyReward);
-      } else {
-        Commons.adjustBalance(accountStore, accountStore.getSingularity(), Math.max(spreadReward - reallyReward, 0));
+        if (!dynamicPropertiesStore.supportBlackHoleOptimization()) {
+          Commons.adjustBalance(accountStore, accountStore.getSingularity(), Math.max(spreadReward - reallyReward, 0));
+        }
       }
     }catch (Exception e){
       logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
