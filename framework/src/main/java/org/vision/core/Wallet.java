@@ -1161,6 +1161,10 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintParticipatePledgeRate())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSMBurnOptimization")
+            .setValue(dbManager.getDynamicPropertiesStore().getSMBurnOptimization())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getRefreezeConsiderationPeriod")
             .setValue(dbManager.getDynamicPropertiesStore().getRefreezeConsiderationPeriod())
             .build());
