@@ -432,7 +432,7 @@ public class MortgageService {
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
-      long reallyReward = 0L;
+      long reallyReward = (long)(spreadReward * (props[0] / 100.0));
       for (int i = 1; i < props.length; i++) {
         SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
         if (spreadRelationShipCapsule == null){

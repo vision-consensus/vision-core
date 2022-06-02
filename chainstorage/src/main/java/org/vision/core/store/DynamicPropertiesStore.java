@@ -3156,6 +3156,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         .orElse(3L);
   }
 
+  public long getSpreadRefreezeConsiderationPeriodResult() {
+    //return getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+    return 300_000L;
+  }
+
   public void burnSpreadAmount(long amount) {
     if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
@@ -3178,7 +3183,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SM_BURN_OPTIMIZATION))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(0L);
+        .orElse(1L);
   }
 
   private static class DynamicResourceProperties {

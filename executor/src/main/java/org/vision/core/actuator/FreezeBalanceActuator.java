@@ -311,6 +311,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
           if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
             throw new ContractValidateException("frozenBalance must be more than 1VS");
           }
+          if (frozenBalance == 0 && freezeBalanceContract.getFreezeBalanceStageCount() == 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
+          }
           for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
             if (stage.getFrozenBalance() <= 0) {
               throw new ContractValidateException("frozenBalance must be positive");

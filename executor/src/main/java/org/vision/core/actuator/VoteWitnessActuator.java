@@ -178,13 +178,6 @@ public class VoteWitnessActuator extends AbstractActuator {
       }
       if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
         voteCount = (long) (voteCount * (accountCapsule.getFrozenStageWeightMerge() * 1.0 / 100L));
-
-        AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-            accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
-
-        SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
-            accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
-
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
       accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);

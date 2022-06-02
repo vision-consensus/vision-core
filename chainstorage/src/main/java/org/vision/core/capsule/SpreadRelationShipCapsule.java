@@ -43,7 +43,7 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
 
   public static boolean dealSpreadReFreezeConsideration(AccountCapsule accountCapsule, SpreadRelationShipStore spreadRelationShipStore, DynamicPropertiesStore dynamicStore) {
     byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
-    long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
+    long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriodResult();
     long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
     long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();

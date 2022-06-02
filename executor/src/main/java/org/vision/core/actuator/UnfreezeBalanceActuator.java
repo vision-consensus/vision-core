@@ -163,12 +163,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     } else {
       Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
       AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+      long now = dynamicStore.getLatestBlockHeaderTimestamp();
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
           List<Frozen> frozenList = Lists.newArrayList();
           frozenList.addAll(accountCapsule.getFrozenList());
           Iterator<Frozen> iterator = frozenList.iterator();
-          long now = dynamicStore.getLatestBlockHeaderTimestamp();
           while (iterator.hasNext()) {
             Frozen next = iterator.next();
             if (next.getExpireTime() <= now) {
@@ -187,6 +187,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (stage!=1L &&
+                  capsule.getInstance().getExpireTimeForPhoton() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
+                continue;
+              }
               dynamicStore
                   .addTotalStagePhotonWeight(Collections.singletonList(stage),
                       -capsule.getInstance().getFrozenBalanceForPhoton() / VS_PRECISION);
@@ -198,9 +202,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-              if (entry.getKey() == 1L) {
-                continue;
-              }
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0L) {
@@ -245,6 +246,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (stage!=1L &&
+                  capsule.getInstance().getExpireTimeForEntropy() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
+                continue;
+              }
               dynamicStore
                   .addTotalStageEntropyWeight(Collections.singletonList(stage),
                       -capsule.getInstance().getFrozenBalanceForEntropy() / VS_PRECISION);
@@ -256,9 +261,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-              if (entry.getKey() == 1L) {
-                continue;
-              }
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
               AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
               if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {
@@ -585,11 +587,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
               throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage);
             }
-
-            long period = dynamicStore.getRefreezeConsiderationPeriodResult();
-            if (stageCapsule.getInstance().getExpireTimeForPhoton() < now - period) {
-              throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: "+stage+", or out of the refreeze consideration period");
-            }
           }
           break;
         case ENTROPY:
@@ -624,11 +621,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
               throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage);
             }
-
-            long period = dynamicStore.getRefreezeConsiderationPeriodResult();
-            if (stageCapsule.getInstance().getExpireTimeForEntropy() < now - period) {
-              throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage + ", or out of the refreeze consideration period");
-            }
           }
           break;
         case FVGUARANTEE:
@@ -650,11 +642,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
           if (frozenBalanceForSpread.getExpireTime() > now) {
             throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
-          }
-
-          long consider = dynamicStore.getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-          if (frozenBalanceForSpread.getExpireTime() < now - consider) {
-            throw new ContractValidateException("It's not time to unfreeze(SpreadMint), or out of the refreeze consideration period");
           }
           break;
         default:
