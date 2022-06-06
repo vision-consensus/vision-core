@@ -2891,7 +2891,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
-            .orElse(1L);
+            .orElse(0L);
   }
 
   public void saveVPFreezeStageWeight(String value) {
