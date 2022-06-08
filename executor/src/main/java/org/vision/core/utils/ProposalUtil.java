@@ -413,6 +413,9 @@ public class ProposalUtil {
         break;
       }
       case REFREEZE_CONSIDERATION_PERIOD: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [REFREEZE_CONSIDERATION_PERIOD]");
+        }
         if (value <= 0 || value > 30) {
           throw new ContractValidateException(
               "Bad REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
@@ -420,6 +423,9 @@ public class ProposalUtil {
         break;
       }
       case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_VP_FREEZE_STAGE_WEIGHT]");
+        }
         if (value != 1 ) {
           throw new ContractValidateException(
                   "This value[ALLOW_VP_FREEZE_STAGE_WEIGHT] is only allowed to be 1");
@@ -427,6 +433,9 @@ public class ProposalUtil {
         break;
       }
       case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [SPREAD_REFREEZE_CONSIDERATION_PERIOD]");
+        }
         if (value <= 0 || value > 30) {
           throw new ContractValidateException(
               "Bad SPREAD_REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
@@ -498,6 +507,9 @@ public class ProposalUtil {
         break;
       }
       case VP_FREEZE_STAGE_WEIGHT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [VP_FREEZE_STAGE_WEIGHT]");
+        }
         String[] stageWeights = value.split(";");
         int stageLen = 5;
         if (stageWeights.length != stageLen) {
