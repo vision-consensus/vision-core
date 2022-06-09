@@ -235,7 +235,7 @@ public class Args extends CommonParameter {
         List<String> localwitness = config.getStringList(Constant.LOCAL_WITNESS_KEYSTORE);
         if (localwitness.size() > 0) {
           for (int keyStoreIndex = 0; keyStoreIndex < localwitness.size(); keyStoreIndex++) {
-            String fileName = System.getProperty("user.dir") + "/" + localwitness.get(0);
+            String fileName = System.getProperty("user.dir") + "/" + localwitness.get(keyStoreIndex);
             String password;
             if (StringUtils.isEmpty(PARAMETER.password)) {
               System.out.println("Please input your password.");
