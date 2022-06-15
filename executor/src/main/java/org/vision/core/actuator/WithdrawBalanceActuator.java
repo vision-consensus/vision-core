@@ -9,18 +9,23 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
+import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
+import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
+import org.vision.core.store.AccountFrozenStageResourceStore;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.SpreadRelationShipStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
@@ -83,6 +88,14 @@ public class WithdrawBalanceActuator extends AbstractActuator {
       ret.setWithdrawAmount(withdrawAmount);
     }else{
       ret.setWithdrawAmount(allowance);
+    }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+          accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
+
+      SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
+          accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
     }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
