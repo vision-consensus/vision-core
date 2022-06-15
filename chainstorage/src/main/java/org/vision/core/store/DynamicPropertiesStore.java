@@ -3183,7 +3183,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SM_BURN_OPTIMIZATION))
         .map(BytesCapsule::getData)
         .map(ByteArray::toLong)
-        .orElse(1L);
+        .orElse(0L);
   }
 
   private static class DynamicResourceProperties {
