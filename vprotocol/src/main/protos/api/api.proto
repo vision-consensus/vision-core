@@ -68,6 +68,26 @@ service Wallet {
     };
   };
 
+  rpc GetAccountFrozenStageResource (AccountFrozenStageResourceParameter) returns (AccountFrozenStageResourceMessage) {
+    option (google.api.http) = {
+      post: "/wallet/getaccountfrozenstageresource"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/getaccountfrozenstageresource"
+      }
+    };
+  };
+
+  rpc GetAccountFrozenShowStageResource (AccountFrozenStageResourceParameter) returns (AccountFrozenStageResourceMessage) {
+    option (google.api.http) = {
+      post: "/wallet/getaccountfrozenshowstageresource"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/getaccountfrozenshowstageresource"
+      }
+    };
+  };
+
   //Please use CreateTransaction2 instead of this function.
   rpc CreateTransaction (TransferContract) returns (Transaction) {
     option (google.api.http) = {
@@ -789,6 +809,7 @@ service Wallet {
 
   rpc GetBurnVs (EmptyMessage) returns (NumberMessage) {
   }
+
 };
 
 service WalletSolidity {
@@ -1163,6 +1184,11 @@ message AccountPhotonMessage {
   map<string, int64> assetPhotonLimit = 6;
   int64 TotalPhotonLimit = 7;
   int64 TotalPhotonWeight = 8;
+  int64 totalStage1PhotonWeight = 9;
+  int64 totalStage2PhotonWeight = 10;
+  int64 totalStage3PhotonWeight = 11;
+  int64 totalStage4PhotonWeight = 12;
+  int64 totalStage5PhotonWeight = 13;
 }
 message AccountResourceMessage {
   int64 freePhotonUsed = 1;
@@ -1184,6 +1210,17 @@ message AccountResourceMessage {
 
   int64 TotalFVGuaranteeWeight = 27;
   int64 TotalSpreadWeight = 32;
+  int64 totalStage1PhotonWeight = 33;
+  int64 totalStage2PhotonWeight = 34;
+  int64 totalStage3PhotonWeight = 35;
+  int64 totalStage4PhotonWeight = 36;
+  int64 totalStage5PhotonWeight = 37;
+  int64 totalStage1EntropyWeight = 38;
+  int64 totalStage2EntropyWeight = 39;
+  int64 totalStage3EntropyWeight = 40;
+  int64 totalStage4EntropyWeight = 41;
+  int64 totalStage5EntropyWeight = 42;
+
 }
 
 message PaginatedMessage {
@@ -1540,4 +1577,22 @@ message ShieldedVRC20TriggerContractParameters {
   repeated BytesMessage spend_authority_signature = 2;
   string amount = 3;
   bytes transparent_to_address = 4;
+}
+
+message AccountFrozenStageResourceParameter {
+  bytes address = 1;
+}
+message AccountFrozenStageResourceMessage {
+  message FrozenStage {
+    int64 stage = 1;
+    int64 frozen_balance_for_photon = 3;
+    int64 frozen_balance_for_entropy = 4;
+    int64 expire_time_for_photon = 5;
+    int64 expire_time_for_entropy = 6;
+  }
+  repeated FrozenStage stages = 1;
+  int64 frozen_balance_for_photon = 2;
+  int64 frozen_balance_for_entropy = 3;
+  int64 delegated_frozen_balance_for_photon = 4;
+  int64 delegated_frozen_balance_for_entropy = 5;
 }

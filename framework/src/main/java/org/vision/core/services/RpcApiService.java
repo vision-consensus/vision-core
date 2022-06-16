@@ -11,6 +11,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.Getter;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1875,10 +1876,25 @@ public class RpcApiService implements Service {
       responseObserver.onCompleted();
     }
 
+    @Override
     public void getSpreadMintParent(SpreadRelationShipMessage request,
                                     StreamObserver<SpreadRelationShipList> responseObserver) {
       responseObserver
               .onNext(wallet.getSpreadMintParentList(request.getOwnerAddress().toByteArray(), request.getLevel()));
+      responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAccountFrozenStageResource(AccountFrozenStageResourceParameter request,
+                                              StreamObserver<AccountFrozenStageResourceMessage> responseObserver) {
+      responseObserver.onNext(wallet.getAccountFrozenStageResource(request.getAddress()));
+      responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAccountFrozenShowStageResource(AccountFrozenStageResourceParameter request,
+                                                  StreamObserver<AccountFrozenStageResourceMessage> responseObserver) {
+      responseObserver.onNext(wallet.getAccountFrozenShowStageResource(request.getAddress()));
       responseObserver.onCompleted();
     }
 
@@ -2541,6 +2557,7 @@ public class RpcApiService implements Service {
       }
       responseObserver.onCompleted();
     }
+
   }
 
   public class MonitorApi extends MonitorGrpc.MonitorImplBase {

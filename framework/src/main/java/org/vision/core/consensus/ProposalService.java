@@ -269,6 +269,22 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowSpreadMintParticipatePledgeRate(entry.getValue());
           break;
         }
+        case SM_BURN_OPTIMIZATION: {
+          manager.getDynamicPropertiesStore().saveSMBurnOptimization(entry.getValue());
+          break;
+        }
+        case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
+          manager.getDynamicPropertiesStore().saveAllowVPFreezeStageWeight(entry.getValue());
+          break;
+        }
+        case REFREEZE_CONSIDERATION_PERIOD: {
+          manager.getDynamicPropertiesStore().saveRefreezeConsiderationPeriod(entry.getValue());
+          break;
+        }
+        case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
+          manager.getDynamicPropertiesStore().saveSpreadRefreezeConsiderationPeriod(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
@@ -292,6 +308,10 @@ public class ProposalService extends ProposalUtil {
           long highInflationRate = Long.parseLong(entry.getValue().split(",")[1]);
           manager.getDynamicPropertiesStore().saveLowInflationRate(lowInflationRate);
           manager.getDynamicPropertiesStore().saveHighInflationRate(highInflationRate);
+          break;
+        }
+        case VP_FREEZE_STAGE_WEIGHT: {
+          manager.getDynamicPropertiesStore().saveVPFreezeStageWeight(entry.getValue());
           break;
         }
         default:

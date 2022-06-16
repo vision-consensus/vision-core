@@ -6,7 +6,8 @@ public class Parameter {
 
   public enum ForkBlockVersionEnum {
     ENTROPY_LIMIT(5, 0L, 0),
-    VERSION_1_0_0(20, 0L, 0);
+    VERSION_1_0_0(20, 0L, 0),
+    VERSION_1_2_0(21, 1654444800000L, 80);//GMT 2022-06-06 00:00:00, 80 means 22 FV upgrade
 
     @Getter
     private int value;

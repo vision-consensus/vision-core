@@ -180,6 +180,10 @@ public class ChainBaseManager {
   @Setter
   private TreeBlockIndexStore merkleTreeIndexStore;
 
+  @Autowired
+  @Getter
+  private AccountFrozenStageResourceStore accountFrozenStageResourceStore;
+
   public void closeOneStore(IVisionChainBase database) {
     logger.info("******** begin to close " + database.getName() + " ********");
     try {
@@ -224,6 +228,7 @@ public class ChainBaseManager {
     closeOneStore(commonDataBase);
     closeOneStore(pbftSignDataStore);
     closeOneStore(sectionBloomStore);
+    closeOneStore(accountFrozenStageResourceStore);
   }
 
   // for test only

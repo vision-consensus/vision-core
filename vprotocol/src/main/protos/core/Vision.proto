@@ -220,6 +220,7 @@ message Account {
   repeated Permission active_permission = 33;
 
   int64 spread_mint_allowance = 34;
+  int64 frozen_stage_weight_merge = 35;
 }
 
 
@@ -231,6 +232,15 @@ message Key {
 message DelegatedResource {
   bytes from = 1;
   bytes to = 2;
+  int64 frozen_balance_for_photon = 3;
+  int64 frozen_balance_for_entropy = 4;
+  int64 expire_time_for_photon = 5;
+  int64 expire_time_for_entropy = 6;
+}
+
+message AccountFrozenStageResource {
+  bytes address = 1;
+  int64 stage = 2;
   int64 frozen_balance_for_photon = 3;
   int64 frozen_balance_for_entropy = 4;
   int64 expire_time_for_photon = 5;
