@@ -45,6 +45,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     final FreezeBalanceContract freezeBalanceContract;
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     try {
       freezeBalanceContract = any.unpack(FreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
@@ -79,7 +80,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
     }
 
-    long expireTime = now + 180000L;
+    long expireTime = now + duration;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
@@ -652,7 +653,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
     long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
     for (FreezeBalanceStage stage : stages) {
       long expireTime = now + stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
-      expireTime = now + stage.getStage() * 180000L;
       long balance = stage.getFrozenBalance();
       if (stage.getStage() == 1L) {
         if (isPhoton) {
@@ -690,7 +690,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
       if (frozenBalance > 0) {
         expireTime = now + stageWeight.get(1L).get(0) * FROZEN_PERIOD;
-        expireTime = now + 180000L;
       }
 
       long balance = frozenBalance;

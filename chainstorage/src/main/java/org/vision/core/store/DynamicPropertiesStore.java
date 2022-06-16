@@ -2938,8 +2938,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public Long getRefreezeConsiderationPeriodResult() {
-    //return getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-    return 600_000L;
+    return getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
   }
 
   public void saveAllowVPFreezeStageWeight(Long value) {
@@ -3217,8 +3216,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public long getSpreadRefreezeConsiderationPeriodResult() {
-    //return getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-    return 300_000L;
+    return getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
   }
 
   public void burnSpreadAmount(long amount) {
