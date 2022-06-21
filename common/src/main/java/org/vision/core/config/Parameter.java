@@ -121,4 +121,47 @@ public class Parameter {
     public static final int ENTROPY_LIMIT = 5;
   }
 
+  public class NativeTransactionContractAbi {
+    public static final String TRANSACTION_CONTRACT_ADDRESS = "VP79PCA81j1zx76qvj2Yfqw2KuyQFZyk2m";
+    public static final String TRANSACTION_CONTRACT_ADDRESS_ETH = "0x8888888888888888888888888888888888888888"; // 0x8888888888888888888888888888888888888888
+    public static final int TRANSACTION_FUNCTION_SELECTOR_LENGTH = 8;
+    public static final int VALUE_SIZE = 64;
+
+    /**·
+     function voteWitness(address[] memory target, uint256[] memory count) public returns (bytes32){
+     return keccak256(abi.encodePacked("dovote(address[],uint256[])"));
+     }
+
+     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint8 resource, address receiver_address) public returns (bool){
+     return true;
+     }
+
+     function unfreezeBalance(uint8 resource, address receiver_address) public returns (bool){
+     return true;
+     }
+
+     function withdrawBalance(uint8 withdraw_type) public returns (bool){
+     return true;
+     }
+
+     function getReward() public returns(uint256, uint256){
+     return (0,0);
+     }
+     */
+    public static final String VoteWitness = "voteWitness(address[],uint256[])";                 // df126771 25a795121eec67426870e1259d4149d8ce2f8f61a6106718d2932ae8
+    public static final String VoteWitness_FunctionSelector = "df126771";
+
+    public static final String FreezeBalance = "freezeBalance(uint256,uint256,uint256,address)";   // c3718670 0a91520cc9a15363af6c66d096179e66e77cb1d1bb45547b2c4ff2d5
+    public static final String FreezeBalance_FunctionSelector = "c3718670";
+
+    public static final String UnfreezeBalance = "unfreezeBalance(uint256,address)";               // 62a60984 ef1f973ed2e0aad55d8777225b517dea86fa6a4396eaea0c6f4a0076
+    public static final String UnfreezeBalance_FunctionSelector = "62a60984";
+
+    public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
+    public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
+
+    public static final String GetReward = "getReward()";                                         // 3d18b912 414e03e11f8639a2ba6d0a824d0c79a512536b3b2fc173f05201421d
+    public static final String GetReward_FunctionSelector = "3d18b912";
+  }
+
 }

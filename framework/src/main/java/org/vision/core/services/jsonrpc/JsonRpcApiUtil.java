@@ -10,8 +10,11 @@ import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
 import org.vision.core.Wallet;
+import org.vision.core.capsule.TransactionCapsule;
+import org.vision.core.exception.ContractValidateException;
 import org.vision.core.exception.JsonRpcInvalidParamsException;
 import org.vision.core.services.EthereumCompatibleService;
+import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.TransactionInfo;
@@ -26,11 +29,13 @@ import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 
+import org.vision.core.config.Parameter.NativeTransactionContractAbi;
+
 import java.util.List;
+import java.util.Map;
 
 @Slf4j(topic = "API")
 public class JsonRpcApiUtil {
-
   public static long getByJsonBlockId(String blockNumOrTag) throws JsonRpcInvalidParamsException {
     if (EthereumCompatibleService.PENDING_STR.equalsIgnoreCase(blockNumOrTag)) {
       throw new JsonRpcInvalidParamsException("TAG pending not supported");
@@ -294,6 +299,96 @@ public class JsonRpcApiUtil {
 
   public static String getTxID(Transaction transaction) {
     return ByteArray.toHexString(Sha256Hash.hash(true, transaction.getRawData().toByteArray()));
+  }
+
+
+  public static Transaction parseEvmTransactionData(TransactionCapsule.EthTrx ethTrx, Wallet wallet)
+          throws ContractValidateException, JsonRpcInvalidParamsException {
+    String data = ethTrx.parseData();
+    if (StringUtils.isEmpty(data)){
+      return null;
+    }
+
+    TransactionCapsule trxCap = null;
+    String functionSelector = data.substring(0, NativeTransactionContractAbi.TRANSACTION_FUNCTION_SELECTOR_LENGTH);
+    String dataValue = data.substring(NativeTransactionContractAbi.TRANSACTION_FUNCTION_SELECTOR_LENGTH);
+
+    int valueSize = NativeTransactionContractAbi.VALUE_SIZE;
+    switch (functionSelector){
+      case NativeTransactionContractAbi.VoteWitness_FunctionSelector:
+        int voteAddressArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, valueSize)));
+        int voteCountArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(64, 64 + valueSize)));
+        long voteAddressArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + valueSize)));
+        long voteCountArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + valueSize)));
+        if (voteAddressArraySize != voteCountArraySize){
+          throw new JsonRpcInvalidParamsException("The size of voteAddress does not match the number of voteCount ");
+        }
+
+        VoteWitnessContract.Builder buildVoter = ethTrx.rlpParseToVoteWitnessContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(buildVoter.build(), ContractType.VoteWitnessContract);
+        break;
+      case NativeTransactionContractAbi.FreezeBalance_FunctionSelector:
+        FreezeBalanceContract.Builder builderFreeze = ethTrx.rlpParseToFreezeBalanceContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderFreeze.build(), ContractType.FreezeBalanceContract);
+        break;
+      case NativeTransactionContractAbi.UnfreezeBalance_FunctionSelector:
+        UnfreezeBalanceContract.Builder build1 = ethTrx.rlpParseToUnfreezeBalanceContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(build1.build(), ContractType.UnfreezeBalanceContract);
+        break;
+      case NativeTransactionContractAbi.WithdrawBalance_FunctionSelector:
+        WithdrawBalanceContract.Builder buildWithdraw = ethTrx.rlpParseToWithdrawBalanceContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(buildWithdraw.build(), ContractType.WithdrawBalanceContract);
+        break;
+      default:
+    }
+    if (trxCap == null){
+      return null;
+    }
+
+    Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
+    Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
+    txBuilder.setRawData(rawBuilder);
+    txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
+
+    return txBuilder.build();
+  }
+
+  /**
+   * evm call vision-core native method
+   * @return
+   */
+  public static String parseEvmCallTransactionData(String data, String fromAddress, ChainBaseManager chainBaseManager){
+    if (StringUtils.isEmpty(data) || data.length() < 8){
+      return null;
+    }
+
+    if (data.contains("0x")){
+      data = data.substring(2);
+    }
+
+    String functionSelector = data.substring(0, 8);
+    if (NativeTransactionContractAbi.GetReward_FunctionSelector.equals(functionSelector)) {
+      Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(fromAddress));
+      DataWord reward = new DataWord(rewardMap.get("reward"));
+      DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
+      return ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
+    }
+
+    return null;
+  }
+
+  /**
+   * validate to is or not 0x8888888888888888888888888888888888888888
+   * @param contractAddress contract_address
+   * @return bool
+   */
+  public static boolean validateContractAddress(String contractAddress){
+    if (StringUtils.isEmpty(contractAddress)){
+      return false;
+    }
+
+    contractAddress = contractAddress.contains("0x") ? contractAddress : "0x" + contractAddress;
+    return NativeTransactionContractAbi.TRANSACTION_CONTRACT_ADDRESS_ETH.equals(contractAddress);
   }
 
 }

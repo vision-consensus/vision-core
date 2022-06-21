@@ -7,11 +7,6 @@ import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class ProposalUtil {
 
   protected static final long LONG_VALUE = 100_000_000_000_000_000L;
@@ -442,6 +437,16 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1]");
+        }
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1] is only allowed to be 1 or 0");
+        }
+        break;
+      }
       default:
         break;
     }
@@ -634,7 +639,8 @@ public class ProposalUtil {
     ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
     VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
     REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
-    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61);
+    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
+    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62);
 
     private long code;
 
