@@ -1582,7 +1582,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
 
       String dataValue = data.substring(8);
-      long withdraw_type = dataValue.length() >= 64 ? ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, 64))) : 0L;
+      long withdraw_type = dataValue.length() >= VALUE_SIZE ? ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))) : 0L;
       build.setType(withdraw_type == 1L ? WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT : WithdrawBalanceContract.WithdrawBalanceType.ALL);
 
       build.setRlpType(1);
@@ -1645,12 +1645,12 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
 
       String dataValue = data.substring(8);
-      if (dataValue.length() >= 256){ // four parameter // freezeBalance(uint256,uint256,uint256,address)
-        build.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, 64))));
-        build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(64, 128))));
-        build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(128, 192))));
+      if (dataValue.length() >= VALUE_SIZE * 4){ // four parameter // freezeBalance(uint256,uint256,uint256,address)
+        build.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))));
+        build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2))));
+        build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3))));
 
-        String receiverAddress = dataValue.substring(192, 256).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        String receiverAddress = dataValue.substring(VALUE_SIZE * 3, VALUE_SIZE * 4).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
         if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
           build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
         }else {
@@ -1659,7 +1659,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           }
         }
 
-        if (dataValue.length() > 256) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
+        if (dataValue.length() > VALUE_SIZE * 4) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
           int stageIndex = VALUE_SIZE * 4;
           int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
 
@@ -1699,13 +1699,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
       String dataValue = data.substring(8);
 
-      int resource = dataValue.length() > 0 ? ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, 64))) : 0;
+      int resource = dataValue.length() > 0 ? ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))) : 0;
       build.setResourceValue(resource);
 
-      if (dataValue.length() >= 128){ // unfreezeBalance(uint256,address)
-        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(64, 128))));
-        if (dataValue.length() >= 192){ // unfreezeBalance(uint256,address,uint256[])
-          int stageIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(128, 128 + VALUE_SIZE)));
+      if (dataValue.length() >= VALUE_SIZE * 2){ // unfreezeBalance(uint256,address)
+        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2))));
+        if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
+          int stageIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3)));
           int index = 0;
           int startIndex, endIndex;
           while (index < stageIndex){
