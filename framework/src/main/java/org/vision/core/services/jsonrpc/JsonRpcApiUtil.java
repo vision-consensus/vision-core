@@ -9,6 +9,7 @@ import org.vision.api.GrpcAPI;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
+import org.vision.core.Constant;
 import org.vision.core.Wallet;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.exception.ContractValidateException;
@@ -33,6 +34,8 @@ import org.vision.core.config.Parameter.NativeTransactionContractAbi;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.vision.core.capsule.TransactionCapsule.EthTrx.ADDRESS_PREFIX_0;
 
 @Slf4j(topic = "API")
 public class JsonRpcApiUtil {
@@ -362,7 +365,7 @@ public class JsonRpcApiUtil {
    * evm call vision-core native method
    * @return
    */
-  public static String parseEvmCallTransactionData(String data, String fromAddress, ChainBaseManager chainBaseManager){
+  public static String parseEvmCallTransactionData(String data, ChainBaseManager chainBaseManager){
     if (StringUtils.isEmpty(data) || data.length() < 8){
       return null;
     }
@@ -373,7 +376,9 @@ public class JsonRpcApiUtil {
 
     String functionSelector = data.substring(0, 8);
     if (NativeTransactionContractAbi.GetReward_FunctionSelector.equals(functionSelector)) {
-      Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(fromAddress));
+      String address = data.substring(8);
+      address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+      Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
       DataWord reward = new DataWord(rewardMap.get("reward"));
       DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
       return ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());

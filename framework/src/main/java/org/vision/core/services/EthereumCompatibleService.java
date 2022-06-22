@@ -392,7 +392,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (e.getMessage() != null) {
                 errString = e.getMessage().replaceAll("[\"]", "\'");
             }
-            return errString;
+            if (StringUtils.isNotEmpty(errString)){
+                return ByteArray.toJsonHex(ByteArray.fromString(errString));
+            }
+            return null;
         }
         String trxHash = ByteArray.toJsonHex(transactionCapsule.getTransactionId().getBytes());
         logger.info("trxHash={}", trxHash);
@@ -407,8 +410,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         try {
             if (chainBaseManager.getDynamicPropertiesStore().supportEthereumCompatibleTransactionNativeStep1()){
                 if (JsonRpcApiUtil.validateContractAddress(args.getTo())){
-                    String from = getAddressFromEth(args.getFrom());
-                    return JsonRpcApiUtil.parseEvmCallTransactionData(args.getData(), from, chainBaseManager);
+                    return JsonRpcApiUtil.parseEvmCallTransactionData(args.getData(), chainBaseManager);
                 }
             }else {
                 if(JsonRpcApiUtil.validateContractAddress(args.getTo())){

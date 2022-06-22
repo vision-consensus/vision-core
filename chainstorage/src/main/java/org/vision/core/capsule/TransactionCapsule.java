@@ -346,37 +346,85 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
   }
 
-  public byte[] getEthRlpData(){
+  public byte[] getEthRlpData(DynamicPropertiesStore dynamicPropertiesStore){
     if (this.ethRlpData != null){
       return this.ethRlpData;
     }
 
     try {
       Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
-      if (contract.getType() == ContractType.TriggerSmartContract) {
-        TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
-        }
+
+      switch (contract.getType()){
+        case CreateSmartContract: getCreateSmartContractRlpData(); break;
+        case TriggerSmartContract: getTriggerSmartContractRlpData(); break;
+        case TransferContract: getTransferContractRlpData(); break;
+        default:
+          break;
       }
 
-      if (contract.getType() == ContractType.TransferContract) {
-        TransferContract c = contract.getParameter().unpack(TransferContract.class);
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
-        }
-      }
-
-      if (contract.getType() == ContractType.CreateSmartContract) {
-        CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
+      if (dynamicPropertiesStore.supportEthereumCompatibleTransactionNativeStep1()){
+        switch (contract.getType()){
+          case VoteWitnessContract: getVoteWitnessContractRlpData(); break;
+          case WithdrawBalanceContract: getWithdrawBalanceContractRlpData(); break;
+          case FreezeBalanceContract: getFreezeBalanceContractRlpData(); break;
+          case UnfreezeBalanceContract: getUnfreezeBalanceContractRlpData(); break;
+          default:
+            break;
         }
       }
     } catch (Exception ex) {
       logger.error("getEthRlpData failed, {}",ex.getMessage());
     }
     return this.ethRlpData;
+  }
+
+  private void getCreateSmartContractRlpData(){
+    CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getTriggerSmartContractRlpData(){
+    TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getTransferContractRlpData(){
+    TransferContract c = ContractCapsule.getTransferContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getVoteWitnessContractRlpData(){
+    VoteWitnessContract c = ContractCapsule.getVoteWitnessContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getWithdrawBalanceContractRlpData(){
+    WithdrawBalanceContract c = ContractCapsule.getWithdrawBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getRlpType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getFreezeBalanceContractRlpData(){
+    FreezeBalanceContract c = ContractCapsule.getFreezeBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getUnfreezeBalanceContractRlpData(){
+    UnfreezeBalanceContract c = ContractCapsule.getUnfreezeBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
   }
 
   public static <T extends com.google.protobuf.Message> T parse(Class<T> clazz,
@@ -1601,12 +1649,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         build.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, 64))));
         build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(64, 128))));
         build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(128, 192))));
+
+        String receiverAddress = dataValue.substring(192, 256).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
         if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
-          build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(192, 256))));
+          build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
         }else {
-          String receiverAddress = ByteArray.toHexString(ByteArray.fromHexString(dataValue.substring(192, 256)));
           if (!receiverAddress.equals(ByteArray.toHexString(build.getOwnerAddress().toByteArray()))){
-            build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(192, 256))));
+            build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
           }
         }
 
@@ -1859,8 +1908,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     return getRawHash();
   }
 
-  public Sha256Hash getEthRlpDataHash(){
-    byte[] rlpData = getEthRlpData();
+  public Sha256Hash getEthRlpDataHash(DynamicPropertiesStore dynamicPropertiesStore){
+    byte[] rlpData = getEthRlpData(dynamicPropertiesStore);
     if (rlpData == null || rlpData.length <= 0){
       return null;
     }

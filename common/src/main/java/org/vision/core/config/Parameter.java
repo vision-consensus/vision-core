@@ -174,8 +174,8 @@ public class Parameter {
     public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
     public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
 
-    public static final String GetReward = "getReward()";                                         // 3d18b912 414e03e11f8639a2ba6d0a824d0c79a512536b3b2fc173f05201421d
-    public static final String GetReward_FunctionSelector = "3d18b912";
+    public static final String GetReward = "getReward(address)";                                         // c00007b0 b14ce14d1d8e20828982c1e51944313ec54b52ee46020e0e01677495
+    public static final String GetReward_FunctionSelector = "c00007b0";
   }
 
 }
