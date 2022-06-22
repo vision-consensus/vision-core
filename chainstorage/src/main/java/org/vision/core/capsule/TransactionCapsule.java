@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.BigIntegers;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.crypto.ECKey;
@@ -59,6 +60,10 @@ import org.vision.protos.contract.AssetIssueContractOuterClass.ParticipateAssetI
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
+import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
+import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
+import org.vision.protos.contract.Common;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
@@ -341,37 +346,85 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
   }
 
-  public byte[] getEthRlpData(){
+  public byte[] getEthRlpData(DynamicPropertiesStore dynamicPropertiesStore){
     if (this.ethRlpData != null){
       return this.ethRlpData;
     }
 
     try {
       Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
-      if (contract.getType() == ContractType.TriggerSmartContract) {
-        TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
-        }
+
+      switch (contract.getType()){
+        case CreateSmartContract: getCreateSmartContractRlpData(); break;
+        case TriggerSmartContract: getTriggerSmartContractRlpData(); break;
+        case TransferContract: getTransferContractRlpData(); break;
+        default:
+          break;
       }
 
-      if (contract.getType() == ContractType.TransferContract) {
-        TransferContract c = contract.getParameter().unpack(TransferContract.class);
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
-        }
-      }
-
-      if (contract.getType() == ContractType.CreateSmartContract) {
-        CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
-        if (c != null && c.getType() == 1) {
-          this.ethRlpData = c.getRlpData().toByteArray();
+      if (dynamicPropertiesStore.supportEthereumCompatibleTransactionNativeStep1()){
+        switch (contract.getType()){
+          case VoteWitnessContract: getVoteWitnessContractRlpData(); break;
+          case WithdrawBalanceContract: getWithdrawBalanceContractRlpData(); break;
+          case FreezeBalanceContract: getFreezeBalanceContractRlpData(); break;
+          case UnfreezeBalanceContract: getUnfreezeBalanceContractRlpData(); break;
+          default:
+            break;
         }
       }
     } catch (Exception ex) {
       logger.error("getEthRlpData failed, {}",ex.getMessage());
     }
     return this.ethRlpData;
+  }
+
+  private void getCreateSmartContractRlpData(){
+    CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getTriggerSmartContractRlpData(){
+    TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getTransferContractRlpData(){
+    TransferContract c = ContractCapsule.getTransferContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getVoteWitnessContractRlpData(){
+    VoteWitnessContract c = ContractCapsule.getVoteWitnessContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getWithdrawBalanceContractRlpData(){
+    WithdrawBalanceContract c = ContractCapsule.getWithdrawBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getRlpType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getFreezeBalanceContractRlpData(){
+    FreezeBalanceContract c = ContractCapsule.getFreezeBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getUnfreezeBalanceContractRlpData(){
+    UnfreezeBalanceContract c = ContractCapsule.getUnfreezeBalanceContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
   }
 
   public static <T extends com.google.protobuf.Message> T parse(Class<T> clazz,
@@ -765,6 +818,157 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     return true;
   }
 
+  /**
+   * validate eth signature validateEthSignature WithdrawBalanceContract
+   */
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      BalanceContract.WithdrawBalanceContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
+      validateEthSignatureCount();
+      if (contract.getRlpType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        BalanceContract.WithdrawBalanceContract contractFromParse = t.rlpParseToWithdrawBalanceContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      BalanceContract.FreezeBalanceContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
+      validateEthSignatureCount();
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        BalanceContract.FreezeBalanceContract contractFromParse = t.rlpParseToFreezeBalanceContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      BalanceContract.UnfreezeBalanceContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
+      validateEthSignatureCount();
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        BalanceContract.UnfreezeBalanceContract contractFromParse = t.rlpParseToUnfreezeBalanceContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      VoteWitnessContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      if (dynamicPropertiesStore.getAllowEthereumCompatibleTransaction() == 0){
+        throw new ValidateSignatureException("EthereumCompatibleTransaction is off, need to be opened by proposal");
+      }
+      validateEthSignatureCount();
+
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        VoteWitnessContract contractFromParse = t.rlpParseToVoteWitnessContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  private void validateEthSignatureCount() throws ValidateSignatureException {
+    if (this.transaction.getSignatureCount() <= 0
+            || this.transaction.getRawData().getContractCount() <= 0) {
+      throw new ValidateSignatureException("miss sig or contract");
+    }
+
+    if (this.transaction.getSignatureCount() != 1) {
+      throw new ValidateSignatureException("eth contract only one signature");
+    }
+  }
+
   public static class EthTrx {
     private static final BigInteger DEFAULT_GAS_PRICE = new BigInteger("10000000000000");
     private static final BigInteger DEFAULT_BALANCE_GAS = new BigInteger("21000");
@@ -772,6 +976,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
     public static final int HASH_LENGTH = 32;
     public static final int ADDRESS_LENGTH = 20;
+
+    public static final int VALUE_SIZE = 64;
+
+    /**
+     * 64-bit address with prefix 000000000000000000000000
+     */
+    public static final String ADDRESS_PREFIX_0 = "000000000000000000000000";
 
     /* SHA3 hash of the RLP encoded transaction */
     private byte[] hash;
@@ -1288,6 +1499,18 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
               chainId);
     }
 
+    public String parseData(){
+      String data = ByteArray.toHexString(this.data);
+      if (StringUtils.isEmpty(data) || data.length() < 8){
+        return null;
+      }
+
+      if (data.contains("0x")){
+        data = data.substring(2);
+      }
+      return data;
+    }
+
     public synchronized TriggerSmartContract rlpParseToTriggerSmartContract(DynamicPropertiesStore dynamicPropertiesStore) {
       if (!parsed)
         rlpParse();
@@ -1346,6 +1569,162 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
       return build.build();
     }
+
+    public synchronized WithdrawBalanceContract rlpParseToWithdrawBalanceContract() {
+      if (!parsed)
+        rlpParse();
+
+      WithdrawBalanceContract.Builder build = WithdrawBalanceContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
+      String data = parseData();
+      if (data == null){
+        return build.build();
+      }
+
+      String dataValue = data.substring(8);
+      long withdraw_type = dataValue.length() >= VALUE_SIZE ? ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))) : 0L;
+      build.setType(withdraw_type == 1L ? WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT : WithdrawBalanceContract.WithdrawBalanceType.ALL);
+
+      build.setRlpType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
+    public synchronized VoteWitnessContract rlpParseToVoteWitnessContract() {
+      if (!parsed)
+        rlpParse();
+
+      VoteWitnessContract.Builder build = VoteWitnessContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
+      String data = parseData();
+      if (data == null){
+        return build.build();
+      }
+
+      String dataValue = data.substring(8);
+      // first array index start should add two parameter size
+      int voteAddressArrayIndex = VALUE_SIZE * 2;
+      int voteAddressArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + VALUE_SIZE)));
+
+      // second array index start should add two parameter size, first array length, first array parameters size
+      int voteCountArrayIndex = VALUE_SIZE * 2 + VALUE_SIZE + VALUE_SIZE * voteAddressArraySize;
+      int voteCountArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + VALUE_SIZE)));
+      if (voteAddressArraySize != voteCountArraySize){
+       return build.build();
+      }
+
+      int index = 1;
+      int startIndex, endIndex;
+      while (index <= voteCountArraySize){
+        startIndex = index * VALUE_SIZE;
+        endIndex = (index +1) * VALUE_SIZE;
+        VoteWitnessContract.Vote.Builder vote = VoteWitnessContract.Vote.newBuilder();
+        String address = dataValue.substring(voteAddressArrayIndex + startIndex, voteAddressArrayIndex + endIndex);
+        address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+
+        vote.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(address)));
+        vote.setVoteCount(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex + startIndex, voteCountArrayIndex + endIndex))));
+        build.addVotes(vote);
+        index++;
+      }
+
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
+    public synchronized FreezeBalanceContract rlpParseToFreezeBalanceContract() {
+      if (!parsed)
+        rlpParse();
+
+      FreezeBalanceContract.Builder build = FreezeBalanceContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
+      String data = parseData();
+      if (data == null){
+        return build.build();
+      }
+
+      String dataValue = data.substring(8);
+      if (dataValue.length() >= VALUE_SIZE * 4){ // four parameter // freezeBalance(uint256,uint256,uint256,address)
+        build.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))));
+        build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2))));
+        build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3))));
+
+        String receiverAddress = dataValue.substring(VALUE_SIZE * 3, VALUE_SIZE * 4).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
+          build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+        }else {
+          if (!receiverAddress.equals(ByteArray.toHexString(build.getOwnerAddress().toByteArray()))){
+            build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+          }
+        }
+
+        if (dataValue.length() > VALUE_SIZE * 4) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
+          int stageIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2;
+          int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
+
+          int frozenIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2 + VALUE_SIZE + VALUE_SIZE * stageSize;
+          int frozenSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(frozenIndex, frozenIndex + VALUE_SIZE)));
+          if (stageSize != frozenSize){
+            return build.build();
+          }
+
+          int index = 1;
+          int startIndex, endIndex;
+          while (index <= stageSize){
+            startIndex = index * VALUE_SIZE;
+            endIndex = (index + 1) * VALUE_SIZE;
+            BalanceContract.FreezeBalanceStage.Builder freezeBalanceStage = BalanceContract.FreezeBalanceStage.newBuilder();
+            freezeBalanceStage.setStage(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
+            freezeBalanceStage.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(frozenIndex + startIndex, frozenIndex + endIndex))));
+            build.addFreezeBalanceStage(freezeBalanceStage);
+            index++;
+          }
+        }
+      }
+
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
+    public synchronized UnfreezeBalanceContract rlpParseToUnfreezeBalanceContract() {
+      if (!parsed)
+        rlpParse();
+      UnfreezeBalanceContract.Builder build = UnfreezeBalanceContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
+      String data = parseData();
+      if (data == null){
+        return null;
+      }
+      String dataValue = data.substring(8);
+
+      int resource = dataValue.length() > 0 ? ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))) : 0;
+      build.setResourceValue(resource);
+
+      if (dataValue.length() >= VALUE_SIZE * 2){ // unfreezeBalance(uint256,address)
+        String receiverAddress = dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+
+        if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
+          int stageIndex = VALUE_SIZE * 3;
+          int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
+          int index = 1;
+          int startIndex, endIndex;
+          while (index <= stageSize){
+            startIndex = index * VALUE_SIZE;
+            endIndex = (index + 1) * VALUE_SIZE;
+            build.addStages(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
+            index++;
+          }
+        }
+      }
+
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
   }
 
 
@@ -1391,38 +1770,22 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     Transaction.Contract contract = this.getInstance().getRawData().getContract(0);
     if (contract.getType() != ContractType.ShieldedTransferContract) {
       int v = 0;
-      if (contract.getType() == ContractType.TriggerSmartContract) {
-        TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
-        if (c == null) {
-          throw new ValidateSignatureException("get trigger smart contract error");
-        }
-        if(c.getType()==1){
-          v = 1;
-          validateEthSignature(accountStore, dynamicPropertiesStore, c);
-        }
+      switch (contract.getType()) {
+        case CreateSmartContract: v = validateCreateSmartContractSignature(accountStore, dynamicPropertiesStore); break;
+        case TriggerSmartContract: v = validateTriggerSmartContractSignature(accountStore, dynamicPropertiesStore); break;
+        case TransferContract: v = validateTransferContractSignature(accountStore, dynamicPropertiesStore); break;
+        default:
+          break;
       }
 
-      if (contract.getType() == ContractType.TransferContract) {
-        try {
-          TransferContract c = contract.getParameter().unpack(TransferContract.class);
-          if(c.getType()==1){
-            v = 1;
-            validateEthSignature(accountStore, dynamicPropertiesStore, c);
-          }
-        } catch (InvalidProtocolBufferException e) {
-          e.printStackTrace();
-          throw new RuntimeException("proto unpack error");
-        }
-      }
-
-      if (contract.getType() == ContractType.CreateSmartContract) {
-        CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
-        if (c == null) {
-          throw new ValidateSignatureException("get create smart contract error");
-        }
-        if(c.getType()==1){
-          v = 1;
-          validateEthSignature(accountStore, dynamicPropertiesStore, c);
+      if (dynamicPropertiesStore.supportEthereumCompatibleTransactionNativeStep1()){
+        switch (contract.getType()) {
+          case WithdrawBalanceContract: v = validateWithdrawBalanceContractSignature(accountStore, dynamicPropertiesStore); break;
+          case FreezeBalanceContract: v = validateFreezeBalanceContractSignature(accountStore, dynamicPropertiesStore); break;
+          case UnfreezeBalanceContract: v = validateUnfreezeBalanceContractSignature(accountStore, dynamicPropertiesStore); break;
+          case VoteWitnessContract: v = validateVoteWitnessContractSignature(accountStore, dynamicPropertiesStore); break;
+          default:
+            break;
         }
       }
 
@@ -1446,12 +1809,110 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     return true;
   }
 
+  private int validateCreateSmartContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get create smart contract error");
+    }
+    if(c.getType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateTransferContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    TransferContract c = ContractCapsule.getTransferContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get transfer contract error");
+    }
+    if(c.getType()==1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateTriggerSmartContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get trigger smart contract error");
+    }
+    if(c.getType()==1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateWithdrawBalanceContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    BalanceContract.WithdrawBalanceContract c = ContractCapsule.getWithdrawBalanceContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get withdraw balance contract error");
+    }
+    if(c.getRlpType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateFreezeBalanceContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    BalanceContract.FreezeBalanceContract c = ContractCapsule.getFreezeBalanceContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get freeze balance contract error");
+    }
+    if(c.getType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateUnfreezeBalanceContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    BalanceContract.UnfreezeBalanceContract c = ContractCapsule.getUnfreezeBalanceContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get unfreeze balance contract error");
+    }
+    if(c.getType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateVoteWitnessContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    VoteWitnessContract c = ContractCapsule.getVoteWitnessContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get vote witness contract error");
+    }
+    if(c.getType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
   public Sha256Hash getTransactionId() {
     return getRawHash();
   }
 
-  public Sha256Hash getEthRlpDataHash(){
-    byte[] rlpData = getEthRlpData();
+  public Sha256Hash getEthRlpDataHash(DynamicPropertiesStore dynamicPropertiesStore){
+    byte[] rlpData = getEthRlpData(dynamicPropertiesStore);
     if (rlpData == null || rlpData.length <= 0){
       return null;
     }

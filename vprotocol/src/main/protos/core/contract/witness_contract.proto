@@ -23,4 +23,7 @@ message VoteWitnessContract {
   bytes owner_address = 1;
   repeated Vote votes = 2;
   bool support = 3;
+
+  int64 type = 4;
+  bytes rlp_data = 5;
 }

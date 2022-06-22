@@ -22,11 +22,13 @@ import org.vision.core.Constant;
 import org.vision.core.Wallet;
 import org.vision.core.capsule.BlockCapsule;
 import org.vision.core.capsule.TransactionCapsule;
+import org.vision.core.config.Parameter;
 import org.vision.core.config.args.Args;
 import org.vision.core.db.BlockIndexStore;
 import org.vision.core.db2.core.Chainbase;
 import org.vision.core.exception.*;
 import org.vision.core.services.http.Util;
+import org.vision.core.services.jsonrpc.JsonRpcApiUtil;
 import org.vision.core.services.jsonrpc.filters.LogBlockQuery;
 import org.vision.core.services.jsonrpc.filters.LogFilterWrapper;
 import org.vision.core.services.jsonrpc.filters.LogMatch;
@@ -57,6 +59,7 @@ import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract.Vote;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -321,63 +324,67 @@ public class EthereumCompatibleService implements EthereumCompatible {
             byte[] receiveAddressStr = ethTrx.getReceiveAddress();
             boolean isDeployContract = (null == receiveAddressStr || receiveAddressStr.length == 0);
             String data = ByteArray.toHexString(ethTrx.getData());
-            if (isDeployContract) {
-                if (StringUtils.isBlank(data)) {
-                    throw new IllegalArgumentException("no data!");
+
+            boolean isOldTransaction = true;
+            if (chainBaseManager.getDynamicPropertiesStore().supportEthereumCompatibleTransactionNativeStep1()){
+                if (JsonRpcApiUtil.validateContractAddress(ByteArray.toJsonHex(receiveAddressStr))){
+                    isOldTransaction = false;
+                    trx = JsonRpcApiUtil.parseEvmTransactionData(ethTrx, wallet);
+                }
+            }else {
+                if (JsonRpcApiUtil.validateContractAddress(ByteArray.toJsonHex(receiveAddressStr))){
+                    throw new JsonRpcInvalidParamsException("not support contract: " + Parameter.NativeTransactionContractAbi.TRANSACTION_CONTRACT_ADDRESS_ETH);
                 }
             }
-            byte[] receiveAddress = ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(ethTrx.getReceiveAddress()));
-            int accountType = wallet.getAccountType(receiveAddress);
-            logger.info("accountType={}", accountType);
-            if ((1 == accountType && !StringUtils.isBlank(data)) || isDeployContract) { //
-                // long feeLimit = 210000000;
-                // feeLimit unit is vdt for vision(1VS = 1,000,000VDT)
-                long gasPriceTmp = Long.parseLong(
-                        toHexString(ethTrx.getGasPrice()), 16
-                );
-                double gasPrice = gasPriceTmp / 1_000_000_000.00;
-                long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
-                logger.info("gasPriceTmp={}, gasPrice={},gasLimit={}", gasPriceTmp, gasPrice, gasLimit);
-                long feeLimit = (long) gasPrice * gasLimit * 2;
-                Message message = null;
-                Protocol.Transaction.Contract.ContractType contractType = null;
-                if (isDeployContract) {
-                    message = ethTrx.rlpParseToDeployContract(chainBaseManager.getDynamicPropertiesStore());
-                    contractType = Protocol.Transaction.Contract.ContractType.CreateSmartContract;
-                } else {
-                    message = ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore());
-                    contractType = Protocol.Transaction.Contract.ContractType.TriggerSmartContract;
-                }
-                TransactionCapsule trxCap = wallet
-                        .createTransactionCapsule(message, contractType);
-                Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
-                Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
-                rawBuilder.setFeeLimit(feeLimit);
-                logger.info("rawData={}", rawBuilder);
-                txBuilder.setRawData(rawBuilder);
-                txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
-                if (isDeployContract) {
-                    trx = txBuilder.build();
-                } else {
-                    trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore()), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
-                            retBuilder);
-                }
 
-            } else {
-                TransactionCapsule transactionCapsule1 = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract);
-                trx = transactionCapsule1.getInstance().toBuilder().addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray())).build();
+            if (isOldTransaction){
+                if (isDeployContract) {
+                    if (StringUtils.isBlank(data)) {
+                        throw new IllegalArgumentException("no data!");
+                    }
+                }
+                byte[] receiveAddress = ByteArray.fromHexString(Constant.ADD_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(ethTrx.getReceiveAddress()));
+                int accountType = wallet.getAccountType(receiveAddress);
+                if ((1 == accountType && !StringUtils.isBlank(data)) || isDeployContract) {
+                    long gasPriceTmp = Long.parseLong( toHexString(ethTrx.getGasPrice()), 16);
+                    double gasPrice = gasPriceTmp / 1_000_000_000.00;
+                    long gasLimit = Long.parseLong(toHexString(ethTrx.getGasLimit()), 16);
+                    long feeLimit = (long) gasPrice * gasLimit * 2;
+                    Message message = null;
+                    Protocol.Transaction.Contract.ContractType contractType = null;
+                    if (isDeployContract) {
+                        message = ethTrx.rlpParseToDeployContract(chainBaseManager.getDynamicPropertiesStore());
+                        contractType = Protocol.Transaction.Contract.ContractType.CreateSmartContract;
+                    } else {
+                        message = ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore());
+                        contractType = Protocol.Transaction.Contract.ContractType.TriggerSmartContract;
+                    }
+                    TransactionCapsule trxCap = wallet
+                            .createTransactionCapsule(message, contractType);
+                    Protocol.Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
+                    Protocol.Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
+                    rawBuilder.setFeeLimit(feeLimit);
+                    logger.info("rawData={}", rawBuilder);
+                    txBuilder.setRawData(rawBuilder);
+                    txBuilder.addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray()));
+                    if (isDeployContract) {
+                        trx = txBuilder.build();
+                    } else {
+                        trx = wallet.triggerContract(ethTrx.rlpParseToTriggerSmartContract(chainBaseManager.getDynamicPropertiesStore()), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
+                                retBuilder);
+                    }
+                } else {
+                    TransactionCapsule transactionCapsule1 = wallet.createTransactionCapsule(ethTrx.rlpParseToTransferContract(), Protocol.Transaction.Contract.ContractType.TransferContract);
+                    trx = transactionCapsule1.getInstance().toBuilder().addSignature(ByteString.copyFrom(ethTrx.getSignature().toByteArray())).build();
+                }
             }
 
             GrpcAPI.Return result = wallet.broadcastTransaction(trx);
             transactionCapsule = new TransactionCapsule(trx);
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
-
-                // String errMsg = result.getMessage().toString();
-                // return "broadcast trx failed:" + errMsg;
-                String errMsg = new String(result.getMessage().toByteArray(), "UTF-8");
-                return toHexString(errMsg.getBytes("UTF-8"));
-
+                String errMsg = new String(result.getMessage().toByteArray(), StandardCharsets.UTF_8);
+                return toHexString(errMsg.getBytes(StandardCharsets.UTF_8));
             }
         } catch (Exception e) {
             logger.error("sendRawTransaction error", e);
@@ -385,9 +392,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (e.getMessage() != null) {
                 errString = e.getMessage().replaceAll("[\"]", "\'");
             }
-            return errString;
+            if (StringUtils.isNotEmpty(errString)){
+                return ByteArray.toJsonHex(ByteArray.fromString(errString));
+            }
+            return null;
         }
-        String trxHash = Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
+        String trxHash = ByteArray.toJsonHex(transactionCapsule.getTransactionId().getBytes());
         logger.info("trxHash={}", trxHash);
         return trxHash;
     }
@@ -398,6 +408,17 @@ public class EthereumCompatibleService implements EthereumCompatible {
         GrpcAPI.TransactionExtention.Builder trxExtBuilder = GrpcAPI.TransactionExtention.newBuilder();
         GrpcAPI.Return.Builder retBuilder = GrpcAPI.Return.newBuilder();
         try {
+            if (chainBaseManager.getDynamicPropertiesStore().supportEthereumCompatibleTransactionNativeStep1()){
+                if (JsonRpcApiUtil.validateContractAddress(args.getTo())){
+                    return JsonRpcApiUtil.parseEvmCallTransactionData(args.getData(), chainBaseManager);
+                }
+            }else {
+                if(JsonRpcApiUtil.validateContractAddress(args.getTo())){
+                    logger.info("AllowEthereumCompatibleTransactionNativeStep1 is off");
+                    return null;
+                }
+            }
+
             build.setData(ByteString.copyFrom(ByteArray.fromHexString(args.getData())));
             build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.getTo().replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase())));
             build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString("460000000000000000000000000000000000000000")));
@@ -1016,6 +1037,10 @@ public class EthereumCompatibleService implements EthereumCompatible {
             return data.substring(2);
         }
         throw new IllegalArgumentException("not hex String");
+    }
+
+    private String getAddressFromEth(String address){
+        return StringUtils.isNotEmpty(address) && address.startsWith("0x") ? "46" + address.substring(2) : address;
     }
 
     private byte[] hashToByteArray(String hash) throws JsonRpcInvalidParamsException {
