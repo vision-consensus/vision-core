@@ -931,6 +931,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
     public static final int VALUE_SIZE = 64;
 
+    /**
+     * 64-bit address with prefix 000000000000000000000000
+     */
+    public static final String ADDRESS_PREFIX_0 = "000000000000000000000000";
+
     /* SHA3 hash of the RLP encoded transaction */
     private byte[] hash;
 
@@ -1520,13 +1525,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     public synchronized WithdrawBalanceContract rlpParseToWithdrawBalanceContract() {
       if (!parsed)
         rlpParse();
+
       WithdrawBalanceContract.Builder build = WithdrawBalanceContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
-
       String data = parseData();
       if (data == null){
-        return null;
+        return build.build();
       }
+
       String dataValue = data.substring(8);
       long withdraw_type = dataValue.length() >= 64 ? ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, 64))) : 0L;
       build.setType(withdraw_type == 1L ? WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT : WithdrawBalanceContract.WithdrawBalanceType.ALL);
@@ -1539,29 +1545,36 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     public synchronized VoteWitnessContract rlpParseToVoteWitnessContract() {
       if (!parsed)
         rlpParse();
+
       VoteWitnessContract.Builder build = VoteWitnessContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
       String data = parseData();
       if (data == null){
-        return null;
+        return build.build();
       }
+
       String dataValue = data.substring(8);
+      // first array index start should add two parameter size
+      int voteAddressArrayIndex = VALUE_SIZE * 2;
+      int voteAddressArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + VALUE_SIZE)));
 
-      int voteAddressArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE)));
-      int voteCountArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(64, 64 + VALUE_SIZE)));
-      long voteAddressArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + VALUE_SIZE)));
-      long voteCountArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + VALUE_SIZE)));
+      // second array index start should add two parameter size, first array length, first array parameters size
+      int voteCountArrayIndex = VALUE_SIZE * 2 + VALUE_SIZE + VALUE_SIZE * voteAddressArraySize;
+      int voteCountArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + VALUE_SIZE)));
       if (voteAddressArraySize != voteCountArraySize){
-        return null;
+       return build.build();
       }
 
-      int index = 0;
+      int index = 1;
       int startIndex, endIndex;
-      while (index < voteAddressArrayIndex){
+      while (index <= voteCountArraySize){
         startIndex = index * VALUE_SIZE;
         endIndex = (index +1) * VALUE_SIZE;
         VoteWitnessContract.Vote.Builder vote = VoteWitnessContract.Vote.newBuilder();
-        vote.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex + startIndex, voteAddressArrayIndex + endIndex))));
+        String address = dataValue.substring(voteAddressArrayIndex + startIndex, voteAddressArrayIndex + endIndex);
+        address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+
+        vote.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(address)));
         vote.setVoteCount(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex + startIndex, voteCountArrayIndex + endIndex))));
         build.addVotes(vote);
         index++;
@@ -1575,22 +1588,49 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     public synchronized FreezeBalanceContract rlpParseToFreezeBalanceContract() {
       if (!parsed)
         rlpParse();
+
       FreezeBalanceContract.Builder build = FreezeBalanceContract.newBuilder();
       build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
-      // todo set vote address count
       String data = parseData();
       if (data == null){
-        return null;
+        return build.build();
       }
+
       String dataValue = data.substring(8);
-      if (dataValue.length() > 64){
+      if (dataValue.length() >= 256){ // four parameter // freezeBalance(uint256,uint256,uint256,address)
         build.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, 64))));
         build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(64, 128))));
         build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(128, 192))));
         if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
           build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(192, 256))));
         }else {
-          build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(192, 256))));
+          String receiverAddress = ByteArray.toHexString(ByteArray.fromHexString(dataValue.substring(192, 256)));
+          if (!receiverAddress.equals(ByteArray.toHexString(build.getOwnerAddress().toByteArray()))){
+            build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(192, 256))));
+          }
+        }
+
+        if (dataValue.length() > 256) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
+          int stageIndex = VALUE_SIZE * 4;
+          int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
+
+          int frozenIndex = VALUE_SIZE * 4 + VALUE_SIZE + VALUE_SIZE * stageSize;
+          int frozenSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(frozenIndex, frozenIndex + VALUE_SIZE)));
+          if (stageSize != frozenSize){
+            return build.build();
+          }
+
+          int index = 1;
+          int startIndex, endIndex;
+          while (index <= stageIndex){
+            startIndex = index * VALUE_SIZE;
+            endIndex = (index + 1) * VALUE_SIZE;
+            BalanceContract.FreezeBalanceStage.Builder freezeBalanceStage = BalanceContract.FreezeBalanceStage.newBuilder();
+            freezeBalanceStage.setStage(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
+            freezeBalanceStage.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(frozenIndex + startIndex, frozenIndex + endIndex))));
+            build.addFreezeBalanceStage(freezeBalanceStage);
+            index++;
+          }
         }
       }
 
@@ -1613,8 +1653,19 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       int resource = dataValue.length() > 0 ? ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, 64))) : 0;
       build.setResourceValue(resource);
 
-      if (dataValue.length() >= 128){
+      if (dataValue.length() >= 128){ // unfreezeBalance(uint256,address)
         build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(64, 128))));
+        if (dataValue.length() >= 192){ // unfreezeBalance(uint256,address,uint256[])
+          int stageIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(128, 128 + VALUE_SIZE)));
+          int index = 0;
+          int startIndex, endIndex;
+          while (index < stageIndex){
+            startIndex = index * VALUE_SIZE;
+            endIndex = (index + 1) * VALUE_SIZE;
+            build.addStages(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
+            index++;
+          }
+        }
       }
 
       build.setType(1);

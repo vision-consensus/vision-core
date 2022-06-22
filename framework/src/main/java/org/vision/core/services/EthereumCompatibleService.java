@@ -327,12 +327,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
             boolean isOldTransaction = true;
             if (chainBaseManager.getDynamicPropertiesStore().supportEthereumCompatibleTransactionNativeStep1()){
-                if (JsonRpcApiUtil.validateContractAddress(ByteUtil.toHexString(receiveAddressStr))){
+                if (JsonRpcApiUtil.validateContractAddress(ByteArray.toJsonHex(receiveAddressStr))){
                     isOldTransaction = false;
                     trx = JsonRpcApiUtil.parseEvmTransactionData(ethTrx, wallet);
                 }
             }else {
-                if (JsonRpcApiUtil.validateContractAddress(ByteUtil.toHexString(receiveAddressStr))){
+                if (JsonRpcApiUtil.validateContractAddress(ByteArray.toJsonHex(receiveAddressStr))){
                     throw new JsonRpcInvalidParamsException("not support contract: " + Parameter.NativeTransactionContractAbi.TRANSACTION_CONTRACT_ADDRESS_ETH);
                 }
             }
@@ -394,7 +394,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             }
             return errString;
         }
-        String trxHash = Constant.ETH_PRE_FIX_STRING_MAINNET + ByteArray.toHexString(transactionCapsule.getTransactionId().getBytes());
+        String trxHash = ByteArray.toJsonHex(transactionCapsule.getTransactionId().getBytes());
         logger.info("trxHash={}", trxHash);
         return trxHash;
     }

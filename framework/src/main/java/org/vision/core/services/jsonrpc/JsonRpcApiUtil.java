@@ -315,11 +315,14 @@ public class JsonRpcApiUtil {
 
     int valueSize = NativeTransactionContractAbi.VALUE_SIZE;
     switch (functionSelector){
-      case NativeTransactionContractAbi.VoteWitness_FunctionSelector:
-        int voteAddressArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, valueSize)));
-        int voteCountArrayIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(64, 64 + valueSize)));
-        long voteAddressArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + valueSize)));
-        long voteCountArraySize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + valueSize)));
+      case NativeTransactionContractAbi.VoteWitness_FunctionSelector: // voteWitness(address[],uint256[])
+        // first array index start should add two parameter size
+        int voteAddressArrayIndex = valueSize * 2;
+        int voteAddressArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteAddressArrayIndex, voteAddressArrayIndex + valueSize)));
+
+        // second array index start should add two parameter size, first array length, first array parameters size
+        int voteCountArrayIndex = valueSize * 2 + valueSize + valueSize * voteAddressArraySize;
+        int voteCountArraySize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex, voteCountArrayIndex + valueSize)));
         if (voteAddressArraySize != voteCountArraySize){
           throw new JsonRpcInvalidParamsException("The size of voteAddress does not match the number of voteCount ");
         }
@@ -328,10 +331,12 @@ public class JsonRpcApiUtil {
         trxCap = wallet.createTransactionCapsule(buildVoter.build(), ContractType.VoteWitnessContract);
         break;
       case NativeTransactionContractAbi.FreezeBalance_FunctionSelector:
+      case NativeTransactionContractAbi.FreezeBalanceStage_FunctionSelector:
         FreezeBalanceContract.Builder builderFreeze = ethTrx.rlpParseToFreezeBalanceContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(builderFreeze.build(), ContractType.FreezeBalanceContract);
         break;
       case NativeTransactionContractAbi.UnfreezeBalance_FunctionSelector:
+      case NativeTransactionContractAbi.UnfreezeBalanceStage_FunctionSelector:
         UnfreezeBalanceContract.Builder build1 = ethTrx.rlpParseToUnfreezeBalanceContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(build1.build(), ContractType.UnfreezeBalanceContract);
         break;

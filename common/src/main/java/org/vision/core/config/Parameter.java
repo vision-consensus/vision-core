@@ -136,7 +136,15 @@ public class Parameter {
      return true;
      }
 
+     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint256 resource, address receiver_address, uint256[] memory stages, uint256[] memory frozen_balances) public returns (bool){
+     return true;
+     }
+
      function unfreezeBalance(uint8 resource, address receiver_address) public returns (bool){
+     return true;
+     }
+
+     function unfreezeBalance(uint8 resource, address receiver_address, uint256[] stages) public returns (bool){
      return true;
      }
 
@@ -154,8 +162,14 @@ public class Parameter {
     public static final String FreezeBalance = "freezeBalance(uint256,uint256,uint256,address)";   // c3718670 0a91520cc9a15363af6c66d096179e66e77cb1d1bb45547b2c4ff2d5
     public static final String FreezeBalance_FunctionSelector = "c3718670";
 
+    public static final String FreezeBalanceStage = "freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])";   // 10a6d73b 741b51421df7c824064dc86f4cd9b70d033ee002604cc61fbe3217af
+    public static final String FreezeBalanceStage_FunctionSelector = "10a6d73b";
+
     public static final String UnfreezeBalance = "unfreezeBalance(uint256,address)";               // 62a60984 ef1f973ed2e0aad55d8777225b517dea86fa6a4396eaea0c6f4a0076
     public static final String UnfreezeBalance_FunctionSelector = "62a60984";
+
+    public static final String UnfreezeBalanceStage = "unfreezeBalance(uint256,address,uint256[])";               // b1c68f74 3ec3afdfe31282ab0b2c9362ef7c5c113743ee22ae0697d1207a7c06
+    public static final String UnfreezeBalanceStage_FunctionSelector = "b1c68f74";
 
     public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
     public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
