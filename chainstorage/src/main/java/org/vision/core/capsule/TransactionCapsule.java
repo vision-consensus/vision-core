@@ -1660,10 +1660,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         }
 
         if (dataValue.length() > VALUE_SIZE * 4) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
-          int stageIndex = VALUE_SIZE * 4;
+          int stageIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2;
           int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
 
-          int frozenIndex = VALUE_SIZE * 4 + VALUE_SIZE + VALUE_SIZE * stageSize;
+          int frozenIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2 + VALUE_SIZE + VALUE_SIZE * stageSize;
           int frozenSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(frozenIndex, frozenIndex + VALUE_SIZE)));
           if (stageSize != frozenSize){
             return build.build();
@@ -1671,7 +1671,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
           int index = 1;
           int startIndex, endIndex;
-          while (index <= stageIndex){
+          while (index <= stageSize){
             startIndex = index * VALUE_SIZE;
             endIndex = (index + 1) * VALUE_SIZE;
             BalanceContract.FreezeBalanceStage.Builder freezeBalanceStage = BalanceContract.FreezeBalanceStage.newBuilder();
@@ -1703,12 +1703,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       build.setResourceValue(resource);
 
       if (dataValue.length() >= VALUE_SIZE * 2){ // unfreezeBalance(uint256,address)
-        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2))));
+        String receiverAddress = dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+
         if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
-          int stageIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3)));
-          int index = 0;
+          int stageIndex = VALUE_SIZE * 3;
+          int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
+          int index = 1;
           int startIndex, endIndex;
-          while (index < stageIndex){
+          while (index <= stageSize){
             startIndex = index * VALUE_SIZE;
             endIndex = (index + 1) * VALUE_SIZE;
             build.addStages(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
