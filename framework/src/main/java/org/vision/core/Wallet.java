@@ -73,6 +73,8 @@ import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
 import org.vision.api.GrpcAPI.SpreadRelationShipList;
+import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage;
+import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage.FrozenStage;
 import org.vision.common.crypto.Hash;
 import org.vision.common.crypto.SignInterface;
 import org.vision.common.crypto.SignUtils;
@@ -1158,6 +1160,26 @@ public class Wallet {
             .setKey("getAllowSpreadMintParticipatePledgeRate")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintParticipatePledgeRate())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSMBurnOptimization")
+            .setValue(dbManager.getDynamicPropertiesStore().getSMBurnOptimization())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getRefreezeConsiderationPeriod")
+            .setValue(dbManager.getDynamicPropertiesStore().getRefreezeConsiderationPeriod())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSpreadRefreezeConsiderationPeriod")
+            .setValue(dbManager.getDynamicPropertiesStore().getSpreadRefreezeConsiderationPeriod())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowVPFreezeStageWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowVPFreezeStageWeight())
+            .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getVPFreezeStageWeight")
+            .setStringValue(dbManager.getDynamicPropertiesStore().getVPFreezeStageWeight())
+            .build());
     return builder.build();
   }
 
@@ -1303,6 +1325,11 @@ public class Wallet {
             .setStringValue(dbManager.getDynamicPropertiesStore().getCyclePledgeRateDenominator())
             .build());
 
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getBurnSpreadAmount")
+            .setValue(dbManager.getDynamicPropertiesStore().getBurnSpreadAmount())
+            .build());
+
     return builder.build();
   }
 
@@ -1392,6 +1419,12 @@ public class Wallet {
     long totalPhotonLimit = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonLimit();
     long totalPhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalPhotonWeight();
 
+    long totalStage1PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1PhotonWeight();
+    long totalStage2PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2PhotonWeight();
+    long totalStage3PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3PhotonWeight();
+    long totalStage4PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4PhotonWeight();
+    long totalStage5PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5PhotonWeight();
+
     Map<String, Long> assetPhotonLimitMap = new HashMap<>();
     Map<String, Long> allFreeAssetPhotonUsage = setAssetPhotonLimit(assetPhotonLimitMap, accountCapsule);
 
@@ -1401,6 +1434,11 @@ public class Wallet {
         .setPhotonLimit(photonLimit)
         .setTotalPhotonLimit(totalPhotonLimit)
         .setTotalPhotonWeight(totalPhotonWeight)
+        .setTotalStage1PhotonWeight(totalStage1PhotonWeight)
+        .setTotalStage2PhotonWeight(totalStage2PhotonWeight)
+        .setTotalStage3PhotonWeight(totalStage3PhotonWeight)
+        .setTotalStage4PhotonWeight(totalStage4PhotonWeight)
+        .setTotalStage5PhotonWeight(totalStage5PhotonWeight)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
         .putAllAssetPhotonLimit(assetPhotonLimitMap);
     return builder.build();
@@ -1440,6 +1478,18 @@ public class Wallet {
     long totalFVGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
     long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
 
+    long totalStage1PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1PhotonWeight();
+    long totalStage2PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2PhotonWeight();
+    long totalStage3PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3PhotonWeight();
+    long totalStage4PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4PhotonWeight();
+    long totalStage5PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5PhotonWeight();
+
+    long totalStage1EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1EntropyWeight();
+    long totalStage2EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2EntropyWeight();
+    long totalStage3EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage3EntropyWeight();
+    long totalStage4EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage4EntropyWeight();
+    long totalStage5EntropyWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage5EntropyWeight();
+
     long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
     long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
 
@@ -1458,6 +1508,16 @@ public class Wallet {
         .setTotalEntropyWeight(totalEntropyWeight)
         .setTotalFVGuaranteeWeight(totalFVGuaranteeWeight)
         .setTotalSpreadWeight(totalSpreadWeight)
+        .setTotalStage1PhotonWeight(totalStage1PhotonWeight)
+        .setTotalStage2PhotonWeight(totalStage2PhotonWeight)
+        .setTotalStage3PhotonWeight(totalStage3PhotonWeight)
+        .setTotalStage4PhotonWeight(totalStage4PhotonWeight)
+        .setTotalStage5PhotonWeight(totalStage5PhotonWeight)
+        .setTotalStage1EntropyWeight(totalStage1EntropyWeight)
+        .setTotalStage2EntropyWeight(totalStage2EntropyWeight)
+        .setTotalStage3EntropyWeight(totalStage3EntropyWeight)
+        .setTotalStage4EntropyWeight(totalStage4EntropyWeight)
+        .setTotalStage5EntropyWeight(totalStage5EntropyWeight)
         .setStorageLimit(storageLimit)
         .setStorageUsed(storageUsage)
         .putAllAssetPhotonUsed(allFreeAssetPhotonUsage)
@@ -4091,6 +4151,81 @@ public class Wallet {
       logger.info(e.getMessage());
       return null;
     }
+  }
+
+  public AccountFrozenStageResourceMessage getAccountFrozenStageResource(ByteString address) {
+    if (address == null || address.isEmpty()) {
+      return null;
+    }
+
+    AccountCapsule accountCapsule =
+        chainBaseManager.getAccountStore().get(address.toByteArray());
+    if (accountCapsule == null) {
+      return null;
+    }
+
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+
+    AccountFrozenStageResourceMessage.Builder result = AccountFrozenStageResourceMessage.newBuilder();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(address.toByteArray(), entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      FrozenStage.Builder builder = FrozenStage.newBuilder()
+          .setStage(entry.getKey())
+          .setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy())
+          .setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton())
+          .setExpireTimeForEntropy(capsule.getInstance().getExpireTimeForEntropy())
+          .setExpireTimeForPhoton(capsule.getInstance().getExpireTimeForPhoton());
+      result.addStages(builder.build());
+    }
+    return result.build();
+  }
+
+  public AccountFrozenStageResourceMessage getAccountFrozenShowStageResource(ByteString address) {
+    if (address == null || address.isEmpty()) {
+      return null;
+    }
+
+    AccountCapsule accountCapsule =
+        chainBaseManager.getAccountStore().get(address.toByteArray());
+    if (accountCapsule == null) {
+      return null;
+    }
+
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+
+    long totalStagePhoton = 0L;
+    long totalStageEntropy = 0L;
+    AccountFrozenStageResourceMessage.Builder result = AccountFrozenStageResourceMessage.newBuilder();
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      byte[] key = AccountFrozenStageResourceCapsule.createDbKey(address.toByteArray(), entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+      if (capsule == null) {
+        continue;
+      }
+      FrozenStage.Builder builder = FrozenStage.newBuilder()
+          .setStage(entry.getKey())
+          .setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy())
+          .setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton())
+          .setExpireTimeForEntropy(capsule.getInstance().getExpireTimeForEntropy())
+          .setExpireTimeForPhoton(capsule.getInstance().getExpireTimeForPhoton());
+      result.addStages(builder.build());
+      totalStagePhoton += capsule.getInstance().getFrozenBalanceForPhoton();
+      totalStageEntropy += capsule.getInstance().getFrozenBalanceForEntropy();
+    }
+    
+    result.setFrozenBalanceForPhoton(accountCapsule.getFrozenBalance() - totalStagePhoton);
+    result.setFrozenBalanceForEntropy(accountCapsule.getEntropyFrozenBalance() - totalStageEntropy);
+    result.setDelegatedFrozenBalanceForPhoton(accountCapsule.getDelegatedFrozenBalanceForPhoton());
+    result.setDelegatedFrozenBalanceForEntropy(accountCapsule.getDelegatedFrozenBalanceForEntropy());
+    return result.build();
   }
 }
 

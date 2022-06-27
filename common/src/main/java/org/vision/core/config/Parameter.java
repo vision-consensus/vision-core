@@ -6,7 +6,8 @@ public class Parameter {
 
   public enum ForkBlockVersionEnum {
     ENTROPY_LIMIT(5, 0L, 0),
-    VERSION_1_0_0(20, 0L, 0);
+    VERSION_1_0_0(20, 0L, 0),
+    VERSION_1_2_0(21, 1654444800000L, 80);//GMT 2022-06-06 00:00:00, 80 means 22 FV upgrade
 
     @Getter
     private int value;
@@ -53,7 +54,7 @@ public class Parameter {
     public static final int SINGLE_REPEAT = 1;
     public static final int BLOCK_FILLED_SLOTS_NUMBER = 128;
     public static final int MAX_FROZEN_NUMBER = 1;
-    public static final int BLOCK_VERSION = 20;
+    public static final int BLOCK_VERSION = 21;
     public static final long FROZEN_PERIOD = 86_400_000L;
     public static final long VS_PRECISION = 1000_000L;
     public static final long UN_FREEZE_FVGUARANTEE_LIMIT = 23L;
