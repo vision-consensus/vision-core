@@ -8,11 +8,17 @@ option java_package = "org.vision.protos.contract"; //Specify the name of the pa
 message WitnessCreateContract {
   bytes owner_address = 1;
   bytes url = 2;
+
+  int64 type = 3;
+  bytes rlp_data = 4;
 }
 
 message WitnessUpdateContract {
   bytes owner_address = 1;
   bytes update_url = 12;
+
+  int64 type = 3;
+  bytes rlp_data = 4;
 }
 
 message VoteWitnessContract {

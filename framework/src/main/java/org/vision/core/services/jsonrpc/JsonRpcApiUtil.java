@@ -28,6 +28,8 @@ import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import org.vision.protos.contract.StorageContract;
+import org.vision.protos.contract.WitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 
 import org.vision.core.config.Parameter.NativeTransactionContractAbi;
@@ -347,7 +349,20 @@ public class JsonRpcApiUtil {
         WithdrawBalanceContract.Builder buildWithdraw = ethTrx.rlpParseToWithdrawBalanceContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(buildWithdraw.build(), ContractType.WithdrawBalanceContract);
         break;
+      case NativeTransactionContractAbi.CreateWitness_FunctionSelector:
+        WitnessContract.WitnessCreateContract.Builder builderWitnessCreate = ethTrx.rlpParseToWitnessCreateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderWitnessCreate.build(), ContractType.WitnessCreateContract);
+        break;
+      case NativeTransactionContractAbi.UpdateWitness_FunctionSelector:
+        WitnessContract.WitnessUpdateContract.Builder builderWitnessUpdate = ethTrx.rlpParseToWitnessUpdateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderWitnessUpdate.build(), ContractType.WitnessUpdateContract);
+        break;
+      case NativeTransactionContractAbi.UpdateBrokerage_FunctionSelector:
+        StorageContract.UpdateBrokerageContract.Builder builder = ethTrx.rlpParseToUpdateBrokerageContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builder.build(), ContractType.UpdateBrokerageContract);
+        break;
       default:
+        break;
     }
     if (trxCap == null){
       return null;
@@ -374,17 +389,36 @@ public class JsonRpcApiUtil {
       data = data.substring(2);
     }
 
-    String functionSelector = data.substring(0, 8);
-    if (NativeTransactionContractAbi.GetReward_FunctionSelector.equals(functionSelector)) {
-      String address = data.substring(8);
-      address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
-      Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
-      DataWord reward = new DataWord(rewardMap.get("reward"));
-      DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
-      return ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
+    int functionSelectorLength = NativeTransactionContractAbi.TRANSACTION_FUNCTION_SELECTOR_LENGTH;
+
+    String functionSelector = data.substring(0, functionSelectorLength);
+
+    String result = null;
+
+    switch (functionSelector){
+      case NativeTransactionContractAbi.GetReward_FunctionSelector:
+        String address = data.substring(functionSelectorLength);
+        address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
+        DataWord reward = new DataWord(rewardMap.get("reward"));
+        DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
+        result = ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
+        break;
+      case NativeTransactionContractAbi.GetBrokerage_FunctionSelector:
+        address = data.substring(functionSelectorLength);
+        byte[] addressByte = ByteArray.fromHexString(address);
+        long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
+        chainBaseManager.getDelegationStore().getBrokerage(cycle, addressByte);
+        break;
+      case NativeTransactionContractAbi.GetNextMaintenanceTime_FunctionSelector:
+        long num = chainBaseManager.getDynamicPropertiesStore().getNextMaintenanceTime();
+        result = ByteArray.toJsonHex(new DataWord(num).toHexString());
+        break;
+      default:
+        break;
     }
 
-    return null;
+    return result;
   }
 
   /**

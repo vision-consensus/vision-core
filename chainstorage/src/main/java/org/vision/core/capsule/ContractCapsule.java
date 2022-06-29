@@ -27,6 +27,7 @@ import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
+import org.vision.protos.contract.StorageContract;
 import org.vision.protos.contract.WitnessContract;
 
 import static java.lang.Math.max;
@@ -123,6 +124,33 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
     try {
       Any any = trx.getRawData().getContract(0).getParameter();
       return any.unpack(WitnessContract.VoteWitnessContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static WitnessContract.WitnessCreateContract getWitnessCreateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(WitnessContract.WitnessCreateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static WitnessContract.WitnessUpdateContract getWitnessUpdateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(WitnessContract.WitnessUpdateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static StorageContract.UpdateBrokerageContract getUpdateBrokerageContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(StorageContract.UpdateBrokerageContract.class);
     } catch (InvalidProtocolBufferException e) {
       return null;
     }
