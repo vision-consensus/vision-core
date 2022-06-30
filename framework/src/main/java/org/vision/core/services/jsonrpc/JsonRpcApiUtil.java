@@ -37,8 +37,6 @@ import org.vision.core.config.Parameter.NativeTransactionContractAbi;
 import java.util.List;
 import java.util.Map;
 
-import static org.vision.core.capsule.TransactionCapsule.EthTrx.ADDRESS_PREFIX_0;
-
 @Slf4j(topic = "API")
 public class JsonRpcApiUtil {
   public static long getByJsonBlockId(String blockNumOrTag) throws JsonRpcInvalidParamsException {
@@ -397,18 +395,18 @@ public class JsonRpcApiUtil {
 
     switch (functionSelector){
       case NativeTransactionContractAbi.GetReward_FunctionSelector:
-        String address = data.substring(functionSelectorLength);
-        address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        String address = TransactionCapsule.EthTrx.parseToVisionAddress(data.substring(functionSelectorLength));
         Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
         DataWord reward = new DataWord(rewardMap.get("reward"));
         DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
         result = ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
         break;
       case NativeTransactionContractAbi.GetBrokerage_FunctionSelector:
-        address = data.substring(functionSelectorLength);
+        address = TransactionCapsule.EthTrx.parseToVisionAddress(data.substring(functionSelectorLength));
         byte[] addressByte = ByteArray.fromHexString(address);
         long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
-        chainBaseManager.getDelegationStore().getBrokerage(cycle, addressByte);
+        int brokerage = chainBaseManager.getDelegationStore().getBrokerage(cycle, addressByte);
+        result = ByteArray.toJsonHex(new DataWord(brokerage).toHexString());
         break;
       case NativeTransactionContractAbi.GetNextMaintenanceTime_FunctionSelector:
         long num = chainBaseManager.getDynamicPropertiesStore().getNextMaintenanceTime();

@@ -77,6 +77,7 @@ import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,8 +88,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
+import static org.apache.commons.lang3.ArrayUtils.*;
 import static org.vision.common.utils.StringUtil.encode58Check;
 import static org.vision.common.utils.WalletUtil.checkPermissionOperations;
 import static org.vision.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
@@ -1634,6 +1634,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       return data;
     }
 
+    public static String parseToVisionAddress(String address) {
+      if (address == null || address.length() != VALUE_SIZE){
+        return address;
+      }
+      return address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+    }
+
     public synchronized TriggerSmartContract rlpParseToTriggerSmartContract(DynamicPropertiesStore dynamicPropertiesStore) {
       if (!parsed)
         rlpParse();
@@ -1743,7 +1750,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         endIndex = (index +1) * VALUE_SIZE;
         VoteWitnessContract.Vote.Builder vote = VoteWitnessContract.Vote.newBuilder();
         String address = dataValue.substring(voteAddressArrayIndex + startIndex, voteAddressArrayIndex + endIndex);
-        address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        address = parseToVisionAddress(address);
 
         vote.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(address)));
         vote.setVoteCount(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(voteCountArrayIndex + startIndex, voteCountArrayIndex + endIndex))));
@@ -1773,7 +1780,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         build.setFrozenDuration(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2))));
         build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3))));
 
-        String receiverAddress = dataValue.substring(VALUE_SIZE * 3, VALUE_SIZE * 4).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        String receiverAddress = parseToVisionAddress(dataValue.substring(VALUE_SIZE * 3, VALUE_SIZE * 4));
         if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
           build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
         }else {
@@ -1826,7 +1833,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       build.setResourceValue(resource);
 
       if (dataValue.length() >= VALUE_SIZE * 2){ // unfreezeBalance(uint256,address)
-        String receiverAddress = dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2).replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
+        String receiverAddress = parseToVisionAddress(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2));
         build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
 
         if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
@@ -1858,18 +1865,19 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         return null;
       }
       String dataValue = data.substring(8);
-      long urlSize = 0;
+      int urlSize = 0;
       if (dataValue.length() > VALUE_SIZE * 2){
-        urlSize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE + VALUE_SIZE)));
+        urlSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE + VALUE_SIZE)));
       }
 
       String url = new String(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2)));
 
-      if (url.length() != urlSize){
+      if (url.length() < urlSize){
         return null;
       }
+      url = url.substring(0, urlSize);
 
-      build.setUrl(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2))));
+      build.setUrl(ByteString.copyFrom(url.getBytes(StandardCharsets.UTF_8)));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();
@@ -1886,11 +1894,17 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
       String dataValue = data.substring(8);
 
+      int urlSize = 0;
       if (dataValue.length() > VALUE_SIZE * 2){
-        long urlSize = ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE + VALUE_SIZE)));
+        urlSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE + VALUE_SIZE)));
       }
+      String url = new String(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2)));
+      if (url.length() < urlSize){
+        return null;
+      }
+      url = url.substring(0, urlSize);
 
-      build.setUpdateUrl(ByteString.copyFrom(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2))));
+      build.setUpdateUrl(ByteString.copyFrom(url.getBytes(StandardCharsets.UTF_8)));
       build.setType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
       return build.build();
