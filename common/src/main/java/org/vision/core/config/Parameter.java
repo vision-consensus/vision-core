@@ -200,6 +200,8 @@ public class Parameter {
     public static final String ProposalDelete = "proposalDelete(uint256)";                                         // 9a213110 8c518b5d240ad509a1b6adfb2dc6863f1da4b2df93cc873e03d0baff
     public static final String ProposalDelete_FunctionSelector = "9a213110";
 
+    public static final String AccountUpdate = "accountUpdate(string)";                                         // 7e5f519e 800a657de36298214f19e062e3fdff3625565ada9a457d60841bce30
+    public static final String AccountUpdate_FunctionSelector = "7e5f519e";
 
 
     /**

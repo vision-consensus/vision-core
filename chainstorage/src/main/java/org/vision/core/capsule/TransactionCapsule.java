@@ -54,24 +54,21 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result;
 import org.vision.protos.Protocol.Transaction.Result.contractResult;
 import org.vision.protos.Protocol.Transaction.raw;
+import org.vision.protos.contract.*;
 import org.vision.protos.contract.AccountContract.AccountCreateContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.ParticipateAssetIssueContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
-import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.TransferContract;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
-import org.vision.protos.contract.Common;
-import org.vision.protos.contract.ProposalContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.ShieldContract.SpendDescription;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import org.vision.protos.contract.StorageContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
@@ -373,6 +370,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           case ProposalApproveContract: getProposalApproveContractRlpData(); break;
           case ProposalCreateContract: getProposalCreateContractRlpData(); break;
           case ProposalDeleteContract: getProposalDeleteContractRlpData(); break;
+          case AccountUpdateContract: getAccountUpdateContractRlpData(); break;
           default:
             break;
         }
@@ -469,6 +467,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   private void getProposalDeleteContractRlpData(){
     ProposalContract.ProposalDeleteContract c = ContractCapsule.getProposalDeleteContractFromTransaction(this.getInstance());
+    if (c != null && c.getType() == 1) {
+      this.ethRlpData = c.getRlpData().toByteArray();
+    }
+  }
+
+  private void getAccountUpdateContractRlpData(){
+    AccountContract.AccountUpdateContract c = ContractCapsule.getAccountUpdateContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
       this.ethRlpData = c.getRlpData().toByteArray();
     }
@@ -1178,6 +1183,39 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       t.rlpParse();
       try {
         ProposalContract.ProposalDeleteContract contractFromParse = t.rlpParseToProposalDeleteContract();
+        if(!contractFromParse.equals(contract)){
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
+        }
+        if (!validateSignature(this.transaction, t.getRawHash(), accountStore, dynamicPropertiesStore)) {
+          isVerified = false;
+          throw new ValidateSignatureException("eth sig error");
+        }
+      } catch (SignatureException | PermissionException | SignatureFormatException e) {
+        isVerified = false;
+        throw new ValidateSignatureException(e.getMessage());
+      }
+      isVerified = true;
+    }
+    return true;
+  }
+
+  public boolean validateEthSignature(AccountStore accountStore,
+                                      DynamicPropertiesStore dynamicPropertiesStore,
+                                      AccountContract.AccountUpdateContract contract)
+          throws ValidateSignatureException {
+    if (!isVerified) {
+      validateAllowEthereumCompatibleTransaction(dynamicPropertiesStore);
+      validateEthSignatureCount();
+
+      if (contract.getType() != 1) {
+        throw new ValidateSignatureException("not eth contract");
+      }
+
+      EthTrx t = new EthTrx(contract.getRlpData().toByteArray());
+      t.rlpParse();
+      try {
+        AccountContract.AccountUpdateContract contractFromParse = t.rlpParseToAccountUpdateContract();
         if(!contractFromParse.equals(contract)){
           isVerified = false;
           throw new ValidateSignatureException("eth sig error, vision transaction have been changed,not equal rlp parsed transaction");
@@ -2125,6 +2163,33 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       return build.build();
     }
 
+    public synchronized AccountContract.AccountUpdateContract rlpParseToAccountUpdateContract() {
+      if (!parsed)
+        rlpParse();
+      AccountContract.AccountUpdateContract.Builder build = AccountContract.AccountUpdateContract.newBuilder();
+      build.setOwnerAddress(ByteString.copyFrom(this.getSender()));
+      String data = parseData();
+      if (data == null){
+        return null;
+      }
+
+      String dataValue = data.substring(8);
+      if (dataValue.length() >= VALUE_SIZE * 3){
+        int name_length = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2)));
+        String account_name = new String(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2)));
+
+        if (name_length < account_name.length()){
+          account_name = account_name.substring(0, name_length);
+        }
+
+        build.setAccountName(ByteString.copyFrom(account_name.getBytes(StandardCharsets.UTF_8)));
+      }
+
+      build.setType(1);
+      build.setRlpData(ByteString.copyFrom(rlpEncoded));
+      return build.build();
+    }
+
   }
 
 
@@ -2190,6 +2255,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           case ProposalApproveContract: v = validateProposalApproveContractSignature(accountStore, dynamicPropertiesStore); break;
           case ProposalCreateContract: v = validateProposalCreateContractSignature(accountStore, dynamicPropertiesStore); break;
           case ProposalDeleteContract: v = validateProposalDeleteContractSignature(accountStore, dynamicPropertiesStore); break;
+          case AccountUpdateContract: v = validateAccountUpdateContractSignature(accountStore, dynamicPropertiesStore); break;
           default:
             break;
         }
@@ -2389,6 +2455,20 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     ProposalContract.ProposalDeleteContract c = ContractCapsule.getProposalDeleteContractFromTransaction(this.getInstance());
     if (c == null) {
       throw new ValidateSignatureException("get proposal delete contract error");
+    }
+    if(c.getType() == 1){
+      v = 1;
+      validateEthSignature(accountStore, dynamicPropertiesStore, c);
+    }
+    return v;
+  }
+
+  private int validateAccountUpdateContractSignature(AccountStore accountStore, DynamicPropertiesStore dynamicPropertiesStore)
+          throws ValidateSignatureException {
+    int v = 0;
+    AccountContract.AccountUpdateContract c = ContractCapsule.getAccountUpdateContractFromTransaction(this.getInstance());
+    if (c == null) {
+      throw new ValidateSignatureException("get account update contract error");
     }
     if(c.getType() == 1){
       v = 1;

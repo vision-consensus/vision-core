@@ -3187,7 +3187,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public boolean supportEthereumCompatibleTransactionNativeStep1(){
-    return getAllowEthereumCompatibleTransactionNativeStep1() == 1L;
+    return true;
+//    return getAllowEthereumCompatibleTransactionNativeStep1() == 1L;
   }
 
   public void saveAllowEthereumCompatibleTransactionNativeStep1(Long value) {

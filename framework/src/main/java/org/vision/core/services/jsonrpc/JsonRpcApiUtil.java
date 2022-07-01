@@ -9,7 +9,6 @@ import org.vision.api.GrpcAPI;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
-import org.vision.core.Constant;
 import org.vision.core.Wallet;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.exception.ContractValidateException;
@@ -369,7 +368,10 @@ public class JsonRpcApiUtil {
         ProposalContract.ProposalDeleteContract.Builder builderProposalDelete = ethTrx.rlpParseToProposalDeleteContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(builderProposalDelete.build(), ContractType.ProposalDeleteContract);
         break;
-
+      case NativeTransactionContractAbi.AccountUpdate_FunctionSelector:
+        AccountContract.AccountUpdateContract.Builder builderAccountUpdate = ethTrx.rlpParseToAccountUpdateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderAccountUpdate.build(), ContractType.AccountUpdateContract);
+        break;
       default:
         break;
     }

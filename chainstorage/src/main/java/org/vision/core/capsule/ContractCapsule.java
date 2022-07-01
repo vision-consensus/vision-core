@@ -21,15 +21,12 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.Constant;
 import org.vision.protos.Protocol.Transaction;
-import org.vision.protos.contract.BalanceContract;
-import org.vision.protos.contract.ProposalContract;
+import org.vision.protos.contract.*;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import org.vision.protos.contract.StorageContract;
-import org.vision.protos.contract.WitnessContract;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -183,6 +180,14 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
     }
   }
 
+  public static AccountContract.AccountUpdateContract getAccountUpdateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(AccountContract.AccountUpdateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
 
   public byte[] getCodeHash() {
     return this.smartContract.getCodeHash().toByteArray();
