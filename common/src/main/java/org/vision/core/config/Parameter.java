@@ -179,7 +179,6 @@ public class Parameter {
     public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
     public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
 
-
     public static final String CreateWitness = "createWitness(string)";                                         // aadf8399 34f925791149fec0bdf92d69d83e186f3b855bcfc8a0abfba58b90e1
     public static final String CreateWitness_FunctionSelector = "aadf8399";
 
@@ -188,6 +187,19 @@ public class Parameter {
 
     public static final String UpdateBrokerage = "updateBrokerage(uint256)";                                         // a9cffe3f 31f225bb675a50eb5bede21129e6519ff796e64333b54f07ca1a6571
     public static final String UpdateBrokerage_FunctionSelector = "a9cffe3f";
+
+    public static final String ProposalApprove = "proposalApprove(uint256,bool)";                                         // 10430496 fb4e39ada0740000372ebaf4c83412a47e5107e5973e67630b13a44c
+    public static final String ProposalApprove_FunctionSelector = "10430496";
+
+    public static final String ProposalCreateInteger = "proposalCreate(uint256,uint256)";                                         // 8994f5b0 aeb75d4dc227d3615da415df78b1a89a158913a5e0decabc2ac47ee4
+    public static final String ProposalCreateInteger_FunctionSelector = "8994f5b0";
+
+    public static final String ProposalCreateString = "proposalCreate(uint256,string)";                                         // 8ad94a88 2761b758983a828cf8a63b902d05d5348d7951ea34786844816c9c31
+    public static final String ProposalCreateString_FunctionSelector = "8ad94a88";
+
+    public static final String ProposalDelete = "proposalDelete(uint256)";                                         // 9a213110 8c518b5d240ad509a1b6adfb2dc6863f1da4b2df93cc873e03d0baff
+    public static final String ProposalDelete_FunctionSelector = "9a213110";
+
 
 
     /**

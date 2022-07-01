@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.vision.core.Constant;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.contract.BalanceContract;
+import org.vision.protos.contract.ProposalContract;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
@@ -155,6 +156,33 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
       return null;
     }
   }
+
+  public static ProposalContract.ProposalApproveContract getProposalApproveContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalApproveContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static ProposalContract.ProposalCreateContract getProposalCreateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalCreateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+  public static ProposalContract.ProposalDeleteContract getProposalDeleteContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalDeleteContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
 
   public byte[] getCodeHash() {
     return this.smartContract.getCodeHash().toByteArray();

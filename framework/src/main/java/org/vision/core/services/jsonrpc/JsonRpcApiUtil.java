@@ -19,17 +19,14 @@ import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.TransactionInfo;
-import org.vision.protos.contract.AssetIssueContractOuterClass;
+import org.vision.protos.contract.*;
 import org.vision.protos.contract.AssetIssueContractOuterClass.UnfreezeAssetContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
 import org.vision.protos.contract.BalanceContract.*;
-import org.vision.protos.contract.ExchangeContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
-import org.vision.protos.contract.StorageContract;
-import org.vision.protos.contract.WitnessContract;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 
 import org.vision.core.config.Parameter.NativeTransactionContractAbi;
@@ -356,9 +353,23 @@ public class JsonRpcApiUtil {
         trxCap = wallet.createTransactionCapsule(builderWitnessUpdate.build(), ContractType.WitnessUpdateContract);
         break;
       case NativeTransactionContractAbi.UpdateBrokerage_FunctionSelector:
-        StorageContract.UpdateBrokerageContract.Builder builder = ethTrx.rlpParseToUpdateBrokerageContract().toBuilder();
-        trxCap = wallet.createTransactionCapsule(builder.build(), ContractType.UpdateBrokerageContract);
+        StorageContract.UpdateBrokerageContract.Builder builderUpdateBrokerage = ethTrx.rlpParseToUpdateBrokerageContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderUpdateBrokerage.build(), ContractType.UpdateBrokerageContract);
         break;
+      case NativeTransactionContractAbi.ProposalApprove_FunctionSelector:
+        ProposalContract.ProposalApproveContract.Builder builderProposalApprove = ethTrx.rlpParseToProposalApproveContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalApprove.build(), ContractType.ProposalApproveContract);
+        break;
+      case NativeTransactionContractAbi.ProposalCreateInteger_FunctionSelector:
+      case NativeTransactionContractAbi.ProposalCreateString_FunctionSelector:
+        ProposalContract.ProposalCreateContract.Builder builderProposalCreate = ethTrx.rlpParseToProposalCreateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalCreate.build(), ContractType.ProposalCreateContract);
+        break;
+      case NativeTransactionContractAbi.ProposalDelete_FunctionSelector:
+        ProposalContract.ProposalDeleteContract.Builder builderProposalDelete = ethTrx.rlpParseToProposalDeleteContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalDelete.build(), ContractType.ProposalDeleteContract);
+        break;
+
       default:
         break;
     }
