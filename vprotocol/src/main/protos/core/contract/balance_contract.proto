@@ -16,6 +16,9 @@ message FreezeBalanceContract {
   bytes receiver_address = 15;
   bytes parent_address = 16;
   repeated FreezeBalanceStage freezeBalanceStage = 17;
+
+  int64 type = 18;  //if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 19; // eth's RLP rawData
 }
 
 message FreezeBalanceStage {
@@ -29,6 +32,9 @@ message UnfreezeBalanceContract {
   ResourceCode resource = 10;
   bytes receiver_address = 15;
   repeated int64 stages = 16;
+
+  int64 type = 17;  //if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 18; // eth's RLP rawData
 }
 
 message WithdrawBalanceContract {
@@ -39,6 +45,9 @@ message WithdrawBalanceContract {
 
   bytes owner_address = 1;
   WithdrawBalanceType type = 2;
+
+  int64 rlp_type = 3;  // if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 4;  // eth's RLP rawData
 }
 
 message TransferContract {
