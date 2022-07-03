@@ -521,14 +521,14 @@ public class Wallet {
 
       if (chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() >= CommonParameter.getInstance().getEthCompatibleRlpDeDupEffectBlockNum()) {
         try {
-          Sha256Hash ethRlpDataHash = trx.getEthRlpDataHash();
+          Sha256Hash ethRlpDataHash = trx.getEthRlpDataHash(chainBaseManager.getDynamicPropertiesStore());
           if (ethRlpDataHash != null) {
             if (dbManager.getRlpDataCache().getIfPresent(ethRlpDataHash) != null) {
               logger.warn("Broadcast eth transaction {} has failed, ethRlpDataHash: {}, it already exists.",
                       trx.getTransactionId(), ethRlpDataHash);
               return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
             } else {
-              TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData());
+              TransactionCapsule.EthTrx ethTrx = new TransactionCapsule.EthTrx(trx.getEthRlpData(chainBaseManager.getDynamicPropertiesStore()));
               if (!ethTrx.isParsed()) {
                 ethTrx.rlpParse();
               }

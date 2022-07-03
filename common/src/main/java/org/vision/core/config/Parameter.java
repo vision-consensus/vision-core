@@ -121,4 +121,101 @@ public class Parameter {
     public static final int ENTROPY_LIMIT = 5;
   }
 
+  public class NativeTransactionContractAbi {
+    public static final String TRANSACTION_CONTRACT_ADDRESS = "VP79PCA81j1zx76qvj2Yfqw2KuyQFZyk2m";
+    public static final String TRANSACTION_CONTRACT_ADDRESS_ETH = "0x8888888888888888888888888888888888888888"; // 0x8888888888888888888888888888888888888888
+    public static final int TRANSACTION_FUNCTION_SELECTOR_LENGTH = 8;
+    public static final int VALUE_SIZE = 64;
+
+    /**·
+     function voteWitness(address[] memory target, uint256[] memory count) public returns (bytes32){
+     return keccak256(abi.encodePacked("dovote(address[],uint256[])"));
+     }
+
+     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint8 resource, address receiver_address) public returns (bool){
+     return true;
+     }
+
+     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint256 resource, address receiver_address, uint256[] memory stages, uint256[] memory frozen_balances) public returns (bool){
+     return true;
+     }
+
+     function unfreezeBalance(uint8 resource, address receiver_address) public returns (bool){
+     return true;
+     }
+
+     function unfreezeBalance(uint8 resource, address receiver_address, uint256[] stages) public returns (bool){
+     return true;
+     }
+
+     function withdrawBalance(uint8 withdraw_type) public returns (bool){
+     return true;
+     }
+
+     function getReward() public returns(uint256, uint256){
+     return (0,0);
+     }
+     */
+
+
+    /**
+     * signature transaction method
+     */
+    public static final String VoteWitness = "voteWitness(address[],uint256[])";                 // df126771 25a795121eec67426870e1259d4149d8ce2f8f61a6106718d2932ae8
+    public static final String VoteWitness_FunctionSelector = "df126771";
+
+    public static final String FreezeBalance = "freezeBalance(uint256,uint256,uint256,address)";   // c3718670 0a91520cc9a15363af6c66d096179e66e77cb1d1bb45547b2c4ff2d5
+    public static final String FreezeBalance_FunctionSelector = "c3718670";
+
+    public static final String FreezeBalanceStage = "freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])";   // 10a6d73b 741b51421df7c824064dc86f4cd9b70d033ee002604cc61fbe3217af
+    public static final String FreezeBalanceStage_FunctionSelector = "10a6d73b";
+
+    public static final String UnfreezeBalance = "unfreezeBalance(uint256,address)";               // 62a60984 ef1f973ed2e0aad55d8777225b517dea86fa6a4396eaea0c6f4a0076
+    public static final String UnfreezeBalance_FunctionSelector = "62a60984";
+
+    public static final String UnfreezeBalanceStage = "unfreezeBalance(uint256,address,uint256[])";               // b1c68f74 3ec3afdfe31282ab0b2c9362ef7c5c113743ee22ae0697d1207a7c06
+    public static final String UnfreezeBalanceStage_FunctionSelector = "b1c68f74";
+
+    public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
+    public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
+
+    public static final String CreateWitness = "createWitness(string)";                                         // aadf8399 34f925791149fec0bdf92d69d83e186f3b855bcfc8a0abfba58b90e1
+    public static final String CreateWitness_FunctionSelector = "aadf8399";
+
+    public static final String UpdateWitness = "updateWitness(string)";                                         // 8cf1c37f 1d5df7ae06909b65e38ab4ea3e2c44c14f0ea4abca8d359fdd3af91e
+    public static final String UpdateWitness_FunctionSelector = "8cf1c37f";
+
+    public static final String UpdateBrokerage = "updateBrokerage(uint256)";                                         // a9cffe3f 31f225bb675a50eb5bede21129e6519ff796e64333b54f07ca1a6571
+    public static final String UpdateBrokerage_FunctionSelector = "a9cffe3f";
+
+    public static final String ProposalApprove = "proposalApprove(uint256,bool)";                                         // 10430496 fb4e39ada0740000372ebaf4c83412a47e5107e5973e67630b13a44c
+    public static final String ProposalApprove_FunctionSelector = "10430496";
+
+    public static final String ProposalCreateInteger = "proposalCreate(uint256,uint256)";                                         // 8994f5b0 aeb75d4dc227d3615da415df78b1a89a158913a5e0decabc2ac47ee4
+    public static final String ProposalCreateInteger_FunctionSelector = "8994f5b0";
+
+    public static final String ProposalCreateString = "proposalCreate(uint256,string)";                                         // 8ad94a88 2761b758983a828cf8a63b902d05d5348d7951ea34786844816c9c31
+    public static final String ProposalCreateString_FunctionSelector = "8ad94a88";
+
+    public static final String ProposalDelete = "proposalDelete(uint256)";                                         // 9a213110 8c518b5d240ad509a1b6adfb2dc6863f1da4b2df93cc873e03d0baff
+    public static final String ProposalDelete_FunctionSelector = "9a213110";
+
+    public static final String AccountUpdate = "accountUpdate(string)";                                         // 7e5f519e 800a657de36298214f19e062e3fdff3625565ada9a457d60841bce30
+    public static final String AccountUpdate_FunctionSelector = "7e5f519e";
+
+
+    /**
+     * no signature transaction method
+     */
+    public static final String GetReward = "getReward(address)";                                         // c00007b0 b14ce14d1d8e20828982c1e51944313ec54b52ee46020e0e01677495
+    public static final String GetReward_FunctionSelector = "c00007b0";
+
+    public static final String GetBrokerage = "getBrokerage(address)";                                         // 27e5684d b0d9950a0698eb39243a5c48892397fa19f25ab743f91b3a6d4d5895
+    public static final String GetBrokerage_FunctionSelector = "27e5684d";
+
+    public static final String GetNextMaintenanceTime = "getNextMaintenanceTime()";                                         // 8321e41c beab214449032e1158a9ab6a4dc7d0867f8c5e2a1bd44f8c97307fcc
+    public static final String GetNextMaintenanceTime_FunctionSelector = "8321e41c";
+
+  }
+
 }

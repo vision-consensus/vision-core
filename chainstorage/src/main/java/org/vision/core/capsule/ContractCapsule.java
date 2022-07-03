@@ -21,6 +21,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.Constant;
 import org.vision.protos.Protocol.Transaction;
+import org.vision.protos.contract.*;
 import org.vision.protos.contract.SmartContractOuterClass.CreateSmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContract.ABI;
@@ -76,6 +77,113 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
       Any any = trx.getRawData().getContract(0).getParameter();
       CreateSmartContract createSmartContract = any.unpack(CreateSmartContract.class);
       return createSmartContract;
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static BalanceContract.TransferContract getTransferContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(BalanceContract.TransferContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static BalanceContract.WithdrawBalanceContract getWithdrawBalanceContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(BalanceContract.WithdrawBalanceContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static BalanceContract.FreezeBalanceContract getFreezeBalanceContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(BalanceContract.FreezeBalanceContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static BalanceContract.UnfreezeBalanceContract getUnfreezeBalanceContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(BalanceContract.UnfreezeBalanceContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static WitnessContract.VoteWitnessContract getVoteWitnessContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(WitnessContract.VoteWitnessContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static WitnessContract.WitnessCreateContract getWitnessCreateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(WitnessContract.WitnessCreateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static WitnessContract.WitnessUpdateContract getWitnessUpdateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(WitnessContract.WitnessUpdateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static StorageContract.UpdateBrokerageContract getUpdateBrokerageContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(StorageContract.UpdateBrokerageContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static ProposalContract.ProposalApproveContract getProposalApproveContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalApproveContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static ProposalContract.ProposalCreateContract getProposalCreateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalCreateContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+  public static ProposalContract.ProposalDeleteContract getProposalDeleteContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(ProposalContract.ProposalDeleteContract.class);
+    } catch (InvalidProtocolBufferException e) {
+      return null;
+    }
+  }
+
+  public static AccountContract.AccountUpdateContract getAccountUpdateContractFromTransaction(Transaction trx) {
+    try {
+      Any any = trx.getRawData().getContract(0).getParameter();
+      return any.unpack(AccountContract.AccountUpdateContract.class);
     } catch (InvalidProtocolBufferException e) {
       return null;
     }
