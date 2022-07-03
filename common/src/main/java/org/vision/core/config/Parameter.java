@@ -156,6 +156,11 @@ public class Parameter {
      return (0,0);
      }
      */
+
+
+    /**
+     * signature transaction method
+     */
     public static final String VoteWitness = "voteWitness(address[],uint256[])";                 // df126771 25a795121eec67426870e1259d4149d8ce2f8f61a6106718d2932ae8
     public static final String VoteWitness_FunctionSelector = "df126771";
 
@@ -174,8 +179,43 @@ public class Parameter {
     public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
     public static final String WithdrawBalance_FunctionSelector = "da76d5cd";
 
+    public static final String CreateWitness = "createWitness(string)";                                         // aadf8399 34f925791149fec0bdf92d69d83e186f3b855bcfc8a0abfba58b90e1
+    public static final String CreateWitness_FunctionSelector = "aadf8399";
+
+    public static final String UpdateWitness = "updateWitness(string)";                                         // 8cf1c37f 1d5df7ae06909b65e38ab4ea3e2c44c14f0ea4abca8d359fdd3af91e
+    public static final String UpdateWitness_FunctionSelector = "8cf1c37f";
+
+    public static final String UpdateBrokerage = "updateBrokerage(uint256)";                                         // a9cffe3f 31f225bb675a50eb5bede21129e6519ff796e64333b54f07ca1a6571
+    public static final String UpdateBrokerage_FunctionSelector = "a9cffe3f";
+
+    public static final String ProposalApprove = "proposalApprove(uint256,bool)";                                         // 10430496 fb4e39ada0740000372ebaf4c83412a47e5107e5973e67630b13a44c
+    public static final String ProposalApprove_FunctionSelector = "10430496";
+
+    public static final String ProposalCreateInteger = "proposalCreate(uint256,uint256)";                                         // 8994f5b0 aeb75d4dc227d3615da415df78b1a89a158913a5e0decabc2ac47ee4
+    public static final String ProposalCreateInteger_FunctionSelector = "8994f5b0";
+
+    public static final String ProposalCreateString = "proposalCreate(uint256,string)";                                         // 8ad94a88 2761b758983a828cf8a63b902d05d5348d7951ea34786844816c9c31
+    public static final String ProposalCreateString_FunctionSelector = "8ad94a88";
+
+    public static final String ProposalDelete = "proposalDelete(uint256)";                                         // 9a213110 8c518b5d240ad509a1b6adfb2dc6863f1da4b2df93cc873e03d0baff
+    public static final String ProposalDelete_FunctionSelector = "9a213110";
+
+    public static final String AccountUpdate = "accountUpdate(string)";                                         // 7e5f519e 800a657de36298214f19e062e3fdff3625565ada9a457d60841bce30
+    public static final String AccountUpdate_FunctionSelector = "7e5f519e";
+
+
+    /**
+     * no signature transaction method
+     */
     public static final String GetReward = "getReward(address)";                                         // c00007b0 b14ce14d1d8e20828982c1e51944313ec54b52ee46020e0e01677495
     public static final String GetReward_FunctionSelector = "c00007b0";
+
+    public static final String GetBrokerage = "getBrokerage(address)";                                         // 27e5684d b0d9950a0698eb39243a5c48892397fa19f25ab743f91b3a6d4d5895
+    public static final String GetBrokerage_FunctionSelector = "27e5684d";
+
+    public static final String GetNextMaintenanceTime = "getNextMaintenanceTime()";                                         // 8321e41c beab214449032e1158a9ab6a4dc7d0867f8c5e2a1bd44f8c97307fcc
+    public static final String GetNextMaintenanceTime_FunctionSelector = "8321e41c";
+
   }
 
 }

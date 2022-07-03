@@ -9,7 +9,6 @@ import org.vision.api.GrpcAPI;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.*;
 import org.vision.core.ChainBaseManager;
-import org.vision.core.Constant;
 import org.vision.core.Wallet;
 import org.vision.core.capsule.TransactionCapsule;
 import org.vision.core.exception.ContractValidateException;
@@ -19,11 +18,10 @@ import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.TransactionInfo;
-import org.vision.protos.contract.AssetIssueContractOuterClass;
+import org.vision.protos.contract.*;
 import org.vision.protos.contract.AssetIssueContractOuterClass.UnfreezeAssetContract;
 import org.vision.protos.contract.AssetIssueContractOuterClass.TransferAssetContract;
 import org.vision.protos.contract.BalanceContract.*;
-import org.vision.protos.contract.ExchangeContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeWithdrawContract;
 import org.vision.protos.contract.ExchangeContract.ExchangeInjectContract;
 import org.vision.protos.contract.ShieldContract.ShieldedTransferContract;
@@ -34,8 +32,6 @@ import org.vision.core.config.Parameter.NativeTransactionContractAbi;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.vision.core.capsule.TransactionCapsule.EthTrx.ADDRESS_PREFIX_0;
 
 @Slf4j(topic = "API")
 public class JsonRpcApiUtil {
@@ -347,7 +343,37 @@ public class JsonRpcApiUtil {
         WithdrawBalanceContract.Builder buildWithdraw = ethTrx.rlpParseToWithdrawBalanceContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(buildWithdraw.build(), ContractType.WithdrawBalanceContract);
         break;
+      case NativeTransactionContractAbi.CreateWitness_FunctionSelector:
+        WitnessContract.WitnessCreateContract.Builder builderWitnessCreate = ethTrx.rlpParseToWitnessCreateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderWitnessCreate.build(), ContractType.WitnessCreateContract);
+        break;
+      case NativeTransactionContractAbi.UpdateWitness_FunctionSelector:
+        WitnessContract.WitnessUpdateContract.Builder builderWitnessUpdate = ethTrx.rlpParseToWitnessUpdateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderWitnessUpdate.build(), ContractType.WitnessUpdateContract);
+        break;
+      case NativeTransactionContractAbi.UpdateBrokerage_FunctionSelector:
+        StorageContract.UpdateBrokerageContract.Builder builderUpdateBrokerage = ethTrx.rlpParseToUpdateBrokerageContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderUpdateBrokerage.build(), ContractType.UpdateBrokerageContract);
+        break;
+      case NativeTransactionContractAbi.ProposalApprove_FunctionSelector:
+        ProposalContract.ProposalApproveContract.Builder builderProposalApprove = ethTrx.rlpParseToProposalApproveContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalApprove.build(), ContractType.ProposalApproveContract);
+        break;
+      case NativeTransactionContractAbi.ProposalCreateInteger_FunctionSelector:
+      case NativeTransactionContractAbi.ProposalCreateString_FunctionSelector:
+        ProposalContract.ProposalCreateContract.Builder builderProposalCreate = ethTrx.rlpParseToProposalCreateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalCreate.build(), ContractType.ProposalCreateContract);
+        break;
+      case NativeTransactionContractAbi.ProposalDelete_FunctionSelector:
+        ProposalContract.ProposalDeleteContract.Builder builderProposalDelete = ethTrx.rlpParseToProposalDeleteContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderProposalDelete.build(), ContractType.ProposalDeleteContract);
+        break;
+      case NativeTransactionContractAbi.AccountUpdate_FunctionSelector:
+        AccountContract.AccountUpdateContract.Builder builderAccountUpdate = ethTrx.rlpParseToAccountUpdateContract().toBuilder();
+        trxCap = wallet.createTransactionCapsule(builderAccountUpdate.build(), ContractType.AccountUpdateContract);
+        break;
       default:
+        break;
     }
     if (trxCap == null){
       return null;
@@ -374,17 +400,36 @@ public class JsonRpcApiUtil {
       data = data.substring(2);
     }
 
-    String functionSelector = data.substring(0, 8);
-    if (NativeTransactionContractAbi.GetReward_FunctionSelector.equals(functionSelector)) {
-      String address = data.substring(8);
-      address = address.replaceFirst(ADDRESS_PREFIX_0, Constant.ADD_PRE_FIX_STRING_MAINNET);
-      Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
-      DataWord reward = new DataWord(rewardMap.get("reward"));
-      DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
-      return ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
+    int functionSelectorLength = NativeTransactionContractAbi.TRANSACTION_FUNCTION_SELECTOR_LENGTH;
+
+    String functionSelector = data.substring(0, functionSelectorLength);
+
+    String result = null;
+
+    switch (functionSelector){
+      case NativeTransactionContractAbi.GetReward_FunctionSelector:
+        String address = TransactionCapsule.EthTrx.parseToVisionAddress(data.substring(functionSelectorLength));
+        Map<String, Long> rewardMap = chainBaseManager.getMortgageService().queryAllReward(ByteArray.fromHexString(address));
+        DataWord reward = new DataWord(rewardMap.get("reward"));
+        DataWord spreadReward = new DataWord(rewardMap.get("spreadReward"));
+        result = ByteArray.toJsonHex(reward.toHexString() + spreadReward.toHexString());
+        break;
+      case NativeTransactionContractAbi.GetBrokerage_FunctionSelector:
+        address = TransactionCapsule.EthTrx.parseToVisionAddress(data.substring(functionSelectorLength));
+        byte[] addressByte = ByteArray.fromHexString(address);
+        long cycle = chainBaseManager.getDynamicPropertiesStore().getCurrentCycleNumber();
+        int brokerage = chainBaseManager.getDelegationStore().getBrokerage(cycle, addressByte);
+        result = ByteArray.toJsonHex(new DataWord(brokerage).toHexString());
+        break;
+      case NativeTransactionContractAbi.GetNextMaintenanceTime_FunctionSelector:
+        long num = chainBaseManager.getDynamicPropertiesStore().getNextMaintenanceTime();
+        result = ByteArray.toJsonHex(new DataWord(num).toHexString());
+        break;
+      default:
+        break;
     }
 
-    return null;
+    return result;
   }
 
   /**
