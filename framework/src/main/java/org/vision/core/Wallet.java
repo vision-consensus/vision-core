@@ -1180,6 +1180,10 @@ public class Wallet {
             .setKey("getVPFreezeStageWeight")
             .setStringValue(dbManager.getDynamicPropertiesStore().getVPFreezeStageWeight())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowEthereumCompatibleTransactionNativeStep1")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransactionNativeStep1())
+            .build());
     return builder.build();
   }
 
