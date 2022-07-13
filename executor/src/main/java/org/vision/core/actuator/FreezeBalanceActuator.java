@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.Commons;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.common.utils.Time;
 import org.vision.core.capsule.*;
+import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.*;
@@ -165,7 +167,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       case SPREAD:
         if (!ArrayUtils.isEmpty(parentAddress)){
-          spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime,freezeBalanceContract.getFrozenDuration());
+          try{
+            if (getModifySpreadParentFee() > 0 ){
+              fee += getModifySpreadParentFee();
+            }
+            spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime, freezeBalanceContract.getFrozenDuration());
+          } catch (BalanceInsufficientException | ArithmeticException e) {
+            logger.debug(e.getMessage(), e);
+            ret.setStatus(fee, code.FAILED);
+            throw new ContractExeException(e.getMessage());
+          }
         }
 
         long newFrozenBalanceForSpreadMint =
@@ -367,6 +378,13 @@ public class FreezeBalanceActuator extends AbstractActuator {
               throw new ContractValidateException("The new and old parentAddress cannot be the same address");
             }
           }
+
+          if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
+            long modifySpreadFee = getModifySpreadParentFee();
+            if (modifySpreadFee > 0 && accountCapsule.getBalance() < modifySpreadFee + frozenBalance){
+              throw new ContractValidateException("The ownerAddress balance is insufficient");
+            }
+          }
         }
 
         if (spreadRelationShipCapsule != null){
@@ -466,6 +484,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     return 0;
   }
 
+  public long getModifySpreadParentFee(){
+    return chainBaseManager.getDynamicPropertiesStore().getModifySpreadMintParentFee();
+  }
+
   private void delegateResource(byte[] ownerAddress, byte[] receiverAddress, boolean isPhoton,
                                 long balance, long expireTime) {
     AccountStore accountStore = chainBaseManager.getAccountStore();
@@ -538,7 +560,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);
   }
 
-  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime,long frozenDuration){
+  /**
+   * operator spread mint relationship
+   */
+  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime,long frozenDuration) throws BalanceInsufficientException {
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(ownerAddress);
@@ -558,6 +583,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 ByteString.copyFrom(ownerAddress),
                 ByteString.copyFrom(parentAddress));
         spreadRelationShipCapsule.setFrozenBalanceForSpread(frozenBalanceForSpread + balance, expireTime, cycle);
+
+        long fee = getModifySpreadParentFee();
+        if (fee > 0){
+          if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()){
+            chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
+          } else {
+            Commons.adjustBalance(chainBaseManager.getAccountStore(), chainBaseManager.getAccountStore().getSingularity(), +fee);
+          }
+        }
       }
     } else {
       spreadRelationShipCapsule = new SpreadRelationShipCapsule(

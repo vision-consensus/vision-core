@@ -3202,6 +3202,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  public void saveModifySpreadMintParentFee(Long value) {
+    this.put(DynamicResourceProperties.MODIFY_SPREAD_MINT_PARENT_FEE,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public Long getModifySpreadMintParentFee() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.MODIFY_SPREAD_MINT_PARENT_FEE))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   private static class DynamicResourceProperties {
     private static final byte[] ONE_DAY_PHOTON_LIMIT = "ONE_DAY_PHOTON_LIMIT".getBytes();
     //public free photon
@@ -3267,6 +3279,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE4_ENTROPY_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1 = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1".getBytes();
+    public static final byte[] MODIFY_SPREAD_MINT_PARENT_FEE = "MODIFY_SPREAD_MINT_PARENT_FEE".getBytes();
   }
 
 }
