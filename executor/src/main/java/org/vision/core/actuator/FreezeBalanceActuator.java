@@ -381,7 +381,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
           if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
             long modifySpreadFee = getModifySpreadParentFee();
-            if (modifySpreadFee > 0 && accountCapsule.getBalance() < modifySpreadFee){
+            if (modifySpreadFee > 0 && accountCapsule.getBalance() < modifySpreadFee + frozenBalance){
               throw new ContractValidateException("The ownerAddress balance is insufficient");
             }
           }
