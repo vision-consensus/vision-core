@@ -453,7 +453,7 @@ public class ProposalUtil {
         }
         if (value < 0 || value > 100_000_000L) {
           throw new ContractValidateException(
-                  "Bad MODIFY_SPREAD_MINT_PARENT_FEE parameter value, valid range is [1, 100L]");
+                  "Bad MODIFY_SPREAD_MINT_PARENT_FEE parameter value, valid range is [1, 100_000_000L]");
         }
         break;
       }
