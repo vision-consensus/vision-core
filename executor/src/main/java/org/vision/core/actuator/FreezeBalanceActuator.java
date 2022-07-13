@@ -560,6 +560,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);
   }
 
+  /**
+   * operator spread mint relationship
+   */
   private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime) throws BalanceInsufficientException {
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
