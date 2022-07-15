@@ -1110,12 +1110,9 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 case FreezeBalanceContract:
                     FreezeBalanceContract freezeBalanceContract = contractParameter.unpack(FreezeBalanceContract.class);
                     ByteString receiverAddress;
-                    if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
-                        receiverAddress = freezeBalanceContract.getParentAddress();
-                    }else {
-                        receiverAddress = contractParameter.unpack(FreezeBalanceContract.class)
+
+                    receiverAddress = contractParameter.unpack(FreezeBalanceContract.class)
                                 .getReceiverAddress();
-                    }
                     if (!receiverAddress.isEmpty()) {
                         list.add(receiverAddress);
                     }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.vision.common.utils.Commons;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
-import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.WitnessCapsule;
 import org.vision.core.config.Parameter.ChainConstant;
 import org.vision.core.exception.BalanceInsufficientException;
@@ -19,7 +18,6 @@ import org.vision.protos.Protocol.Vote;
 
 import java.util.*;
 
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
 
 @Slf4j(topic = "mortgage")
 @Component
@@ -33,10 +31,6 @@ public class MortgageService {
   private DelegationStore delegationStore;
 
   @Setter
-  @Getter
-  private SpreadRelationShipStore spreadRelationShipStore;
-
-  @Setter
   private DynamicPropertiesStore dynamicPropertiesStore;
 
   @Setter
@@ -48,12 +42,11 @@ public class MortgageService {
 
   public void initStore(WitnessStore witnessStore, DelegationStore delegationStore,
                         DynamicPropertiesStore dynamicPropertiesStore, AccountStore accountStore,
-                        SpreadRelationShipStore spreadRelationShipStore, WitnessScheduleStore witnessScheduleStore) {
+                        WitnessScheduleStore witnessScheduleStore) {
     this.witnessStore = witnessStore;
     this.delegationStore = delegationStore;
     this.dynamicPropertiesStore = dynamicPropertiesStore;
     this.accountStore = accountStore;
-    this.spreadRelationShipStore = spreadRelationShipStore;
     this.witnessScheduleStore = witnessScheduleStore;
   }
 
@@ -113,74 +106,9 @@ public class MortgageService {
     adjustAllowance(witnessAddress, brokerageAmount);
   }
 
-  public void paySpreadMintReward(long value) {
-    long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    delegationStore.addSpreadMintReward(cycle, value);
-    dynamicPropertiesStore.addTotalSpreadMintPayAssets(value);
-  }
-
-  public void withdrawSpreadMintReward(byte[] address) {
-    if (!dynamicPropertiesStore.allowChangeDelegation()) {
-      return;
-    }
-    AccountCapsule accountCapsule = accountStore.get(address);
-    long beginCycle = delegationStore.getSpreadMintBeginCycle(address);
-    long endCycle = delegationStore.getSpreadMintEndCycle(address);
-    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    if (beginCycle > currentCycle || accountCapsule == null) {
-      return;
-    }
-
-    if (beginCycle == currentCycle) {
-      AccountCapsule account = delegationStore.getAccountSpreadMint(beginCycle, address);
-      if (account != null) {
-        return;
-      }
-    }
-
-    long spreadReward =0;
-    //withdraw the latest cycle reward
-    if (beginCycle + 1 == endCycle && beginCycle < currentCycle) {
-      AccountCapsule account = delegationStore.getAccountSpreadMint(beginCycle, address);
-      if (account != null) {
-        spreadReward = computeSpreadMintReward(beginCycle, account, true);
-        adjustAllowance(address, spreadReward);
-        adjustSpreadMintAllowance(address, spreadReward);
-        logger.info("latest cycle spread reward {},{},{}", beginCycle, account.getSpreadFrozenBalance(), spreadReward);
-        spreadReward = 0;
-      }
-      beginCycle += 1;
-    }
-    endCycle = currentCycle;
-
-    if (accountCapsule.getSpreadFrozenBalance() == 0) {
-      delegationStore.setSpreadMintBeginCycle(address, endCycle + 1);
-      return;
-    }
-
-    if (beginCycle < endCycle) {
-      for (long cycle = beginCycle; cycle < endCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, true);
-      }
-      adjustAllowance(address, spreadReward);
-      adjustSpreadMintAllowance(address, spreadReward);
-    }
-
-    delegationStore.setSpreadMintBeginCycle(address, endCycle);
-    delegationStore.setSpreadMintEndCycle(address, endCycle + 1);
-    delegationStore.setAccountSpreadMint(endCycle, address, accountCapsule);
-    logger.info("adjust {} allowance {}, now currentCycle {}, beginCycle {}, endCycle {}, "
-            + "account spread {},", Hex.toHexString(address), spreadReward, currentCycle,
-        beginCycle, endCycle, accountCapsule.getSpreadFrozenBalance());
-  }
-
   public void withdrawReward(byte[] address, boolean isWithdrawalSpread) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;
-    }
-
-    if(isWithdrawalSpread && dynamicPropertiesStore.supportSpreadMint()){
-      withdrawSpreadMintReward(address);
     }
 
     AccountCapsule accountCapsule = accountStore.get(address);
@@ -236,84 +164,12 @@ public class MortgageService {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return rewardMap;
     }
-
-    // query spreadReward
-    long spreadReward = 0;
-    if (dynamicPropertiesStore.supportSpreadMint()){
-      spreadReward = querySpreadReward(address);
-      rewardMap.put("spreadReward", spreadReward);
-    }
-
     // query reward
     long reward = queryReward(address);
-    if (spreadReward > 0){
-      reward += spreadReward;
-      reward -= accountStore.get(address).getSpreadMintAllowance();
-    }
+
     rewardMap.put("reward", reward);
 
     return rewardMap;
-  }
-
-  public long querySpreadReward(byte[] address){
-    if (!dynamicPropertiesStore.allowChangeDelegation()) {
-      return 0;
-    }
-    if (!dynamicPropertiesStore.supportSpreadMint()){
-      return 0;
-    }
-
-    AccountCapsule accountCapsule = accountStore.get(address);
-    long spreadAllowance = 0;
-    if (accountCapsule == null) {
-      return spreadAllowance;
-    }
-    spreadAllowance = accountCapsule.getSpreadMintAllowance();
-    long spreadReward = querySpreadUnLiquiatedReward(address);
-    return spreadAllowance + spreadReward;
-  }
-
-  public long querySpreadUnLiquiatedReward(byte[] address){
-    if (!dynamicPropertiesStore.allowChangeDelegation()) {
-      return 0;
-    }
-    if (!dynamicPropertiesStore.supportSpreadMint()){
-      return 0;
-    }
-
-    AccountCapsule accountCapsule = accountStore.get(address);
-    long spreadMintBeginCycle = delegationStore.getSpreadMintBeginCycle(address);
-    long spreadMintEndCycle = delegationStore.getSpreadMintEndCycle(address);
-    long currentCycle = dynamicPropertiesStore.getCurrentCycleNumber();
-    long spreadReward = 0L;
-    if (accountCapsule == null) {
-      return spreadReward;
-    }
-    if (spreadMintBeginCycle > currentCycle) {
-//      spreadReward = accountCapsule.getSpreadMintAllowance();
-      return spreadReward;
-    }
-    //withdraw the latest cycle spread reward
-    if (spreadMintBeginCycle + 1 == spreadMintEndCycle && spreadMintBeginCycle < currentCycle) {
-      AccountCapsule account = delegationStore.getAccountSpreadMint(spreadMintBeginCycle, address);
-      if (account != null) {
-        spreadReward = computeSpreadMintReward(spreadMintBeginCycle, account, false);
-      }
-      spreadMintBeginCycle += 1;
-    }
-    spreadMintEndCycle = currentCycle;
-
-    if (accountCapsule.getSpreadFrozenBalance() == 0) {
-//      spreadReward += accountCapsule.getSpreadMintAllowance();
-      return spreadReward;
-    }
-    if (spreadMintBeginCycle < spreadMintEndCycle) {
-      for (long cycle = spreadMintBeginCycle; cycle < spreadMintEndCycle; cycle++) {
-        spreadReward += computeSpreadMintReward(cycle, accountCapsule, false);
-      }
-//      spreadReward += accountCapsule.getSpreadMintAllowance();
-    }
-    return spreadReward;
   }
 
   public long queryReward(byte[] address) {
@@ -329,8 +185,6 @@ public class MortgageService {
     if (accountCapsule == null) {
       return 0;
     }
-
-//    reward += querySpreadUnLiquiatedReward(address);
 
     if (beginCycle > currentCycle) {
       reward += accountCapsule.getAllowance();
@@ -379,95 +233,6 @@ public class MortgageService {
     return reward;
   }
 
-  private long computeSpreadMintReward(long cycle, AccountCapsule accountCapsule, boolean isWithdrawReward) {
-    if (!dynamicPropertiesStore.supportSpreadMint()){
-      return 0;
-    }
-
-    long totalFreeze = delegationStore.getTotalFreezeBalanceForSpreadMint(cycle);
-    if(totalFreeze==0L){
-      return 0;
-    }
-
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(accountCapsule.getAddress().toByteArray());
-    if (spreadRelationShipCapsule != null){
-      if (cycle < spreadRelationShipCapsule.getFrozenCycle()){ // filter cycle
-        return 0;
-      }
-    }
-
-    long accountSpreadFreezeVdt = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
-    long totalReward = delegationStore.getSpreadMintReward(cycle);
-    long spreadReward = (long)((accountSpreadFreezeVdt * 1.0 / VS_PRECISION / totalFreeze) * totalReward);
-    if (spreadReward == 0){
-      return 0;
-    }
-
-    String spreadLevelProp = dynamicPropertiesStore.getSpreadMintLevelProp();
-    String[] levelProps = spreadLevelProp.split(",");
-    int[] props = new int[levelProps.length];
-    int sumProps = 0;
-    for(int i = 0; i < levelProps.length; i++)
-    {
-      props[i] = Integer.parseInt(levelProps[i]);
-      if (props[i] < 0 || props[i] > 100){
-        break;
-      }
-      sumProps += props[i];
-    }
-
-    if (sumProps != 100){
-      logger.error("computeSpreadMintReward, sum of spreadLevelProp is not equal to 100: {}, {}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), spreadLevelProp);
-      return spreadReward;
-    }
-
-    if(!isWithdrawReward){
-      return (long)(spreadReward * (props[0] / 100.0));
-    }
-    adjustSpreadMintParentAllowance(accountCapsule, props, spreadReward, accountSpreadFreezeVdt);
-    return (long)(spreadReward * (props[0] / 100.0));
-  }
-
-  private void adjustSpreadMintParentAllowance(AccountCapsule accountCapsule, int[] props, long spreadReward, long accountSpreadFreezeVdt){
-    try {
-      AccountCapsule parentCapsule = accountCapsule;
-      ArrayList<String> addressList = new ArrayList<>();
-      long reallyReward = (long)(spreadReward * (props[0] / 100.0));
-      for (int i = 1; i < props.length; i++) {
-        SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
-        if (spreadRelationShipCapsule == null){
-          break;
-        }
-
-        addressList.add(Hex.toHexString(spreadRelationShipCapsule.getOwner().toByteArray()));
-        if (addressList.contains(Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray()))){ // deal loop parent address
-          break;
-        }
-
-        parentCapsule = accountStore.get(spreadRelationShipCapsule.getParent().toByteArray());
-        long spreadAmount = (long)(props[i] / 100.0 * spreadReward * minSpreadMintProp(parentCapsule, accountSpreadFreezeVdt));
-        adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
-        adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
-        reallyReward += spreadAmount;
-      }
-
-      if (dynamicPropertiesStore.getSMBurnOptimization() == 1L) {
-        dynamicPropertiesStore.burnSpreadAmount(spreadReward - reallyReward);
-        if (!dynamicPropertiesStore.supportBlackHoleOptimization()) {
-          Commons.adjustBalance(accountStore, accountStore.getSingularity(), Math.max(spreadReward - reallyReward, 0));
-        }
-      }
-    }catch (Exception e){
-      logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);
-    }
-  }
-
-  public double minSpreadMintProp(AccountCapsule parentCapsule, long accountSpreadFreezeVdt){
-    long parentAccountSpreadFreezeVdt = parentCapsule.getSpreadFrozenBalance();
-    double minSpreadMintProp = parentAccountSpreadFreezeVdt * 1.0 / accountSpreadFreezeVdt;
-    return minSpreadMintProp < 1 ? minSpreadMintProp : 1.0;
-  }
-
   public WitnessCapsule getWitnessByAddress(ByteString address) {
     return witnessStore.get(address.toByteArray());
   }
@@ -496,33 +261,6 @@ public class MortgageService {
           StringUtil.createReadableString(accountAddress) + " insufficient balance");
     }
     account.setAllowance(allowance + amount);
-    accountStore.put(account.createDbKey(), account);
-  }
-
-  public void adjustSpreadMintAllowance(byte[] address, long amount) {
-    try {
-      if (amount <= 0) {
-        return;
-      }
-      adjustSpreadMintAllowance(accountStore, address, amount);
-    } catch (BalanceInsufficientException e) {
-      logger.error("withdrawReward adjustSpreadMintAllowance error: {},{}", Hex.toHexString(address), address, e);
-    }
-  }
-
-  public void adjustSpreadMintAllowance(AccountStore accountStore, byte[] accountAddress, long amount)
-          throws BalanceInsufficientException {
-    AccountCapsule account = accountStore.getUnchecked(accountAddress);
-    long allowance = account.getSpreadMintAllowance();
-    if (amount == 0) {
-      return;
-    }
-
-    if (amount < 0 && allowance < -amount) {
-      throw new BalanceInsufficientException(
-              StringUtil.createReadableString(accountAddress) + " insufficient balance");
-    }
-    account.setSpreadMintAllowance(allowance + amount);
     accountStore.put(account.createDbKey(), account);
   }
 

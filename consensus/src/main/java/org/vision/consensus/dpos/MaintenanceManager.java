@@ -188,8 +188,6 @@ public class MaintenanceManager {
             delegationStore.getBrokerage(witness.createDbKey()));
         delegationStore.setWitnessVote(nextCycle, witness.createDbKey(), witness.getVoteCount());
         delegationStore.setWitnessVoteWeight(nextCycle, witness.createDbKey(), witness.getVoteCountWeight());
-        //spread mint total freeze
-        delegationStore.setTotalFreezeBalanceForSpreadMint(nextCycle, consensusDelegate.getDynamicPropertiesStore().getTotalSpreadMintWeight());
       });
     }
     calculationCyclePledgeRate();
@@ -309,10 +307,6 @@ public class MaintenanceManager {
     BigDecimal bigTotalFVGuarantee = new BigDecimal(dynamicPropertiesStore.getTotalFVGuaranteeWeight()).multiply(new BigDecimal(VS_PRECISION));
     BigDecimal bigTotalAssets = new BigDecimal(dynamicPropertiesStore.getTotalAssets());
     BigDecimal totalPledgeAmount = bigTotalPhoton.add(bigTotalEntropy).add(bigTotalFVGuarantee);
-    if (dynamicPropertiesStore.getAllowSpreadMintParticipatePledgeRate() == 1){
-      BigDecimal bigTotalSpreadMint = new BigDecimal(dynamicPropertiesStore.getTotalSpreadMintWeight()).multiply(new BigDecimal(VS_PRECISION));
-      totalPledgeAmount = totalPledgeAmount.add(bigTotalSpreadMint);
-    }
 
     BigDecimal bigGalaxyLiquidityAmount = getBigGalaxyLiquidityAmount();
     BigDecimal bigAvalonLiquidityAmount = getBigAvalonLiquidityAmount();

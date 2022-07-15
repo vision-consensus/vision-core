@@ -312,20 +312,6 @@ public class ProposalUtil {
         }
         break;
       }
-      case SPREAD_MINT_PAY_PER_BLOCK: {
-        if (value < 0 || value > 100_000_000L) {
-          throw new ContractValidateException(
-              "Bad SPREAD_MINT_PAY_PER_BLOCK parameter value, valid range is [0,100_000_000L]");
-        }
-        break;
-      }
-      case ALLOW_SPREAD_MINT_LEVEL_PROP: {
-        if (value != 1 && value != 0) {
-          throw new ContractValidateException(
-                  "This value[ALLOW_SPREAD_MINT_LEVEL_PROP] is only allowed to be 1 or 0");
-        }
-        break;
-      }
       case PLEDGE_RATE_THRESHOLD: {
         if (value < 0 || value > 100L) {
           throw new ContractValidateException(
@@ -333,24 +319,10 @@ public class ProposalUtil {
         }
         break;
       }
-      case SPREAD_FREEZE_PERIOD_LIMIT: {
-        if (value < 1 || value > 30L) {
-          throw new ContractValidateException(
-                  "Bad SPREAD_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,30L]");
-        }
-        break;
-      }
       case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION: {
         if (value != 1 && value != 0) {
           throw new ContractValidateException(
                   "This value[ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION] is only allowed to be 1 or 0");
-        }
-        break;
-      }
-      case ALLOW_MODIFY_SPREAD_MINT_PARENT: {
-        if (value != 1 && value != 0) {
-          throw new ContractValidateException(
-                  "This value[ALLOW_MODIFY_SPREAD_MINT_PARENT] is only allowed to be 1 or 0");
         }
         break;
       }
@@ -393,20 +365,6 @@ public class ProposalUtil {
         }
         break;
       }
-      case ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE: {
-        if (value != 1 && value != 0) {
-          throw new ContractValidateException(
-                  "This value[ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE] is only allowed to be 1 or 0");
-        }
-        break;
-      }
-      case SM_BURN_OPTIMIZATION: {
-        if (value != 1 && value != 0) {
-          throw new ContractValidateException(
-              "This value[SM_BURN_OPTIMIZATION] is only allowed to be 1 or 0");
-        }
-        break;
-      }
       case REFREEZE_CONSIDERATION_PERIOD: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
           throw new ContractValidateException("Bad chain parameter id [REFREEZE_CONSIDERATION_PERIOD]");
@@ -424,16 +382,6 @@ public class ProposalUtil {
         if (value != 1 ) {
           throw new ContractValidateException(
                   "This value[ALLOW_VP_FREEZE_STAGE_WEIGHT] is only allowed to be 1");
-        }
-        break;
-      }
-      case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
-          throw new ContractValidateException("Bad chain parameter id [SPREAD_REFREEZE_CONSIDERATION_PERIOD]");
-        }
-        if (value <= 0 || value > 30) {
-          throw new ContractValidateException(
-              "Bad SPREAD_REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
         }
         break;
       }
@@ -458,32 +406,6 @@ public class ProposalUtil {
           throws ContractValidateException {
     ProposalType proposalType = ProposalType.getEnum(code);
     switch (proposalType) {
-      case SPREAD_MINT_LEVEL_PROP: {
-        String[] levelProps = value.split(",");
-        if(levelProps.length < 1 || levelProps.length > 10){
-          throw new ContractValidateException("Bad SPREAD_MINT_LEVEL_PROP parameter value, valid level props length range is [1, 10]");
-        }
-        int[] props = new int[levelProps.length];
-        int sumProps = 0;
-        for(int i = 0; i < levelProps.length; i++)
-        {
-          String tmp = levelProps[i].trim();
-          if(!NumberUtils.isNumber(tmp)){
-            throw new ContractValidateException("Bad SPREAD_MINT_LEVEL_PROP parameter value, Level Prop must be a Number");
-          }
-          props[i] = Integer.parseInt(tmp);
-          if (props[i] < 0 || props[i] > 100){
-            break;
-          }
-          sumProps += props[i];
-        }
-
-        if (sumProps != 100){
-          throw new ContractValidateException(
-                  "Bad SPREAD_MINT_LEVEL_PROP parameter value, allowed like [80,10,8,2]");
-        }
-        break;
-      }
       case INFLATION_RATE: {
         String[] inflationRates = value.split(",");
         if (inflationRates.length != 2) {
@@ -620,26 +542,26 @@ public class ProposalUtil {
     MAX_FEE_LIMIT(39), // [0, 10_000_000_000]
     ALLOW_TRANSACTION_FEE_POOL(40), // 0, 1
     ALLOW_BLACKHOLE_OPTIMIZATION(41),// 0,1
-    SPREAD_MINT_PAY_PER_BLOCK(42),// [0,100_000_000]
+//    SPREAD_MINT_PAY_PER_BLOCK(42),// [0,100_000_000]
     ECONOMY_CYCLE(43), // [1,500]
-    ALLOW_SPREAD_MINT_LEVEL_PROP(44),// 0,1
-    SPREAD_MINT_LEVEL_PROP(45),// "80,10,8,2"
+//    ALLOW_SPREAD_MINT_LEVEL_PROP(44),// 0,1
+//    SPREAD_MINT_LEVEL_PROP(45),// "80,10,8,2"
     INFLATION_RATE(46),//"689,2322"
     PLEDGE_RATE_THRESHOLD(47),// [0, 100L]
-    SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
+//    SPREAD_FREEZE_PERIOD_LIMIT(48),// [0, 100L]
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION(49),// 0,1
-    ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
+//    ALLOW_MODIFY_SPREAD_MINT_PARENT(50),// 0,1
     TOTAL_PHOTON_LIMIT(51),// [0, 1_000_000_000_000L]
     SPECIAL_FREEZE_PERIOD_LIMIT(52),// [0, 365L]
     FVGUARANTEE_FREEZE_PERIOD_LIMIT(53),
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
-    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
+//    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
     SM_BURN_OPTIMIZATION(57),// 0,1
     ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
     VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
     REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
-    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
+//    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62);
 
     private long code;

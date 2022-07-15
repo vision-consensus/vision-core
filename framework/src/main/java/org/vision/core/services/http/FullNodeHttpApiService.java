@@ -168,8 +168,6 @@ public class FullNodeHttpApiService implements Service {
   @Autowired
   private GetAccountResourceServlet getAccountResourceServlet;
   @Autowired
-  private GetSpreadMintParentServlet getSpreadMintParentServlet;
-  @Autowired
   private GetNodeInfoServlet getNodeInfoServlet;
   @Autowired
   private AddTransactionSignServlet addTransactionSignServlet;
@@ -436,8 +434,6 @@ public class FullNodeHttpApiService implements Service {
           "/wallet/getnonproposalchainparameters");
       context.addServlet(new ServletHolder(getAccountResourceServlet),
           "/wallet/getaccountresource");
-      context.addServlet(new ServletHolder(getSpreadMintParentServlet),
-              "/wallet/getspreadmintparent");
       context.addServlet(new ServletHolder(addTransactionSignServlet),
           "/wallet/addtransactionsign");
       context.addServlet(new ServletHolder(getTransactionSignWeightServlet),

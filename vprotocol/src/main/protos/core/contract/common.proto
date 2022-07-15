@@ -9,5 +9,4 @@ enum ResourceCode {
   PHOTON = 0x00;
   ENTROPY = 0x01;
   FVGUARANTEE = 0x02;
-  SPREAD = 0x03;
 }

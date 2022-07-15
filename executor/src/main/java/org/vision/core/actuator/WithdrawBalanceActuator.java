@@ -17,15 +17,12 @@ import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.AccountFrozenStageResourceCapsule;
-import org.vision.core.capsule.SpreadRelationShipCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountFrozenStageResourceStore;
 import org.vision.core.store.AccountStore;
 import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.SpreadRelationShipStore;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.WithdrawBalanceContract;
@@ -63,39 +60,20 @@ public class WithdrawBalanceActuator extends AbstractActuator {
         get(withdrawBalanceContract.getOwnerAddress().toByteArray());
     long oldBalance = accountCapsule.getBalance();
     long allowance = accountCapsule.getAllowance();
-    long spreadAllowance = accountCapsule.getSpreadMintAllowance();
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
-    long withdrawAmount = allowance;
-    if (withdrawBalanceContract.getType() == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
-      accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-              .setBalance(oldBalance + spreadAllowance)
-              .setAllowance(allowance - spreadAllowance)
-              .setSpreadMintAllowance(0L)
-              .setLatestWithdrawTime(now)
-              .build());
-      withdrawAmount = spreadAllowance;
-    } else {
-      accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+
+    accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
               .setBalance(oldBalance + allowance)
               .setAllowance(0L)
-              .setSpreadMintAllowance(0L)
               .setLatestWithdrawTime(now)
               .build());
-    }
 
-    if (dynamicStore.getAllowWithdrawTransactionInfoSeparateAmount() == 1){
-      ret.setWithdrawAmount(withdrawAmount);
-    }else{
-      ret.setWithdrawAmount(allowance);
-    }
+    ret.setWithdrawAmount(allowance);
 
     if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
       AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
           accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
-
-      SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
-          accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
     }
 
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
@@ -131,17 +109,6 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     if (!DecodeUtil.addressValid(ownerAddress)) {
       throw new ContractValidateException("Invalid address");
     }
-    WithdrawBalanceContract.WithdrawBalanceType type = withdrawBalanceContract.getType();
-    if (type != WithdrawBalanceContract.WithdrawBalanceType.ALL && type != WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
-      throw new ContractValidateException("Invalid WithdrawBalance type");
-    }
-    long spreadReward = 0;
-    if (type == WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT){
-      spreadReward = mortgageService.querySpreadReward(ownerAddress);
-      if (spreadReward <= 0){
-        throw new ContractValidateException("Spread mint reward must be positive");
-      }
-    }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     if (accountCapsule == null) {
@@ -172,12 +139,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 
     if (accountCapsule.getAllowance() <= 0 &&
         mortgageService.queryReward(ownerAddress) <= 0) {
-      if (type == WithdrawBalanceContract.WithdrawBalanceType.ALL){
-        spreadReward = mortgageService.querySpreadReward(ownerAddress);
-      }
-      if (spreadReward <= 0 ){
         throw new ContractValidateException("witnessAccount does not have any reward");
-      }
     }
     try {
       LongMath.checkedAdd(accountCapsule.getBalance(), accountCapsule.getAllowance());

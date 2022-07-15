@@ -72,7 +72,6 @@ import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.TransactionExtention.Builder;
 import org.vision.api.GrpcAPI.TransactionInfoList;
 import org.vision.api.GrpcAPI.WitnessList;
-import org.vision.api.GrpcAPI.SpreadRelationShipList;
 import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage;
 import org.vision.api.GrpcAPI.AccountFrozenStageResourceMessage.FrozenStage;
 import org.vision.common.crypto.Hash;
@@ -145,7 +144,6 @@ import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.TransactionInfo;
-import org.vision.protos.Protocol.SpreadRelationShip;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
@@ -333,53 +331,6 @@ public class Wallet {
         + BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEntropy());
 
     return accountCapsule.getInstance();
-  }
-
-  public SpreadRelationShip getSpreadMintParent(Account account, int level) {
-    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(account.getAddress().toByteArray());
-    if (spreadRelationShipCapsule == null) {
-      return null;
-    }
-
-    return spreadRelationShipCapsule.getInstance();
-  }
-
-  public SpreadRelationShipList getSpreadMintParentList(byte[] address, int level) {
-    SpreadRelationShipList.Builder builder = SpreadRelationShipList.newBuilder();
-
-    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(address);
-    if (spreadRelationShipCapsule == null) {
-      return null;
-    }
-
-    List<SpreadRelationShipCapsule> spreadRelationShipCapsuleList = new ArrayList<>();
-    spreadRelationShipCapsuleList.add(spreadRelationShipCapsule);
-    level = Math.min(level, QUERY_SPREAD_MINT_PARENT_LEVEL_MAX);
-
-    SpreadRelationShipCapsule capsule = spreadRelationShipCapsule;
-    int i = 1;
-    List<String> addressList = new ArrayList<>();
-    addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
-    while (i < level){
-      capsule = spreadRelationShipStore.get(capsule.getParent().toByteArray());
-      if (capsule == null){
-        break;
-      }
-      spreadRelationShipCapsuleList.add(capsule);
-      i++;
-
-      addressList.add(Hex.toHexString(capsule.getOwner().toByteArray()));
-      if (addressList.contains(Hex.toHexString(capsule.getParent().toByteArray()))) { // deal loop parent address
-        break;
-      }
-    }
-
-    spreadRelationShipCapsuleList
-            .forEach(spreadCapsule -> builder.addSpreadRelationShip(spreadCapsule.getInstance()));
-
-    return builder.build();
   }
 
   /**
@@ -1085,22 +1036,6 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getEconomyCycle())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadMintPayPerBlock")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlock())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadMintPayPerBlockInflation")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowSpreadMintLevelProp")
-            .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintLevelProp())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadMintLevelProp")
-            .setStringValue(dbManager.getDynamicPropertiesStore().getSpreadMintLevelProp())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getInflationRate")
             .setStringValue(dbManager.getDynamicPropertiesStore().getLowInflationRate()+","+dbManager.getDynamicPropertiesStore().getHighInflationRate())
             .build());
@@ -1125,10 +1060,6 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getHighInflationRate())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadFreezePeriodLimit")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadFreezePeriodLimit())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getFvGuaranteeFreezePeriodLimit")
             .setValue(dbManager.getDynamicPropertiesStore().getFvGuaranteeFreezePeriodLimit())
             .build());
@@ -1139,10 +1070,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowEthereumCompatibleTransaction")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowEthereumCompatibleTransaction())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowModifySpreadMintParent")
-            .setValue(dbManager.getDynamicPropertiesStore().getAllowModifySpreadMintParent())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalPhotonLimit")
@@ -1157,20 +1084,8 @@ public class Wallet {
             .setValue(dbManager.getDynamicPropertiesStore().getAllowWithdrawTransactionInfoSeparateAmount())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowSpreadMintParticipatePledgeRate")
-            .setValue(dbManager.getDynamicPropertiesStore().getAllowSpreadMintParticipatePledgeRate())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSMBurnOptimization")
-            .setValue(dbManager.getDynamicPropertiesStore().getSMBurnOptimization())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getRefreezeConsiderationPeriod")
             .setValue(dbManager.getDynamicPropertiesStore().getRefreezeConsiderationPeriod())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadRefreezeConsiderationPeriod")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadRefreezeConsiderationPeriod())
             .build());
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getAllowVPFreezeStageWeight")
@@ -1194,11 +1109,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalPhotonWeight")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalPhotonWeight())
-            .build());
-
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getTotalSpreadMintWeight")
-            .setValue(dbManager.getDynamicPropertiesStore().getTotalSpreadMintWeight())
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1292,11 +1202,6 @@ public class Wallet {
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getSpreadMintPayPerBlockInflation")
-            .setValue(dbManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation())
-            .build());
-
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalAssets")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalAssets())
             .build());
@@ -1309,11 +1214,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getTotalWitness123PayAssets")
             .setValue(dbManager.getDynamicPropertiesStore().getTotalWitness123PayAssets())
-            .build());
-
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getTotalSpreadMintPayAssets")
-            .setValue(dbManager.getDynamicPropertiesStore().getTotalSpreadMintPayAssets())
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -1349,11 +1249,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getCyclePledgeRateDenominator")
             .setStringValue(dbManager.getDynamicPropertiesStore().getCyclePledgeRateDenominator())
-            .build());
-
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getBurnSpreadAmount")
-            .setValue(dbManager.getDynamicPropertiesStore().getBurnSpreadAmount())
             .build());
 
     return builder.build();
@@ -1502,7 +1397,6 @@ public class Wallet {
         chainBaseManager.getDynamicPropertiesStore().getTotalEntropyWeight();
 
     long totalFVGuaranteeWeight = chainBaseManager.getDynamicPropertiesStore().getTotalFVGuaranteeWeight();
-    long totalSpreadWeight = chainBaseManager.getDynamicPropertiesStore().getTotalSpreadMintWeight();
 
     long totalStage1PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage1PhotonWeight();
     long totalStage2PhotonWeight = chainBaseManager.getDynamicPropertiesStore().getTotalStage2PhotonWeight();
@@ -1533,7 +1427,6 @@ public class Wallet {
         .setTotalEntropyLimit(totalEntropyLimit)
         .setTotalEntropyWeight(totalEntropyWeight)
         .setTotalFVGuaranteeWeight(totalFVGuaranteeWeight)
-        .setTotalSpreadWeight(totalSpreadWeight)
         .setTotalStage1PhotonWeight(totalStage1PhotonWeight)
         .setTotalStage2PhotonWeight(totalStage2PhotonWeight)
         .setTotalStage3PhotonWeight(totalStage3PhotonWeight)

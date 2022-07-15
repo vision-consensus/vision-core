@@ -469,10 +469,6 @@ public class CommonParameter {
 
   @Getter
   @Setter
-  public long spreadMintUnlimitedPledgeEffectBlockNum;
-
-  @Getter
-  @Setter
   public long spreadMintUnfreezeClearRelationShipEffectBlockNum;
 
   @Getter

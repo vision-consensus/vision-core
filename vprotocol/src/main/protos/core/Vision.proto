@@ -206,9 +206,6 @@ message Account {
     int64 storage_usage = 7;
     int64 latest_exchange_storage_time = 8;
 
-    // the frozen balance for spread_mint
-    Frozen frozen_balance_for_spread = 9;
-
     // the frozen balance for FVGuarantee
     Frozen frozen_balance_for_fvguarantee = 10;
 
@@ -219,7 +216,6 @@ message Account {
   Permission witness_permission = 32;
   repeated Permission active_permission = 33;
 
-  int64 spread_mint_allowance = 34;
   int64 frozen_stage_weight_merge = 35;
 }
 
@@ -245,14 +241,6 @@ message AccountFrozenStageResource {
   int64 frozen_balance_for_entropy = 4;
   int64 expire_time_for_photon = 5;
   int64 expire_time_for_entropy = 6;
-}
-
-message SpreadRelationShip {
-  bytes owner = 1;
-  bytes parent = 2;
-  int64 frozen_balance_for_spread = 3;
-  int64 expire_time_for_spread = 4;
-  int64 frozen_cycle = 5;
 }
 
 message authority {

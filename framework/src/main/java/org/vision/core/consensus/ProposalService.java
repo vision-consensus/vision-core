@@ -221,28 +221,12 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveEconomyCycle(entry.getValue());
           break;
         }
-        case SPREAD_MINT_PAY_PER_BLOCK: {
-          manager.getDynamicPropertiesStore().saveSpreadMintPayPerBlock(entry.getValue());
-          break;
-        }
-        case ALLOW_SPREAD_MINT_LEVEL_PROP: {
-          manager.getDynamicPropertiesStore().saveAllowSpreadMintLevelProp(entry.getValue());
-          break;
-        }
         case PLEDGE_RATE_THRESHOLD: {
           manager.getDynamicPropertiesStore().savePledgeRateThreshold(entry.getValue());
           break;
         }
-        case SPREAD_FREEZE_PERIOD_LIMIT: {
-          manager.getDynamicPropertiesStore().saveSpreadFreezePeriodLimit(entry.getValue());
-          break;
-        }
         case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION: {
           manager.getDynamicPropertiesStore().saveAllowEthereumCompatibleTransaction(entry.getValue());
-          break;
-        }
-        case ALLOW_MODIFY_SPREAD_MINT_PARENT: {
-          manager.getDynamicPropertiesStore().saveAllowModifySpreadMintParent(entry.getValue());
           break;
         }
         case TOTAL_PHOTON_LIMIT: {
@@ -265,24 +249,12 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowWithdrawTransactionInfoSeparateAmount(entry.getValue());
           break;
         }
-        case ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE: {
-          manager.getDynamicPropertiesStore().saveAllowSpreadMintParticipatePledgeRate(entry.getValue());
-          break;
-        }
-        case SM_BURN_OPTIMIZATION: {
-          manager.getDynamicPropertiesStore().saveSMBurnOptimization(entry.getValue());
-          break;
-        }
         case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
           manager.getDynamicPropertiesStore().saveAllowVPFreezeStageWeight(entry.getValue());
           break;
         }
         case REFREEZE_CONSIDERATION_PERIOD: {
           manager.getDynamicPropertiesStore().saveRefreezeConsiderationPeriod(entry.getValue());
-          break;
-        }
-        case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
-          manager.getDynamicPropertiesStore().saveSpreadRefreezeConsiderationPeriod(entry.getValue());
           break;
         }
         case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1: {
@@ -303,10 +275,6 @@ public class ProposalService extends ProposalUtil {
         continue;
       }
       switch (proposalType) {
-        case SPREAD_MINT_LEVEL_PROP: {
-          manager.getDynamicPropertiesStore().saveSpreadMintLevelProp(entry.getValue());
-          break;
-        }
         case INFLATION_RATE: {
           long lowInflationRate = Long.parseLong(entry.getValue().split(",")[0]);
           long highInflationRate = Long.parseLong(entry.getValue().split(",")[1]);

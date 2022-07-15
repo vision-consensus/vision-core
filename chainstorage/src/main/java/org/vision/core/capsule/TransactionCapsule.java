@@ -1871,8 +1871,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
 
       String dataValue = data.substring(8);
-      long withdraw_type = dataValue.length() >= VALUE_SIZE ? ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE))) : 0L;
-      build.setType(withdraw_type == 1L ? WithdrawBalanceContract.WithdrawBalanceType.SPREAD_MINT : WithdrawBalanceContract.WithdrawBalanceType.ALL);
 
       build.setRlpType(1);
       build.setRlpData(ByteString.copyFrom(rlpEncoded));
@@ -1940,12 +1938,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         build.setResourceValue(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3))));
 
         String receiverAddress = parseToVisionAddress(dataValue.substring(VALUE_SIZE * 3, VALUE_SIZE * 4));
-        if (build.getResourceValue() == Common.ResourceCode.SPREAD_VALUE){
-          build.setParentAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
-        }else {
-          if (!receiverAddress.equals(ByteArray.toHexString(build.getOwnerAddress().toByteArray()))){
-            build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
-          }
+
+        if (!receiverAddress.equals(ByteArray.toHexString(build.getOwnerAddress().toByteArray()))){
+          build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
         }
 
         if (dataValue.length() > VALUE_SIZE * 4) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])

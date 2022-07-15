@@ -168,16 +168,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   private static final byte[] SR_FREEZE_LOWEST = "SR_FREEZE_LOWEST".getBytes();
   private static final byte[] SR_FREEZE_LOWEST_PERCENT = "SR_FREEZE_LOWEST_PERCENT".getBytes();
 
-  private static final byte[] SPREAD_MINT_PAY_PER_BLOCK = "SPREAD_MINT_PAY_PER_BLOCK".getBytes();
-
   private static final byte[] ECONOMY_CYCLE = "ECONOMY_CYCLE".getBytes();
   private static final byte[] EFFECT_ECONOMY_CYCLE = "EFFECT_ECONOMY_CYCLE".getBytes();
-  private static final byte[] SPREAD_MINT_LEVEL_PROP = "SPREAD_LEVEL_PROP".getBytes();
-  private static final byte[] ALLOW_SPREAD_MINT_LEVEL_PROP = "ALLOW_SPREAD_LEVEL_PROP".getBytes();
   private static final byte[] TOTAL_GENESIS_VOTE_SUM = "TOTAL_GENESIS_VOTE_SUM".getBytes();
   private static final byte[] TOTAL_PLEDGE_AMOUNT = "TOTAL_PLEDGE_AMOUNT".getBytes();
   private static final byte[] PLEDGE_RATE_DENOMINATOR = "PLEDGE_RATE_DENOMINATOR".getBytes();
-  private static final byte[] BURN_SPREAD_AMOUNT = "BURN_SPREAD_AMOUNT".getBytes();
 
 
   @Autowired
@@ -406,12 +401,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.getHighInflationRate();
     } catch (IllegalArgumentException e) {
       this.saveHighInflationRate(2322L);
-    }
-
-    try {
-      this.getSpreadFreezePeriodLimit();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadFreezePeriodLimit(1L);
     }
 
     try {
@@ -876,30 +865,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     }
 
     try {
-      this.getSpreadMintPayPerBlock();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadMintPayPerBlock(130000L);//0.13vs
-    }
-
-    try {
-      this.getAllowSpreadMintLevelProp();
-    } catch (IllegalArgumentException e) {
-      this.saveAllowSpreadMintLevelProp(1L);
-    }
-
-    try {
-      this.getSpreadMintLevelProp();
-    } catch (IllegalArgumentException e) {
-      this.saveSpreadMintLevelProp("80,10,8,2");
-    }
-
-    try {
-      this.getAllowModifySpreadMintParent();
-    } catch (IllegalArgumentException e) {
-      this.saveAllowModifySpreadMintParent(1L);
-    }
-
-    try {
       this.getVPFreezeStageWeight();
     } catch (IllegalArgumentException e) {
       this.saveVPFreezeStageWeight("1,35,100;2,60,110;3,180,120;4,360,130;5,720,150");
@@ -1276,18 +1241,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
-  public void saveTotalSpreadMintPayAssets(long totalAssets) {
-    this.put(DynamicResourceProperties.TOTAL_SPREAD_MINT_PAY_ASSETS,
-            new BytesCapsule(ByteArray.fromLong(totalAssets)));
-  }
-
-  public long getTotalSpreadMintPayAssets() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPREAD_MINT_PAY_ASSETS))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(0L);
-  }
-
   public void savePledgeRate(long pledgeRate) {
     this.put(DynamicResourceProperties.PLEDGE_RATE,
             new BytesCapsule(ByteArray.fromLong(pledgeRate)));
@@ -1322,18 +1275,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(60L);
-  }
-
-  public void saveSpreadFreezePeriodLimit(long freezePeriodLimit) {
-    this.put(DynamicResourceProperties.SPREAD_FREEZE_PERIOD_LIMIT,
-            new BytesCapsule(ByteArray.fromLong(freezePeriodLimit)));
-  }
-
-  public long getSpreadFreezePeriodLimit() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SPREAD_FREEZE_PERIOD_LIMIT))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(1L);
   }
 
   public void saveSpecialFreezePeriodLimit(long freezePeriodLimit) {
@@ -2490,12 +2431,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     saveTotalWitness123PayAssets(totalAssets);
   }
 
-  public void addTotalSpreadMintPayAssets(long amount) {
-    long totalAssets = getTotalSpreadMintPayAssets();
-    totalAssets += amount;
-    saveTotalSpreadMintPayAssets(totalAssets);
-  }
-
   public void addTotalCreateAccountCost(long fee) {
     long newValue = getTotalCreateAccountCost() + fee;
     saveTotalCreateAccountFee(newValue);
@@ -2653,68 +2588,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             () -> new IllegalArgumentException("not found ALLOW_BLACKHOLE_OPTIMIZATION"));
   }
 
-  public void addTotalSpreadMintWeight(long amount) {
-      long totalSpreadMintWeight = getTotalSpreadMintWeight();
-      totalSpreadMintWeight += amount;
-      saveTotalSpreadMintWeight(totalSpreadMintWeight);
-    }
-
-  public void saveTotalSpreadMintWeight(long totalSpreadMintWeight) {
-    this.put(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT,
-            new BytesCapsule(ByteArray.fromLong(totalSpreadMintWeight)));
-  }
-
-  public long getTotalSpreadMintWeight() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_SPREAD_MINT_WEIGHT))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(0L);
-  }
-
-  public long getSpreadMintPayPerBlock() {
-    return Optional.ofNullable(getUnchecked(SPREAD_MINT_PAY_PER_BLOCK))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(130000L);
-  }
-
-  public long getSpreadMintPayPerBlockInflation() {
-    long weight = getSpreadMintPayPerBlock();
-    return (long) (weight * (getInflationRate() * 1.0 / 120000 + 1));
-  }
-
-  public boolean supportSpreadMint() {
-    return getAllowSpreadMintLevelProp() == 1L;
-  }
-
-  public boolean supportModifySpreadMintParent() {
-    return getAllowModifySpreadMintParent() == 1L;
-  }
-
-  public void saveSpreadMintLevelProp(String value) {
-    this.put(SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromString(value)));
-  }
-
-  public String getSpreadMintLevelProp() {
-    return Optional.ofNullable(getUnchecked(SPREAD_MINT_LEVEL_PROP))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toStr)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found SPREAD_LEVEL_PROP"));
-  }
-
-  public void saveAllowSpreadMintLevelProp(long value) {
-    this.put(ALLOW_SPREAD_MINT_LEVEL_PROP, new BytesCapsule(ByteArray.fromLong(value)));
-  }
-
-  public long getAllowSpreadMintLevelProp() {
-    return Optional.ofNullable(getUnchecked(ALLOW_SPREAD_MINT_LEVEL_PROP))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElseThrow(
-                    () -> new IllegalArgumentException("not found ALLOW_SPREAD_MINT_LEVEL_PROP"));
-  }
-
   public void saveVoteFreezeStageLevel1(long value) {
     this.put(VOTE_FREEZE_STAGE_LEVEL1, new BytesCapsule(ByteArray.fromLong(value)));
   }
@@ -2803,10 +2676,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException("not found SR_FREEZE_LOWEST_PERCENT"));
   }
 
-  public void saveSpreadMintPayPerBlock(long value) {
-    this.put(SPREAD_MINT_PAY_PER_BLOCK, new BytesCapsule(ByteArray.fromLong(value)));
-  }
-
   public void saveEconomyCycle(long value) {
     this.put(ECONOMY_CYCLE,
             new BytesCapsule(ByteArray.fromLong(value)));
@@ -2843,18 +2712,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(1L);
   }
 
-  public void saveAllowModifySpreadMintParent(long allowModifySpreadMintParent) {
-    this.put(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT,
-            new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
-  }
-
-  public long getAllowModifySpreadMintParent() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_MODIFY_SPREAD_MINT_PARENT))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(0L);
-  }
-
   public void saveAllowUnfreezeSpreadOrFvGuaranteeClearVote(long allowModifySpreadMintParent) {
     this.put(DynamicResourceProperties.ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE,
             new BytesCapsule(ByteArray.fromLong(allowModifySpreadMintParent)));
@@ -2874,18 +2731,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
 
   public long getAllowWithdrawTransactionInfoSeparateAmount() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT))
-            .map(BytesCapsule::getData)
-            .map(ByteArray::toLong)
-            .orElse(0L);
-  }
-
-  public void saveAllowSpreadMintParticipatePledgeRate(long participate) {
-    this.put(DynamicResourceProperties.ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE,
-            new BytesCapsule(ByteArray.fromLong(participate)));
-  }
-
-  public long getAllowSpreadMintParticipatePledgeRate() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE))
             .map(BytesCapsule::getData)
             .map(ByteArray::toLong)
             .orElse(0L);
@@ -3203,47 +3048,6 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
         new BytesCapsule(ByteArray.fromLong(amount)));
   }
 
-  public void saveSpreadRefreezeConsiderationPeriod(Long value) {
-    this.put(DynamicResourceProperties.SPREAD_REFREEZE_CONSIDERATION_PERIOD,
-        new BytesCapsule(ByteArray.fromLong(value)));
-  }
-
-  public Long getSpreadRefreezeConsiderationPeriod() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SPREAD_REFREEZE_CONSIDERATION_PERIOD))
-        .map(BytesCapsule::getData)
-        .map(ByteArray::toLong)
-        .orElse(3L);
-  }
-
-  public long getSpreadRefreezeConsiderationPeriodResult() {
-    return getSpreadRefreezeConsiderationPeriod() * FROZEN_PERIOD;
-  }
-
-  public void burnSpreadAmount(long amount) {
-    if (amount <= 0) return;
-    long burn = getBurnSpreadAmount();
-    burn += amount;
-    this.put(DynamicPropertiesStore.BURN_SPREAD_AMOUNT, new BytesCapsule(ByteArray.fromLong(burn)));
-  }
-
-  public long getBurnSpreadAmount() {
-    return Optional.ofNullable(getUnchecked(DynamicPropertiesStore.BURN_SPREAD_AMOUNT))
-        .map(BytesCapsule::getData)
-        .map(ByteArray::toLong)
-        .orElse(0L);
-  }
-
-  public void saveSMBurnOptimization(Long value) {
-    this.put(DynamicResourceProperties.SM_BURN_OPTIMIZATION, new BytesCapsule(ByteArray.fromLong(value)));
-  }
-
-  public long getSMBurnOptimization() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SM_BURN_OPTIMIZATION))
-        .map(BytesCapsule::getData)
-        .map(ByteArray::toLong)
-        .orElse(0L);
-  }
-
   public boolean supportEthereumCompatibleTransactionNativeStep1(){
     return getAllowEthereumCompatibleTransactionNativeStep1() == 1L;
   }
@@ -3285,11 +3089,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] TOTAL_ASSETS = "TOTAL_ASSETS".getBytes();
     private static final byte[] TOTAL_WITNESS_PAY_ASSETS = "TOTAL_WITNESS_PAY_ASSETS".getBytes();
     private static final byte[] TOTAL_WITNESS123_PAY_ASSETS = "TOTAL_WITNESS123_PAY_ASSETS".getBytes();
-    private static final byte[] TOTAL_SPREAD_MINT_PAY_ASSETS = "TOTAL_SPREAD_MINT_PAY_ASSETS".getBytes();
     private static final byte[] PLEDGE_RATE = "PLEDGE_RATE".getBytes();
     private static final byte[] INFLATION_RATE = "INFLATION_RATE".getBytes();
     private static final byte[] PLEDGE_RATE_THRESHOLD = "PLEDGE_RATE_THRESHOLD".getBytes();
-    private static final byte[] SPREAD_FREEZE_PERIOD_LIMIT = "SPREAD_FREEZE_PERIOD_LIMIT".getBytes();
     private static final byte[] SPECIAL_FREEZE_PERIOD_LIMIT = "SPECIAL_FREEZE_PERIOD_LIMIT".getBytes();
     private static final byte[] FVGUARANTEE_FREEZE_PERIOD_LIMIT = "FVGUARANTEE_FREEZE_PERIOD_LIMIT".getBytes();
     private static final byte[] LOW_INFLATION_RATE = "LOW_INFLATION_RATE".getBytes();
@@ -3308,15 +3110,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO =
         "ADAPTIVE_RESOURCE_LIMIT_TARGET_RATIO"
             .getBytes();
-    private static final byte[] TOTAL_SPREAD_MINT_WEIGHT = "TOTAL_SPREAD_MINT_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION".getBytes();
-    public static final byte[] ALLOW_MODIFY_SPREAD_MINT_PARENT = "ALLOW_MODIFY_SPREAD_MINT_PARENT".getBytes();
     public static final byte[] ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE = "ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE".getBytes();
     public static final byte[] ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT = "ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT".getBytes();
-    public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
     public static final byte[] REFREEZE_CONSIDERATION_PERIOD = "REFREEZE_CONSIDERATION_PERIOD".getBytes();
-    public static final byte[] SPREAD_REFREEZE_CONSIDERATION_PERIOD = "SPREAD_REFREEZE_CONSIDERATION_PERIOD".getBytes();
-    public static final byte[] SM_BURN_OPTIMIZATION = "SM_BURN_OPTIMIZATION".getBytes();
     private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
     private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();
     public static final byte[] TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT = "TOTAL_FREEZE_STAGE1_PHOTON_WEIGHT".getBytes();

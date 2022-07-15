@@ -1877,14 +1877,6 @@ public class RpcApiService implements Service {
     }
 
     @Override
-    public void getSpreadMintParent(SpreadRelationShipMessage request,
-                                    StreamObserver<SpreadRelationShipList> responseObserver) {
-      responseObserver
-              .onNext(wallet.getSpreadMintParentList(request.getOwnerAddress().toByteArray(), request.getLevel()));
-      responseObserver.onCompleted();
-    }
-
-    @Override
     public void getAccountFrozenStageResource(AccountFrozenStageResourceParameter request,
                                               StreamObserver<AccountFrozenStageResourceMessage> responseObserver) {
       responseObserver.onNext(wallet.getAccountFrozenStageResource(request.getAddress()));

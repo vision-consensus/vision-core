@@ -59,11 +59,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     }
     byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();
 
-    //
-    if(unfreezeBalanceContract.getResource() != Common.ResourceCode.FVGUARANTEE){
-      mortgageService.withdrawReward(ownerAddress, unfreezeBalanceContract.getResource() == Common.ResourceCode.SPREAD);
-    }
-
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     long oldBalance = accountCapsule.getBalance();
 
@@ -300,31 +295,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   .setBalance(oldBalance + unfreezeBalance)
                   .setAccountResource(newFVGuarantee).build());
           break;
-        case SPREAD:
-          unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
-              .getFrozenBalance();
-          if (dynamicStore.getAllowVPFreezeStageWeight() != 1) {
-            AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
-                .clearFrozenBalanceForSpread().build();
-            accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-                .setBalance(oldBalance + unfreezeBalance)
-                .setAccountResource(newSpread).build());
-
-            clearSpreadRelationShip(ownerAddress);
-          } else {
-            refreeze = SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
-                accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
-            if (!refreeze) {
-              AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForSpread().build();
-              accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-                  .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newSpread).build());
-
-              clearSpreadRelationShip(ownerAddress);
-            }
-          }
-          break;
         default:
           //this should never happen
           break;
@@ -355,12 +325,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         if (refreeze) {
           dynamicStore
               .addTotalEntropyWeight(-unfreezeBalance / VS_PRECISION);
-        }
-        break;
-      case SPREAD:
-        if (refreeze) {
-          dynamicStore.addTotalSpreadMintWeight(-unfreezeBalance / VS_PRECISION);
-          clearVote = dynamicStore.getAllowUnfreezeSpreadOrFvGuaranteeClearVote() == 1;
         }
         break;
       case FVGUARANTEE:
@@ -636,17 +600,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("It's not time to unfreeze(FVGuarantee).");
           }
           break;
-        case SPREAD:
-          Frozen frozenBalanceForSpread = accountCapsule.getAccountResource()
-                  .getFrozenBalanceForSpread();
-          if (frozenBalanceForSpread.getFrozenBalance() <= 0) {
-            throw new ContractValidateException("no frozenBalance(SpreadMint)");
-          }
-
-          if (frozenBalanceForSpread.getExpireTime() > now) {
-            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
-          }
-          break;
         default:
           throw new ContractValidateException(
               "ResourceCode error.valid ResourceCode[PHOTON、ENTROPY]");
@@ -665,19 +618,5 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
   @Override
   public long calcFee() {
     return 0;
-  }
-
-  private void clearSpreadRelationShip(byte[] ownerAddress){
-    SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
-    SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
-    if (spreadRelationShipCapsule != null) {
-      DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
-      long cycle = dynamicPropertiesStore.getCurrentCycleNumber();
-      long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
-      spreadRelationShipCapsule.setFrozenBalanceForSpread(0, now, cycle); // clear SpreadRelationShip frozen_balance_for_spread, not delete key
-      if (dynamicPropertiesStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
-        spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
-      }
-    }
   }
 }

@@ -801,14 +801,6 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = this.account.toBuilder().setAllowance(allowance).build();
   }
 
-  public long getSpreadMintAllowance() {
-    return getInstance().getSpreadMintAllowance();
-  }
-
-  public void setSpreadMintAllowance(long allowance) {
-    this.account = this.account.toBuilder().setSpreadMintAllowance(allowance).build();
-  }
-
   public long getLatestWithdrawTime() {
     return getInstance().getLatestWithdrawTime();
   }
@@ -1076,20 +1068,6 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     this.account = builder.build();
   }
 
-  public void setFrozenForSpread(long newFrozenBalanceForSpread, long time) {
-    Frozen newFrozenForSpread = Frozen.newBuilder()
-            .setFrozenBalance(newFrozenBalanceForSpread)
-            .setExpireTime(time)
-            .build();
-
-    AccountResource newAccountResource = getAccountResource().toBuilder()
-            .setFrozenBalanceForSpread(newFrozenForSpread).build();
-
-    this.account = this.account.toBuilder()
-            .setAccountResource(newAccountResource)
-            .build();
-  }
-
   public void setFrozenForFVGuarantee(long newFrozenBalanceForFVGuarantee, long time) {
     Frozen newFrozenForFVGuarantee = Frozen.newBuilder()
             .setFrozenBalance(newFrozenBalanceForFVGuarantee)
@@ -1115,15 +1093,6 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     return balance;
   }
 
-  public long getSpreadFrozenBalance() {
-    long balance = 0L;
-    try {
-      balance = this.account.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
-    }catch (Exception e){
-      logger.debug(e.getMessage());
-    }
-    return balance;
-  }
 
   public void setFrozenStageWeightMerge(long weightMerge) {
     this.account = this.account.toBuilder()

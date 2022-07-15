@@ -280,7 +280,7 @@ public class Manager {
     mortgageService
         .initStore(chainBaseManager.getWitnessStore(), chainBaseManager.getDelegationStore(),
             chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getAccountStore(),
-                chainBaseManager.getSpreadRelationShipStore(), chainBaseManager.getWitnessScheduleStore());
+               chainBaseManager.getWitnessScheduleStore());
     accountStateCallBack.setChainBaseManager(chainBaseManager);
     trieService.setChainBaseManager(chainBaseManager);
     revokingStore.disable();
@@ -1390,7 +1390,6 @@ public class Manager {
     WitnessCapsule witnessCapsule =
         chainBaseManager.getWitnessStore().getUnchecked(block.getInstance().getBlockHeader()
             .getRawData().getWitnessAddress().toByteArray());
-    long spreadMintPayPerBlock = 0L;
     if (getDynamicPropertiesStore().allowChangeDelegation()) {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
           getDynamicPropertiesStore().getWitnessPayPerBlockInflation());
@@ -1424,14 +1423,9 @@ public class Manager {
       getAccountStore().put(account.createDbKey(), account);
     }
 
-    if(chainBaseManager.getDynamicPropertiesStore().supportSpreadMint()){
-      mortgageService.paySpreadMintReward(chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation());
-      spreadMintPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getSpreadMintPayPerBlockInflation();
-    }
-
     long witnessPayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitnessPayPerBlockInflation();
     long witness123PayPerBlock = chainBaseManager.getDynamicPropertiesStore().getWitness123PayPerBlockInflation();
-    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock + spreadMintPayPerBlock);
+    chainBaseManager.getDynamicPropertiesStore().addTotalAssets(witnessPayPerBlock + witness123PayPerBlock);
   }
 
   private void saveGenisisAccountInitAmount(){

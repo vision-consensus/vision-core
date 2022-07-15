@@ -99,9 +99,6 @@ public class ChainBaseManager {
   private DelegatedResourceAccountIndexStore delegatedResourceAccountIndexStore;
   @Autowired
   @Getter
-  private SpreadRelationShipStore spreadRelationShipStore;
-  @Autowired
-  @Getter
   private StorageRowStore storageRowStore;
   @Autowired
   @Getter
@@ -217,7 +214,6 @@ public class ChainBaseManager {
     closeOneStore(votesStore);
     closeOneStore(delegatedResourceStore);
     closeOneStore(delegatedResourceAccountIndexStore);
-    closeOneStore(spreadRelationShipStore);
     closeOneStore(assetIssueV2Store);
     closeOneStore(exchangeV2Store);
     closeOneStore(nullifierStore);

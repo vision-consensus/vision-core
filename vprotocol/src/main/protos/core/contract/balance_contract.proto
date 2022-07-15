@@ -38,13 +38,8 @@ message UnfreezeBalanceContract {
 }
 
 message WithdrawBalanceContract {
-  enum WithdrawBalanceType {
-    ALL = 0x00;
-    SPREAD_MINT = 0x01;
-  }
 
   bytes owner_address = 1;
-  WithdrawBalanceType type = 2;
 
   int64 rlp_type = 3;  // if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
   bytes rlp_data = 4;  // eth's RLP rawData
