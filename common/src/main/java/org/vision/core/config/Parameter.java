@@ -127,37 +127,6 @@ public class Parameter {
     public static final int TRANSACTION_FUNCTION_SELECTOR_LENGTH = 8;
     public static final int VALUE_SIZE = 64;
 
-    /**·
-     function voteWitness(address[] memory target, uint256[] memory count) public returns (bytes32){
-     return keccak256(abi.encodePacked("dovote(address[],uint256[])"));
-     }
-
-     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint8 resource, address receiver_address) public returns (bool){
-     return true;
-     }
-
-     function freezeBalance(uint256 frozen_balance, uint256 frozen_duration, uint256 resource, address receiver_address, uint256[] memory stages, uint256[] memory frozen_balances) public returns (bool){
-     return true;
-     }
-
-     function unfreezeBalance(uint8 resource, address receiver_address) public returns (bool){
-     return true;
-     }
-
-     function unfreezeBalance(uint8 resource, address receiver_address, uint256[] stages) public returns (bool){
-     return true;
-     }
-
-     function withdrawBalance(uint8 withdraw_type) public returns (bool){
-     return true;
-     }
-
-     function getReward() public returns(uint256, uint256){
-     return (0,0);
-     }
-     */
-
-
     /**
      * signature transaction method
      */
