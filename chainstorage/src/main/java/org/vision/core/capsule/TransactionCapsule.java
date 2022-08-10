@@ -1993,7 +1993,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
       if (dataValue.length() >= VALUE_SIZE * 2){ // unfreezeBalance(uint256,address)
         String receiverAddress = parseToVisionAddress(dataValue.substring(VALUE_SIZE, VALUE_SIZE * 2));
-        build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+        if (!Arrays.equals(this.getSender(), ByteArray.fromHexString(receiverAddress))){
+          build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
+        }
 
         if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
           int stageIndex = VALUE_SIZE * 3;
