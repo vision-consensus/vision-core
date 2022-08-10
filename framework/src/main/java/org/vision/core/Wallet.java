@@ -1188,6 +1188,7 @@ public class Wallet {
             .setKey("getModifySpreadMintParentFee")
             .setValue(dbManager.getDynamicPropertiesStore().getModifySpreadMintParentFee())
             .build());
+
     return builder.build();
   }
 
