@@ -57,9 +57,7 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
       SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
       if (spreadRelationShipCapsule != null) {
         spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
-        if (dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnfreezeClearRelationShipEffectBlockNum){
-          spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
-        }
+        spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
       }
     }
     return refreeze;
