@@ -7,11 +7,6 @@ import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class ProposalUtil {
 
   protected static final long LONG_VALUE = 100_000_000_000_000_000L;

@@ -271,7 +271,6 @@ public class HttpSelfFormatFieldName {
     // MarketPriceList
     NameFieldNameMap.put("protocol.MarketPriceList.sell_token_id", 1);
     NameFieldNameMap.put("protocol.MarketPriceList.buy_token_id", 1);
-    NameFieldNameMap.put("protocol.", 1);
   }
 
   public static boolean isAddressFormat(final String name) {
