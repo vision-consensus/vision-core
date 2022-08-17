@@ -45,8 +45,7 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
     return key;
   }
 
-  public static boolean dealReFreezeConsideration(AccountCapsule accountCapsule, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
-    boolean refreeze = false;
+  public static void dealReFreezeConsideration(AccountCapsule accountCapsule, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
     byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
     Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
@@ -63,7 +62,6 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
 
       if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
           && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
-        refreeze = true;
         long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
             / entry.getValue().get(0) / FROZEN_PERIOD;
         long tmp = capsule.getInstance().getExpireTimeForPhoton() +
@@ -75,7 +73,6 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
       }
       if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
           && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
-        refreeze = true;
         long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
             / entry.getValue().get(0) / FROZEN_PERIOD;
         long tmp = capsule.getInstance().getExpireTimeForEntropy() +
@@ -86,7 +83,6 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
             Math.max(accountCapsule.getEntropyFrozenExpireTime(), tmp));
       }
     }
-    return refreeze;
   }
 
   public static void freezeBalance(byte[] ownerAddress, long stage, long balance, long expireTime, boolean isPhoton, AccountFrozenStageResourceStore accountFrozenStageResourceStore) {
