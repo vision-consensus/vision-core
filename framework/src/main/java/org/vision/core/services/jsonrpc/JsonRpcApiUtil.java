@@ -344,6 +344,7 @@ public class JsonRpcApiUtil {
         trxCap = wallet.createTransactionCapsule(buildWithdraw.build(), ContractType.WithdrawBalanceContract);
         break;
       case NativeTransactionContractAbi.CreateWitness_FunctionSelector:
+      case NativeTransactionContractAbi.CreateWitnessValue_FunctionSelector:
         WitnessContract.WitnessCreateContract.Builder builderWitnessCreate = ethTrx.rlpParseToWitnessCreateContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(builderWitnessCreate.build(), ContractType.WitnessCreateContract);
         break;
