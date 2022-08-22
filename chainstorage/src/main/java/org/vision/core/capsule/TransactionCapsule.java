@@ -2027,11 +2027,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       }
       String dataValue = data.substring(8);
       int urlSize = 0;
+      int parameterNum = 1;
       if (dataValue.length() > VALUE_SIZE * 2){
-        urlSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE, VALUE_SIZE + VALUE_SIZE)));
+        int parameterSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(0, VALUE_SIZE)));
+        parameterNum = (int) Math.ceil((double) parameterSize / 32);
+
+        urlSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(parameterNum * VALUE_SIZE , parameterNum * VALUE_SIZE + VALUE_SIZE)));
       }
 
-      String url = new String(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2)));
+      String url = new String(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * (parameterNum + 1))));
 
       if (url.length() < urlSize){
         return null;

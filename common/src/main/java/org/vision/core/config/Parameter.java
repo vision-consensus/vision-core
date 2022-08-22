@@ -151,6 +151,9 @@ public class Parameter {
     public static final String CreateWitness = "createWitness(string)";                                         // aadf8399 34f925791149fec0bdf92d69d83e186f3b855bcfc8a0abfba58b90e1
     public static final String CreateWitness_FunctionSelector = "aadf8399";
 
+    public static final String CreateWitnessValue = "createWitness(string,uint256)";                                         // 3d2f1c45 13139b7a6181461eedb5a2f7720f3104243c36960d420991d5d6d1a3
+    public static final String CreateWitnessValue_FunctionSelector = "3d2f1c45";
+
     public static final String UpdateWitness = "updateWitness(string)";                                         // 8cf1c37f 1d5df7ae06909b65e38ab4ea3e2c44c14f0ea4abca8d359fdd3af91e
     public static final String UpdateWitness_FunctionSelector = "8cf1c37f";
 
@@ -160,8 +163,8 @@ public class Parameter {
     public static final String ProposalApprove = "proposalApprove(uint256,bool)";                                         // 10430496 fb4e39ada0740000372ebaf4c83412a47e5107e5973e67630b13a44c
     public static final String ProposalApprove_FunctionSelector = "10430496";
 
-    public static final String ProposalCreateInteger = "proposalCreate(uint256,uint256)";                                         // 8994f5b0 aeb75d4dc227d3615da415df78b1a89a158913a5e0decabc2ac47ee4
-    public static final String ProposalCreateInteger_FunctionSelector = "8994f5b0";
+    public static final String ProposalCreateInteger = "proposalCreateUint(uint256,uint256)";                                         // 38f8ec2a abc423e03a09216ff4a15414ba9e12fd3fa78e8644a08f4fc0297fdd
+    public static final String ProposalCreateInteger_FunctionSelector = "38f8ec2a";
 
     public static final String ProposalCreateString = "proposalCreate(uint256,string)";                                         // 8ad94a88 2761b758983a828cf8a63b902d05d5348d7951ea34786844816c9c31
     public static final String ProposalCreateString_FunctionSelector = "8ad94a88";
