@@ -59,13 +59,14 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
       if (capsule == null) {
         continue;
       }
+      long duration = entry.getValue().get(0) * FROZEN_PERIOD;
+      duration = entry.getKey() * 180000L; // for vtest
 
       if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
           && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
-        long cycle = (now - capsule.getInstance().getExpireTimeForPhoton())
-            / entry.getValue().get(0) / FROZEN_PERIOD;
-        long tmp = capsule.getInstance().getExpireTimeForPhoton() +
-            (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+        long cycle = (now - capsule.getInstance().getExpireTimeForPhoton()) / duration;
+        long tmp = capsule.getInstance().getExpireTimeForPhoton() + (cycle + 1) * duration;
+
         capsule.setFrozenBalanceForPhoton(capsule.getInstance().getFrozenBalanceForPhoton(), tmp);
         accountFrozenStageResourceStore.put(key, capsule);
         accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
@@ -73,10 +74,8 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
       }
       if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
           && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
-        long cycle = (now - capsule.getInstance().getExpireTimeForEntropy())
-            / entry.getValue().get(0) / FROZEN_PERIOD;
-        long tmp = capsule.getInstance().getExpireTimeForEntropy() +
-            (cycle + 1) * entry.getValue().get(0) * FROZEN_PERIOD;
+        long cycle = (now - capsule.getInstance().getExpireTimeForEntropy()) / duration;
+        long tmp = capsule.getInstance().getExpireTimeForEntropy() + (cycle + 1) * duration;
         capsule.setFrozenBalanceForEntropy(capsule.getInstance().getFrozenBalanceForEntropy(), tmp);
         accountFrozenStageResourceStore.put(key, capsule);
         accountCapsule.setFrozenForEntropy(accountCapsule.getEntropyFrozenBalance(),

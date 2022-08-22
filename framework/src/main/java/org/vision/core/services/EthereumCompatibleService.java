@@ -384,7 +384,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
                 String errMsg = new String(result.getMessage().toByteArray(), StandardCharsets.UTF_8);
-                return toHexString(errMsg.getBytes(StandardCharsets.UTF_8));
+                return ByteArray.toJsonHex(errMsg.getBytes(StandardCharsets.UTF_8));
             }
         } catch (Exception e) {
             logger.error("sendRawTransaction error", e);

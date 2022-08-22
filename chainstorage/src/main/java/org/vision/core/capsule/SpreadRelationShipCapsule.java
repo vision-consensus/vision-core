@@ -50,8 +50,12 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
     boolean refreeze = false;
     if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
       refreeze = true;
-      long cycle = (now - spreadExpireTime) / FROZEN_PERIOD / dynamicStore.getSpreadFreezePeriodLimit();
-      spreadExpireTime += (cycle + 1) * dynamicStore.getSpreadFreezePeriodLimit() * FROZEN_PERIOD;
+
+      long duration = FROZEN_PERIOD * dynamicStore.getSpreadFreezePeriodLimit();
+      duration = 180000L; // for vtest
+
+      long cycle = (now - spreadExpireTime) / duration;
+      spreadExpireTime += (cycle + 1) * duration;
       accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
 
       SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
