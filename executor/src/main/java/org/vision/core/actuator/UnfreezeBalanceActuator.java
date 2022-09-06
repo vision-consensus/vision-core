@@ -199,8 +199,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
-            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
+//            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+//                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
@@ -255,8 +255,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
-            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
+//            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+//                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
@@ -584,7 +584,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   throw new ContractValidateException("no frozenBalance(PHOTON) stage:" + stage);
                 }
 
-                if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
+                if (stageCapsule.getInstance().getExpireTimeForPhoton() > now ||
+                        stageCapsule.getInstance().getExpireTimeForPhoton() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
                   throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: " + stage);
                 }
               }
@@ -623,7 +624,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
                 }
 
-                if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
+                if (stageCapsule.getInstance().getExpireTimeForEntropy() > now ||
+                        stageCapsule.getInstance().getExpireTimeForEntropy() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
                   throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage);
                 }
               }

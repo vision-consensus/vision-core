@@ -108,12 +108,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
           long newFrozenBalanceForPhoton =
                   frozenBalance + accountCapsule.getFrozenBalance();
           accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
-
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            long weightMerge = AccountCapsule.calcAccountFrozenStageWeightMerge(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
-            accountCapsule.setFrozenStageWeightMerge(weightMerge);
-          }
         }
         dynamicStore
             .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
@@ -143,12 +137,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
                           .getFrozenBalanceForEntropy()
                           .getFrozenBalance();
           accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
-
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            long weightMerge = AccountCapsule.calcAccountFrozenStageWeightMerge(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
-            accountCapsule.setFrozenStageWeightMerge(weightMerge);
-          }
         }
         dynamicStore
                 .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
@@ -176,6 +164,17 @@ public class FreezeBalanceActuator extends AbstractActuator {
         break;
       default:
         logger.debug("Resource Code Error.");
+    }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      switch (freezeBalanceContract.getResource()) {
+        case PHOTON:
+        case ENTROPY:
+          long weightMerge = AccountCapsule.calcAccountFrozenStageWeightMerge(
+                  accountCapsule, accountFrozenStageResourceStore, dynamicStore);
+          accountCapsule.setFrozenStageWeightMerge(weightMerge);
+          break;
+      }
     }
 
     accountCapsule.setBalance(newBalance);
@@ -299,6 +298,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
           if (frozenBalance == 0 && freezeBalanceContract.getFreezeBalanceStageCount() == 0) {
             throw new ContractValidateException("frozenBalance must be positive");
           }
+          boolean refreeze = false;
           for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
             if (stage.getFrozenBalance() <= 0) {
               throw new ContractValidateException("frozenBalance must be positive");
@@ -307,7 +307,13 @@ public class FreezeBalanceActuator extends AbstractActuator {
               throw new ContractValidateException("frozenBalance must be more than 1VS");
             }
             frozenBalance += stage.getFrozenBalance();
+            refreeze = stage.getRefreeze() || refreeze;
           }
+
+          if (refreeze && freezeBalanceContract.getFreezeBalanceStageCount() > 1){
+            throw new ContractValidateException("batch refreeze is not allowed");
+          }
+
         } else {
           if (frozenBalance <= 0) {
             throw new ContractValidateException("frozenBalance must be positive");
@@ -651,6 +657,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
     AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
     for (FreezeBalanceStage stage : stages) {
+      if (stage.getStage() != 1L && stage.getRefreeze()){
+        AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+                account, accountFrozenStageResourceStore, dynamicPropertiesStore, stage.getStage(), isPhoton);
+        continue;
+      }
+
       long expireTime = now + stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
       expireTime = now + stage.getStage() * 180000L;
       long balance = stage.getFrozenBalance();
@@ -717,7 +729,5 @@ public class FreezeBalanceActuator extends AbstractActuator {
       }
     }
 
-    AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-        account, accountFrozenStageResourceStore, dynamicPropertiesStore);
   }
 }
