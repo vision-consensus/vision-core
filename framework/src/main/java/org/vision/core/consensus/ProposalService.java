@@ -285,6 +285,14 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSpreadRefreezeConsiderationPeriod(entry.getValue());
           break;
         }
+        case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1: {
+          manager.getDynamicPropertiesStore().saveAllowEthereumCompatibleTransactionNativeStep1(entry.getValue());
+          break;
+        }
+        case MODIFY_SPREAD_MINT_PARENT_FEE: {
+          manager.getDynamicPropertiesStore().saveModifySpreadMintParentFee(entry.getValue());
+          break;
+        }
         case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
           manager.getDynamicPropertiesStore().saveSeparateProposalStringParameters(entry.getValue());
           break;

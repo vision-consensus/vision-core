@@ -437,6 +437,26 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1]");
+        }
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1] is only allowed to be 1 or 0");
+        }
+        break;
+      }
+      case MODIFY_SPREAD_MINT_PARENT_FEE: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [MODIFY_SPREAD_MINT_PARENT_FEE]");
+        }
+        if (value < 0 || value > 100_000_000L) {
+          throw new ContractValidateException(
+                  "Bad MODIFY_SPREAD_MINT_PARENT_FEE parameter value, valid range is [0, 100_000_000L]");
+        }
+        break;
+      }
       case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
         if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
           throw new ContractValidateException("Bad chain parameter id [SEPARATE_PROPOSAL_STRING_PARAMETER]");
@@ -648,6 +668,8 @@ public class ProposalUtil {
     VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
     REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
     SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
+    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62),
+    MODIFY_SPREAD_MINT_PARENT_FEE(63),
     SEPARATE_PROPOSAL_STRING_PARAMETERS(64);
 
     private long code;
