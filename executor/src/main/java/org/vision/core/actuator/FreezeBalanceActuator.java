@@ -67,6 +67,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
     List<FreezeBalanceStage> stages = freezeBalanceContract.getFreezeBalanceStageList();
+    boolean refreeze = false;
     switch (freezeBalanceContract.getResource()) {
       case PHOTON:
       case ENTROPY:
@@ -75,6 +76,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
           duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage()) * FROZEN_PERIOD;
           frozenBalance += stage.getFrozenBalance();
           newBalance -= stage.getFrozenBalance();
+          refreeze = stage.getRefreeze() || refreeze;
         }
         break;
     }
@@ -105,12 +107,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
             }
           }
 
-          long newFrozenBalanceForPhoton =
-                  frozenBalance + accountCapsule.getFrozenBalance();
-          accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
+          if (!refreeze){
+            long newFrozenBalanceForPhoton =
+                    frozenBalance + accountCapsule.getFrozenBalance();
+            accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
+          }
         }
-        dynamicStore
-            .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        if (!refreeze){
+          dynamicStore
+                  .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        }
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -132,14 +138,18 @@ public class FreezeBalanceActuator extends AbstractActuator {
               expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
             }
           }
-          long newFrozenBalanceForEntropy =
-                  frozenBalance + accountCapsule.getAccountResource()
-                          .getFrozenBalanceForEntropy()
-                          .getFrozenBalance();
-          accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
+          if (!refreeze){
+            long newFrozenBalanceForEntropy =
+                    frozenBalance + accountCapsule.getAccountResource()
+                            .getFrozenBalanceForEntropy()
+                            .getFrozenBalance();
+            accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
+          }
         }
-        dynamicStore
-                .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        if (!refreeze) {
+          dynamicStore
+                  .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        }
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =
@@ -300,14 +310,20 @@ public class FreezeBalanceActuator extends AbstractActuator {
           }
           boolean refreeze = false;
           for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
-            if (stage.getFrozenBalance() <= 0) {
-              throw new ContractValidateException("frozenBalance must be positive");
-            }
-            if (stage.getFrozenBalance() < VS_PRECISION) {
-              throw new ContractValidateException("frozenBalance must be more than 1VS");
-            }
-            frozenBalance += stage.getFrozenBalance();
             refreeze = stage.getRefreeze() || refreeze;
+            if (refreeze){
+              if (stage.getFrozenBalance() <= 0) {
+                throw new ContractValidateException("frozenBalance must be positive");
+              }
+              if (stage.getFrozenBalance() < VS_PRECISION) {
+                throw new ContractValidateException("frozenBalance must be more than 1VS");
+              }
+              frozenBalance += stage.getFrozenBalance();
+            } else {
+              if (stage.getFrozenBalance() != 0){
+                throw new ContractValidateException("refreeze stage frozenBalance must be 0VS");
+              }
+            }
           }
 
           if (refreeze && freezeBalanceContract.getFreezeBalanceStageCount() > 1){
