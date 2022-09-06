@@ -285,6 +285,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSpreadRefreezeConsiderationPeriod(entry.getValue());
           break;
         }
+        case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
+          manager.getDynamicPropertiesStore().saveSeparateProposalStringParameters(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;

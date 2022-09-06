@@ -437,8 +437,22 @@ public class ProposalUtil {
         }
         break;
       }
-      default:
+      case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [SEPARATE_PROPOSAL_STRING_PARAMETER]");
+        }
+        if (value != 1 && value != 0 ) {
+          throw new ContractValidateException(
+                  "This value[SEPARATE_PROPOSAL_STRING_PARAMETER] is only allowed to be 1 or 0");
+        }
         break;
+      }
+      default:
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -563,7 +577,11 @@ public class ProposalUtil {
         }
       }
       default:
-        break;
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal string parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -629,7 +647,8 @@ public class ProposalUtil {
     ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
     VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
     REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
-    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61);
+    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
+    SEPARATE_PROPOSAL_STRING_PARAMETERS(62);
 
     private long code;
 
