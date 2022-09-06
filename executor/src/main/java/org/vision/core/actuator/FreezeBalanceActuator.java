@@ -311,7 +311,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
           boolean refreeze = false;
           for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
             refreeze = stage.getRefreeze() || refreeze;
-            if (refreeze){
+            if (!refreeze){
               if (stage.getFrozenBalance() <= 0) {
                 throw new ContractValidateException("frozenBalance must be positive");
               }
