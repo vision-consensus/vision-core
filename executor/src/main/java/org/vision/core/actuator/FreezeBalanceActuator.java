@@ -812,12 +812,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
       expireTime = now + 180000L;
     }
 
-    long balance = frozenBalance;
     byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
     AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
     if (capsule == null){
-      long photonFrozenBalance = isPhoton ? balance + account.getFrozenBalance() : account.getFrozenBalance();
-      long entropyFrozenBalance = !isPhoton ? balance + account.getEntropyFrozenBalance() : account.getEntropyFrozenBalance();
+      long photonFrozenBalance = isPhoton ? frozenBalance + account.getFrozenBalance() : account.getFrozenBalance();
+      long entropyFrozenBalance = !isPhoton ? frozenBalance + account.getEntropyFrozenBalance() : account.getEntropyFrozenBalance();
 
       if (photonFrozenBalance > 0){
         freezeStageBalance(ownerAddress, true, photonFrozenBalance, stage, expireTime);
@@ -826,18 +825,12 @@ public class FreezeBalanceActuator extends AbstractActuator {
         freezeStageBalance(ownerAddress, false, entropyFrozenBalance, stage, expireTime);
       }
     } else {
-      if (isPhoton && capsule.getInstance().getFrozenBalanceForPhoton() > 0) {
-        balance += capsule.getInstance().getFrozenBalanceForPhoton();
-      }
 
-      if ((!isPhoton && capsule.getInstance().getFrozenBalanceForEntropy() > 0)){
-        balance += capsule.getInstance().getFrozenBalanceForEntropy();
-      }
-      if (balance <= 0){
+      if (frozenBalance <= 0){
         return;
       }
 
-      freezeStageBalance(ownerAddress, isPhoton, balance, stage, expireTime);
+      freezeStageBalance(ownerAddress, isPhoton, frozenBalance, stage, expireTime);
     }
   }
 
