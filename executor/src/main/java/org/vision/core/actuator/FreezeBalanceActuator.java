@@ -586,6 +586,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
         long fee = getModifySpreadParentFee();
         if (fee > 0){
+          AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(ownerAddress);
+          Commons.adjustBalance(chainBaseManager.getAccountStore(), accountCapsule, -fee);
           if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()){
             chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
           } else {
