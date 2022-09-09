@@ -1135,6 +1135,9 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
     long merge = 100L;
     try {
       merge = this.account.getFrozenStageWeightMerge();
+      if (merge < 100L){
+        merge = 100L;
+      }
     }catch (Exception e){
       logger.debug(e.getMessage());
     }
