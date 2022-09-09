@@ -1191,6 +1191,10 @@ public class Wallet {
             .setKey("getModifySpreadMintParentFee")
             .setValue(dbManager.getDynamicPropertiesStore().getModifySpreadMintParentFee())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getSeparateProposalStringParameters")
+            .setValue(dbManager.getDynamicPropertiesStore().getSeparateProposalStringParameters())
+            .build());
 
     return builder.build();
   }

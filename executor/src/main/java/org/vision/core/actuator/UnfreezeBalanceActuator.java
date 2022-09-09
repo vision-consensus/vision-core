@@ -205,8 +205,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
-            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
@@ -232,11 +230,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setBalance(oldBalance + unfreezeBalance)
               .clearFrozen().addAllFrozen(frozenList).build());
 
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            long merge = AccountCapsule.calcAccountFrozenStageWeightMerge(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
-            accountCapsule.setFrozenStageWeightMerge(merge);
-          }
           break;
         case ENTROPY:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForEntropy()
@@ -261,8 +254,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
-            AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
             long totalStage = 0L;
             long expireTime = 0L;
             for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
@@ -289,11 +280,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               .setBalance(oldBalance + unfreezeBalance)
               .setAccountResource(newAccountResource).build());
 
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-            long merge = AccountCapsule.calcAccountFrozenStageWeightMerge(
-                accountCapsule, accountFrozenStageResourceStore, dynamicStore);
-            accountCapsule.setFrozenStageWeightMerge(merge);
-          }
           break;
         case FVGUARANTEE:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForFvguarantee()
@@ -307,7 +293,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         case SPREAD:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread()
               .getFrozenBalance();
-          if (dynamicStore.getAllowVPFreezeStageWeight() != 1) {
             AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
                 .clearFrozenBalanceForSpread().build();
             accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
@@ -315,21 +300,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 .setAccountResource(newSpread).build());
 
             clearSpreadRelationShip(ownerAddress);
-          } else {
-            refreeze = SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
-                accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
-            if (!refreeze) {
-              AccountResource newSpread = accountCapsule.getAccountResource().toBuilder()
-                  .clearFrozenBalanceForSpread().build();
-              accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-                  .setBalance(oldBalance + unfreezeBalance)
-                  .setAccountResource(newSpread).build());
-
-              clearSpreadRelationShip(ownerAddress);
-            }else {
-              unfreezeBalance = 0L;
-            }
-          }
           break;
         default:
           //this should never happen
@@ -346,6 +316,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             && capsule.getInstance().getFrozenBalanceForEntropy() == 0L) {
           accountFrozenStageResourceStore.delete(key);
         }
+      }
+    }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      switch (unfreezeBalanceContract.getResource()) {
+        case PHOTON:
+        case ENTROPY:
+          long weightMerge = AccountCapsule.calcAccountFrozenStageWeightMerge(
+                  accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
+          accountCapsule.setFrozenStageWeightMerge(weightMerge);
+          break;
       }
     }
 
@@ -590,7 +571,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   throw new ContractValidateException("no frozenBalance(PHOTON) stage:" + stage);
                 }
 
-                if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
+                if (stageCapsule.getInstance().getExpireTimeForPhoton() > now ||
+                        stageCapsule.getInstance().getExpireTimeForPhoton() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
                   throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: " + stage);
                 }
               }
@@ -629,7 +611,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                   throw new ContractValidateException("no frozenBalance(Entropy) stage: "+stage);
                 }
 
-                if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
+                if (stageCapsule.getInstance().getExpireTimeForEntropy() > now ||
+                        stageCapsule.getInstance().getExpireTimeForEntropy() < now - dynamicStore.getRefreezeConsiderationPeriodResult()) {
                   throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage);
                 }
               }
@@ -654,7 +637,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
 
-          if (frozenBalanceForSpread.getExpireTime() > now) {
+          if (frozenBalanceForSpread.getExpireTime() > now
+            || frozenBalanceForSpread.getExpireTime() < now - dynamicStore.getSpreadRefreezeConsiderationPeriodResult()) {
             throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
           }
           break;

@@ -91,14 +91,6 @@ public class WithdrawBalanceActuator extends AbstractActuator {
       ret.setWithdrawAmount(allowance);
     }
 
-    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
-      AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
-          accountCapsule, chainBaseManager.getAccountFrozenStageResourceStore(), dynamicStore);
-
-      SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(
-          accountCapsule, chainBaseManager.getSpreadRelationShipStore(), dynamicStore);
-    }
-
     accountStore.put(accountCapsule.createDbKey(), accountCapsule);
     ret.setStatus(fee, code.SUCESS);
 

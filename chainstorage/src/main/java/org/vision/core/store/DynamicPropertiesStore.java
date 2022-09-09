@@ -3161,6 +3161,18 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return 300_000L;
   }
 
+  public void saveSeparateProposalStringParameters(Long value) {
+    this.put(DynamicResourceProperties.SEPARATE_PROPOSAL_STRING_PARAMETERS,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public Long getSeparateProposalStringParameters() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.SEPARATE_PROPOSAL_STRING_PARAMETERS))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void burnSpreadAmount(long amount) {
     if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
@@ -3265,6 +3277,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE = "ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE".getBytes();
     public static final byte[] REFREEZE_CONSIDERATION_PERIOD = "REFREEZE_CONSIDERATION_PERIOD".getBytes();
     public static final byte[] SPREAD_REFREEZE_CONSIDERATION_PERIOD = "SPREAD_REFREEZE_CONSIDERATION_PERIOD".getBytes();
+    public static final byte[] SEPARATE_PROPOSAL_STRING_PARAMETERS = "SEPARATE_PROPOSAL_STRING_PARAMETERS".getBytes();
     public static final byte[] SM_BURN_OPTIMIZATION = "SM_BURN_OPTIMIZATION".getBytes();
     private static final byte[] ALLOW_VP_FREEZE_STAGE_WEIGHT = "ALLOW_VP_FREEZE_STAGE_WEIGHT".getBytes();
     private static final byte[] VP_FREEZE_STAGE_WEIGHT = "VP_FREEZE_STAGE_WEIGHT".getBytes();

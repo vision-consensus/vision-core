@@ -457,8 +457,22 @@ public class ProposalUtil {
         }
         break;
       }
-      default:
+      case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [SEPARATE_PROPOSAL_STRING_PARAMETER]");
+        }
+        if (value != 1 && value != 0 ) {
+          throw new ContractValidateException(
+                  "This value[SEPARATE_PROPOSAL_STRING_PARAMETER] is only allowed to be 1 or 0");
+        }
         break;
+      }
+      default:
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -583,7 +597,11 @@ public class ProposalUtil {
         }
       }
       default:
-        break;
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal string parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -651,7 +669,8 @@ public class ProposalUtil {
     REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
     SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62),
-    MODIFY_SPREAD_MINT_PARENT_FEE(63);
+    MODIFY_SPREAD_MINT_PARENT_FEE(63),
+    SEPARATE_PROPOSAL_STRING_PARAMETERS(64);
 
     private long code;
 

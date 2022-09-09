@@ -45,13 +45,13 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
     return key;
   }
 
-  public static void dealReFreezeConsideration(AccountCapsule accountCapsule, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore) {
+  public static void dealReFreezeConsideration(AccountCapsule accountCapsule, AccountFrozenStageResourceStore accountFrozenStageResourceStore, DynamicPropertiesStore dynamicStore, long refreezeStage, boolean isPhoton) {
     byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
     Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     long consider = dynamicStore.getRefreezeConsiderationPeriodResult();
     for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
-      if (entry.getKey() == 1L) {
+      if (entry.getKey() == 1L || entry.getKey() != refreezeStage) {
         continue;
       }
       byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
@@ -62,7 +62,7 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
       long duration = entry.getValue().get(0) * FROZEN_PERIOD;
       duration = entry.getKey() * 180000L; // for vtest
 
-      if (capsule.getInstance().getFrozenBalanceForPhoton() > 0
+      if (isPhoton && capsule.getInstance().getFrozenBalanceForPhoton() > 0
           && capsule.getInstance().getExpireTimeForPhoton() < now - consider) {
         long cycle = (now - capsule.getInstance().getExpireTimeForPhoton()) / duration;
         long tmp = capsule.getInstance().getExpireTimeForPhoton() + (cycle + 1) * duration;
@@ -72,7 +72,7 @@ public class AccountFrozenStageResourceCapsule implements ProtoCapsule<AccountFr
         accountCapsule.setFrozenForPhoton(accountCapsule.getFrozenBalance(),
             Math.max(accountCapsule.getFrozenExpireTime(), tmp));
       }
-      if (capsule.getInstance().getFrozenBalanceForEntropy() > 0
+      if (!isPhoton && capsule.getInstance().getFrozenBalanceForEntropy() > 0
           && capsule.getInstance().getExpireTimeForEntropy() < now - consider) {
         long cycle = (now - capsule.getInstance().getExpireTimeForEntropy()) / duration;
         long tmp = capsule.getInstance().getExpireTimeForEntropy() + (cycle + 1) * duration;
