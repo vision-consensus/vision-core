@@ -24,6 +24,7 @@ message FreezeBalanceContract {
 message FreezeBalanceStage {
   int64 stage = 1;
   int64 frozen_balance = 2;
+  bool refreeze = 3;
 }
 
 message UnfreezeBalanceContract {
