@@ -168,10 +168,16 @@ public class FreezeBalanceActuator extends AbstractActuator {
       case SPREAD:
         if (!ArrayUtils.isEmpty(parentAddress)){
           try{
-            if (getModifySpreadParentFee() > 0 ){
+            boolean isUpdateParent = spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
+            if (isUpdateParent && getModifySpreadParentFee() > 0 ){
               fee += getModifySpreadParentFee();
+              newBalance -= fee;
+              if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()){
+                chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
+              } else {
+                Commons.adjustBalance(chainBaseManager.getAccountStore(), chainBaseManager.getAccountStore().getSingularity(), +fee);
+              }
             }
-            spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime);
           } catch (BalanceInsufficientException | ArithmeticException e) {
             logger.debug(e.getMessage(), e);
             ret.setStatus(fee, code.FAILED);
@@ -563,7 +569,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
   /**
    * operator spread mint relationship
    */
-  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime) throws BalanceInsufficientException {
+  private boolean spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime) {
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(ownerAddress);
@@ -583,17 +589,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 ByteString.copyFrom(ownerAddress),
                 ByteString.copyFrom(parentAddress));
         spreadRelationShipCapsule.setFrozenBalanceForSpread(frozenBalanceForSpread + balance, expireTime, cycle);
-
-        long fee = getModifySpreadParentFee();
-        if (fee > 0){
-          AccountCapsule accountCapsule = chainBaseManager.getAccountStore().get(ownerAddress);
-          Commons.adjustBalance(chainBaseManager.getAccountStore(), accountCapsule, -fee);
-          if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()){
-            chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
-          } else {
-            Commons.adjustBalance(chainBaseManager.getAccountStore(), chainBaseManager.getAccountStore().getSingularity(), +fee);
-          }
-        }
       }
     } else {
       spreadRelationShipCapsule = new SpreadRelationShipCapsule(
@@ -602,6 +597,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
       spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime, cycle);
     }
     spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule, isUpdate);
+
+    return isUpdate;
   }
 
   /**
