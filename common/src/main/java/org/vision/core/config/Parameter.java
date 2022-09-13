@@ -139,6 +139,9 @@ public class Parameter {
     public static final String FreezeBalanceStage = "freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])";   // 10a6d73b 741b51421df7c824064dc86f4cd9b70d033ee002604cc61fbe3217af
     public static final String FreezeBalanceStage_FunctionSelector = "10a6d73b";
 
+    public static final String FreezeBalanceReStage = "freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[],bool[])";   // 13fb4223 25f6fae64ac1c83392e05b3d65752b2f3ce07012db25180b6f1452e8
+    public static final String FreezeBalanceReStage_FunctionSelector = "13fb4223";
+
     public static final String UnfreezeBalance = "unfreezeBalance(uint256,address)";               // 62a60984 ef1f973ed2e0aad55d8777225b517dea86fa6a4396eaea0c6f4a0076
     public static final String UnfreezeBalance_FunctionSelector = "62a60984";
 
