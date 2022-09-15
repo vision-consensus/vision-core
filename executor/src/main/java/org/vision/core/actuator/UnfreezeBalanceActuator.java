@@ -560,12 +560,23 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
-              if (stage == 1L && stageCapsule == null){
-                long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
-                        .filter(frozen -> frozen.getExpireTime() <= now).count();
-                if (allowedUnfreezeCount <= 0) {
-                  throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
+              if (stage == 1L){
+                if (stageCapsule == null){
+                  long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
+                          .filter(frozen -> frozen.getExpireTime() <= now).count();
+                  if (allowedUnfreezeCount <= 0) {
+                    throw new ContractValidateException("It's not time to unfreeze(PHOTON).");
+                  }
+                }else {
+                  if (stageCapsule.getInstance().getFrozenBalanceForPhoton() == 0) {
+                    throw new ContractValidateException("no frozenBalance(PHOTON) stage:" + stage);
+                  }
+
+                  if (stageCapsule.getInstance().getExpireTimeForPhoton() > now) {
+                    throw new ContractValidateException("It's not time to unfreeze(PHOTON) stage: " + stage);
+                  }
                 }
+
               }else {
                 if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForPhoton() == 0) {
                   throw new ContractValidateException("no frozenBalance(PHOTON) stage:" + stage);
@@ -602,9 +613,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
-              if (stage == 1L && stageCapsule == null) {
-                if (frozenBalanceForEntropy.getExpireTime() > now) {
-                  throw new ContractValidateException("It's not time to unfreeze(Entropy).");
+              if (stage == 1L) {
+                if (stageCapsule == null){
+                  if (frozenBalanceForEntropy.getExpireTime() > now) {
+                    throw new ContractValidateException("It's not time to unfreeze(Entropy).");
+                  }
+                }else {
+                  if (stageCapsule.getInstance().getExpireTimeForEntropy() > now) {
+                    throw new ContractValidateException("It's not time to unfreeze(Entropy) stage: " + stage);
+                  }
                 }
               } else {
                 if (stageCapsule == null || stageCapsule.getInstance().getFrozenBalanceForEntropy() == 0) {
