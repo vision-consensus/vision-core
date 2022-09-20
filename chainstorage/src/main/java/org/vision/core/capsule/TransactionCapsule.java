@@ -1949,12 +1949,32 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         }
 
         if (dataValue.length() > VALUE_SIZE * 4) { // for freeze stage parameter // freezeBalance(uint256,uint256,uint256,address,uint256[],uint256[])
-          int stageIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2;
+          int stageStartIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 4, VALUE_SIZE * 5)));
+          int frozenStartIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 5, VALUE_SIZE * 6)));
+          int refreezeStartIndex = 0;
+
+          int stageArraySize = (int)Math.ceil(stageStartIndex / 32.0);
+          int frozenArraySize = (int)Math.ceil(frozenStartIndex / 32.0);
+          int refreezeArraySize = 0;
+
+          int refreezeIndex = 0;
+          int refreezeSize = 0;
+
+          if (stageArraySize * VALUE_SIZE > VALUE_SIZE * 6){
+            refreezeStartIndex = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 6, VALUE_SIZE * 7)));
+            refreezeArraySize = (int)Math.ceil(refreezeStartIndex / 32.0);
+            refreezeIndex = refreezeArraySize * VALUE_SIZE;
+            refreezeSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(refreezeIndex, refreezeIndex + VALUE_SIZE)));
+          }
+
+          int stageIndex = stageArraySize * VALUE_SIZE;
           int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
 
-          int frozenIndex = VALUE_SIZE * 4 + VALUE_SIZE * 2 + VALUE_SIZE + VALUE_SIZE * stageSize;
+          int frozenIndex = frozenArraySize * VALUE_SIZE;
           int frozenSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(frozenIndex, frozenIndex + VALUE_SIZE)));
-          if (stageSize != frozenSize){
+
+          if (stageSize != frozenSize ||
+                  (refreezeIndex > 0 && stageSize != refreezeSize)){
             return build.build();
           }
 
@@ -1966,6 +1986,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
             BalanceContract.FreezeBalanceStage.Builder freezeBalanceStage = BalanceContract.FreezeBalanceStage.newBuilder();
             freezeBalanceStage.setStage(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex + startIndex, stageIndex + endIndex))));
             freezeBalanceStage.setFrozenBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(frozenIndex + startIndex, frozenIndex + endIndex))));
+            if (refreezeStartIndex > 0){
+              freezeBalanceStage.setRefreeze(ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(refreezeIndex + startIndex, refreezeIndex + endIndex))) == 1);
+            }
             build.addFreezeBalanceStage(freezeBalanceStage);
             index++;
           }
