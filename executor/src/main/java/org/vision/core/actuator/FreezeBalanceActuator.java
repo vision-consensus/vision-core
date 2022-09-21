@@ -769,10 +769,14 @@ public class FreezeBalanceActuator extends AbstractActuator {
     Map<Long, List<Long>> stageWeight = dynamicPropertiesStore.getVPFreezeStageWeights();
     AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
-    boolean refreeze = false;
+
+    Set<Long> stagesKey = stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toSet());
+    if (!stagesKey.contains(1L)) {
+      freezeOneStage(ownerAddress, isPhoton, account, frozenBalance);
+    }
+
     for (FreezeBalanceStage stage : stages) {
       if (stage.getStage() != 1L && stage.getRefreeze()){
-        refreeze = true;
         AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
                 account, accountFrozenStageResourceStore, dynamicPropertiesStore, stage.getStage(), isPhoton);
         break;
@@ -788,15 +792,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
         freezeStageBalance(ownerAddress, isPhoton, balance, stage.getStage(), expireTime);
       }
     }
-
-    if (refreeze){
-      return;
-    }
-
-    Set<Long> stagesKey = stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toSet());
-    if (!stagesKey.contains(1L)) {
-      freezeOneStage(ownerAddress, true, account, frozenBalance);
-    }
   }
 
   private void freezeOneStage(byte[] ownerAddress, boolean isPhoton, AccountCapsule account, long frozenBalance){
@@ -810,9 +805,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (!isPhoton) {
       expireTime = account.getEntropyFrozenExpireTime();
     }
+    long duration = stageWeights.get(stage).get(0) * FROZEN_PERIOD;
     if (frozenBalance > 0) {
-      expireTime = now + stageWeights.get(stage).get(0) * FROZEN_PERIOD;
-      expireTime = now + 180000L;
+      duration = 180000L;
+      expireTime = now + duration;
     }
 
     boolean existMultiStage = false;
@@ -831,11 +827,14 @@ public class FreezeBalanceActuator extends AbstractActuator {
       long photonFrozenBalance = isPhoton ? frozenBalance + account.getFrozenBalance() : account.getFrozenBalance();
       long entropyFrozenBalance = !isPhoton ? frozenBalance + account.getEntropyFrozenBalance() : account.getEntropyFrozenBalance();
 
+      long photonExpireTime = isPhoton && frozenBalance > 0 ? now + duration : account.getFrozenExpireTime();
+      long entropyExpireTime = !isPhoton && frozenBalance > 0 ? now + duration : account.getEntropyFrozenExpireTime();
+
       if (photonFrozenBalance > 0){
-        freezeStageBalance(ownerAddress, true, photonFrozenBalance, stage, expireTime);
+        freezeStageBalance(ownerAddress, true, photonFrozenBalance, stage, photonExpireTime);
       }
       if (entropyFrozenBalance > 0){
-        freezeStageBalance(ownerAddress, false, entropyFrozenBalance, stage, expireTime);
+        freezeStageBalance(ownerAddress, false, entropyFrozenBalance, stage, entropyExpireTime);
       }
     } else {
 
@@ -857,11 +856,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
             chainBaseManager.getAccountFrozenStageResourceStore());
     if (isPhoton) {
       chainBaseManager.getDynamicPropertiesStore()
-              .addTotalStagePhotonWeight(Collections.singletonList(1L),
+              .addTotalStagePhotonWeight(Collections.singletonList(stage),
                       balance / VS_PRECISION);
     } else {
       chainBaseManager.getDynamicPropertiesStore()
-              .addTotalStageEntropyWeight(Collections.singletonList(1L),
+              .addTotalStageEntropyWeight(Collections.singletonList(stage),
                       balance / VS_PRECISION);
     }
   }

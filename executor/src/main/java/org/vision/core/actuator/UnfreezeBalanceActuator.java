@@ -596,12 +596,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
           if (frozenBalanceForEntropy.getFrozenBalance() <= 0) {
             throw new ContractValidateException("no frozenBalance(Entropy)");
           }
-          if (frozenBalanceForEntropy.getExpireTime() > now
-              && dynamicStore.getAllowVPFreezeStageWeight() != 1) {
-            throw new ContractValidateException("It's not time to unfreeze(Entropy).");
-          }
 
-          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+          if (dynamicStore.getAllowVPFreezeStageWeight() != 1)   {
+            if (frozenBalanceForEntropy.getExpireTime() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(Entropy).");
+            }
+          }else {
             List<Long> stageList = parseStageList(unfreezeBalanceContract);
             if (stageList.contains(1L)){
               long totalStageBalance = AccountFrozenStageResourceCapsule.getTotalStageBalanceForEntropy(ownerAddress, 1L, accountFrozenStageResourceStore, dynamicStore);
@@ -654,9 +654,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
             throw new ContractValidateException("no frozenBalance(SpreadMint)");
           }
 
-          if (frozenBalanceForSpread.getExpireTime() > now
-            || frozenBalanceForSpread.getExpireTime() < now - dynamicStore.getSpreadRefreezeConsiderationPeriodResult()) {
-            throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+          if (dynamicStore.getAllowVPFreezeStageWeight() != 1){
+            if (frozenBalanceForSpread.getExpireTime() > now) {
+              throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+            }
+          }else {
+            if (frozenBalanceForSpread.getExpireTime() > now
+                    || frozenBalanceForSpread.getExpireTime() < now - dynamicStore.getSpreadRefreezeConsiderationPeriodResult()) {
+              throw new ContractValidateException("It's not time to unfreeze(SpreadMint).");
+            }
           }
           break;
         default:
