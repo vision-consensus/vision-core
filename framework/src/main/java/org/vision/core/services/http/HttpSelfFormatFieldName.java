@@ -199,6 +199,7 @@ public class HttpSelfFormatFieldName {
     NameFieldNameMap.put("protocol.EasyTransferAssetMessage.passPhrase", 1);
     //Note
     NameFieldNameMap.put("protocol.Note.memo", 1);
+    AddressFieldNameMap.put("protocol.AccountFrozenStageResourceMessage.address", 1);
 
     //***** Contract.proto *****
     //AccountUpdateContract
