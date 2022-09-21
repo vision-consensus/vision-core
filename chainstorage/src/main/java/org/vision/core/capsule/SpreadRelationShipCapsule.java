@@ -3,7 +3,12 @@ package org.vision.core.capsule;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.parameter.CommonParameter;
+import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.SpreadRelationShipStore;
 import org.vision.protos.Protocol.SpreadRelationShip;
+
+import static org.vision.core.config.Parameter.ChainConstant.FROZEN_PERIOD;
 
 @Slf4j(topic = "capsule")
 public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShip> {
@@ -34,6 +39,31 @@ public class SpreadRelationShipCapsule implements ProtoCapsule<SpreadRelationShi
     System.arraycopy(from, 0, key, 0, from.length);
     System.arraycopy(to, 0, key, from.length, to.length);
     return key;
+  }
+
+  public static boolean dealSpreadReFreezeConsideration(AccountCapsule accountCapsule, SpreadRelationShipStore spreadRelationShipStore, DynamicPropertiesStore dynamicStore) {
+    byte[] ownerAddress = accountCapsule.getAddress().toByteArray();
+    long spreadConsider = dynamicStore.getSpreadRefreezeConsiderationPeriodResult();
+    long spreadBalance = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getFrozenBalance();
+    long spreadExpireTime = accountCapsule.getAccountResource().getFrozenBalanceForSpread().getExpireTime();
+    long now = dynamicStore.getLatestBlockHeaderTimestamp();
+    boolean refreeze = false;
+    if (spreadBalance > 0 && spreadExpireTime < now - spreadConsider) {
+      refreeze = true;
+
+      long duration = FROZEN_PERIOD * dynamicStore.getSpreadFreezePeriodLimit();
+
+      long cycle = (now - spreadExpireTime) / duration;
+      spreadExpireTime += (cycle + 1) * duration;
+      accountCapsule.setFrozenForSpread(spreadBalance, spreadExpireTime);
+
+      SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(ownerAddress);
+      if (spreadRelationShipCapsule != null) {
+        spreadRelationShipCapsule.setFrozenBalanceForSpread(spreadBalance, spreadExpireTime, dynamicStore.getCurrentCycleNumber());
+        spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule);
+      }
+    }
+    return refreeze;
   }
 
   public ByteString getOwner() {

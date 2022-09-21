@@ -110,16 +110,36 @@ public class ProposalCreateActuator extends AbstractActuator {
           WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
     }
 
-    if (contract.getParametersMap().size() != 0) {
-      for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
-        validateValue(entry);
+    if (chainBaseManager.getDynamicPropertiesStore().getSeparateProposalStringParameters() == 1L){
+      boolean existParameters = false;
+      if (contract.getParametersMap().size() != 0) {
+        existParameters = true;
+        for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
+          validateValue(entry);
+        }
       }
-    } else if (contract.getStringParametersMap().size() != 0) {
-      for (Map.Entry<Long, String> entry : contract.getStringParametersMap().entrySet()) {
-        validateStringValue(entry);
+      if (contract.getStringParametersMap().size() != 0) {
+        existParameters = true;
+        for (Map.Entry<Long, String> entry : contract.getStringParametersMap().entrySet()) {
+          validateStringValue(entry);
+        }
       }
-    } else {
-      throw new ContractValidateException("This proposal has no parameter or string parameter.");
+
+      if (!existParameters){
+        throw new ContractValidateException("This proposal has no parameter or string parameter.");
+      }
+    }else {
+      if (contract.getParametersMap().size() != 0) {
+        for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
+          validateValue(entry);
+        }
+      } else if (contract.getStringParametersMap().size() != 0) {
+        for (Map.Entry<Long, String> entry : contract.getStringParametersMap().entrySet()) {
+          validateStringValue(entry);
+        }
+      } else {
+        throw new ContractValidateException("This proposal has no parameter or string parameter.");
+      }
     }
 
     return true;

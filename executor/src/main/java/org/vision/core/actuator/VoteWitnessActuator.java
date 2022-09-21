@@ -12,14 +12,15 @@ import org.vision.common.utils.*;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.TransactionResultCapsule;
 import org.vision.core.capsule.VotesCapsule;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
+import org.vision.core.capsule.*;
 import org.vision.core.config.Parameter;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
-import org.vision.core.store.AccountStore;
-import org.vision.core.store.DynamicPropertiesStore;
-import org.vision.core.store.VotesStore;
-import org.vision.core.store.WitnessStore;
+import org.vision.core.store.*;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
@@ -31,8 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.*;
-import static org.vision.core.config.Parameter.ChainConstant.MAX_VOTE_NUMBER;
-import static org.vision.core.config.Parameter.ChainConstant.VS_PRECISION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 
 @Slf4j(topic = "actuator")
 public class VoteWitnessActuator extends AbstractActuator {
@@ -185,6 +185,9 @@ public class VoteWitnessActuator extends AbstractActuator {
         voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel2() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
       } else if (visionPower >= interval1) {
         voteCount = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      }
+      if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
+        voteCount = (long) (voteCount * (accountCapsule.getFrozenStageWeightMerge() * 1.0 / 100L));
       }
       votesCapsule.addNewVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);
       accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), voteCount);

@@ -6,25 +6,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.utils.Commons;
 import org.vision.common.utils.DecodeUtil;
 import org.vision.common.utils.StringUtil;
 import org.vision.common.utils.Time;
 import org.vision.core.capsule.*;
+import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
-import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.FreezeBalanceContract;
+import org.vision.protos.contract.BalanceContract.FreezeBalanceStage;
 import org.vision.protos.contract.Common;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.config.Parameter.ChainConstant.*;
@@ -47,6 +46,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
     final FreezeBalanceContract freezeBalanceContract;
     AccountStore accountStore = chainBaseManager.getAccountStore();
     DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
     try {
       freezeBalanceContract = any.unpack(FreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
@@ -65,10 +65,30 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     long now = dynamicStore.getLatestBlockHeaderTimestamp();
     long duration = freezeBalanceContract.getFrozenDuration() * FROZEN_PERIOD;
-
     long newBalance = accountCapsule.getBalance() - freezeBalanceContract.getFrozenBalance();
 
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
+
+    List<FreezeBalanceStage> stages = freezeBalanceContract.getFreezeBalanceStageList();
+    boolean refreeze = false;
+    switch (freezeBalanceContract.getResource()) {
+      case PHOTON:
+      case ENTROPY:
+        stages = stages.stream().sorted(Comparator.comparingLong(FreezeBalanceStage::getStage)).collect(Collectors.toList());
+        for(FreezeBalanceStage stage : stages){
+          duration = dynamicStore.getVPFreezeDurationByStage(stage.getStage()) * FROZEN_PERIOD;
+          frozenBalance += stage.getFrozenBalance();
+          newBalance -= stage.getFrozenBalance();
+          refreeze = stage.getRefreeze() || refreeze;
+        }
+        break;
+      case SPREAD:
+        if (stages.size() == 1 && stages.get(0).getRefreeze()){
+          refreeze = true;
+        }
+        break;
+    }
+
     long expireTime = now + duration;
 
     byte[] receiverAddress = freezeBalanceContract.getReceiverAddress().toByteArray();
@@ -82,12 +102,29 @@ public class FreezeBalanceActuator extends AbstractActuator {
                   frozenBalance, expireTime);
           accountCapsule.addDelegatedFrozenBalanceForPhoton(frozenBalance);
         } else {
-          long newFrozenBalanceForPhoton =
-                  frozenBalance + accountCapsule.getFrozenBalance();
-          accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            accountFrozenStageResource(ownerAddress, stages, true, accountCapsule, freezeBalanceContract.getFrozenBalance());
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null || capsule.getInstance().getFrozenBalanceForPhoton() == 0) {
+                continue;
+              }
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
+            }
+          }
+
+          if (!refreeze){
+            long newFrozenBalanceForPhoton =
+                    frozenBalance + accountCapsule.getFrozenBalance();
+            accountCapsule.setFrozenForPhoton(newFrozenBalanceForPhoton, expireTime);
+          }
         }
-        dynamicStore
-                .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        if (!refreeze){
+          dynamicStore
+                  .addTotalPhotonWeight(frozenBalance / VS_PRECISION);
+        }
         break;
       case ENTROPY:
         if (!ArrayUtils.isEmpty(receiverAddress)
@@ -96,14 +133,31 @@ public class FreezeBalanceActuator extends AbstractActuator {
                   frozenBalance, expireTime);
           accountCapsule.addDelegatedFrozenBalanceForEntropy(frozenBalance);
         } else {
-          long newFrozenBalanceForEntropy =
-                  frozenBalance + accountCapsule.getAccountResource()
-                          .getFrozenBalanceForEntropy()
-                          .getFrozenBalance();
-          accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
+          if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            accountFrozenStageResource(ownerAddress, stages, false, accountCapsule, freezeBalanceContract.getFrozenBalance());
+
+            Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
+            for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+              AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+              if (capsule == null || capsule.getInstance().getFrozenBalanceForEntropy() == 0) {
+                continue;
+              }
+              expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
+            }
+          }
+          if (!refreeze){
+            long newFrozenBalanceForEntropy =
+                    frozenBalance + accountCapsule.getAccountResource()
+                            .getFrozenBalanceForEntropy()
+                            .getFrozenBalance();
+            accountCapsule.setFrozenForEntropy(newFrozenBalanceForEntropy, expireTime);
+          }
         }
-        dynamicStore
-                .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        if (!refreeze) {
+          dynamicStore
+                  .addTotalEntropyWeight(frozenBalance / VS_PRECISION);
+        }
         break;
       case FVGUARANTEE:
         long newFrozenBalanceForFVGuarantee =
@@ -115,19 +169,50 @@ public class FreezeBalanceActuator extends AbstractActuator {
                 .addTotalFVGuaranteeWeight(frozenBalance / VS_PRECISION);
         break;
       case SPREAD:
-        if (!ArrayUtils.isEmpty(parentAddress)){
-          spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime,freezeBalanceContract.getFrozenDuration());
+        if (refreeze){
+          SpreadRelationShipCapsule.dealSpreadReFreezeConsideration(accountCapsule, chainBaseManager.getSpreadRelationShipStore(), chainBaseManager.getDynamicPropertiesStore());
+        } else {
+          if (!ArrayUtils.isEmpty(parentAddress)){
+            try{
+              boolean isUpdateParent = spreadRelationShip(ownerAddress, parentAddress, frozenBalance, expireTime, freezeBalanceContract.getFrozenDuration());
+              if (isUpdateParent && getModifySpreadParentFee() > 0 ){
+                fee += getModifySpreadParentFee();
+                newBalance -= fee;
+                if (chainBaseManager.getDynamicPropertiesStore().supportBlackHoleOptimization()){
+                  chainBaseManager.getDynamicPropertiesStore().burnVs(fee);
+                } else {
+                  Commons.adjustBalance(chainBaseManager.getAccountStore(), chainBaseManager.getAccountStore().getSingularity(), +fee);
+                }
+              }
+            } catch (BalanceInsufficientException | ArithmeticException e) {
+              logger.debug(e.getMessage(), e);
+              ret.setStatus(fee, code.FAILED);
+              throw new ContractExeException(e.getMessage());
+            }
+          }
+
+          long newFrozenBalanceForSpreadMint =
+                  frozenBalance + accountCapsule.getAccountResource()
+                          .getFrozenBalanceForSpread().getFrozenBalance();
+          accountCapsule.setFrozenForSpread(newFrozenBalanceForSpreadMint, expireTime);
+
+          dynamicStore.addTotalSpreadMintWeight(frozenBalance / VS_PRECISION);
         }
 
-        long newFrozenBalanceForSpreadMint =
-                frozenBalance + accountCapsule.getAccountResource()
-                        .getFrozenBalanceForSpread().getFrozenBalance();
-        accountCapsule.setFrozenForSpread(newFrozenBalanceForSpreadMint, expireTime);
-
-        dynamicStore.addTotalSpreadMintWeight(frozenBalance / VS_PRECISION);
         break;
       default:
         logger.debug("Resource Code Error.");
+    }
+
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      switch (freezeBalanceContract.getResource()) {
+        case PHOTON:
+        case ENTROPY:
+          long weightMerge = AccountCapsule.calcAccountFrozenStageWeightMerge(
+                  accountCapsule, accountFrozenStageResourceStore, dynamicStore);
+          accountCapsule.setFrozenStageWeightMerge(weightMerge);
+          break;
+      }
     }
 
     accountCapsule.setBalance(newBalance);
@@ -137,7 +222,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     return true;
   }
-
 
   @Override
   public boolean validate() throws ContractValidateException {
@@ -166,7 +250,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
     if (!DecodeUtil.addressValid(ownerAddress)) {
       throw new ContractValidateException("Invalid address");
     }
-
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     if (accountCapsule == null) {
       String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
@@ -178,12 +261,48 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     boolean needCheckFrozeTime = CommonParameter.getInstance()
             .getCheckFrozenTime() == 1;
+    long days = dynamicStore.getSpecialFreezePeriodLimit();
+    if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+      if (freezeBalanceContract.getFreezeBalanceStageCount() > 5) {
+        throw new ContractValidateException(
+                "[PHOTON、ENTROPY] frozen stage's length must be lte 5");
+      }
+      Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
+      Set<Long> stages = new HashSet<>();
+      for(FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+        if(!stageWeight.containsKey(stage.getStage())){
+          throw new ContractValidateException(
+                  "[PHOTON、ENTROPY] frozen stage must be one of " + stageWeight.keySet());
+        }
+        stages.add(stage.getStage());
+      }
+      if (stages.size() != freezeBalanceContract.getFreezeBalanceStageCount()) {
+        throw new ContractValidateException("[PHOTON、ENTROPY] frozen stage must be not repeated");
+      }
+      days = dynamicStore.getVPFreezeDurationByStage(1L);
+    } else {
+      if (freezeBalanceContract.getFreezeBalanceStageCount() > 0) {
+        throw new ContractValidateException("freeze stages is not allowed yet");
+      }
+    }
 
     if (needCheckFrozeTime
-            && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
-            && frozenDuration != dynamicStore.getSpecialFreezePeriodLimit()) {
-      throw new ContractValidateException(
-              "[PHOTON、ENTROPY] frozenDuration must be " + dynamicStore.getSpecialFreezePeriodLimit() + " days");
+        && (freezeBalanceContract.getResource() == Common.ResourceCode.PHOTON || freezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)
+        && frozenDuration != days) {
+      if (dynamicStore.getAllowVPFreezeStageWeight() != 1){
+        throw new ContractValidateException(
+            "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
+      } else {
+        if (freezeBalanceContract.getFrozenBalance() > 0) {
+          throw new ContractValidateException(
+              "[PHOTON、ENTROPY] frozenDuration must be " + days + " days");
+        } else {
+          if (freezeBalanceContract.getFreezeBalanceStageCount() <=0 ){
+            throw new ContractValidateException(
+                "[PHOTON、ENTROPY] freeze stages must not by empty when freeze balance is zero");
+          }
+        }
+      }
     }
 
     if (needCheckFrozeTime
@@ -202,74 +321,182 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
     byte[] parentAddress = freezeBalanceContract.getParentAddress().toByteArray();
     long frozenBalance = freezeBalanceContract.getFrozenBalance();
+
+    long now = dynamicStore.getLatestBlockHeaderTimestamp();
     boolean isUnlimitedPledge = dynamicStore.getLatestBlockHeaderNumber() >= CommonParameter.PARAMETER.spreadMintUnlimitedPledgeEffectBlockNum;
-    if (freezeBalanceContract.getResource() == Common.ResourceCode.SPREAD){
-      if (!dynamicStore.supportSpreadMint()){
-        throw new ContractValidateException("It's not support SPREAD type of frozen.");
-      }
+    switch (freezeBalanceContract.getResource()) {
+      case PHOTON:
+      case ENTROPY:
+        if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+          if (frozenBalance < 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
+          }
+          if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+            throw new ContractValidateException("frozenBalance must be more than 1VS");
+          }
+          if (frozenBalance == 0 && freezeBalanceContract.getFreezeBalanceStageCount() == 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
+          }
+          boolean refreeze = false;
+          for (FreezeBalanceStage stage : freezeBalanceContract.getFreezeBalanceStageList()) {
+            refreeze = stage.getRefreeze() || refreeze;
+            if (!refreeze){
+              if (stage.getFrozenBalance() <= 0) {
+                throw new ContractValidateException("frozenBalance must be positive");
+              }
+              if (stage.getFrozenBalance() < VS_PRECISION) {
+                throw new ContractValidateException("frozenBalance must be more than 1VS");
+              }
+              frozenBalance += stage.getFrozenBalance();
+            } else {
+              if (stage.getStage() == 1L){
+                throw new ContractValidateException("one stage not allowed refreeze");
+              }
 
-      if (ArrayUtils.isEmpty(parentAddress)){
-        throw new ContractValidateException("parentAddress can not be empty");
-      }
-      if (!DecodeUtil.addressValid(parentAddress)) {
-        throw new ContractValidateException("Invalid parentAddress");
-      }
+              if (frozenBalance != 0 || stage.getFrozenBalance() != 0){
+                throw new ContractValidateException("refreeze stage frozenBalance must be 0VS");
+              }
 
-      if (frozenBalance < 0) {
-        throw new ContractValidateException("frozenBalance must be positive");
-      } else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
-        throw new ContractValidateException("frozenBalance must be more than 1VS");
-      }
+              byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage.getStage());
+              AccountFrozenStageResourceCapsule capsule = chainBaseManager.getAccountFrozenStageResourceStore().get(key);
+              if (capsule == null) {
+                throw new ContractValidateException("no frozenBalance in refreeze stage");
+              }
 
-      SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
-      String oldParent = "";
-      String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
-      if(spreadRelationShipCapsule != null){
-        oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
-      }
+              long consider = dynamicStore.getRefreezeConsiderationPeriodResult();
+              if (freezeBalanceContract.getResource().equals(Common.ResourceCode.PHOTON) ){
+                if (capsule.getInstance().getFrozenBalanceForPhoton() <= 0 || capsule.getInstance().getExpireTimeForPhoton() >= now - consider){
+                  throw new ContractValidateException("not in refreeze period or no frozenBalance for PHOTON");
+                }
+              }else {
+                if (capsule.getInstance().getFrozenBalanceForEntropy() <= 0 || capsule.getInstance().getExpireTimeForEntropy() >= now - consider){
+                  throw new ContractValidateException("not in refreeze period or no frozenBalance for ENTROPY");
+                }
+              }
+            }
+          }
 
-      if (!dynamicStore.supportModifySpreadMintParent()){
-        if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
-          throw new ContractValidateException("It's not allowed to modify the parentAddress");
+          if (refreeze && freezeBalanceContract.getFreezeBalanceStageCount() > 1){
+            throw new ContractValidateException("batch refreeze is not allowed");
+          }
+
+        } else {
+          if (frozenBalance <= 0) {
+            throw new ContractValidateException("frozenBalance must be positive");
+          }
+          if (frozenBalance < VS_PRECISION) {
+            throw new ContractValidateException("frozenBalance must be more than 1VS");
+          }
         }
-        if (frozenBalance == 0){
+        break;
+      case FVGUARANTEE:
+        if (frozenBalance <= 0) {
+          throw new ContractValidateException("frozenBalance must be positive");
+        }
+        if (frozenBalance < VS_PRECISION) {
           throw new ContractValidateException("frozenBalance must be more than 1VS");
         }
-      } else { // supportModifySpreadMintParent == true
-        if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
-          if (spreadRelationShipCapsule == null){
-            throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
-          }
-          if (!oldParent.isEmpty() && oldParent.equals(newParent)) {
-            throw new ContractValidateException("The new and old parentAddress cannot be the same address");
+        break;
+      case SPREAD:
+        if (!dynamicStore.supportSpreadMint()){
+          throw new ContractValidateException("It's not support SPREAD type of frozen.");
+        }
+
+        if (ArrayUtils.isEmpty(parentAddress)){
+          throw new ContractValidateException("parentAddress can not be empty");
+        }
+        if (!DecodeUtil.addressValid(parentAddress)) {
+          throw new ContractValidateException("Invalid parentAddress");
+        }
+
+        if (frozenBalance < 0) {
+          throw new ContractValidateException("frozenBalance must be positive");
+        } else if (frozenBalance > 0 && frozenBalance < VS_PRECISION) {
+          throw new ContractValidateException("frozenBalance must be more than 1VS");
+        }
+
+        SpreadRelationShipCapsule spreadRelationShipCapsule = chainBaseManager.getSpreadRelationShipStore().get(ownerAddress);
+        String oldParent = "";
+        String newParent = Hex.toHexString(ByteString.copyFrom(parentAddress).toByteArray());
+        if(spreadRelationShipCapsule != null){
+          oldParent = Hex.toHexString(spreadRelationShipCapsule.getParent().toByteArray());
+        }
+
+        boolean refreeze = false;
+        if (dynamicStore.getAllowVPFreezeStageWeight() == 1){
+          if (freezeBalanceContract.getFreezeBalanceStageCount() > 0) {
+            if (freezeBalanceContract.getFreezeBalanceStageCount() != 1) {
+              throw new ContractValidateException("illegal refreeze SPREAD parameters");
+            }
+
+            FreezeBalanceStage freezeBalanceStage = freezeBalanceContract.getFreezeBalanceStage(0);
+            if (freezeBalanceStage.getStage() != 1 || !freezeBalanceStage.getRefreeze()){
+              throw new ContractValidateException("illegal refreeze SPREAD parameters");
+            }
+
+            if (frozenBalance != 0 || freezeBalanceStage.getFrozenBalance() != 0){
+              throw new ContractValidateException("refreeze spread frozenBalance must be 0");
+            }
+
+            if (spreadRelationShipCapsule == null
+                    || spreadRelationShipCapsule.getFrozenBalanceForSpread() <= 0
+                    || spreadRelationShipCapsule.getExpireTimeForSpread() >= now - dynamicStore.getSpreadRefreezeConsiderationPeriodResult() ){
+              throw new ContractValidateException("not in refreeze period or no frozenBalance for SPREAD");
+            }
+
+            if (!oldParent.equals(newParent)){
+              throw new ContractValidateException("refreeze transaction is not allowed to modify parentAddress");
+            }
+
+            refreeze = true;
           }
         }
-      }
 
-      if (spreadRelationShipCapsule != null){
-        if (isUnlimitedPledge){
-          if (!oldParent.equals(newParent) && spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to modify parentAddress. Time left: "+
-                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+        if (!refreeze){
+          if (!dynamicStore.supportModifySpreadMintParent()){
+            if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
+              throw new ContractValidateException("It's not allowed to modify the parentAddress");
+            }
+            if (frozenBalance == 0){
+              throw new ContractValidateException("frozenBalance must be more than 1VS");
+            }
+          } else { // supportModifySpreadMintParent == true
+            if (frozenBalance == 0){ // frozenBalance == 0 and exist spreadRelationShip, update Spread parentAddress
+              if (spreadRelationShipCapsule == null){
+                throw new ContractValidateException("the address has not yet set a parentAddress, frozenBalance must be more than 1VS");
+              }
+              if (!oldParent.isEmpty() && oldParent.equals(newParent)) {
+                throw new ContractValidateException("The new and old parentAddress cannot be the same address");
+              }
+            }
+
+            if (!oldParent.isEmpty() && !oldParent.equals(newParent)){
+              long modifySpreadFee = getModifySpreadParentFee();
+              if (modifySpreadFee > 0 && accountCapsule.getBalance() < modifySpreadFee + frozenBalance){
+                throw new ContractValidateException("The ownerAddress balance is insufficient");
+              }
+            }
           }
-        }else{
-          if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
-            throw new ContractValidateException("It's not time to re-freeze. Time left: "+
-                    Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+
+          if (spreadRelationShipCapsule != null){
+            if (isUnlimitedPledge){
+              if (!oldParent.equals(newParent) && spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
+                throw new ContractValidateException("It's not time to modify parentAddress. Time left: "+
+                        Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+              }
+            }else{
+              if (spreadRelationShipCapsule.getExpireTimeForSpread() > dynamicStore.getLatestBlockHeaderTimestamp()){
+                throw new ContractValidateException("It's not time to re-freeze. Time left: "+
+                        Time.formatMillisInterval(spreadRelationShipCapsule.getExpireTimeForSpread() - dynamicStore.getLatestBlockHeaderTimestamp()));
+              }
+            }
           }
         }
-      }
 
-      if (isUnlimitedPledge && Arrays.equals(ownerAddress, parentAddress)){
-        throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
-      }
-    }else{
-      if (frozenBalance <= 0) {
-        throw new ContractValidateException("frozenBalance must be positive");
-      }
-      if (frozenBalance < VS_PRECISION) {
-        throw new ContractValidateException("frozenBalance must be more than 1VS");
-      }
+        if (isUnlimitedPledge && Arrays.equals(ownerAddress, parentAddress)){
+          throw new ContractValidateException("Illegal parentAddress, it's not allowed to set yourself as a parentAddress");
+        }
+        break;
     }
 
     int frozenCount = accountCapsule.getFrozenCount();
@@ -349,6 +576,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     return 0;
   }
 
+  public long getModifySpreadParentFee(){
+    return chainBaseManager.getDynamicPropertiesStore().getModifySpreadMintParentFee();
+  }
+
   private void delegateResource(byte[] ownerAddress, byte[] receiverAddress, boolean isPhoton,
                                 long balance, long expireTime) {
     AccountStore accountStore = chainBaseManager.getAccountStore();
@@ -421,7 +652,10 @@ public class FreezeBalanceActuator extends AbstractActuator {
     accountStore.put(receiverCapsule.createDbKey(), receiverCapsule);
   }
 
-  private void spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime,long frozenDuration){
+  /**
+   * operator spread mint relationship
+   */
+  private boolean spreadRelationShip(byte[] ownerAddress, byte[] parentAddress, long balance, long expireTime, long frozenDuration) {
     SpreadRelationShipStore spreadRelationShipStore = chainBaseManager.getSpreadRelationShipStore();
     SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore
             .get(ownerAddress);
@@ -448,7 +682,9 @@ public class FreezeBalanceActuator extends AbstractActuator {
               ByteString.copyFrom(parentAddress));
       spreadRelationShipCapsule.addFrozenBalanceForSpread(balance, expireTime, cycle);
     }
-    spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule, isUpdate,frozenDuration);
+    spreadRelationShipStore.put(ownerAddress, spreadRelationShipCapsule, isUpdate, frozenDuration);
+
+    return isUpdate;
   }
 
   /**
@@ -527,6 +763,105 @@ public class FreezeBalanceActuator extends AbstractActuator {
     }
 
     return isCycle;
+  }
+
+  private void accountFrozenStageResource(byte[] ownerAddress, List<FreezeBalanceStage> stages, boolean isPhoton, AccountCapsule account, long frozenBalance) {
+    DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeight = dynamicPropertiesStore.getVPFreezeStageWeights();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+
+    Set<Long> stagesKey = stages.stream().map(FreezeBalanceStage::getStage).collect(Collectors.toSet());
+    if (!stagesKey.contains(1L)) {
+      freezeOneStage(ownerAddress, isPhoton, account, frozenBalance);
+    }
+
+    for (FreezeBalanceStage stage : stages) {
+      if (stage.getStage() != 1L && stage.getRefreeze()){
+        AccountFrozenStageResourceCapsule.dealReFreezeConsideration(
+                account, accountFrozenStageResourceStore, dynamicPropertiesStore, stage.getStage(), isPhoton);
+        break;
+      }
+
+      long expireTime = now + stageWeight.get(stage.getStage()).get(0) * FROZEN_PERIOD;
+      long balance = stage.getFrozenBalance();
+      if (stage.getStage() == 1L) {
+        balance += frozenBalance;
+        freezeOneStage(ownerAddress, isPhoton, account, balance);
+      } else {
+        freezeStageBalance(ownerAddress, isPhoton, balance, stage.getStage(), expireTime);
+      }
+    }
+  }
+
+  private void freezeOneStage(byte[] ownerAddress, boolean isPhoton, AccountCapsule account, long frozenBalance){
+    DynamicPropertiesStore dynamicPropertiesStore = chainBaseManager.getDynamicPropertiesStore();
+    Map<Long, List<Long>> stageWeights = dynamicPropertiesStore.getVPFreezeStageWeights();
+    AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
+    long now = dynamicPropertiesStore.getLatestBlockHeaderTimestamp();
+
+    long stage = 1;
+    long expireTime = account.getFrozenExpireTime();
+    if (!isPhoton) {
+      expireTime = account.getEntropyFrozenExpireTime();
+    }
+    long duration = stageWeights.get(stage).get(0) * FROZEN_PERIOD;
+    if (frozenBalance > 0) {
+      expireTime = now + duration;
+    }
+
+    boolean existMultiStage = false;
+    for (Map.Entry<Long, List<Long>> entry : stageWeights.entrySet()) {
+      byte[] stageKey = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, entry.getKey());
+      AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(stageKey);
+      if (capsule != null && ( capsule.getInstance().getFrozenBalanceForPhoton() > 0 || capsule.getInstance().getFrozenBalanceForEntropy() > 0)) {
+        existMultiStage = true;
+        break;
+      }
+    }
+
+    byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
+    AccountFrozenStageResourceCapsule capsule = accountFrozenStageResourceStore.get(key);
+    if (capsule == null && !existMultiStage){
+      long photonFrozenBalance = isPhoton ? frozenBalance + account.getFrozenBalance() : account.getFrozenBalance();
+      long entropyFrozenBalance = !isPhoton ? frozenBalance + account.getEntropyFrozenBalance() : account.getEntropyFrozenBalance();
+
+      long photonExpireTime = isPhoton && frozenBalance > 0 ? now + duration : account.getFrozenExpireTime();
+      long entropyExpireTime = !isPhoton && frozenBalance > 0 ? now + duration : account.getEntropyFrozenExpireTime();
+
+      if (photonFrozenBalance > 0){
+        freezeStageBalance(ownerAddress, true, photonFrozenBalance, stage, photonExpireTime);
+      }
+      if (entropyFrozenBalance > 0){
+        freezeStageBalance(ownerAddress, false, entropyFrozenBalance, stage, entropyExpireTime);
+      }
+    } else {
+
+      if (frozenBalance <= 0){
+        return;
+      }
+
+      freezeStageBalance(ownerAddress, isPhoton, frozenBalance, stage, expireTime);
+    }
+  }
+
+  private void freezeStageBalance(byte[] ownerAddress, boolean isPhoton, long balance, long stage, long expireTime){
+    AccountFrozenStageResourceCapsule.freezeBalance(
+            ownerAddress,
+            stage,
+            balance,
+            expireTime,
+            isPhoton,
+            chainBaseManager.getAccountFrozenStageResourceStore());
+    if (isPhoton) {
+      chainBaseManager.getDynamicPropertiesStore()
+              .addTotalStagePhotonWeight(Collections.singletonList(stage),
+                      balance / VS_PRECISION);
+    } else {
+      chainBaseManager.getDynamicPropertiesStore()
+              .addTotalStageEntropyWeight(Collections.singletonList(stage),
+                      balance / VS_PRECISION);
+    }
   }
 
 }
