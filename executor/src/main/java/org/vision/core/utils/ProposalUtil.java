@@ -595,6 +595,7 @@ public class ProposalUtil {
           throw new ContractValidateException(
                   "Bad VP_FREEZE_STAGE_WEIGHT parameter value, last weight must be less than 200");
         }
+        break;
       }
       default:
         if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
