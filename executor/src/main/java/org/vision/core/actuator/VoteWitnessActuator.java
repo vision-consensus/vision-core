@@ -44,7 +44,6 @@ public class VoteWitnessActuator extends AbstractActuator {
       countVoteAccount(voteContract);
       ret.setStatus(fee, code.SUCESS);
     } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);
       throw new ContractExeException(e.getMessage());
     }
@@ -70,7 +69,6 @@ public class VoteWitnessActuator extends AbstractActuator {
     try {
       contract = this.any.unpack(VoteWitnessContract.class);
     } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
       throw new ContractValidateException(e.getMessage());
     }
     if (!DecodeUtil.addressValid(contract.getOwnerAddress().toByteArray())) {
@@ -129,7 +127,6 @@ public class VoteWitnessActuator extends AbstractActuator {
                 + "]");
       }
     } catch (ArithmeticException e) {
-      logger.debug(e.getMessage(), e);
       throw new ContractValidateException(e.getMessage());
     }
 

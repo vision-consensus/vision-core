@@ -162,15 +162,8 @@ import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 
 import java.math.BigInteger;
 import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
 
 import static org.vision.common.utils.Commons.getAssetIssueStoreFinal;
 import static org.vision.common.utils.Commons.getExchangeStoreFinal;
@@ -354,7 +347,6 @@ public class Wallet {
       trx.setExpiration(expiration);
       trx.setTimestamp();
     } catch (Exception e) {
-      logger.error("Create transaction capsule failed.", e);
     }
   }
 
@@ -382,7 +374,6 @@ public class Wallet {
       trx.setExpiration(expiration);
       trx.setTimestamp();
     } catch (Exception e) {
-      logger.error("Create transaction capsule failed.", e);
     }
     return trx;
   }
@@ -500,7 +491,6 @@ public class Wallet {
             }
           }
         }catch (Exception e){
-          logger.error("Broadcast eth Transaction failed.", e);
         }
       }
 
@@ -647,7 +637,6 @@ public class Wallet {
       Block block = chainBaseManager.getBlockByNum(blockNum).getInstance();
       count = block.getTransactionsCount();
     } catch (StoreException e) {
-      logger.error(e.getMessage());
     }
 
     return count;
@@ -1547,7 +1536,6 @@ public class Wallet {
     try {
       block = chainBaseManager.getBlockStore().get(blockId.toByteArray()).getInstance();
     } catch (StoreException e) {
-      logger.error(e.getMessage());
     }
     return block;
   }
@@ -1619,7 +1607,6 @@ public class Wallet {
       proposalCapsule = chainBaseManager.getProposalStore()
           .get(proposalId.toByteArray());
     } catch (StoreException e) {
-      logger.error(e.getMessage());
     }
     if (proposalCapsule != null) {
       return proposalCapsule.getInstance();
@@ -1949,7 +1936,6 @@ public class Wallet {
             .parseFrom(chainBaseManager.getMerkleTreeIndexStore().get(blockNum));
       }
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
     }
 
     return null;
@@ -2097,7 +2083,6 @@ public class Wallet {
     try {
       transactionCapsule = builder.build();
     } catch (ZksnarkException e) {
-      logger.error("createShieldedTransaction except, error is " + e.toString());
       throw new ZksnarkException(e.toString());
     }
     return transactionCapsule;
@@ -2200,7 +2185,6 @@ public class Wallet {
     try {
       transactionCapsule = builder.buildWithoutAsk();
     } catch (ZksnarkException e) {
-      logger.error("createShieldedTransaction exception, error is " + e.toString());
       throw new ZksnarkException(e.toString());
     }
     return transactionCapsule;
@@ -2537,7 +2521,6 @@ public class Wallet {
         }
       }
     } catch (BadItemException | ItemNotFoundException e) {
-      logger.error(e.getMessage());
     }
 
     return transactionInfoList.build();
@@ -3162,6 +3145,7 @@ public class Wallet {
                 decryptedOutCtUnwrapped.getEsk(),
                 decryptedOutCtUnwrapped.getPkD(),
                 r.getNoteCommitment().toByteArray());
+            cipherText.setData(new byte[0]);
 
             if (foo.isPresent()) {
               Note bar = foo.get();
@@ -3508,14 +3492,14 @@ public class Wallet {
         for (String topic : topicsList) {
           byte[] topicHash = Hash.sha3(ByteArray.fromString(topic));
           if (Arrays.equals(topicsBytes, topicHash)) {
-            if (topic.toLowerCase().contains("mint")) {
+            if (topic.toLowerCase(Locale.ROOT).contains("mint")) {
               return 1;
-            } else if (topic.toLowerCase().contains("transfer")) {
+            } else if (topic.toLowerCase(Locale.ROOT).contains("transfer")) {
               return 2;
-            } else if (topic.toLowerCase().contains("burn")) {
-              if (topic.toLowerCase().contains("leaf")) {
+            } else if (topic.toLowerCase(Locale.ROOT).contains("burn")) {
+              if (topic.toLowerCase(Locale.ROOT).contains("leaf")) {
                 return 3;
-              } else if (topic.toLowerCase().contains("token")) {
+              } else if (topic.toLowerCase(Locale.ROOT).contains("token")) {
                 return 4;
               }
             }
@@ -3645,17 +3629,14 @@ public class Wallet {
       retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
           .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
     } catch (RuntimeException e) {
       retBuilder.setResult(false).setCode(response_code.CONTRACT_EXE_ERROR)
           .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn("When run constant call in VM, have RuntimeException: " + e.getMessage());
     } catch (Exception e) {
       retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
           .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn("unknown exception caught: " + e.getMessage(), e);
     } finally {
       trxExt = trxExtBuilder.build();
     }
@@ -3710,6 +3691,7 @@ public class Wallet {
               decryptedOutCtUnwrapped.getEsk(),
               decryptedOutCtUnwrapped.getPkD(),
               cm);
+          ciphertext.setData(new byte[0]);
           if (foo.isPresent()) {
             Note bar = foo.get();
             String paymentAddress = KeyIo.encodePaymentAddress(
@@ -3723,6 +3705,7 @@ public class Wallet {
             builder.setNote(note);
             return Optional.of(builder.build());
           }
+
         }
       } else if (logType == 4) {
         //Data = toAddress(32) + value(32) + ciphertext(80) + padding(16)
@@ -3909,17 +3892,14 @@ public class Wallet {
       retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
           .setMessage(ByteString.copyFromUtf8(CONTRACT_VALIDATE_ERROR + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
     } catch (RuntimeException e) {
       retBuilder.setResult(false).setCode(response_code.CONTRACT_EXE_ERROR)
           .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn("When run constant call in VM, have RuntimeException: " + e.getMessage());
     } catch (Exception e) {
       retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
           .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
       trxExtBuilder.setResult(retBuilder);
-      logger.warn("Unknown exception caught: " + e.getMessage(), e);
     } finally {
       trxExt = trxExtBuilder.build();
     }

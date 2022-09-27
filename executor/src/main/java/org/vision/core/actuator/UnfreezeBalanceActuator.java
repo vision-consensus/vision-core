@@ -53,7 +53,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     try {
       unfreezeBalanceContract = any.unpack(UnfreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);
       throw new ContractExeException(e.getMessage());
     }
@@ -380,7 +379,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     try {
       unfreezeBalanceContract = this.any.unpack(UnfreezeBalanceContract.class);
     } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
       throw new ContractValidateException(e.getMessage());
     }
     byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();

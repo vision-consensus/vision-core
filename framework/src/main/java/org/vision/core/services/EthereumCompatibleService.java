@@ -63,6 +63,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -115,15 +116,21 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String web3_clientVersion() {
-        Pattern shortVersion = Pattern.compile("(\\d\\.\\d).*");
-        Matcher matcher = shortVersion.matcher(System.getProperty("java.version"));
-        matcher.matches();
+        String clientVersion = null;
+        try {
+            Pattern shortVersion = Pattern.compile("(\\d\\.\\d).*");
+            Matcher matcher = shortVersion.matcher(System.getProperty("java.version"));
+            matcher.matches();
 
-        return String.join("/", Arrays.asList(
-                "VISION", "v" + Version.getVersion(),
-                System.getProperty("os.name"),
-                "Java" + matcher.group(1),
-                Version.VERSION_NAME));
+            clientVersion = String.join("/", Arrays.asList(
+                    "VISION", "v" + Version.getVersion(),
+                    System.getProperty("os.name"),
+                    "Java" + matcher.group(1),
+                    Version.VERSION_NAME));
+        }catch (Exception e){
+
+        }
+        return clientVersion;
     }
 
     @Override
@@ -216,7 +223,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
     @Override
     public String eth_getBalance(String address, String block) throws Exception {
         Protocol.Account.Builder build = Protocol.Account.newBuilder();
-        build.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address.replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase())));
+        build.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address.replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase(Locale.ROOT))));
         Protocol.Account reply = wallet.getAccount(build.build());
         return null == reply ? Constant.ETH_PRE_FIX_STRING_MAINNET + "0" : Constant.ETH_PRE_FIX_STRING_MAINNET + new BigInteger(reply.getBalance() + "").multiply(new BigInteger("1000000000000")).toString(16);
     }
@@ -387,7 +394,6 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 return toHexString(errMsg.getBytes(StandardCharsets.UTF_8));
             }
         } catch (Exception e) {
-            logger.error("sendRawTransaction error", e);
             String errString = null;
             if (e.getMessage() != null) {
                 errString = e.getMessage().replaceAll("[\"]", "\'");
@@ -420,7 +426,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
             }
 
             build.setData(ByteString.copyFrom(ByteArray.fromHexString(args.getData())));
-            build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.getTo().replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase())));
+            build.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(args.getTo().replace(Constant.ETH_PRE_FIX_STRING_MAINNET, Constant.ADD_PRE_FIX_STRING_MAINNET).toLowerCase(Locale.ROOT))));
             build.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString("460000000000000000000000000000000000000000")));
             TransactionCapsule trxCap = wallet
                     .createTransactionCapsule(build.build(), Protocol.Transaction.Contract.ContractType.TriggerSmartContract);

@@ -220,8 +220,7 @@ public class JsonRpcApiUtil {
         default:
       }
     } catch (Exception e) {
-      logger.error("Exception happens when get amount. Exception = [{}]",
-              Throwables.getStackTraceAsString(e));
+
     }
     return amount;
   }
@@ -246,8 +245,7 @@ public class JsonRpcApiUtil {
         }
       }
     } catch (Exception e) {
-      logger.warn("Exception happens when get token10 frozenAmount. Exception = [{}]",
-              Throwables.getStackTraceAsString(e));
+
     }
     return amount;
   }
@@ -288,10 +286,8 @@ public class JsonRpcApiUtil {
         logger.error("Can't find transaction {} ", hash);
       }
     } catch (Exception e) {
-      logger.warn("Exception happens when get amount from transactionInfo. Exception = [{}]",
-              Throwables.getStackTraceAsString(e));
+
     } catch (Throwable t) {
-      t.printStackTrace();
     }
     return amount;
   }

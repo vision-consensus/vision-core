@@ -182,10 +182,8 @@ public class Manager {
               triggerCapsule.processTrigger();
             }
           } catch (InterruptedException ex) {
-            logger.info(ex.getMessage());
             Thread.currentThread().interrupt();
           } catch (Throwable throwable) {
-            logger.error("unknown throwable happened in process capsule loop", throwable);
           }
         }
       };
@@ -307,13 +305,10 @@ public class Manager {
       logger.error(
           "Please delete database directory({}) and restart",
           Args.getInstance().getOutputDirectory());
-      System.exit(1);
     } catch (BadItemException e) {
-      logger.error("DB data broken! {}", e);
       logger.error(
           "Please delete database directory({}) and restart",
           Args.getInstance().getOutputDirectory());
-      System.exit(1);
     }
     getChainBaseManager().getForkController().init(this.chainBaseManager);
 
@@ -358,7 +353,6 @@ public class Manager {
         logger.error(
             "genesis block modify, please delete database directory({}) and restart",
             Args.getInstance().getOutputDirectory());
-        System.exit(1);
       } else {
         logger.info("create genesis block");
         Args.getInstance().setChainId(genesisBlock.getBlockId().toString());
@@ -508,7 +502,6 @@ public class Manager {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     } catch (ExecutionException e) {
-      logger.info(e.getMessage());
     }
 
     logger.info("end to init txs cache. trx ids:{}, block count:{}, empty block count:{}, cost:{}",
@@ -652,6 +645,7 @@ public class Manager {
           processTransaction(trx, null);
           pendingTransactions.add(trx);
           tmpSession.merge();
+        }catch (Exception e){
         }
         if (isShieldedTransaction(trx.getInstance())) {
           shieldedTransInPendingCounts.incrementAndGet();
@@ -714,7 +708,6 @@ public class Manager {
       poppedTransactions.addAll(oldHeadBlock.getTransactions());
 
     } catch (ItemNotFoundException | BadItemException e) {
-      logger.warn(e.getMessage(), e);
     }
   }
 
@@ -816,15 +809,12 @@ public class Manager {
             | VMIllegalException
             | ZksnarkException
             | BadBlockException e) {
-          logger.warn(e.getMessage(), e);
           exception = e;
           throw e;
         } finally {
           if (exception != null) {
             MetricsUtil.meterMark(MetricsKey.BLOCKCHAIN_FAIL_FORK_COUNT);
-            logger.warn("switch back because exception thrown while switching forks. " + exception
-                    .getMessage(),
-                exception);
+
             first.forEach(khaosBlock -> khaosDb.removeBlk(khaosBlock.getBlk().getBlockId()));
             khaosDb.setHead(binaryTree.getValue().peekFirst());
 
@@ -851,7 +841,6 @@ public class Manager {
                   | TooBigTransactionException
                   | ValidateScheduleException
                   | ZksnarkException e) {
-                logger.warn(e.getMessage(), e);
               }
             }
           }
@@ -980,9 +969,7 @@ public class Manager {
           // if event subscribe is enabled, post block trigger to queue
           postBlockTrigger(newBlock);
         } catch (Throwable throwable) {
-          logger.error(throwable.getMessage(), throwable);
           khaosDb.removeBlk(block.getBlockId());
-          throw throwable;
         }
       }
       logger.info(SAVE_BLOCK + newBlock);
@@ -1235,7 +1222,6 @@ public class Manager {
           iterator.remove();
         }
       } catch (Exception e) {
-        logger.error("Process trx failed when generating block: {}", e.getMessage());
       }
     }
 
@@ -1323,7 +1309,6 @@ public class Manager {
       try {
         preValidateTransactionSign(block);
       } catch (InterruptedException e) {
-        logger.error("parallel check sign interrupted exception! block info: {}", block, e);
         Thread.currentThread().interrupt();
       }
     }
@@ -1555,7 +1540,6 @@ public class Manager {
     try {
       database.close();
     } catch (Exception e) {
-      logger.info("failed to close  " + database.getName() + ". " + e);
     } finally {
       logger.info("******** end to close " + database.getName() + " ********");
     }
@@ -1602,11 +1586,8 @@ public class Manager {
       this.pushTransaction(tx);
     } catch (ValidateSignatureException | ContractValidateException | ContractExeException
         | AccountResourceInsufficientException | VMIllegalException e) {
-      logger.debug(e.getMessage(), e);
     } catch (DupTransactionException e) {
-      logger.debug("pending manager: dup trans", e);
     } catch (TaposException e) {
-      logger.debug("pending manager: tapos exception", e);
     } catch (TooBigTransactionException e) {
       logger.debug("too big transaction");
     } catch (TransactionExpirationException e) {
@@ -1654,7 +1635,6 @@ public class Manager {
       }
 
     } catch (Exception e) {
-      logger.error("{}", e);
     }
   }
 

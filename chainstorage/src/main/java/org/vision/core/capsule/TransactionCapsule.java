@@ -343,8 +343,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   }
 
   public byte[] getEthRlpData(DynamicPropertiesStore dynamicPropertiesStore){
-    if (this.ethRlpData != null){
-      return this.ethRlpData;
+    if (getEthRlpData() != null){
+      return getEthRlpData();
     }
 
     try {
@@ -376,106 +376,113 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         }
       }
     } catch (Exception ex) {
-      logger.error("getEthRlpData failed, {}",ex.getMessage());
     }
-    return this.ethRlpData;
+    return getEthRlpData();
+  }
+
+  public byte[] getEthRlpData() {
+    return ethRlpData;
+  }
+
+  public void setEthRlpData(byte[] ethRlpData) {
+    this.ethRlpData = ethRlpData;
   }
 
   private void getCreateSmartContractRlpData(){
     CreateSmartContract c = ContractCapsule.getCreateSmartContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getTriggerSmartContractRlpData(){
     TriggerSmartContract c = ContractCapsule.getTriggerContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getTransferContractRlpData(){
     TransferContract c = ContractCapsule.getTransferContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getVoteWitnessContractRlpData(){
     VoteWitnessContract c = ContractCapsule.getVoteWitnessContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getWithdrawBalanceContractRlpData(){
     WithdrawBalanceContract c = ContractCapsule.getWithdrawBalanceContractFromTransaction(this.getInstance());
     if (c != null && c.getRlpType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getFreezeBalanceContractRlpData(){
     FreezeBalanceContract c = ContractCapsule.getFreezeBalanceContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getUnfreezeBalanceContractRlpData(){
     UnfreezeBalanceContract c = ContractCapsule.getUnfreezeBalanceContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getWitnessCreateContractRlpData(){
     WitnessCreateContract c = ContractCapsule.getWitnessCreateContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getWitnessUpdateContractRlpData(){
     WitnessUpdateContract c = ContractCapsule.getWitnessUpdateContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getUpdateBrokerageContractRlpData(){
     StorageContract.UpdateBrokerageContract c = ContractCapsule.getUpdateBrokerageContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getProposalApproveContractRlpData(){
     ProposalContract.ProposalApproveContract c = ContractCapsule.getProposalApproveContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getProposalCreateContractRlpData(){
     ProposalContract.ProposalCreateContract c = ContractCapsule.getProposalCreateContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getProposalDeleteContractRlpData(){
     ProposalContract.ProposalDeleteContract c = ContractCapsule.getProposalDeleteContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
   private void getAccountUpdateContractRlpData(){
     AccountContract.AccountUpdateContract c = ContractCapsule.getAccountUpdateContractFromTransaction(this.getInstance());
     if (c != null && c.getType() == 1) {
-      this.ethRlpData = c.getRlpData().toByteArray();
+      setEthRlpData(c.getRlpData().toByteArray());
     }
   }
 
@@ -1368,7 +1375,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
     private Integer extractChainIdFromRawSignature(BigInteger bv, byte[] r, byte[] s) {
       if (r == null && s == null) return bv.intValue();  // EIP 86
-      if (bv.bitLength() > 31) return Integer.MAX_VALUE; // chainId is limited to 31 bits, longer are not valid for now
+      if (bv.bitLength() > 31) return 0; // chainId is limited to 31 bits, longer are not valid for now
       long v = bv.longValue();
       if (v == LOWER_REAL_V || v == (LOWER_REAL_V + 1)) return null;
       return (int) ((v - CHAIN_ID_INC) / 2);
@@ -1413,9 +1420,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         this.nonce = transaction.get(0).getRLPData();
         this.gasPrice = transaction.get(1).getRLPData();
         this.gasLimit = transaction.get(2).getRLPData();
-        this.receiveAddress = transaction.get(3).getRLPData();
+//        this.receiveAddress = transaction.get(3).getRLPData();
+        setReceiveAddress(transaction.get(3).getRLPData());
         this.value = transaction.get(4).getRLPData();
-        this.data = transaction.get(5).getRLPData();
+//        this.data = transaction.get(5).getRLPData();
+        setData(transaction.get(5).getRLPData());
         // only parse signature in case tx is signed
         if (transaction.get(6).getRLPData() != null) {
           byte[] vData =  transaction.get(6).getRLPData();
@@ -1429,7 +1438,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         } else {
           logger.debug("RLP encoded tx is not signed!");
         }
-        this.hash = Hash.sha3(rlpEncoded);
+//        this.hash = Hash.sha3(rlpEncoded);
+        setHash(Hash.sha3(rlpEncoded));
+        setRawHash(getEncodedRaw());
         this.parsed = true;
       } catch (Exception e) {
         throw new RuntimeException("Error on parsing RLP", e);
@@ -1461,19 +1472,26 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
 
     public byte[] getHash() {
-      if (!isEmpty(hash)) return hash;
       rlpParse();
       getEncoded();
       return hash;
     }
 
-    public byte[] getRawHash() {
-      rlpParse();
-      if (rawHash != null) return rawHash;
-      byte[] plainMsg = this.getEncodedRaw();
-      return rawHash = Hash.sha3(plainMsg);
+    public void setHash(byte[] hash) {
+      this.hash = hash;
     }
 
+    public byte[] getRawHash() {
+      rlpParse();
+      return rawHash;
+//      if (rawHash != null) return rawHash;
+//      byte[] plainMsg = this.getEncodedRaw();
+//      return rawHash = Hash.sha3(plainMsg);
+    }
+
+    public void setRawHash(byte[] rawHash) {
+      this.rawHash = rawHash;
+    }
 
     public byte[] getNonce() {
       rlpParse();
@@ -1720,7 +1738,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       this.rlpEncoded = RLP.encodeList(nonce, gasPrice, gasLimit,
               receiveAddress, value, data, v, r, s);
 
-      this.hash = Hash.sha3(rlpEncoded);
+      setHash(Hash.sha3(rlpEncoded));
 
       return rlpEncoded;
     }
@@ -2530,7 +2548,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
             toStringBuff.append("transfer amount=").append(transferContract.getAmount())
                 .append("\n");
           } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
           }
         } else if (contract.getType().equals(ContractType.TransferAssetContract)) {
           TransferAssetContract transferAssetContract;
@@ -2542,7 +2559,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
             toStringBuff.append("transfer amount=").append(transferAssetContract.getAmount())
                 .append("\n");
           } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
           }
         }
         if (this.transaction.getSignatureList().size() >= i.get() + 1) {
