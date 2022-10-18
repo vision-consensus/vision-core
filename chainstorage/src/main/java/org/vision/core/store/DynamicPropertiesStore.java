@@ -902,7 +902,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     try {
       this.getVPFreezeStageWeight();
     } catch (IllegalArgumentException e) {
-      this.saveVPFreezeStageWeight("1,35,100;2,60,110;3,180,120;4,360,130;5,720,150");
+      this.saveVPFreezeStageWeight("1,30,100;2,60,110;3,90,120;4,180,130;5,360,150");
     }
 
   }
