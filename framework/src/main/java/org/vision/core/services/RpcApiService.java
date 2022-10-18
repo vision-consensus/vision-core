@@ -75,7 +75,11 @@ import org.vision.protos.contract.WitnessContract.VoteWitnessContract;
 import org.vision.protos.contract.WitnessContract.WitnessCreateContract;
 import org.vision.protos.contract.WitnessContract.WitnessUpdateContract;
 
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -658,6 +662,8 @@ public class RpcApiService implements Service {
         responseObserver.onNext(decryptNotes);
       } catch (BadItemException | ZksnarkException e) {
         responseObserver.onError(getRunTimeException(e));
+      } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e) {
+        e.printStackTrace();
       }
       responseObserver.onCompleted();
     }
@@ -2246,6 +2252,8 @@ public class RpcApiService implements Service {
       } catch (BadItemException | ZksnarkException e) {
         responseObserver.onError(getRunTimeException(e));
         return;
+      } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e) {
+        e.printStackTrace();
       }
       responseObserver.onCompleted();
     }

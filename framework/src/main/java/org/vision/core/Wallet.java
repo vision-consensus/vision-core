@@ -160,7 +160,12 @@ import org.vision.protos.contract.SmartContractOuterClass.SmartContract;
 import org.vision.protos.contract.SmartContractOuterClass.SmartContractDataWrapper;
 import org.vision.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 
+import javax.crypto.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.*;
 import java.util.Map.Entry;
@@ -3095,7 +3100,7 @@ public class Wallet {
    * try to get cm belongs to ovk
    */
   public GrpcAPI.DecryptNotes scanNoteByOvk(long startNum, long endNum,
-      byte[] ovk) throws BadItemException, ZksnarkException {
+      byte[] ovk) throws BadItemException, ZksnarkException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException, ClassNotFoundException {
     checkFullNodeAllowShieldedTransaction();
 
     GrpcAPI.DecryptNotes.Builder builder = GrpcAPI.DecryptNotes.newBuilder();
@@ -3138,14 +3143,22 @@ public class Wallet {
           if (notePlaintext.isPresent()) {
             OutgoingPlaintext decryptedOutCtUnwrapped = notePlaintext.get();
             //decode c_enc with pkd、esk
-            NoteEncryption.Encryption.EncCiphertext cipherText = new NoteEncryption.Encryption.EncCiphertext();
-            cipherText.setData(r.getCEnc().toByteArray());
-            Optional<Note> foo = Note.decrypt(cipherText,
+//            NoteEncryption.Encryption.EncCiphertext cipherText = new NoteEncryption.Encryption.EncCiphertext();
+//            cipherText.setData(r.getCEnc().toByteArray());
+
+            Serializable obj = new String(r.getCEnc().toByteArray());
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            kgen.init(128);
+            SecretKey aesKey = kgen.generateKey();
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+            SealedObject sealedObject = new SealedObject(obj, cipher);
+
+            Optional<Note> foo = Note.decryptSeal(sealedObject, aesKey,
                 r.getEpk().toByteArray(),
                 decryptedOutCtUnwrapped.getEsk(),
                 decryptedOutCtUnwrapped.getPkD(),
                 r.getNoteCommitment().toByteArray());
-            cipherText.setData(new byte[0]);
 
             if (foo.isPresent()) {
               Note bar = foo.get();
@@ -3667,7 +3680,7 @@ public class Wallet {
 
   private Optional<GrpcAPI.DecryptNotesVRC20.NoteTx> getNoteTxFromLogListByOvk(
           GrpcAPI.DecryptNotesVRC20.NoteTx.Builder builder,
-      TransactionInfo.Log log, byte[] ovk, int logType) throws ZksnarkException {
+      TransactionInfo.Log log, byte[] ovk, int logType) throws ZksnarkException, NoSuchAlgorithmException, IllegalBlockSizeException, IOException, NoSuchPaddingException, InvalidKeyException, ClassNotFoundException {
     byte[] logData = log.getData().toByteArray();
     if (!ArrayUtils.isEmpty(logData)) {
       if (logType > 0 && logType < 4) {
@@ -3684,14 +3697,22 @@ public class Wallet {
         if (notePlaintext.isPresent()) {
           OutgoingPlaintext decryptedOutCtUnwrapped = notePlaintext.get();
           //decode c_enc with pkd、esk
-          NoteEncryption.Encryption.EncCiphertext ciphertext = new NoteEncryption.Encryption.EncCiphertext();
-          ciphertext.setData(cenc);
-          Optional<Note> foo = Note.decrypt(ciphertext,
+//          NoteEncryption.Encryption.EncCiphertext ciphertext = new NoteEncryption.Encryption.EncCiphertext();
+//          ciphertext.setData(cenc);
+
+          Serializable obj = new String(cenc);
+          KeyGenerator kgen = KeyGenerator.getInstance("AES");
+          kgen.init(128);
+          SecretKey aesKey = kgen.generateKey();
+          Cipher cipher = Cipher.getInstance("AES");
+          cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+          SealedObject sealedObject = new SealedObject(obj, cipher);
+
+          Optional<Note> foo = Note.decryptSeal(sealedObject, aesKey,
               epk,
               decryptedOutCtUnwrapped.getEsk(),
               decryptedOutCtUnwrapped.getPkD(),
               cm);
-          ciphertext.setData(new byte[0]);
           if (foo.isPresent()) {
             Note bar = foo.get();
             String paymentAddress = KeyIo.encodePaymentAddress(
@@ -3739,7 +3760,7 @@ public class Wallet {
 
   public GrpcAPI.DecryptNotesVRC20 scanShieldedVRC20NotesByOvk(long startNum, long endNum,
                                                                byte[] ovk, byte[] shieldedVRC20ContractAddress, ProtocolStringList topicsList)
-      throws ZksnarkException, BadItemException {
+          throws ZksnarkException, BadItemException, IllegalBlockSizeException, NoSuchPaddingException, NoSuchAlgorithmException, IOException, InvalidKeyException, ClassNotFoundException {
     checkFullNodeAllowShieldedTransaction();
 
     GrpcAPI.DecryptNotesVRC20.Builder builder = GrpcAPI.DecryptNotesVRC20.newBuilder();

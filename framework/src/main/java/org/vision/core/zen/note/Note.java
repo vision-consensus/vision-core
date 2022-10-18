@@ -7,7 +7,10 @@ import static org.vision.core.utils.ZenChainParams.ZC_NOTEPLAINTEXT_LEADING;
 import static org.vision.core.utils.ZenChainParams.ZC_R_SIZE;
 import static org.vision.core.utils.ZenChainParams.ZC_V_SIZE;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -23,6 +26,9 @@ import org.vision.common.zksnark.LibrustzcashParam.ComputeCmParams;
 import org.vision.common.zksnark.LibrustzcashParam.ComputeNfParams;
 import org.vision.common.zksnark.LibrustzcashParam.IvkToPkdParams;
 import org.vision.core.exception.ZksnarkException;
+
+import javax.crypto.SealedObject;
+import javax.crypto.SecretKey;
 
 
 public class Note {
@@ -164,6 +170,30 @@ public class Note {
     byte[] cmuExpected = new byte[32];
     if (!JLibrustzcash.librustzcashComputeCm(
         new ComputeCmParams(ret.d.getData(), pkD, ret.value, ret.rcm, cmuExpected))) {
+      return Optional.empty();
+    }
+    if (!Arrays.equals(cmu, cmuExpected)) {
+      return Optional.empty();
+    }
+    return Optional.of(ret);
+  }
+
+  /**
+   * decrypt c_enc with ovk to plain_enc
+   */
+  public static Optional<Note> decryptSeal(
+          SealedObject ciphertext, SecretKey key, byte[] epk, byte[] esk, byte[] pkD,
+          byte[] cmu)
+          throws ZksnarkException, IOException, NoSuchAlgorithmException, InvalidKeyException, ClassNotFoundException {
+    Optional<NoteEncryption.Encryption.EncPlaintext> pt =
+            NoteEncryption.Encryption.attemptEncDecryptionSeal(ciphertext, key, epk, esk, pkD);
+    if (!pt.isPresent()) {
+      return Optional.empty();
+    }
+    Note ret = decode(pt.get());
+    byte[] cmuExpected = new byte[32];
+    if (!JLibrustzcash.librustzcashComputeCm(
+            new ComputeCmParams(ret.d.getData(), pkD, ret.value, ret.rcm, cmuExpected))) {
       return Optional.empty();
     }
     if (!Arrays.equals(cmu, cmuExpected)) {

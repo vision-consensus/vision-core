@@ -7,7 +7,10 @@ import static org.vision.core.utils.ZenChainParams.ZC_OUTCIPHERTEXT_SIZE;
 import static org.vision.core.utils.ZenChainParams.ZC_OUTPLAINTEXT_SIZE;
 import static org.vision.core.zen.note.NoteEncryption.Encryption.NOTEENCRYPTION_CIPHER_KEYSIZE;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +30,9 @@ import org.vision.core.zen.note.NoteEncryption.Encryption.EncCiphertext;
 import org.vision.core.zen.note.NoteEncryption.Encryption.EncPlaintext;
 import org.vision.core.zen.note.NoteEncryption.Encryption.OutCiphertext;
 import org.vision.core.zen.note.NoteEncryption.Encryption.OutPlaintext;
+
+import javax.crypto.SealedObject;
+import javax.crypto.SecretKey;
 
 @AllArgsConstructor
 public class NoteEncryption {
@@ -214,6 +220,37 @@ public class NoteEncryption {
           null,
           0,
           cipherNonce, kEnc)) != 0) {
+        return Optional.empty();
+      }
+
+      return Optional.of(plaintext);
+    }
+
+    /**
+     * decrypt cEnc by kEnc to plain_enc generate with esk + pkD kEnc can use in encrypt also in
+     * decrypt，symmetric encryption.
+     */
+    public static Optional<EncPlaintext> attemptEncDecryptionSeal(
+            SealedObject ciphertext, SecretKey key, byte[] epk, byte[] esk, byte[] pkD) throws ZksnarkException, IOException, NoSuchAlgorithmException, InvalidKeyException, ClassNotFoundException {
+      byte[] sharedsecret = new byte[32];
+      //generate sharedsecret by esk and pkD. esk + pkD = sharedsecret = epk + ivk
+      if (!JLibrustzcash.librustzcashKaAgree(new KaAgreeParams(pkD, esk, sharedsecret))) {
+        return Optional.empty();
+      }
+      byte[] kEnc = new byte[NOTEENCRYPTION_CIPHER_KEYSIZE];
+      //generate kEnc by sharedsecret and epk
+      kdfSapling(kEnc, sharedsecret, epk);
+      byte[] cipherNonce = new byte[CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES];
+      EncPlaintext plaintext = new EncPlaintext();
+      plaintext.data = new byte[ZC_ENCPLAINTEXT_SIZE];
+      //decrypt cEnc by kEnc.
+      if (JLibsodium.cryptoAeadChacha20poly1305IetfDecrypt(new Chacha20poly1305IetfDecryptParams(
+              plaintext.data, null,
+              null,
+              ((String) ciphertext.getObject(key)).getBytes(), ZC_ENCCIPHERTEXT_SIZE,
+              null,
+              0,
+              cipherNonce, kEnc)) != 0) {
         return Optional.empty();
       }
 
