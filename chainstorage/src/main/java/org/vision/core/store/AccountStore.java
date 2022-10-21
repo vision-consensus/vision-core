@@ -84,6 +84,7 @@ public class AccountStore extends VisionStoreWithRevoking<AccountCapsule> {
       if (CommonParameter.getInstance().isHistoryBalanceLookup()) {
         itemJsonObject.putAll(balanceTraceStore.assembleJsonInfo());
       }
+      itemJsonObject.put("account_name", item.getAccountName().toStringUtf8());
       Producer.getInstance().send("ACCOUNT", Hex.toHexString(item.getAddress().toByteArray()), itemJsonObject.toJSONString());
       logger.info("send ACCOUNT TOPIC success, address: {}, balance:{}", StringUtil.encode58Check(item.getAddress().toByteArray()), item.getBalance());
     }
