@@ -9,15 +9,24 @@ message ProposalApproveContract {
   bytes owner_address = 1;
   int64 proposal_id = 2;
   bool is_add_approval = 3; // add or remove approval
+
+  int64 type = 4;  //if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 5; // eth's RLP rawData
 }
 
 message ProposalCreateContract {
   bytes owner_address = 1;
   map<int64, int64> parameters = 2;
   map<int64, string> string_parameters = 3;
+
+  int64 type = 4;  //if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 5; // eth's RLP rawData
 }
 
 message ProposalDeleteContract {
   bytes owner_address = 1;
   int64 proposal_id = 2;
+
+  int64 type = 3;  //if type=eth validate eth sign else validate vision sign  0 or null -> vision, 1 -> eth
+  bytes rlp_data = 4; // eth's RLP rawData
 }
