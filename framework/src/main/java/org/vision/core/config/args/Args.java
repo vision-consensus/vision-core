@@ -234,26 +234,28 @@ public class Args extends CommonParameter {
       if (PARAMETER.isWitness()) {
         List<String> localwitness = config.getStringList(Constant.LOCAL_WITNESS_KEYSTORE);
         if (localwitness.size() > 0) {
-          String fileName = System.getProperty("user.dir") + "/" + localwitness.get(0);
-          String password;
-          if (StringUtils.isEmpty(PARAMETER.password)) {
-            System.out.println("Please input your password.");
-            password = WalletUtils.inputPassword();
-          } else {
-            password = PARAMETER.password;
-            PARAMETER.password = null;
-          }
+          for (int keyStoreIndex = 0; keyStoreIndex < localwitness.size(); keyStoreIndex++) {
+            String fileName = System.getProperty("user.dir") + "/" + localwitness.get(keyStoreIndex);
+            String password;
+            if (StringUtils.isEmpty(PARAMETER.password)) {
+              System.out.println("Please input your password.");
+              password = WalletUtils.inputPassword();
+            } else {
+              password = PARAMETER.password;
+              PARAMETER.password = null;
+            }
 
-          try {
-            Credentials credentials = WalletUtils
-                .loadCredentials(password, new File(fileName));
-            SignInterface sign = credentials.getSignInterface();
-            String prikey = ByteArray.toHexString(sign.getPrivateKey());
-            privateKeys.add(prikey);
-          } catch (IOException | CipherException e) {
-            logger.error(e.getMessage());
-            logger.error("Witness node start failed!");
-            exit(-1);
+            try {
+              Credentials credentials = WalletUtils
+                      .loadCredentials(password, new File(fileName));
+              SignInterface sign = credentials.getSignInterface();
+              String prikey = ByteArray.toHexString(sign.getPrivateKey());
+              privateKeys.add(prikey);
+            } catch (IOException | CipherException e) {
+              logger.error(e.getMessage());
+              logger.error("Witness node start failed!");
+              exit(-1);
+            }
           }
         }
       }

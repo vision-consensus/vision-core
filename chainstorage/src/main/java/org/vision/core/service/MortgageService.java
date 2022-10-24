@@ -1,6 +1,5 @@
 package org.vision.core.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
-import org.vision.common.parameter.CommonParameter;
-import org.vision.common.utils.Producer;
+import org.vision.common.utils.Commons;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.AccountCapsule;
 import org.vision.core.capsule.SpreadRelationShipCapsule;
@@ -19,9 +17,7 @@ import org.vision.core.exception.BalanceInsufficientException;
 import org.vision.core.store.*;
 import org.vision.protos.Protocol.Vote;
 
-import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.*;
@@ -439,6 +435,7 @@ public class MortgageService {
     try {
       AccountCapsule parentCapsule = accountCapsule;
       ArrayList<String> addressList = new ArrayList<>();
+      long reallyReward = (long)(spreadReward * (props[0] / 100.0));
       for (int i = 1; i < props.length; i++) {
         SpreadRelationShipCapsule spreadRelationShipCapsule = spreadRelationShipStore.get(parentCapsule.getAddress().toByteArray());
         if (spreadRelationShipCapsule == null){
@@ -454,6 +451,14 @@ public class MortgageService {
         long spreadAmount = (long)(props[i] / 100.0 * spreadReward * minSpreadMintProp(parentCapsule, accountSpreadFreezeVdt));
         adjustAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
         adjustSpreadMintAllowance(spreadRelationShipCapsule.getParent().toByteArray(), spreadAmount);
+        reallyReward += spreadAmount;
+      }
+
+      if (dynamicPropertiesStore.getSMBurnOptimization() == 1L) {
+        dynamicPropertiesStore.burnSpreadAmount(spreadReward - reallyReward);
+        if (!dynamicPropertiesStore.supportBlackHoleOptimization()) {
+          Commons.adjustBalance(accountStore, accountStore.getSingularity(), Math.max(spreadReward - reallyReward, 0));
+        }
       }
     }catch (Exception e){
       logger.error("calculateSpreadMintProp error: {},{}", Hex.toHexString(accountCapsule.getAddress().toByteArray()), accountCapsule.getAddress(), e);

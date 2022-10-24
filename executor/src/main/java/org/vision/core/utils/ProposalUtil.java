@@ -361,7 +361,11 @@ public class ProposalUtil {
         }
         break;
       }
-      case SPECIAL_FREEZE_PERIOD_LIMIT:{
+      case SPECIAL_FREEZE_PERIOD_LIMIT: {
+        if (dynamicPropertiesStore.getAllowVPFreezeStageWeight() == 1){
+          throw new ContractValidateException("SPECIAL_FREEZE_PERIOD_LIMIT is deprecated");
+        }
+
         if (value < 1 || value > 365L) {
           throw new ContractValidateException(
                   "Bad SPECIAL_FREEZE_PERIOD_LIMIT parameter value, valid range is [1,365L]");
@@ -396,8 +400,79 @@ public class ProposalUtil {
         }
         break;
       }
-      default:
+      case SM_BURN_OPTIMIZATION: {
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+              "This value[SM_BURN_OPTIMIZATION] is only allowed to be 1 or 0");
+        }
         break;
+      }
+      case REFREEZE_CONSIDERATION_PERIOD: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [REFREEZE_CONSIDERATION_PERIOD]");
+        }
+        if (value <= 0 || value > 30) {
+          throw new ContractValidateException(
+              "Bad REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
+        }
+        break;
+      }
+      case ALLOW_VP_FREEZE_STAGE_WEIGHT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_VP_FREEZE_STAGE_WEIGHT]");
+        }
+        if (value != 1 ) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_VP_FREEZE_STAGE_WEIGHT] is only allowed to be 1");
+        }
+        break;
+      }
+      case SPREAD_REFREEZE_CONSIDERATION_PERIOD: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [SPREAD_REFREEZE_CONSIDERATION_PERIOD]");
+        }
+        if (value <= 0 || value > 30) {
+          throw new ContractValidateException(
+              "Bad SPREAD_REFREEZE_CONSIDERATION_PERIOD parameter value, valid range is [1,30L]");
+        }
+        break;
+      }
+      case ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1]");
+        }
+        if (value != 1 && value != 0) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1] is only allowed to be 1 or 0");
+        }
+        break;
+      }
+      case MODIFY_SPREAD_MINT_PARENT_FEE: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [MODIFY_SPREAD_MINT_PARENT_FEE]");
+        }
+        if (value < 0 || value > 100_000_000L) {
+          throw new ContractValidateException(
+                  "Bad MODIFY_SPREAD_MINT_PARENT_FEE parameter value, valid range is [0, 100_000_000L]");
+        }
+        break;
+      }
+      case SEPARATE_PROPOSAL_STRING_PARAMETERS: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [SEPARATE_PROPOSAL_STRING_PARAMETER]");
+        }
+        if (value != 1 && value != 0 ) {
+          throw new ContractValidateException(
+                  "This value[SEPARATE_PROPOSAL_STRING_PARAMETER] is only allowed to be 1 or 0");
+        }
+        break;
+      }
+      default:
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -460,8 +535,74 @@ public class ProposalUtil {
         }
         break;
       }
-      default:
+      case VP_FREEZE_STAGE_WEIGHT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [VP_FREEZE_STAGE_WEIGHT]");
+        }
+        String[] stageWeights = value.split(";");
+        int stageLen = 5;
+        if (stageWeights.length != stageLen) {
+          throw new ContractValidateException(
+                  "Bad VP_FREEZE_STAGE_WEIGHT parameter value, only allowed five strings like [stage,duration,weight] x 5");
+        }
+
+        Integer[] stage = new Integer[stageLen];
+        Integer[] duration = new Integer[stageLen];
+        Integer[] weight = new Integer[stageLen];
+        for (int j = 0; j < stageWeights.length; j++){
+          String sw = stageWeights[j];
+          String[] stageWeight = sw.split(",");
+          if (stageWeight.length != 3) {
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, only allowed three positive integers like [stage,duration,weight]");
+          }
+          for (String s : stageWeight) {
+            String tmp = s.trim();
+            if (!NumberUtils.isNumber(tmp)) {
+              throw new ContractValidateException(
+                      "Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage, duration and weight must be a Number");
+            }
+          }
+
+          stage[j] = Integer.parseInt(stageWeight[0]);
+          if (stage[j] != j + 1){
+            throw new ContractValidateException("Bad VP_FREEZE_STAGE_WEIGHT parameter value, stage must be 1,2,3,4,5");
+          }
+          duration[j] = Integer.parseInt(stageWeight[1]);
+          if (duration[j] <= 0) {
+            throw new ContractValidateException("Bad VP_FREEZE_STAGE_WEIGHT parameter value, duration must be great than 0");
+          }
+          weight[j] = Integer.parseInt(stageWeight[2]);
+        }
+
+        for (int i = 0; i < duration.length-1; i++) {
+          if(duration[i] >= duration[i+1]){
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, duration must be ordered by asc");
+          }
+        }
+        for (int i = 0; i < weight.length-1; i++) {
+          if(i==0 && weight[i] != 100){
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, first stage weight must be 100");
+          }
+          if(weight[i] >= weight[i+1]){
+            throw new ContractValidateException(
+                    "Bad VP_FREEZE_STAGE_WEIGHT parameter value, weight must be ordered by asc");
+          }
+        }
+        if(weight[stageLen-1] >= 200){
+          throw new ContractValidateException(
+                  "Bad VP_FREEZE_STAGE_WEIGHT parameter value, last weight must be less than 200");
+        }
         break;
+      }
+      default:
+        if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
+          throw new ContractValidateException("Bad proposal string parameter key or value");
+        } else {
+          break;
+        }
     }
   }
 
@@ -522,7 +663,15 @@ public class ProposalUtil {
     FVGUARANTEE_FREEZE_PERIOD_LIMIT(53),
     ALLOW_UNFREEZE_SPREAD_OR_FVGUARANTEE_CLEAR_VOTE(54),// 0,1
     ALLOW_WITHDRAW_TRANSACTION_INFO_SEPARATE_AMOUNT(55),// 0,1
-    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56);// 0,1
+    ALLOW_SPREAD_MINT_PARTICIPATE_PLEDGE_RATE(56),// 0,1
+    SM_BURN_OPTIMIZATION(57),// 0,1
+    ALLOW_VP_FREEZE_STAGE_WEIGHT(58), // 0,1
+    VP_FREEZE_STAGE_WEIGHT(59), //1,35,100;2,60,110;3,180,120;4,360,130;5,720,150
+    REFREEZE_CONSIDERATION_PERIOD(60),//[1,30]
+    SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
+    ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62),
+    MODIFY_SPREAD_MINT_PARENT_FEE(63),
+    SEPARATE_PROPOSAL_STRING_PARAMETERS(64);
 
     private long code;
 
