@@ -8,6 +8,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.*;
 import org.spongycastle.util.encoders.Hex;
