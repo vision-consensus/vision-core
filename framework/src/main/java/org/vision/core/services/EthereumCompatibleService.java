@@ -14,6 +14,7 @@ import org.vision.api.GrpcAPI.BytesMessage;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.crypto.Hash;
 import org.vision.common.parameter.CommonParameter;
+import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteArray;
 import org.vision.common.utils.ByteUtil;
 import org.vision.common.utils.Sha256Hash;
@@ -32,6 +33,8 @@ import org.vision.core.services.jsonrpc.JsonRpcApiUtil;
 import org.vision.core.services.jsonrpc.filters.LogBlockQuery;
 import org.vision.core.services.jsonrpc.filters.LogFilterWrapper;
 import org.vision.core.services.jsonrpc.filters.LogMatch;
+import org.vision.core.store.StorageRowStore;
+import org.vision.core.vm.program.Storage;
 import org.vision.program.Version;
 import org.vision.protos.Protocol;
 import org.vision.protos.Protocol.Block;
@@ -228,7 +231,34 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
     @Override
     public String eth_getStorageAt(String address, String storageIdx, String blockId) throws Exception {
-        return null;
+        if (EARLIEST_STR.equalsIgnoreCase(blockId)
+                || PENDING_STR.equalsIgnoreCase(blockId)) {
+            throw new JsonRpcInvalidParamsException(TAG_NOT_SUPPORT_ERROR);
+        } else if (LATEST_STR.equalsIgnoreCase(blockId)) {
+            byte[] addressByte = addressCompatibleToByteArray(address);
+
+            // get contract from contractStore
+            BytesMessage.Builder build = BytesMessage.newBuilder();
+            BytesMessage bytesMessage = build.setValue(ByteString.copyFrom(addressByte)).build();
+            SmartContractOuterClass.SmartContract smartContract = wallet.getContract(bytesMessage);
+            if (smartContract == null) {
+                return ByteArray.toJsonHex(new byte[32]);
+            }
+
+            StorageRowStore store = chainBaseManager.getStorageRowStore();
+            Storage storage = new Storage(addressByte, store);
+
+            DataWord value = storage.getValue(new DataWord(ByteArray.fromHexString(storageIdx)));
+            return ByteArray.toJsonHex(value == null ? new byte[32] : value.getData());
+        } else {
+            try {
+                ByteArray.hexToBigInteger(blockId);
+            } catch (Exception e) {
+                throw new JsonRpcInvalidParamsException(BLOCK_NUM_ERROR);
+            }
+
+            throw new JsonRpcInvalidParamsException(QUANTITY_NOT_SUPPORT_ERROR);
+        }
     }
 
     @Override
@@ -653,12 +683,12 @@ public class EthereumCompatibleService implements EthereumCompatible {
         blockResult.sha3Uncles = "0x0000000000000000000000000000000000000000000000000000000000000000";
         blockResult.stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
         blockResult.totalDifficulty = "0x000000";
-        blockResult.timestamp = "0x" + Long.toHexString(rawData.getTimestamp());
+        blockResult.timestamp = "0x" + Long.toHexString(rawData.getTimestamp() / 1000);
         blockResult.size = Constant.ETH_PRE_FIX_STRING_MAINNET + "0";
         List<Protocol.Transaction> transactionList = reply.getTransactionsList();
         List<String> transHashList = new ArrayList<>();
         List<TransactionResultDTO> tranFullList = new ArrayList<>();
-        if (null != transactionList && transactionList.size() > 0) {
+        if (transactionList.size() > 0) {
             long transactionIdx = 0;
             for (Protocol.Transaction trx : transactionList) {
                 // eth_getBlockByHash actually get block by txId for vision-core
