@@ -297,6 +297,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSeparateProposalStringParameters(entry.getValue());
           break;
         }
+        case ALLOW_UNFREEZE_FRAGMENTATION: {
+          manager.getDynamicPropertiesStore().saveAllowUnfreezeFragmentation(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
