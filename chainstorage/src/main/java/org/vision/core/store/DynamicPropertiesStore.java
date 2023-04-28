@@ -3178,6 +3178,10 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             new BytesCapsule(ByteArray.fromLong(value)));
   }
 
+  public boolean supportUnfreezeFragmentation() {
+    return getAllowUnfreezeFragmentation() == 1L;
+  }
+
   public Long getAllowUnfreezeFragmentation() {
     return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION))
             .map(BytesCapsule::getData)
