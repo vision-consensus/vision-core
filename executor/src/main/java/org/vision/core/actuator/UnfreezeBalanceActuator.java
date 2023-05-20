@@ -13,13 +13,14 @@ import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
 import org.vision.core.store.*;
+import org.vision.protos.Protocol.Vote;
 import org.vision.protos.Protocol.Account.AccountResource;
 import org.vision.protos.Protocol.Account.Frozen;
 import org.vision.protos.Protocol.AccountType;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.BalanceContract.UnfreezeBalanceContract;
-import org.vision.protos.contract.Common;
+import org.vision.protos.contract.Common.ResourceCode;
 
 import java.util.*;
 
@@ -59,14 +60,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();
 
     //
-    if(unfreezeBalanceContract.getResource() != Common.ResourceCode.FVGUARANTEE){
-      mortgageService.withdrawReward(ownerAddress, unfreezeBalanceContract.getResource() == Common.ResourceCode.SPREAD);
+    if(unfreezeBalanceContract.getResource() != ResourceCode.FVGUARANTEE){
+      mortgageService.withdrawReward(ownerAddress, unfreezeBalanceContract.getResource() == ResourceCode.SPREAD);
     }
 
     AccountCapsule accountCapsule = accountStore.get(ownerAddress);
     long oldBalance = accountCapsule.getBalance();
 
     long unfreezeBalance = 0L;
+    long unfrozenFragBalance = 0L;
 
     byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
@@ -163,6 +165,18 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       Map<Long, List<Long>> stageWeights = dynamicStore.getVPFreezeStageWeights();
       AccountFrozenStageResourceStore accountFrozenStageResourceStore = chainBaseManager.getAccountFrozenStageResourceStore();
       long now = dynamicStore.getLatestBlockHeaderTimestamp();
+
+      if (dynamicStore.supportUnfreezeFragmentation()){
+        switch (unfreezeBalanceContract.getResource()){
+          case PHOTON:
+          case ENTROPY:
+            if (unfreezeBalanceContract.getUnfreezeBalance() > 0) {
+              unfrozenFragBalance = unfreezeBalanceContract.getUnfreezeBalance();
+            }
+            break;
+        }
+      }
+
       switch (unfreezeBalanceContract.getResource()) {
         case PHOTON:
           List<Frozen> frozenList = Lists.newArrayList();
@@ -175,8 +189,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               iterator.remove();
             }
           }
+          long photonExpiredTime = accountCapsule.getFrozenExpireTime();
 
           if (dynamicStore.getAllowVPFreezeStageWeight() == 1) {
+            boolean existStageFreeze = true;
             unfreezeBalance = accountCapsule.getFrozenBalance();
             List<Long> stageList = parseStageList(unfreezeBalanceContract);
             for (Long stage : stageList) {
@@ -188,12 +204,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               }
 
               if (stage == 1L && capsule == null){
+                existStageFreeze = false;
                 frozenList.clear();
               } else {
-                dynamicStore
-                        .addTotalStagePhotonWeight(Collections.singletonList(stage),
-                                -capsule.getInstance().getFrozenBalanceForPhoton() / VS_PRECISION);
-                capsule.setFrozenBalanceForPhoton(0, 0);
+                long stageFrozenBalance = capsule.getInstance().getFrozenBalanceForPhoton();
+                long remainFrozenBalance = stageFrozenBalance - unfrozenFragBalance;
+                long expireTime = remainFrozenBalance > 0 ? capsule.getInstance().getExpireTimeForPhoton() : 0L;
+
+                dynamicStore.addTotalStagePhotonWeight(Collections.singletonList(stage), -unfrozenFragBalance / VS_PRECISION);
+                capsule.setFrozenBalanceForPhoton(remainFrozenBalance, expireTime);
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
@@ -208,6 +227,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               totalStage += capsule.getInstance().getFrozenBalanceForPhoton();
               expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForPhoton());
             }
+
+            if (totalStage == 0 && !existStageFreeze){
+              totalStage = unfreezeBalance - unfrozenFragBalance;
+              expireTime = photonExpiredTime;
+            }
+
             if (totalStage > 0) {
               Frozen newFrozen = Frozen.newBuilder()
                   .setFrozenBalance(totalStage)
@@ -226,6 +251,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         case ENTROPY:
           unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForEntropy()
               .getFrozenBalance();
+          long entropyExpiredTime = accountCapsule.getEntropyFrozenExpireTime();
 
           AccountResource newAccountResource = accountCapsule.getAccountResource().toBuilder()
               .clearFrozenBalanceForEntropy().build();
@@ -239,10 +265,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 continue;
               }
               if (stage != 1L || capsule != null) {
-                dynamicStore
-                        .addTotalStageEntropyWeight(Collections.singletonList(stage),
-                                -capsule.getInstance().getFrozenBalanceForEntropy() / VS_PRECISION);
-                capsule.setFrozenBalanceForEntropy(0, 0);
+                long stageFrozenBalance = capsule.getInstance().getFrozenBalanceForEntropy();
+                long remainFrozenBalance = stageFrozenBalance - unfrozenFragBalance;
+                long expireTime = remainFrozenBalance > 0 ? capsule.getInstance().getExpireTimeForPhoton() : 0L;
+
+                dynamicStore.addTotalStageEntropyWeight(Collections.singletonList(stage), -unfrozenFragBalance / VS_PRECISION);
+                capsule.setFrozenBalanceForEntropy(remainFrozenBalance, expireTime);
                 accountFrozenStageResourceStore.put(key, capsule);
               }
             }
@@ -257,6 +285,12 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               totalStage += capsule.getInstance().getFrozenBalanceForEntropy();
               expireTime = Math.max(expireTime, capsule.getInstance().getExpireTimeForEntropy());
             }
+
+            if (totalStage == 0){
+              totalStage = unfreezeBalance - unfrozenFragBalance;
+              expireTime = entropyExpiredTime;
+            }
+
             if (totalStage > 0) {
               Frozen newFrozenForEntropy = Frozen.newBuilder()
                   .setFrozenBalance(totalStage)
@@ -348,17 +382,21 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     }
 
     if (clearVote) {
-      VotesCapsule votesCapsule;
-      if (!votesStore.has(ownerAddress)) {
-        votesCapsule = new VotesCapsule(unfreezeBalanceContract.getOwnerAddress(),
-                accountCapsule.getVotesList());
-      } else {
-        votesCapsule = votesStore.get(ownerAddress);
-      }
-      accountCapsule.clearVotes();
-      votesCapsule.clearNewVotes();
+      if (dynamicStore.supportUnfreezeFragmentation()){
+        updateVote(accountCapsule, unfreezeBalanceContract, ownerAddress);
+      }else {
+        VotesCapsule votesCapsule;
+        if (!votesStore.has(ownerAddress)) {
+          votesCapsule = new VotesCapsule(unfreezeBalanceContract.getOwnerAddress(),
+                  accountCapsule.getVotesList());
+        } else {
+          votesCapsule = votesStore.get(ownerAddress);
+        }
+        accountCapsule.clearVotes();
+        votesCapsule.clearNewVotes();
 
-      votesStore.put(ownerAddress, votesCapsule);
+        votesStore.put(ownerAddress, votesCapsule);
+      }
     }
 
     accountStore.put(ownerAddress, accountCapsule);
@@ -414,8 +452,8 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     //If the receiver is not included in the contract, unfreeze frozen balance for this account.
     //otherwise,unfreeze delegated frozen balance provided this account.
     if (dynamicStore.getAllowVPFreezeStageWeight() == 1 &&
-        (unfreezeBalanceContract.getResource() == Common.ResourceCode.PHOTON
-            || unfreezeBalanceContract.getResource() == Common.ResourceCode.ENTROPY)) {
+        (unfreezeBalanceContract.getResource() == ResourceCode.PHOTON
+            || unfreezeBalanceContract.getResource() == ResourceCode.ENTROPY)) {
       Map<Long, List<Long>> stageWeight = dynamicStore.getVPFreezeStageWeights();
       Set<Long> stages = new HashSet<>();
       for (Long stage : unfreezeBalanceContract.getStagesList()) {
@@ -427,6 +465,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
       if (stages.size() != unfreezeBalanceContract.getStagesCount()) {
         throw new ContractValidateException("stages must be not repeated");
       }
+    }
+
+    if (!checkUnfreezeFragBalanceCondition(unfreezeBalanceContract, dynamicStore)){
+      throw new ContractValidateException("Invalid unfreeze operation, Illegal unfreeze_balance filed");
     }
 
     if (!ArrayUtils.isEmpty(receiverAddress) && dynamicStore.supportDR()) {
@@ -550,6 +592,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               frozenAmount = accountCapsule.getFrozenBalance() - totalStageBalance;
             }
 
+            if (!checkStageNumUnFreezeBalance(stageList, unfreezeBalanceContract, dynamicStore)) {
+              throw new ContractValidateException("Invalid unfreeze operation, the number of unfreezing stage(PHOTON) exceeds limit");
+            }
+
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
@@ -582,7 +628,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 }
                 frozenAmount = stageCapsule.getInstance().getFrozenBalanceForPhoton();
               }
-              if (dynamicStore.supportUnfreezeFragmentation() && unfreezeBalanceContract.getUnfreezeBalance() > 0 && frozenAmount < unfreezeBalanceContract.getUnfreezeBalance()){
+              if (!checkUnFreezeBalance(unfreezeBalanceContract, dynamicStore, frozenAmount)){
                 throw new ContractValidateException("Insufficient unfreezeBalance(PHOTON) stage: " + stage);
               }
             }
@@ -610,6 +656,10 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
               frozenAmount = accountCapsule.getEntropyFrozenBalance() - totalStageBalance;
             }
 
+            if (!checkStageNumUnFreezeBalance(stageList, unfreezeBalanceContract, dynamicStore)) {
+              throw new ContractValidateException("Invalid unfreeze operation, the number of unfreezing stage(ENTROPY) exceeds limit");
+            }
+
             for (Long stage : stageList) {
               byte[] key = AccountFrozenStageResourceCapsule.createDbKey(ownerAddress, stage);
               AccountFrozenStageResourceCapsule stageCapsule = accountFrozenStageResourceStore.get(key);
@@ -635,7 +685,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 }
                 frozenAmount = stageCapsule.getInstance().getFrozenBalanceForPhoton();
               }
-              if (dynamicStore.supportUnfreezeFragmentation() && unfreezeBalanceContract.getUnfreezeBalance() > 0 && frozenAmount < unfreezeBalanceContract.getUnfreezeBalance()){
+              if (!checkUnFreezeBalance(unfreezeBalanceContract, dynamicStore, frozenAmount)){
                 throw new ContractValidateException("Insufficient unfreezeBalance(Entropy) stage: " + stage);
               }
             }
@@ -718,4 +768,106 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
     }
     return stageList;
   }
+
+  public boolean checkUnfreezeFragBalanceCondition(UnfreezeBalanceContract unfreezeBalanceContract, DynamicPropertiesStore dynamicStore){
+    boolean checkOk = false;
+    long unfreezeBalance = unfreezeBalanceContract.getUnfreezeBalance();
+    byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
+    if (!ArrayUtils.isEmpty(receiverAddress) && dynamicStore.supportDR()){
+      checkOk = unfreezeBalance == 0;
+    } else {
+      if (dynamicStore.supportUnfreezeFragmentation()){
+        switch (unfreezeBalanceContract.getResource()){
+          case PHOTON:
+          case ENTROPY:
+            checkOk = unfreezeBalance > 0;
+            break;
+          case FVGUARANTEE:
+          case SPREAD:
+            checkOk = unfreezeBalance == 0;
+            break;
+        }
+      }else {
+        checkOk = unfreezeBalance == 0;
+      }
+    }
+
+    return checkOk;
+  }
+
+  // only one stage can be unfrozen fragmentation
+  public boolean checkStageNumUnFreezeBalance(List<Long> stageList, UnfreezeBalanceContract unfreezeBalanceContract, DynamicPropertiesStore dynamicStore){
+    if (dynamicStore.supportUnfreezeFragmentation()){
+      switch (unfreezeBalanceContract.getResource()) {
+        case ENTROPY:
+        case PHOTON:
+          if (unfreezeBalanceContract.getUnfreezeBalance() > 0 && stageList.size() > 1){
+            return false;
+          }
+      }
+    }
+
+    return true;
+  }
+
+  public boolean checkUnFreezeBalance(UnfreezeBalanceContract unfreezeBalanceContract, DynamicPropertiesStore dynamicStore, long frozenAmount){
+    if (dynamicStore.supportUnfreezeFragmentation()){
+      return unfreezeBalanceContract.getUnfreezeBalance() > 0 && unfreezeBalanceContract.getUnfreezeBalance() <= frozenAmount;
+    }
+
+    return false;
+  }
+
+  private void updateVote(AccountCapsule accountCapsule, final UnfreezeBalanceContract unfreezeBalanceContract, byte[] ownerAddress) {
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    if (!dynamicStore.supportUnfreezeFragmentation()){
+      return;
+    }
+
+    if (accountCapsule.getVotesList().isEmpty()) {
+      return;
+    }
+
+    long totalVote = 0;
+    for (Vote vote : accountCapsule.getVotesList()) {
+      totalVote += vote.getVoteCount();
+    }
+    if (totalVote == 0) {
+      return;
+    }
+
+    long ownedVisionPower = accountCapsule.getVisionPower();
+    // vision power is enough to total votes
+    if (ownedVisionPower >= totalVote * VS_PRECISION) {
+      return;
+    }
+
+    VotesStore votesStore = chainBaseManager.getVotesStore();
+    VotesCapsule votesCapsule;
+    if (!votesStore.has(ownerAddress)) {
+      votesCapsule = new VotesCapsule(
+              unfreezeBalanceContract.getOwnerAddress(),
+              accountCapsule.getVotesList()
+      );
+    } else {
+      votesCapsule = votesStore.get(ownerAddress);
+    }
+
+    // Update Owner Voting
+    votesCapsule.clearNewVotes();
+    for (Vote vote : accountCapsule.getVotesList()) {
+      long newVoteCount = (long)
+              ((double) vote.getVoteCount() / totalVote * ownedVisionPower / VS_PRECISION);
+      if (newVoteCount > 0) {
+        votesCapsule.addNewVotes(vote.getVoteAddress(), newVoteCount);
+      }
+    }
+    votesStore.put(ownerAddress, votesCapsule);
+
+    accountCapsule.clearVotes();
+    for (Vote vote : votesCapsule.getNewVotes()) {
+      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
+    }
+  }
+
 }
