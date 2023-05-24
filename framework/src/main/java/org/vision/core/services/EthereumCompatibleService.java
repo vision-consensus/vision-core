@@ -419,7 +419,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
             if (GrpcAPI.Return.response_code.SUCCESS != result.getCode()) {
                 logger.error("Broadcast transaction {} has failed, {}.", transactionCapsule.getTransactionId(), result.getMessage().toStringUtf8());
                 String errMsg = new String(result.getMessage().toByteArray(), StandardCharsets.UTF_8);
-                return ByteArray.toJsonHex(errMsg.getBytes(StandardCharsets.UTF_8));
+
+                throw new JsonRpcInternalException(errMsg);
             }
         } catch (Exception e) {
             logger.error("sendRawTransaction error", e);
@@ -428,7 +429,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 errString = e.getMessage().replaceAll("[\"]", "\'");
             }
             if (StringUtils.isNotEmpty(errString)){
-                return ByteArray.toJsonHex(ByteArray.fromString(errString));
+                throw new JsonRpcInternalException(errString);
             }
             return null;
         }
@@ -850,7 +851,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
         List<Transaction> txList = block.getTransactionsList();
         for (int index = 0; index < txList.size(); index++) {
             transaction = txList.get(index);
-            if (getTxID(transaction).equals(txId)) {
+            if (getTxID(transaction).equals(txID)) {
                 transactionIndex = index;
                 break;
             }
