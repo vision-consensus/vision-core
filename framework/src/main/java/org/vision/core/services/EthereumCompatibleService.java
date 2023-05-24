@@ -11,8 +11,10 @@ import org.spongycastle.util.encoders.Hex;
 import org.springframework.stereotype.Component;
 import org.vision.api.GrpcAPI;
 import org.vision.api.GrpcAPI.BytesMessage;
+import org.vision.api.GrpcAPI.EstimateEntropyMessage;
 import org.vision.common.application.EthereumCompatible;
 import org.vision.common.crypto.Hash;
+import org.vision.common.logsfilter.ContractEventParser;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.vm.DataWord;
 import org.vision.common.utils.ByteArray;
@@ -41,6 +43,7 @@ import org.vision.protos.Protocol.Block;
 import org.vision.protos.Protocol.Transaction;
 import org.vision.protos.Protocol.Transaction.Contract;
 import org.vision.protos.Protocol.Transaction.Contract.ContractType;
+import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.api.GrpcAPI.TransactionExtention;
 import org.vision.api.GrpcAPI.Return;
 import org.vision.api.GrpcAPI.Return.response_code;
@@ -94,6 +97,8 @@ public class EthereumCompatibleService implements EthereumCompatible {
     private static final String QUANTITY_NOT_SUPPORT_ERROR =
             "QUANTITY not supported, just support TAG as latest";
     public static final int EXPIRE_SECONDS = 5 * 60;
+    public static final long ESTIMATE_MIN_ENTROPY = 21000L;
+    private static final String ERROR_SELECTOR = "08c379a0"; // Function selector for Error(string)
 
     private Wallet wallet;
     private ChainBaseManager chainBaseManager;
@@ -493,8 +498,11 @@ public class EthereumCompatibleService implements EthereumCompatible {
             return "0x0";
         }
 
+        boolean supportEstimateEntropy = CommonParameter.getInstance().isEstimateEntropy();
+
         TransactionExtention.Builder trxExtBuilder = TransactionExtention.newBuilder();
         Return.Builder retBuilder = Return.newBuilder();
+        EstimateEntropyMessage.Builder estimateBuilder = EstimateEntropyMessage.newBuilder();
 
         try {
             byte[] contractAddress;
@@ -504,15 +512,44 @@ public class EthereumCompatibleService implements EthereumCompatible {
             } else {
                 contractAddress = new byte[0];
             }
+            if (supportEstimateEntropy){
+                estimateEntropy(ownerAddress,
+                        contractAddress,
+                        args.parseValue(),
+                        ByteArray.fromHexString(args.getData()),
+                        trxExtBuilder,
+                        retBuilder,
+                        estimateBuilder);
+            }else {
+                callTriggerConstantContract(ownerAddress,
+                        contractAddress,
+                        args.parseValue(),
+                        ByteArray.fromHexString(args.getData()),
+                        trxExtBuilder,
+                        retBuilder);
+            }
 
-            callTriggerConstantContract(ownerAddress,
-                    contractAddress,
-                    args.parseValue(),
-                    ByteArray.fromHexString(args.getData()),
-                    trxExtBuilder,
-                    retBuilder);
+            if (trxExtBuilder.getTransaction().getRet(0).getRet().equals(code.FAILED)) {
+                String errMsg = retBuilder.getMessage().toStringUtf8();
 
-            return ByteArray.toJsonHex(Math.max(trxExtBuilder.getEntropyUsed(), 21000L));
+                byte[] data = trxExtBuilder.getConstantResult(0).toByteArray();
+                if (data.length > 4 && Hex.toHexString(data).startsWith(ERROR_SELECTOR)) {
+                    String msg = ContractEventParser
+                            .parseDataBytes(Arrays.copyOfRange(data, 4, data.length),
+                                    "string", 0);
+                    errMsg += ": " + msg;
+                }
+
+                throw new JsonRpcInternalException(errMsg);
+            } else {
+
+                if (supportEstimateEntropy) {
+                    return ByteArray.toJsonHex(Math.max(estimateBuilder.getEntropyRequired(), ESTIMATE_MIN_ENTROPY));
+                } else {
+                    return ByteArray.toJsonHex(Math.max(trxExtBuilder.getEntropyUsed(), ESTIMATE_MIN_ENTROPY));
+                }
+
+            }
         } catch (ContractValidateException e) {
             String errString = "invalid contract";
             if (e.getMessage() != null) {
@@ -528,6 +565,31 @@ public class EthereumCompatibleService implements EthereumCompatible {
 
             throw new JsonRpcInternalException(errString);
         }
+    }
+
+    private void estimateEntropy(byte[] ownerAddressByte, byte[] contractAddressByte,
+                                long value, byte[] data, TransactionExtention.Builder trxExtBuilder,
+                                Return.Builder retBuilder, EstimateEntropyMessage.Builder estimateBuilder)
+            throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
+
+        TriggerSmartContract triggerContract = triggerCallContract(
+                ownerAddressByte,
+                contractAddressByte,
+                value,
+                data,
+                0,
+                null
+        );
+
+        TransactionCapsule trxCap = wallet.createTransactionCapsule(triggerContract,
+                ContractType.TriggerSmartContract);
+        Transaction trx =
+                wallet.estimateEntropy(triggerContract, trxCap, trxExtBuilder, retBuilder, estimateBuilder);
+        trxExtBuilder.setTransaction(trx);
+        trxExtBuilder.setTxid(trxCap.getTransactionId().getByteString());
+        trxExtBuilder.setResult(retBuilder);
+        retBuilder.setResult(true).setCode(response_code.SUCCESS);
+        estimateBuilder.setResult(retBuilder);
     }
 
     private void callTriggerConstantContract(byte[] ownerAddressByte, byte[] contractAddressByte,

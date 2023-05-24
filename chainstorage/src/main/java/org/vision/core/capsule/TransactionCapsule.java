@@ -113,6 +113,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   private byte[] ethRlpData;
 
+  private Sha256Hash id;
+
   /**
    * constructor TransactionCapsule.
    */
@@ -629,7 +631,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         .setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
         .setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
         .build();
-    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+    setRawData(rawData);
   }
 
   public long getExpiration() {
@@ -642,24 +645,38 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   public void setExpiration(long expiration) {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
         .build();
-    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+    setRawData(rawData);
   }
 
   public void setTimestamp() {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder()
         .setTimestamp(System.currentTimeMillis())
         .build();
-    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+    setRawData(rawData);
   }
   public void setTimestamp(long timestamp) {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder()
         .setTimestamp(timestamp)
         .build();
-    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+    setRawData(rawData);
   }
 
   public long getTimestamp() {
     return transaction.getRawData().getTimestamp();
+  }
+
+  public void setFeeLimit(long feeLimit) {
+    Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+            .setFeeLimit(feeLimit)
+            .build();
+    setRawData(rawData);
+  }
+
+  public long getFeeLimit() {
+    return transaction.getRawData().getFeeLimit();
   }
 
   @Deprecated
@@ -2507,7 +2524,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   }
 
   public Sha256Hash getTransactionId() {
-    return getRawHash();
+    if (this.id == null) {
+      this.id = getRawHash();
+    }
+    return this.id;
+  }
+
+  private void setRawData(Transaction.raw rawData) {
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+    // invalidate trxId
+    this.id = null;
   }
 
   public Sha256Hash getEthRlpDataHash(DynamicPropertiesStore dynamicPropertiesStore){

@@ -50,6 +50,8 @@ public class VMConfig {
 
   private static boolean ALLOW_VVM_ASSET_ISSUE = false;
 
+  private static boolean ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID = false;
+
   private VMConfig() {
   }
 
@@ -105,6 +107,10 @@ public class VMConfig {
     return ENTROPY_LIMIT_HARD_FORK;
   }
 
+  public static void initAllowOptimizedReturnValueOfChainId(long allow) {
+    ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID = allow == 1;
+  }
+
   public static boolean allowVvmTransferVrc10() {
     return ALLOW_VVM_TRANSFER_VRC10;
   }
@@ -133,6 +139,10 @@ public class VMConfig {
 
   public static boolean allowVvmAssetIssue() {
     return ALLOW_VVM_ASSET_ISSUE;
+  }
+
+  public static boolean allowOptimizedReturnValueOfChainId() {
+    return ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID;
   }
 
   private static class SystemPropertiesInstance {

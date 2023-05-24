@@ -1221,8 +1221,13 @@ public class Program {
   }
 
   public DataWord getChainId() {
-    return new DataWord(Hex.toHexString(getContractState()
-        .getBlockByNum(0).getBlockId().getBytes()));
+    if (VMConfig.allowOptimizedReturnValueOfChainId()){
+      String chainId = Integer.toHexString(CommonParameter.getInstance().nodeP2pVersion);
+      return new DataWord(chainId.getBytes());
+    } else {
+      return new DataWord(Hex.toHexString(getContractState()
+              .getBlockByNum(0).getBlockId().getBytes()));
+    }
   }
   public DataWord getDropPrice() {
     return new DataWord(1);
