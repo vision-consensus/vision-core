@@ -235,6 +235,83 @@ public class EthereumCompatibleService implements EthereumCompatible {
     }
 
     @Override
+    public FeeHistory eth_feeHistory(String blockCount, String newestBlock, List<Double> rewardPercentiles) throws Exception {
+        if (EARLIEST_STR.equalsIgnoreCase(newestBlock)
+                || PENDING_STR.equalsIgnoreCase(newestBlock)) {
+            throw new JsonRpcInvalidParamsException(TAG_NOT_SUPPORT_ERROR);
+        } else if (LATEST_STR.equalsIgnoreCase(newestBlock)) {
+            FeeHistory feeHistory = new FeeHistory();
+            try{
+                long blockCountNumber = ByteArray.hexToBigInteger(blockCount).longValue();
+                if (blockCountNumber <= 0){
+                    feeHistory.setOldestBlock("0x0");
+                    feeHistory.setGasUsedRatio(null);
+                    return feeHistory;
+                }
+
+                Block block = wallet.getByJsonBlockId(newestBlock);
+                long newestBlockNumber = block.getBlockHeader().getRawData().getNumber();
+                long oldestBlockNumber = newestBlockNumber - (blockCountNumber - 1);
+                String oldestBlock = Long.toHexString(oldestBlockNumber);
+                feeHistory.setOldestBlock(oldestBlock);
+                long rewardCount = 0;
+                if (rewardPercentiles != null){
+                    rewardCount = rewardPercentiles.size();
+                }
+
+                List<String> baseFeePerGas = new ArrayList<>();
+                List<Double> gasUsedRatio = new ArrayList<>();
+                List<List<String>> reward = new ArrayList<>();
+
+                for (int i = 0; i < blockCountNumber; i++){
+                    baseFeePerGas.add(eth_gasPrice());
+                    Block tmpBlock = wallet.getBlockByNum(newestBlockNumber - i);
+                    BlockCapsule blockCapsule = new BlockCapsule(block);
+                    long totalEntropy = 0, feeLimit = 0;
+                    if (tmpBlock.getTransactionsCount() > 0){
+                        for (TransactionCapsule transactionCapsule: blockCapsule.getTransactions()){
+                            Transaction.Contract contract = transactionCapsule.getInstance().getRawData().getContract(0);
+                            if (!contract.getType().equals(ContractType.TriggerSmartContract) && !contract.getType().equals(ContractType.CreateSmartContract)){
+                                continue;
+                            }
+                            Protocol.TransactionInfo transactionInfo = wallet.getTransactionInfoById(ByteString.copyFrom(transactionCapsule.getTransactionId().getBytes()));
+                            totalEntropy += transactionInfo.getReceipt().getEntropyUsageTotal();
+                            feeLimit += transactionCapsule.getFeeLimit();
+                        }
+                    }
+                    double gasUsedRatioVal = feeLimit > 0 ? totalEntropy * 1.0 / feeLimit : 0.0;
+                    gasUsedRatioVal = Math.max(Math.min(1, gasUsedRatioVal), 0);
+                    gasUsedRatio.add(gasUsedRatioVal);
+
+                    if (rewardCount > 0) {
+                        List<String> rewardItem = new ArrayList<>();
+                        for (int j = 0; j < rewardCount; j++) {
+                            rewardItem.add("0x0");
+                        }
+                        reward.add(rewardItem);
+                    }
+                }
+                feeHistory.setBaseFeePerGas(baseFeePerGas);
+                feeHistory.setGasUsedRatio(gasUsedRatio);
+                feeHistory.setReward(reward);
+
+                return feeHistory;
+            }catch (Exception e){
+                String message = e.getMessage();
+                throw new JsonRpcInternalException(message);
+            }
+        }else {
+            try {
+                ByteArray.hexToBigInteger(newestBlock);
+            } catch (Exception e) {
+                throw new JsonRpcInvalidParamsException(BLOCK_NUM_ERROR);
+            }
+
+            throw new JsonRpcInvalidParamsException(QUANTITY_NOT_SUPPORT_ERROR);
+        }
+    }
+
+    @Override
     public String eth_getStorageAt(String address, String storageIdx, String blockId) throws Exception {
         if (EARLIEST_STR.equalsIgnoreCase(blockId)
                 || PENDING_STR.equalsIgnoreCase(blockId)) {
