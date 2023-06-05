@@ -115,6 +115,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   private Sha256Hash id;
 
+  private byte[] ownerAddress;
+
+  public byte[] getOwnerAddress() {
+    if (this.ownerAddress == null) {
+      this.ownerAddress = getOwner(this.transaction.getRawData().getContract(0));
+    }
+    return this.ownerAddress;
+  }
+
   /**
    * constructor TransactionCapsule.
    */
