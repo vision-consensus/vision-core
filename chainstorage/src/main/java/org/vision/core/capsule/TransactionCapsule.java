@@ -704,7 +704,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     //    String signature = cryptoEngine.signHash(getRawHash().getBytes());
     //    ByteString sig = ByteString.copyFrom(signature.getBytes());
     ByteString sig = ByteString.copyFrom(cryptoEngine.Base64toBytes(cryptoEngine
-        .signHash(getRawHash().getBytes())));
+        .signHash(getTransactionId().getBytes())));
     this.transaction = this.transaction.toBuilder().addSignature(sig).build();
   }
 
@@ -728,7 +728,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         .fromPrivate(privateKey, CommonParameter.getInstance().isECKeyCryptoEngine());
     byte[] address = cryptoEngine.getAddress();
     if (this.transaction.getSignatureCount() > 0) {
-      checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
+      checkWeight(permission, this.transaction.getSignatureList(), this.getTransactionId().getBytes(),
           approveList);
       if (approveList.contains(ByteString.copyFrom(address))) {
         throw new PermissionException(encode58Check(address) + " had signed!");
@@ -743,7 +743,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
     //    String signature = cryptoEngine.signHash(getRawHash().getBytes());
     ByteString sig = ByteString.copyFrom(cryptoEngine.Base64toBytes(cryptoEngine
-        .signHash(getRawHash().getBytes())));
+        .signHash(getTransactionId().getBytes())));
     this.transaction = this.transaction.toBuilder().addSignature(sig).build();
   }
   private static void checkPermission(int permissionId, Permission permission, Transaction.Contract contract) throws PermissionException {
@@ -2255,7 +2255,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       throw new ValidateSignatureException("too many signatures");
     }
 
-    byte[] hash = this.getRawHash().getBytes();
+    byte[] hash = this.getTransactionId().getBytes();
 
     try {
       if (!validateSignature(this.transaction, hash, accountStore, dynamicPropertiesStore)) {
