@@ -180,22 +180,6 @@ public class VMActuator implements Actuator2 {
         vm.play(program);
         result = program.getResult();
 
-        if (isConstantCall) {
-          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
-          long callTokenValue = TransactionUtil
-              .getCallTokenValue(trx.getRawData().getContract(0));
-          if (callValue > 0 || callTokenValue > 0) {
-            result.setRuntimeError("constant cannot set call value or call token value.");
-            result.rejectInternalTransactions();
-          }
-          if (result.getException() != null) {
-            result.setRuntimeError(result.getException().getMessage());
-            result.rejectInternalTransactions();
-          }
-          context.setProgramResult(result);
-          return;
-        }
-
         if (TrxType.TRX_CONTRACT_CREATION_TYPE == trxType && !result.isRevert()) {
           byte[] code = program.getResult().getHReturn();
           long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
@@ -215,6 +199,13 @@ public class VMActuator implements Actuator2 {
         }
 
         if (isConstantCall) {
+          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
+          long callTokenValue = TransactionUtil
+                  .getCallTokenValue(trx.getRawData().getContract(0));
+          if (callValue > 0 || callTokenValue > 0) {
+            result.setRuntimeError("constant cannot set call value or call token value.");
+            result.rejectInternalTransactions();
+          }
           if (result.getException() != null) {
             result.setRuntimeError(result.getException().getMessage());
             result.rejectInternalTransactions();
@@ -399,6 +390,9 @@ public class VMActuator implements Actuator2 {
           .createProgramInvoke(TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
                       tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
                       vmShouldEndInUs, entropyLimit);
+      if (isConstantCall) {
+        programInvoke.setConstantCall();
+      }
       this.vm = new VM();
       this.program = new Program(ops, programInvoke, rootInternalTransaction, vmConfig
       );

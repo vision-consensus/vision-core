@@ -1192,7 +1192,7 @@ public class Manager {
 
       if (trx == null) {
         //  transaction may be removed by rePushLoop.
-        logger.warn("Trx is null, fromPending: {}, pending: {}, repush: {}.",
+        logger.warn("transaction is null, fromPending: {}, pending: {}, repush: {}.",
                 fromPending, pendingTransactions.size(), rePushTransactions.size());
         continue;
       }
