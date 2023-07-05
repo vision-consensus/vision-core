@@ -57,6 +57,9 @@ public interface EthereumCompatible {
         @Getter
         @Setter
         private String nonce; // not used
+        @Getter
+        @Setter
+        private String type;
 
         /**
          * just support TransferContract, CreateSmartContract and TriggerSmartContract
