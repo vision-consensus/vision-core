@@ -100,7 +100,9 @@ public class VM {
           || (!VMConfig.allowVvmSolidity059() && op == ISCONTRACT)
           || (!VMConfig.allowVvmIstanbul() && (op == SELFBALANCE || op == CHAINID))
           ) {
-        throw Program.Exception.invalidOpCode(program.getCurrentOp());
+        if (!allowChainId(op)) {
+          throw Program.Exception.invalidOpCode(program.getCurrentOp());
+        }
       }
 
       program.setLastOp(op.val());
@@ -1482,5 +1484,8 @@ public class VM {
         == null;
   }
 
+  private boolean allowChainId(OpCode op) {
+    return op == CHAINID && VMConfig.allowOptimizedReturnValueOfChainId();
+  }
 
 }
