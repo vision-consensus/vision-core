@@ -252,7 +252,7 @@ public class EthereumCompatibleService implements EthereumCompatible {
                 Block block = wallet.getByJsonBlockId(newestBlock);
                 long newestBlockNumber = block.getBlockHeader().getRawData().getNumber();
                 long oldestBlockNumber = newestBlockNumber - (blockCountNumber - 1);
-                String oldestBlock = Long.toHexString(oldestBlockNumber);
+                String oldestBlock = ByteArray.toJsonHex(oldestBlockNumber);
                 feeHistory.setOldestBlock(oldestBlock);
                 long rewardCount = 0;
                 if (rewardPercentiles != null){
