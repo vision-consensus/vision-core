@@ -1222,8 +1222,7 @@ public class Program {
 
   public DataWord getChainId() {
     if (VMConfig.allowOptimizedReturnValueOfChainId()){
-      String chainId = Integer.toHexString(CommonParameter.getInstance().nodeP2pVersion);
-      return new DataWord(chainId.getBytes());
+      return new DataWord(CommonParameter.PARAMETER.nodeP2pVersion);
     } else {
       return new DataWord(Hex.toHexString(getContractState()
               .getBlockByNum(0).getBlockId().getBytes()));
