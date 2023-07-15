@@ -287,7 +287,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
                 long stageFrozenBalance = capsule.getInstance().getFrozenBalanceForEntropy();
                 unfrozenFragBalance = getUnfreezeFragBalance(unfreezeBalanceContract, dynamicStore, stageFrozenBalance);
                 long remainFrozenBalance = stageFrozenBalance - unfrozenFragBalance;
-                long expireTime = remainFrozenBalance > 0 ? capsule.getInstance().getExpireTimeForPhoton() : 0L;
+                long expireTime = remainFrozenBalance > 0 ? capsule.getInstance().getExpireTimeForEntropy() : 0L;
 
                 dynamicStore.addTotalStageEntropyWeight(Collections.singletonList(stage), -unfrozenFragBalance / VS_PRECISION);
                 capsule.setFrozenBalanceForEntropy(remainFrozenBalance, expireTime);
