@@ -905,6 +905,14 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.saveVPFreezeStageWeight("1,35,100;2,60,110;3,180,120;4,360,130;5,720,150");
     }
 
+    try {
+      this.getAllowOptimizedReturnValueOfChainId();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowOptimizedReturnValueOfChainId(
+              CommonParameter.getInstance().getAllowOptimizedReturnValueOfChainId()
+      );
+    }
+
   }
 
   public String intArrayToString(int[] a) {
@@ -3171,6 +3179,36 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  public void saveAllowUnfreezeFragmentation(Long value) {
+    this.put(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public boolean supportUnfreezeFragmentation() {
+    return getAllowUnfreezeFragmentation() == 1L;
+  }
+
+  public Long getAllowUnfreezeFragmentation() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveAllowOptimizedReturnValueOfChainId(long value) {
+    this.put(DynamicResourceProperties.ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowOptimizedReturnValueOfChainId() {
+    String msg = "not found ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID";
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException(msg));
+  }
+
   public void burnSpreadAmount(long amount) {
     if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
@@ -3291,6 +3329,8 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1 = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1".getBytes();
     public static final byte[] MODIFY_SPREAD_MINT_PARENT_FEE = "MODIFY_SPREAD_MINT_PARENT_FEE".getBytes();
+    public static final byte[] ALLOW_UNFREEZE_FRAGMENTATION = "ALLOW_UNFREEZE_FRAGMENTATION".getBytes();
+    private static final byte[] ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID = "ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID".getBytes();
   }
 
 }
