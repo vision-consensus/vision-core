@@ -1275,6 +1275,11 @@ message TransactionExtention {
   repeated InternalTransaction internal_transactions = 7;
 }
 
+message EstimateEntropyMessage {
+  Return result = 1;
+  int64 entropy_required = 2;
+}
+
 message BlockExtention {
   repeated TransactionExtention transactions = 1;
   BlockHeader block_header = 2;
