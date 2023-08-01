@@ -2882,6 +2882,43 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return 600_000L;
   }
 
+  public void saveAllowFreezeAccount(Long value) {
+    this.put(DynamicResourceProperties.ALLOW_FREEZE_ACCOUNT, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public boolean supportFreezeAccount() {
+    return getAllowFreezeAccount() == 1;
+  }
+
+  public long getAllowFreezeAccount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_FREEZE_ACCOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveFreezeAccountOwner(String value) {
+    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_OWNER, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getFreezeAccountOwner() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_OWNER))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  public void saveFreezeAccountList(String value) {
+    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_List, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getFreezeAccountList() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_List))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
   public void saveAllowVPFreezeStageWeight(Long value) {
     this.put(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT,
             new BytesCapsule(ByteArray.fromLong(value)));
@@ -3293,6 +3330,9 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1 = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1".getBytes();
     public static final byte[] MODIFY_SPREAD_MINT_PARENT_FEE = "MODIFY_SPREAD_MINT_PARENT_FEE".getBytes();
+    private static final byte[] ALLOW_FREEZE_ACCOUNT = "ALLOW_FREEZE_ACCOUNT".getBytes();
+    private static final byte[] FREEZE_ACCOUNT_OWNER = "FREEZE_ACCOUNT_OWNER".getBytes();
+    private static final byte[] FREEZE_ACCOUNT_List = "FREEZE_ACCOUNT_List".getBytes();
   }
 
 }
