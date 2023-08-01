@@ -29,6 +29,7 @@ message FreezeBalanceStage {
 
 message UnfreezeBalanceContract {
   bytes owner_address = 1;
+  int64 unfreeze_balance = 3;
 
   ResourceCode resource = 10;
   bytes receiver_address = 15;
