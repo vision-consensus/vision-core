@@ -255,6 +255,10 @@ message SpreadRelationShip {
   int64 frozen_cycle = 5;
 }
 
+message FreezeAccount {
+  repeated bytes freeze_accounts = 2;
+}
+
 message authority {
   AccountId account = 1;
   bytes permission_name = 2;
@@ -375,6 +379,8 @@ message Transaction {
       ShieldedTransferContract = 51;
       MarketSellAssetContract = 52;
       MarketCancelOrderContract = 53;
+      FreezeAccountContract = 54;
+      UnfreezeAccountContract = 55;
     }
     ContractType type = 1;
     google.protobuf.Any parameter = 2;
