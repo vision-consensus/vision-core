@@ -2909,11 +2909,11 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
   }
 
   public void saveFreezeAccountList(String value) {
-    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_List, new BytesCapsule(ByteArray.fromString(value)));
+    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_LIST, new BytesCapsule(ByteArray.fromString(value)));
   }
 
   public String getFreezeAccountList() {
-    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_List))
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_LIST))
             .map(BytesCapsule::getData)
             .map(ByteArray::toStr)
             .orElse("");
@@ -3332,7 +3332,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] MODIFY_SPREAD_MINT_PARENT_FEE = "MODIFY_SPREAD_MINT_PARENT_FEE".getBytes();
     private static final byte[] ALLOW_FREEZE_ACCOUNT = "ALLOW_FREEZE_ACCOUNT".getBytes();
     private static final byte[] FREEZE_ACCOUNT_OWNER = "FREEZE_ACCOUNT_OWNER".getBytes();
-    private static final byte[] FREEZE_ACCOUNT_List = "FREEZE_ACCOUNT_List".getBytes();
+    private static final byte[] FREEZE_ACCOUNT_LIST = "FREEZE_ACCOUNT_LIST".getBytes();
   }
 
 }
