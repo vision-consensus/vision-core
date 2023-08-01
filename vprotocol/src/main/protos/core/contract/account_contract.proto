@@ -50,3 +50,12 @@ message AccountPermissionUpdateContract {
   repeated Permission actives = 4; //Empty is invalidate
 }
 
+message FreezeAccountContract {
+  bytes owner_address = 1;
+  repeated bytes accounts = 2;
+}
+
+message UnfreezeAccountContract {
+  bytes owner_address = 1;
+  repeated bytes accounts = 2;
+}

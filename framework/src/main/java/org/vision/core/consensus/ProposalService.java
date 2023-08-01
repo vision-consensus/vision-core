@@ -1,8 +1,12 @@
 package org.vision.core.consensus;
 
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.ByteArray;
+import org.vision.common.utils.DecodeUtil;
+import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.ProposalCapsule;
 import org.vision.core.db.Manager;
+import org.vision.core.services.http.Util;
 import org.vision.core.utils.ProposalUtil;
 
 import java.util.Map;
@@ -297,6 +301,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSeparateProposalStringParameters(entry.getValue());
           break;
         }
+        case ALLOW_FREEZE_ACCOUNT: {
+          manager.getDynamicPropertiesStore().saveAllowFreezeAccount(entry.getValue());
+          break;
+        }
         case ALLOW_UNFREEZE_FRAGMENTATION: {
           manager.getDynamicPropertiesStore().saveAllowUnfreezeFragmentation(entry.getValue());
           break;
@@ -332,6 +340,31 @@ public class ProposalService extends ProposalUtil {
         }
         case VP_FREEZE_STAGE_WEIGHT: {
           manager.getDynamicPropertiesStore().saveVPFreezeStageWeight(entry.getValue());
+          break;
+        }
+        case FREEZE_ACCOUNT_OWNER: {
+          String owner_account = entry.getValue();
+          if (owner_account.length() == 34) {
+            owner_account = Util.getHexAddress(owner_account);
+          }
+          manager.getDynamicPropertiesStore().saveFreezeAccountOwner(owner_account);
+          break;
+        }
+        case FREEZE_ACCOUNT_LIST: {
+          String[] accounts = entry.getValue().split(",");
+          StringBuilder value = new StringBuilder();
+          for (String account: accounts) {
+            if (account.length() == DecodeUtil.ADDRESS_SIZE) {
+              value.append(StringUtil.encode58Check(ByteArray.fromHexString(account))).append(",");
+            }else {
+              value.append(account).append(",");
+            }
+          }
+          String accountList = value.toString();
+          if (accountList.endsWith(",")) {
+            accountList = accountList.substring(0, accountList.length() - 1);
+          }
+          manager.getDynamicPropertiesStore().saveFreezeAccountList(accountList);
           break;
         }
         default:
