@@ -218,6 +218,12 @@ public class CommonParameter {
   public long proposalExpireTime; // (ms)
   @Getter
   @Setter
+  public long proposalEffectiveBlockNumber;
+  @Getter
+  @Setter
+  public long proposalEffectiveExpireTime; // (ms)
+  @Getter
+  @Setter
   public int checkFrozenTime; // for test only
   @Getter
   @Setter

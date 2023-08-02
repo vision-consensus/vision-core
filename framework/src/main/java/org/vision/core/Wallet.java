@@ -521,17 +521,14 @@ public class Wallet {
       }
 
       if (chainBaseManager.getDynamicPropertiesStore().supportFreezeAccount()) {
-        String freezeAccountOwner = chainBaseManager.getDynamicPropertiesStore().getFreezeAccountOwner();
-        if (StringUtils.isNotBlank(freezeAccountOwner)) {
-          FreezeAccountStore freezeAccountStore = chainBaseManager.getFreezeAccountStore();
-          FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
-          if (freezeAccountCapsule != null) {
-            byte[] ownerAddress = TransactionCapsule.getOwner(trx.getInstance().getRawData().getContract(0));
-            if (ownerAddress.length > 0 && freezeAccountCapsule.checkFreeze(ByteString.copyFrom(ownerAddress))) {
-              String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
-              throw new ContractValidateException(
-                      ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + ACCOUNT_CANNOT_TRANSACTION);
-            }
+        FreezeAccountStore freezeAccountStore = chainBaseManager.getFreezeAccountStore();
+        FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+        if (freezeAccountCapsule != null) {
+          byte[] ownerAddress = TransactionCapsule.getOwner(trx.getInstance().getRawData().getContract(0));
+          if (ownerAddress.length > 0 && freezeAccountCapsule.checkFreeze(ByteString.copyFrom(ownerAddress))) {
+            String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
+            throw new ContractValidateException(
+                    ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + ACCOUNT_CANNOT_TRANSACTION);
           }
         }
       }
@@ -1233,14 +1230,7 @@ public class Wallet {
             .setKey("getAllowFreezeAccount")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowFreezeAccount())
             .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getFreezeAccountOwner")
-            .setStringValue(dbManager.getDynamicPropertiesStore().getFreezeAccountOwner())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getFreezeAccountList")
-            .setStringValue(dbManager.getDynamicPropertiesStore().getFreezeAccountList())
-            .build());
+
     return builder.build();
   }
 

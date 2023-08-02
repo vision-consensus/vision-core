@@ -39,9 +39,15 @@ public class FreezeAccountCapsule implements ProtoCapsule<FreezeAccount> {
             .build();
   }
 
-  public void addAddress(ByteString freezeAccount) {
+  public void addAddress(ByteString freezeAddress) {
     this.freezeAccount = this.freezeAccount.toBuilder()
-            .addFreezeAccounts(freezeAccount)
+            .addFreezeAccounts(freezeAddress)
+            .build();
+  }
+
+  public void addAllAddress(List<ByteString> freezeAccounts) {
+    this.freezeAccount = this.freezeAccount.toBuilder()
+            .addAllFreezeAccounts(freezeAccounts)
             .build();
   }
 
