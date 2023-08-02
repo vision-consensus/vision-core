@@ -226,6 +226,10 @@ public class Manager {
     return chainBaseManager.getDelegatedResourceAccountIndexStore();
   }
 
+  public FreezeAccountStore getFreezeAccountStore() {
+    return chainBaseManager.getFreezeAccountStore();
+  }
+
   public CodeStore getCodeStore() {
     return chainBaseManager.getCodeStore();
   }

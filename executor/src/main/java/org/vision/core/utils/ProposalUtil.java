@@ -1,15 +1,22 @@
 package org.vision.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.protobuf.ByteString;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.Commons;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.ForkController;
+import org.vision.common.utils.*;
+import org.vision.core.capsule.FreezeAccountCapsule;
 import org.vision.core.config.Parameter.ForkBlockVersionConsts;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.FreezeAccountStore;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+
+import static org.vision.common.utils.Commons.decodeFromBase58Check;
 
 public class ProposalUtil {
 
@@ -511,6 +518,7 @@ public class ProposalUtil {
   }
 
   public static void validatorString(DynamicPropertiesStore dynamicPropertiesStore,
+                               FreezeAccountStore freezeAccountStore,
                                ForkController forkController,
                                long code, String value)
           throws ContractValidateException {
@@ -648,11 +656,46 @@ public class ProposalUtil {
         if (value == null || value.length() <= 0) {
           throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value must be a address string");
         }
-        String[] accounts = value.split(",");
+
+        String[] values = value.split(";");
+        if (values.length != 2){
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value format is wrong");
+        }
+        String valueType = values[0];
+        if (!Objects.equals(valueType, "0") && !Objects.equals(valueType, "1") && !Objects.equals(valueType, "2")) {
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value type must be 0,1,2");
+        }
+
+        List<ByteString> oldFreezeAccounts = new ArrayList<>();
+        FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+        if (freezeAccountCapsule != null) {
+          oldFreezeAccounts = freezeAccountCapsule.getAddressesList();
+        }
+        HashSet<String> set = new HashSet<>();
+        String[] accounts = values[1].split(",");
         for (String account: accounts) {
           JSONObject resObject = validAddress(account);
           if (!resObject.getBoolean("result")){
             throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] must be a address");
+          }
+          if (!set.add(account)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is a duplicate address");
+          }
+          ByteString accountByteString;
+          if (account.length() == 34){
+            byte[] address = decodeFromBase58Check(account);
+            if (address == null) {
+              throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] must be address");
+            }
+            accountByteString = ByteString.copyFrom(address);
+          }else {
+            accountByteString = ByteString.copyFrom(ByteArray.fromHexString(account));
+          }
+          if (valueType.equals("1") && oldFreezeAccounts.contains(accountByteString)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is a freeze address");
+          }
+          if (valueType.equals("2") && !oldFreezeAccounts.contains(accountByteString)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is not a freeze address");
           }
         }
         break;
@@ -676,7 +719,7 @@ public class ProposalUtil {
         msg = "Hex string format";
       } else if (input.length() == 34) {
         //base58check
-        address = Commons.decodeFromBase58Check(input);
+        address = decodeFromBase58Check(input);
         msg = "Base58check format";
       }
 //      else if (input.length() == 28) {
