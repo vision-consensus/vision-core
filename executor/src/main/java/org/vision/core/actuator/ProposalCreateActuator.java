@@ -15,12 +15,16 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.contract.ProposalContract.ProposalCreateContract;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_EXCEPTION_STR;
 import static org.vision.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 import static org.vision.core.actuator.ActuatorConstant.WITNESS_EXCEPTION_STR;
+import static org.vision.core.utils.ProposalUtil.ProposalType.ALLOW_FREEZE_ACCOUNT;
+import static org.vision.core.utils.ProposalUtil.ProposalType.FREEZE_ACCOUNT_LIST;
 
 @Slf4j(topic = "actuator")
 public class ProposalCreateActuator extends AbstractActuator {
@@ -55,7 +59,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 
       long currentMaintenanceTime =
           chainBaseManager.getDynamicPropertiesStore().getNextMaintenanceTime();
-      long now3 = now + CommonParameter.getInstance().getProposalExpireTime();
+      long now3 = now + getProposalExpiredTime(proposalCreateContract);
       long round = (now3 - currentMaintenanceTime) / maintenanceTimeInterval;
       long expirationTime =
           currentMaintenanceTime + (round + 1) * maintenanceTimeInterval;
@@ -112,22 +116,34 @@ public class ProposalCreateActuator extends AbstractActuator {
 
     if (chainBaseManager.getDynamicPropertiesStore().getSeparateProposalStringParameters() == 1L){
       boolean existParameters = false;
+      List<Long> proposalIds = new ArrayList<>();
       if (contract.getParametersMap().size() != 0) {
         existParameters = true;
         for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
           validateValue(entry);
+          proposalIds.add(entry.getKey());
         }
       }
       if (contract.getStringParametersMap().size() != 0) {
         existParameters = true;
         for (Map.Entry<Long, String> entry : contract.getStringParametersMap().entrySet()) {
           validateStringValue(entry);
+          proposalIds.add(entry.getKey());
         }
       }
 
       if (!existParameters){
         throw new ContractValidateException("This proposal has no parameter or string parameter.");
       }
+
+      if (checkFreezeAccountBlockNumber() && checkFreezeAccountProposal(proposalIds)) {
+        for (Long id: proposalIds) {
+          if (id != ALLOW_FREEZE_ACCOUNT.getCode() && id != FREEZE_ACCOUNT_LIST.getCode()) {
+            throw new ContractValidateException("This proposal has wrong parameter or string parameter[67 or 69].");
+          }
+        }
+      }
+
     }else {
       if (contract.getParametersMap().size() != 0) {
         for (Map.Entry<Long, Long> entry : contract.getParametersMap().entrySet()) {
@@ -153,7 +169,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 
   private void validateStringValue(Map.Entry<Long, String> entry) throws ContractValidateException {
     ProposalUtil
-            .validatorString(chainBaseManager.getDynamicPropertiesStore(), forkController, entry.getKey(),
+            .validatorString(chainBaseManager.getDynamicPropertiesStore(), chainBaseManager.getFreezeAccountStore(), forkController, entry.getKey(),
                     entry.getValue());
   }
 
@@ -165,6 +181,35 @@ public class ProposalCreateActuator extends AbstractActuator {
   @Override
   public long calcFee() {
     return 0;
+  }
+
+  public boolean checkFreezeAccountProposal(List<Long> proposalIds){
+    return !proposalIds.isEmpty() && (proposalIds.contains(ALLOW_FREEZE_ACCOUNT.getCode()) || proposalIds.contains(FREEZE_ACCOUNT_LIST.getCode()));
+  }
+
+  public boolean checkFreezeAccountBlockNumber() {
+    return chainBaseManager.getDynamicPropertiesStore().getLatestBlockHeaderNumber() > CommonParameter.getInstance().getProposalEffectiveBlockNumber();
+  }
+
+  public long getProposalExpiredTime(ProposalCreateContract proposalCreateContract) {
+    long proposalExpiredTime = CommonParameter.getInstance().getProposalExpireTime();
+    if (checkFreezeAccountBlockNumber()) {
+      List<Long> proposalIds = new ArrayList<>();
+      if (proposalCreateContract.getParametersMap().size() != 0) {
+        for (Map.Entry<Long, Long> entry : proposalCreateContract.getParametersMap().entrySet()) {
+          proposalIds.add(entry.getKey());
+        }
+      }
+      if (proposalCreateContract.getStringParametersMap().size() != 0) {
+        for (Map.Entry<Long, String> entry : proposalCreateContract.getStringParametersMap().entrySet()) {
+          proposalIds.add(entry.getKey());
+        }
+      }
+      if (checkFreezeAccountProposal(proposalIds)) {
+        proposalExpiredTime = CommonParameter.getInstance().getProposalEffectiveExpireTime();
+      }
+    }
+    return proposalExpiredTime;
   }
 
 }
