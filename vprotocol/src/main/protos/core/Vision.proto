@@ -379,8 +379,6 @@ message Transaction {
       ShieldedTransferContract = 51;
       MarketSellAssetContract = 52;
       MarketCancelOrderContract = 53;
-      FreezeAccountContract = 54;
-      UnfreezeAccountContract = 55;
     }
     ContractType type = 1;
     google.protobuf.Any parameter = 2;
