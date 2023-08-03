@@ -376,35 +376,39 @@ public class ProposalService extends ProposalUtil {
 
     FreezeAccountStore freezeAccountStore = manager.getFreezeAccountStore();
     FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
-    List<ByteString> oldFreezeAddresses = freezeAccountCapsule.getAddressesList();
-
-    switch (valueType) {
-      case "0":
-        freezeAccountCapsule.setAllAddresses(valueList);
-        freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
-        break;
-      case "1":
-        freezeAccountCapsule.addAllAddress(valueList);
-        freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
-        break;
-      case "2":
-        List<ByteString> newFreezeAccountList = new ArrayList<>();
-        for (ByteString address: oldFreezeAddresses) {
-          if (valueList.contains(address)){
-            continue;
-          }
-          newFreezeAccountList.add(address);
-        }
-
-        if (newFreezeAccountList.isEmpty()) {
-          freezeAccountStore.delete(freezeAccountStore.createFreezeAccountDbKey());
-        }else {
-          freezeAccountCapsule.setAllAddresses(newFreezeAccountList);
+    if (freezeAccountCapsule == null) {
+      freezeAccountCapsule = new FreezeAccountCapsule(valueList);
+      freezeAccountStore.put(freezeAccountCapsule.createFreezeAccountDbKey(), freezeAccountCapsule);
+    }else {
+      List<ByteString> oldFreezeAddresses = freezeAccountCapsule.getAddressesList();
+      switch (valueType) {
+        case "0":
+          freezeAccountCapsule.setAllAddresses(valueList);
           freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
-        }
-        break;
-      default:
-        break;
+          break;
+        case "1":
+          freezeAccountCapsule.addAllAddress(valueList);
+          freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
+          break;
+        case "2":
+          List<ByteString> newFreezeAccountList = new ArrayList<>();
+          for (ByteString address: oldFreezeAddresses) {
+            if (valueList.contains(address)){
+              continue;
+            }
+            newFreezeAccountList.add(address);
+          }
+
+          if (newFreezeAccountList.isEmpty()) {
+            freezeAccountStore.delete(freezeAccountStore.createFreezeAccountDbKey());
+          }else {
+            freezeAccountCapsule.setAllAddresses(newFreezeAccountList);
+            freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
+          }
+          break;
+        default:
+          break;
+      }
     }
   }
 
