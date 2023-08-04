@@ -140,8 +140,9 @@ public class HttpSelfFormatFieldName {
     //ShieldedTransferContract
     AddressFieldNameMap.put("protocol.ShieldedTransferContract.transparent_from_address", 1);
     AddressFieldNameMap.put("protocol.ShieldedTransferContract.transparent_to_address", 1);
-    //UpdateBrokerageContract
-    AddressFieldNameMap.put("protocol.UpdateBrokerageContract.owner_address", 1);
+
+    //FreezeAccount
+    AddressFieldNameMap.put("protocol.FreezeAccount.freeze_accounts", 1);
 
     //***** Vision.proto *****
     //AccountId
