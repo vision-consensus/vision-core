@@ -84,12 +84,7 @@ import org.vision.common.overlay.message.Message;
 import org.vision.common.parameter.CommonParameter;
 import org.vision.common.runtime.ProgramResult;
 import org.vision.common.runtime.vm.LogInfo;
-import org.vision.common.utils.ByteArray;
-import org.vision.common.utils.ByteUtil;
-import org.vision.common.utils.DecodeUtil;
-import org.vision.common.utils.Sha256Hash;
-import org.vision.common.utils.Utils;
-import org.vision.common.utils.WalletUtil;
+import org.vision.common.utils.*;
 import org.vision.common.zksnark.IncrementalMerkleTreeContainer;
 import org.vision.common.zksnark.IncrementalMerkleVoucherContainer;
 import org.vision.common.zksnark.JLibrustzcash;
@@ -99,6 +94,7 @@ import org.vision.common.zksnark.LibrustzcashParam.IvkToPkdParams;
 import org.vision.common.zksnark.LibrustzcashParam.SpendSigParams;
 import org.vision.consensus.ConsensusDelegate;
 import org.vision.core.actuator.Actuator;
+import org.vision.core.actuator.ActuatorConstant;
 import org.vision.core.actuator.ActuatorFactory;
 import org.vision.core.actuator.VMActuator;
 import org.vision.core.capsule.*;
@@ -146,6 +142,7 @@ import org.vision.protos.Protocol.Transaction.Contract.ContractType;
 import org.vision.protos.Protocol.Transaction.Result.code;
 import org.vision.protos.Protocol.TransactionInfo;
 import org.vision.protos.Protocol.SpreadRelationShip;
+import org.vision.protos.Protocol.FreezeAccount;
 import org.vision.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;
 import org.vision.protos.contract.BalanceContract;
 import org.vision.protos.contract.BalanceContract.BlockBalanceTrace;
@@ -177,8 +174,8 @@ import java.util.Optional;
 import static org.vision.common.utils.Commons.getAssetIssueStoreFinal;
 import static org.vision.common.utils.Commons.getExchangeStoreFinal;
 import static org.vision.common.utils.WalletUtil.isConstant;
-import static org.vision.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
-import static org.vision.core.config.Parameter.ChainConstant.QUERY_SPREAD_MINT_PARENT_LEVEL_MAX;
+import static org.vision.core.actuator.ActuatorConstant.ACCOUNT_CANNOT_TRANSACTION;
+import static org.vision.core.config.Parameter.ChainConstant.*;
 import static org.vision.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.MARKET_COUNT_LIMIT_MAX;
 import static org.vision.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
@@ -382,6 +379,17 @@ public class Wallet {
     return builder.build();
   }
 
+
+  public FreezeAccount getFreezeAccount(byte[] address) {
+    FreezeAccountStore freezeAccountStore = chainBaseManager.getFreezeAccountStore();
+    FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+    if (freezeAccountCapsule == null) {
+      return null;
+    }
+
+    return freezeAccountCapsule.getInstance();
+  }
+
   /**
    * Create a transaction by contract.
    */
@@ -509,6 +517,19 @@ public class Wallet {
         logger
             .warn("Broadcast transaction {} has failed, too many pending.", trx.getTransactionId());
         return builder.setResult(false).setCode(response_code.SERVER_BUSY).build();
+      }
+
+      if (chainBaseManager.getDynamicPropertiesStore().supportFreezeAccount()) {
+        FreezeAccountStore freezeAccountStore = chainBaseManager.getFreezeAccountStore();
+        FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+        if (freezeAccountCapsule != null) {
+          byte[] ownerAddress = TransactionCapsule.getOwner(trx.getInstance().getRawData().getContract(0));
+          if (ownerAddress.length > 0 && freezeAccountCapsule.checkFreeze(ByteString.copyFrom(ownerAddress))) {
+            String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
+            throw new ContractValidateException(
+                    ActuatorConstant.ACCOUNT_EXCEPTION_STR + readableOwnerAddress + ACCOUNT_CANNOT_TRANSACTION);
+          }
+        }
       }
 
       if (dbManager.getTransactionIdCache().getIfPresent(trx.getTransactionId()) != null) {
@@ -1194,6 +1215,11 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSeparateProposalStringParameters")
             .setValue(dbManager.getDynamicPropertiesStore().getSeparateProposalStringParameters())
+            .build());
+
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowFreezeAccount")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowFreezeAccount())
             .build());
 
     return builder.build();

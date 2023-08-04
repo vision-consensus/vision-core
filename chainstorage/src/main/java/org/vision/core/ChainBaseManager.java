@@ -184,6 +184,11 @@ public class ChainBaseManager {
   @Getter
   private AccountFrozenStageResourceStore accountFrozenStageResourceStore;
 
+  @Autowired
+  @Getter
+  private FreezeAccountStore freezeAccountStore;
+
+
   public void closeOneStore(IVisionChainBase database) {
     logger.info("******** begin to close " + database.getName() + " ********");
     try {
@@ -229,6 +234,7 @@ public class ChainBaseManager {
     closeOneStore(pbftSignDataStore);
     closeOneStore(sectionBloomStore);
     closeOneStore(accountFrozenStageResourceStore);
+    closeOneStore(freezeAccountStore);
   }
 
   // for test only
