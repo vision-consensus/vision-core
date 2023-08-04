@@ -126,6 +126,8 @@ public class Args extends CommonParameter {
     PARAMETER.pBFTHttpPort = 0;
     PARAMETER.maintenanceTimeInterval = 0;
     PARAMETER.proposalExpireTime = 0;
+    PARAMETER.proposalEffectiveBlockNumber = 0;
+    PARAMETER.proposalEffectiveExpireTime = 0;
     PARAMETER.checkFrozenTime = 1;
     PARAMETER.allowCreationOfContracts = 0;
     PARAMETER.allowAdaptiveEntropy = 0;
@@ -503,6 +505,15 @@ public class Args extends CommonParameter {
     PARAMETER.proposalExpireTime =
         config.hasPath(Constant.BLOCK_PROPOSAL_EXPIRE_TIME) ? config
             .getInt(Constant.BLOCK_PROPOSAL_EXPIRE_TIME) : 259200000L;
+
+    PARAMETER.proposalEffectiveBlockNumber =
+            config.hasPath(Constant.BLOCK_PROPOSAL_EFFECTIVE_BLOCK_NUMBER) ? config
+                    .getInt(Constant.BLOCK_PROPOSAL_EFFECTIVE_BLOCK_NUMBER) : 15000000L;
+
+    PARAMETER.proposalEffectiveExpireTime =
+            config.hasPath(Constant.BLOCK_PROPOSAL_EFFECTIVE_EXPIRE_TIME) ? config
+                    .getInt(Constant.BLOCK_PROPOSAL_EFFECTIVE_EXPIRE_TIME) : 259200000L;
+
 
     PARAMETER.checkFrozenTime =
         config.hasPath(Constant.BLOCK_CHECK_FROZEN_TIME) ? config

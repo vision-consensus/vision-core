@@ -255,6 +255,10 @@ message SpreadRelationShip {
   int64 frozen_cycle = 5;
 }
 
+message FreezeAccount {
+  repeated bytes freeze_accounts = 2;
+}
+
 message authority {
   AccountId account = 1;
   bytes permission_name = 2;

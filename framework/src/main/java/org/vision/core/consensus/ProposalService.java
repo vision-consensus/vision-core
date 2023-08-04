@@ -1,10 +1,17 @@
 package org.vision.core.consensus;
 
+import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
+import org.vision.common.utils.ByteArray;
+import org.vision.core.capsule.FreezeAccountCapsule;
 import org.vision.core.capsule.ProposalCapsule;
 import org.vision.core.db.Manager;
+import org.vision.core.services.http.Util;
+import org.vision.core.store.FreezeAccountStore;
 import org.vision.core.utils.ProposalUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -297,6 +304,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveSeparateProposalStringParameters(entry.getValue());
           break;
         }
+        case ALLOW_FREEZE_ACCOUNT: {
+          manager.getDynamicPropertiesStore().saveAllowFreezeAccount(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;
@@ -326,6 +337,19 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveVPFreezeStageWeight(entry.getValue());
           break;
         }
+        case FREEZE_ACCOUNT_OWNER: {
+          String owner_account = entry.getValue();
+          if (owner_account.length() == 34) {
+            owner_account = Util.getHexAddress(owner_account);
+          }
+          manager.getDynamicPropertiesStore().saveFreezeAccountOwner(owner_account);
+          break;
+        }
+        case FREEZE_ACCOUNT_LIST: {
+          String[] values = entry.getValue().split(";");
+          saveFreezeAccountList(values[0], values[1], manager);
+          break;
+        }
         default:
           find = false;
           break;
@@ -333,6 +357,51 @@ public class ProposalService extends ProposalUtil {
     }
 
     return find;
+  }
+
+  public static void saveFreezeAccountList(String valueType, String accounts, Manager manager) {
+    List<ByteString> valueList = new ArrayList<>();
+    for (String account: accounts.split(",")) {
+      String hexAddress = account.length() == 34 ? Util.getHexAddress(account): account;
+      valueList.add(ByteString.copyFrom(ByteArray.fromHexString(hexAddress)));
+    }
+
+    FreezeAccountStore freezeAccountStore = manager.getFreezeAccountStore();
+    FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+    if (freezeAccountCapsule == null) {
+      freezeAccountCapsule = new FreezeAccountCapsule(valueList);
+      freezeAccountStore.put(freezeAccountCapsule.createFreezeAccountDbKey(), freezeAccountCapsule);
+    }else {
+      List<ByteString> oldFreezeAddresses = freezeAccountCapsule.getAddressesList();
+      switch (valueType) {
+        case "0":
+          freezeAccountCapsule.setAllAddresses(valueList);
+          freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
+          break;
+        case "1":
+          freezeAccountCapsule.addAllAddress(valueList);
+          freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
+          break;
+        case "2":
+          List<ByteString> newFreezeAccountList = new ArrayList<>();
+          for (ByteString address: oldFreezeAddresses) {
+            if (valueList.contains(address)){
+              continue;
+            }
+            newFreezeAccountList.add(address);
+          }
+
+          if (newFreezeAccountList.isEmpty()) {
+            freezeAccountStore.delete(freezeAccountStore.createFreezeAccountDbKey());
+          }else {
+            freezeAccountCapsule.setAllAddresses(newFreezeAccountList);
+            freezeAccountStore.put(freezeAccountStore.createFreezeAccountDbKey(), freezeAccountCapsule);
+          }
+          break;
+        default:
+          break;
+      }
+    }
   }
 
 }

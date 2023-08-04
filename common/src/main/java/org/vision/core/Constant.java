@@ -116,6 +116,8 @@ public class Constant {
 
   public static final String BLOCK_MAINTENANCE_TIME_INTERVAL = "block.maintenanceTimeInterval";
   public static final String BLOCK_PROPOSAL_EXPIRE_TIME = "block.proposalExpireTime";
+  public static final String BLOCK_PROPOSAL_EFFECTIVE_BLOCK_NUMBER = "block.proposalEffectiveBlockNumber";
+  public static final String BLOCK_PROPOSAL_EFFECTIVE_EXPIRE_TIME = "block.proposalEffectiveExpireTime";
 
   public static final String BLOCK_CHECK_FROZEN_TIME = "block.checkFrozenTime";
 
