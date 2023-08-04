@@ -1,11 +1,22 @@
 package org.vision.core.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.protobuf.ByteString;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.vision.common.utils.ForkController;
+import org.vision.common.utils.*;
+import org.vision.core.capsule.FreezeAccountCapsule;
 import org.vision.core.config.Parameter.ForkBlockVersionConsts;
 import org.vision.core.config.Parameter.ForkBlockVersionEnum;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.store.DynamicPropertiesStore;
+import org.vision.core.store.FreezeAccountStore;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+
+import static org.vision.common.utils.Commons.decodeFromBase58Check;
 
 public class ProposalUtil {
 
@@ -467,6 +478,36 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_FREEZE_ACCOUNT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_FREEZE_ACCOUNT]");
+        }
+        if (value != 1 && value != 0 ) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_FREEZE_ACCOUNT] is only allowed to be 1 or 0");
+          }
+        break;
+      }
+      case ALLOW_UNFREEZE_FRAGMENTATION: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_3_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_UNFREEZE_FRAGMENTATION]");
+        }
+        if (value != 1 && value != 0 ) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_UNFREEZE_FRAGMENTATION] is only allowed to be 1 or 0");
+        }
+        break;
+      }
+      case ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_3_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID]");
+        }
+        if (value != 1) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID] is only allowed to be 1");
+        }
+        break;
+      }
       default:
         if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
           throw new ContractValidateException("Bad proposal parameter key or value");
@@ -477,6 +518,7 @@ public class ProposalUtil {
   }
 
   public static void validatorString(DynamicPropertiesStore dynamicPropertiesStore,
+                               FreezeAccountStore freezeAccountStore,
                                ForkController forkController,
                                long code, String value)
           throws ContractValidateException {
@@ -597,6 +639,66 @@ public class ProposalUtil {
         }
         break;
       }
+      case FREEZE_ACCOUNT_OWNER:
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [FREEZE_ACCOUNT_OWNER]");
+        }
+        JSONObject jsonObject = validAddress(value);
+        if (!jsonObject.getBoolean("result")){
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_OWNER value, value must be a address");
+        }
+        break;
+      case FREEZE_ACCOUNT_LIST:
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_2_0)) {
+          throw new ContractValidateException("Bad chain parameter id [FREEZE_ACCOUNT_LIST]");
+        }
+
+        if (value == null || value.length() <= 0) {
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value must be a address string");
+        }
+
+        String[] values = value.split(";");
+        if (values.length != 2){
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value format is wrong");
+        }
+        String valueType = values[0];
+        if (!Objects.equals(valueType, "0") && !Objects.equals(valueType, "1") && !Objects.equals(valueType, "2")) {
+          throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value type must be 0,1,2");
+        }
+
+        List<ByteString> oldFreezeAccounts = new ArrayList<>();
+        FreezeAccountCapsule freezeAccountCapsule = freezeAccountStore.get(freezeAccountStore.createFreezeAccountDbKey());
+        if (freezeAccountCapsule != null) {
+          oldFreezeAccounts = freezeAccountCapsule.getAddressesList();
+        }
+        HashSet<String> set = new HashSet<>();
+        String[] accounts = values[1].split(",");
+        for (String account: accounts) {
+          JSONObject resObject = validAddress(account);
+          if (!resObject.getBoolean("result")){
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] must be a address");
+          }
+          if (!set.add(account)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is a duplicate address");
+          }
+          ByteString accountByteString;
+          if (account.length() == 34){
+            byte[] address = decodeFromBase58Check(account);
+            if (address == null) {
+              throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] must be address");
+            }
+            accountByteString = ByteString.copyFrom(address);
+          }else {
+            accountByteString = ByteString.copyFrom(ByteArray.fromHexString(account));
+          }
+          if (valueType.equals("1") && oldFreezeAccounts.contains(accountByteString)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is a freeze address");
+          }
+          if (valueType.equals("2") && !oldFreezeAccounts.contains(accountByteString)) {
+            throw new ContractValidateException("Bad FREEZE_ACCOUNT_LIST value, value[" + account + "] is not a freeze address");
+          }
+        }
+        break;
       default:
         if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
           throw new ContractValidateException("Bad proposal string parameter key or value");
@@ -604,6 +706,47 @@ public class ProposalUtil {
           break;
         }
     }
+  }
+
+  public static JSONObject validAddress(String input) {
+    byte[] address = null;
+    boolean result = true;
+    String msg;
+    try {
+      if (input.length() == DecodeUtil.ADDRESS_SIZE) {
+        //hex
+        address = ByteArray.fromHexString(input);
+        msg = "Hex string format";
+      } else if (input.length() == 34) {
+        //base58check
+        address = decodeFromBase58Check(input);
+        msg = "Base58check format";
+      }
+//      else if (input.length() == 28) {
+//        //base64
+//        address = Base64.getDecoder().decode(input);
+//        msg = "Base64 format";
+//      }
+      else {
+        result = false;
+        msg = "Length error";
+      }
+      if (result) {
+        result = DecodeUtil.addressValid(address);
+        if (!result) {
+          msg = "Invalid address";
+        }
+      }
+    } catch (Exception e) {
+      result = false;
+      msg = e.getMessage();
+    }
+
+    JSONObject jsonAddress = new JSONObject();
+    jsonAddress.put("result", result);
+    jsonAddress.put("message", msg);
+
+    return jsonAddress;
   }
 
   public enum ProposalType {         // current value, value range
@@ -671,7 +814,12 @@ public class ProposalUtil {
     SPREAD_REFREEZE_CONSIDERATION_PERIOD(61),
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62),
     MODIFY_SPREAD_MINT_PARENT_FEE(63),
-    SEPARATE_PROPOSAL_STRING_PARAMETERS(64);
+    SEPARATE_PROPOSAL_STRING_PARAMETERS(64),
+    ALLOW_UNFREEZE_FRAGMENTATION(65),
+    ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID(66),
+    ALLOW_FREEZE_ACCOUNT(67),
+    FREEZE_ACCOUNT_OWNER(68),
+    FREEZE_ACCOUNT_LIST(69);
 
     private long code;
 

@@ -905,6 +905,14 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
       this.saveVPFreezeStageWeight("1,30,100;2,60,110;3,90,120;4,180,130;5,360,150");
     }
 
+    try {
+      this.getAllowOptimizedReturnValueOfChainId();
+    } catch (IllegalArgumentException e) {
+      this.saveAllowOptimizedReturnValueOfChainId(
+              CommonParameter.getInstance().getAllowOptimizedReturnValueOfChainId()
+      );
+    }
+
   }
 
   public String intArrayToString(int[] a) {
@@ -2941,6 +2949,43 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     return getRefreezeConsiderationPeriod() * FROZEN_PERIOD;
   }
 
+  public void saveAllowFreezeAccount(Long value) {
+    this.put(DynamicResourceProperties.ALLOW_FREEZE_ACCOUNT, new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public boolean supportFreezeAccount() {
+    return getAllowFreezeAccount() == 1;
+  }
+
+  public long getAllowFreezeAccount() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_FREEZE_ACCOUNT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveFreezeAccountOwner(String value) {
+    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_OWNER, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getFreezeAccountOwner() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_OWNER))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
+  public void saveFreezeAccountList(String value) {
+    this.put(DynamicResourceProperties.FREEZE_ACCOUNT_LIST, new BytesCapsule(ByteArray.fromString(value)));
+  }
+
+  public String getFreezeAccountList() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREEZE_ACCOUNT_LIST))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toStr)
+            .orElse("");
+  }
+
   public void saveAllowVPFreezeStageWeight(Long value) {
     this.put(DynamicResourceProperties.ALLOW_VP_FREEZE_STAGE_WEIGHT,
             new BytesCapsule(ByteArray.fromLong(value)));
@@ -3231,6 +3276,36 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
             .orElse(0L);
   }
 
+  public void saveAllowUnfreezeFragmentation(Long value) {
+    this.put(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public boolean supportUnfreezeFragmentation() {
+    return getAllowUnfreezeFragmentation() == 1L;
+  }
+
+  public Long getAllowUnfreezeFragmentation() {
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
+  public void saveAllowOptimizedReturnValueOfChainId(long value) {
+    this.put(DynamicResourceProperties.ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowOptimizedReturnValueOfChainId() {
+    String msg = "not found ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID";
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () -> new IllegalArgumentException(msg));
+  }
+
   public void burnSpreadAmount(long amount) {
     if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
@@ -3356,6 +3431,13 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     public static final byte[] TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT = "TOTAL_FREEZE_STAGE5_ENTROPY_WEIGHT".getBytes();
     public static final byte[] ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1 = "ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1".getBytes();
     public static final byte[] MODIFY_SPREAD_MINT_PARENT_FEE = "MODIFY_SPREAD_MINT_PARENT_FEE".getBytes();
+
+    private static final byte[] ALLOW_FREEZE_ACCOUNT = "ALLOW_FREEZE_ACCOUNT".getBytes();
+    private static final byte[] FREEZE_ACCOUNT_OWNER = "FREEZE_ACCOUNT_OWNER".getBytes();
+    private static final byte[] FREEZE_ACCOUNT_LIST = "FREEZE_ACCOUNT_LIST".getBytes();
+    public static final byte[] ALLOW_UNFREEZE_FRAGMENTATION = "ALLOW_UNFREEZE_FRAGMENTATION".getBytes();
+    private static final byte[] ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID = "ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID".getBytes();
+
   }
 
 }
