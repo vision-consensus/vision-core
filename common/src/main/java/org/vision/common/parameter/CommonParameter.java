@@ -46,11 +46,6 @@ public class CommonParameter {
   public boolean supportConstant = false;
   @Getter
   @Setter
-  @Parameter(names = {"--max-entropy-limit-for-constant"}, description = "Max entropy limit for "
-          + "constant calling. (default: 100,000,000)")
-  public long maxEntropyLimitForConstant = 100_000_000L;
-  @Getter
-  @Setter
   @Parameter(names = {"--debug"})
   public boolean debug = false;
   @Getter
@@ -263,12 +258,6 @@ public class CommonParameter {
   @Getter
   @Setter
   public boolean walletExtensionApi;
-  @Getter
-  @Setter
-  public boolean estimateEntropy;
-  @Getter
-  @Setter
-  public int estimateEntropyMaxRetry;
   @Getter
   @Setter
   public int backupPriority;
@@ -503,10 +492,6 @@ public class CommonParameter {
   @Getter
   @Setter
   public boolean jsonRpcFilterEnabled = true;
-
-  @Getter
-  @Setter
-  public long allowOptimizedReturnValueOfChainId = 0L;
 
   private static double calcMaxTimeRatio() {
     //return max(2.0, min(5.0, 5 * 4.0 / max(Runtime.getRuntime().availableProcessors(), 1)));

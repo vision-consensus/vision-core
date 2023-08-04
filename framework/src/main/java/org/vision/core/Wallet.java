@@ -114,7 +114,6 @@ import org.vision.core.net.VisionNetService;
 import org.vision.core.net.message.TransactionMessage;
 import org.vision.core.store.*;
 import org.vision.core.utils.TransactionUtil;
-import org.vision.core.vm.program.Program;
 import org.vision.core.zen.ShieldedVRC20ParametersBuilder;
 import org.vision.core.zen.ZenTransactionBuilder;
 import org.vision.core.zen.address.DiversifierT;
@@ -1216,14 +1215,6 @@ public class Wallet {
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
             .setKey("getSeparateProposalStringParameters")
             .setValue(dbManager.getDynamicPropertiesStore().getSeparateProposalStringParameters())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowUnfreezeFragmentation")
-            .setValue(dbManager.getDynamicPropertiesStore().getAllowUnfreezeFragmentation())
-            .build());
-    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-            .setKey("getAllowOptimizedReturnValueOfChainId")
-            .setValue(dbManager.getDynamicPropertiesStore().getAllowOptimizedReturnValueOfChainId())
             .build());
 
     builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
@@ -2918,153 +2909,25 @@ public class Wallet {
     }
   }
 
-  public Transaction estimateEntropy(TriggerSmartContract triggerSmartContract,
-                                    TransactionCapsule txCap, TransactionExtention.Builder txExtBuilder,
-                                    Return.Builder txRetBuilder, GrpcAPI.EstimateEntropyMessage.Builder estimateBuilder)
-          throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
-
-    if (!Args.getInstance().estimateEntropy) {
-      throw new ContractValidateException("this node does not support estimate entropy");
-    }
-
-    if (!Args.getInstance().supportConstant) {
-      throw new ContractValidateException("this node does not support constant, "
-              + "so estimate entropy cannot work");
-    }
-    int retry = Args.getInstance().estimateEntropyMaxRetry;
-
-    DynamicPropertiesStore dps = chainBaseManager.getDynamicPropertiesStore();
-    long high = dps.getMaxFeeLimit();
-
-    Transaction transaction;
-
-    while (true) {
-      try {
-        transaction = cleanContextAndTriggerConstantContract(
-                triggerSmartContract, txCap, txExtBuilder, txRetBuilder, high);
-        break;
-      } catch (Program.OutOfTimeException e) {
-        retry--;
-        if (retry < 0) {
-          throw e;
-        }
-      }
-    }
-
-    // If failed, return directly.
-    if (transaction.getRet(0).getRet().equals(code.FAILED)) {
-      txRetBuilder.setCode(response_code.CONTRACT_EXE_ERROR);
-      estimateBuilder.setResult(txRetBuilder);
-      return transaction;
-    }
-
-    long low = dps.getEntropyFee() * txExtBuilder.getEntropyUsed();
-
-    long twoTimes = low * 2;
-    if (twoTimes < high) {
-      while (true) {
-        try {
-          transaction = cleanContextAndTriggerConstantContract(
-                  triggerSmartContract, txCap, txExtBuilder, txRetBuilder, twoTimes);
-
-          if (transaction.getRet(0).getRet().equals(code.FAILED)) {
-            low = twoTimes;
-          } else {
-            high = twoTimes;
-          }
-
-          break;
-        } catch (Program.OutOfTimeException e) {
-          retry--;
-          if (retry < 0) {
-            throw e;
-          }
-        }
-      }
-    }
-
-    while (low + VS_PRECISION < high) {
-      long mid = (low + high) / 2;
-
-      while (true) {
-        try {
-          transaction = cleanContextAndTriggerConstantContract(
-                  triggerSmartContract, txCap, txExtBuilder, txRetBuilder, mid);
-          break;
-        } catch (Program.OutOfTimeException e) {
-          retry--;
-          if (retry < 0) {
-            throw e;
-          }
-        }
-      }
-
-      if (transaction.getRet(0).getRet().equals(code.FAILED)) {
-        low = mid;
-      } else {
-        high = mid;
-      }
-    }
-
-    // Retry the binary search result
-    transaction = cleanContextAndTriggerConstantContract(
-            triggerSmartContract, txCap, txExtBuilder, txRetBuilder, high);
-    // Setting estimating result
-    estimateBuilder.setResult(txRetBuilder);
-    if (transaction.getRet(0).getRet().equals(code.SUCESS)) {
-      txRetBuilder.setResult(true);
-      txRetBuilder.setCode(response_code.SUCCESS);
-      estimateBuilder.setEntropyRequired((long) Math.ceil((double) high / dps.getEntropyFee()));
-    }
-
-    return transaction;
-  }
-
-  private Transaction cleanContextAndTriggerConstantContract(
-          TriggerSmartContract triggerSmartContract, TransactionCapsule txCap,
-          Builder txExtBuilder, Return.Builder txRetBuilder, long feeLimit)
-          throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
-    Transaction transaction;
-    txCap.setFeeLimit(feeLimit);
-    txCap.resetResult();
-    txExtBuilder.clear();
-    txRetBuilder.clear();
-    transaction = triggerConstantContract(
-            triggerSmartContract, txCap, txExtBuilder, txRetBuilder);
-    return transaction;
-  }
-
   public Transaction triggerConstantContract(TriggerSmartContract
       triggerSmartContract,
       TransactionCapsule trxCap, Builder builder,
       Return.Builder retBuilder)
       throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
-    if (triggerSmartContract.getContractAddress().isEmpty()) { // deploy contract
-      CreateSmartContract.Builder deployBuilder = CreateSmartContract.newBuilder();
-      deployBuilder.setOwnerAddress(triggerSmartContract.getOwnerAddress());
-      deployBuilder.setNewContract(SmartContract.newBuilder()
-              .setOriginAddress(triggerSmartContract.getOwnerAddress())
-              .setBytecode(triggerSmartContract.getData())
-              .setCallValue(triggerSmartContract.getCallValue())
-              .setConsumeUserResourcePercent(100)
-              .setOriginEntropyLimit(1)
-              .build()
-      );
-      deployBuilder.setCallTokenValue(triggerSmartContract.getCallTokenValue());
-      deployBuilder.setTokenId(triggerSmartContract.getTokenId());
-      trxCap = createTransactionCapsule(deployBuilder.build(), ContractType.CreateSmartContract);
-    } else { // call contract
-      ContractStore contractStore = chainBaseManager.getContractStore();
-      byte[] contractAddress = triggerSmartContract.getContractAddress().toByteArray();
-      byte[] isContractExist = contractStore.findContractByHash(contractAddress);
-      if (ArrayUtils.isEmpty(isContractExist)) {
-        throw new ContractValidateException(
-                "No contract or not a smart contract");
-      }
 
-      if (!Args.getInstance().isSupportConstant()) {
-        throw new ContractValidateException("this node does not support constant");
-      }
+    ContractStore contractStore = chainBaseManager.getContractStore();
+    byte[] contractAddress = triggerSmartContract.getContractAddress()
+        .toByteArray();
+    byte[] isContractExist = contractStore
+        .findContractByHash(contractAddress);
+
+    if (ArrayUtils.isEmpty(isContractExist)) {
+      throw new ContractValidateException(
+          "No contract or not a smart contract");
+    }
+
+    if (!Args.getInstance().isSupportConstant()) {
+      throw new ContractValidateException("this node does not support constant");
     }
 
     return callConstantContract(trxCap, builder, retBuilder);

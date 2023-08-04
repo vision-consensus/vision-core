@@ -57,9 +57,7 @@ public interface EthereumCompatible {
         @Getter
         @Setter
         private String nonce; // not used
-        @Getter
-        @Setter
-        private String type;
+
 
         /**
          * just support TransferContract, CreateSmartContract and TriggerSmartContract
@@ -395,23 +393,6 @@ public interface EthereumCompatible {
 
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class FeeHistory {
-        @Getter
-        @Setter
-        private String oldestBlock;
-        @Getter
-        @Setter
-        private List<List<String>> reward;
-        @Getter
-        @Setter
-        private List<String> baseFeePerGas;
-        @Getter
-        @Setter
-        private List<Double> gasUsedRatio;
-    }
-
     String eth_chainId();
     String web3_clientVersion();
     String web3_sha3(String data) throws Exception;
@@ -428,7 +409,6 @@ public interface EthereumCompatible {
     String eth_blockNumber();
     String eth_getBalance(String address, String block) throws Exception;
     String eth_getLastBalance(String address) throws Exception;
-    FeeHistory eth_feeHistory(String blockCount, String newestBlock, List<Double> rewardPercentiles) throws Exception;
 
     String eth_getStorageAt(String address, String storageIdx, String blockId) throws Exception;
 

@@ -488,26 +488,6 @@ public class ProposalUtil {
           }
         break;
       }
-      case ALLOW_UNFREEZE_FRAGMENTATION: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_3_0)) {
-          throw new ContractValidateException("Bad chain parameter id [ALLOW_UNFREEZE_FRAGMENTATION]");
-        }
-        if (value != 1 && value != 0 ) {
-          throw new ContractValidateException(
-                  "This value[ALLOW_UNFREEZE_FRAGMENTATION] is only allowed to be 1 or 0");
-        }
-        break;
-      }
-      case ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID: {
-        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_3_0)) {
-          throw new ContractValidateException("Bad chain parameter id [ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID]");
-        }
-        if (value != 1) {
-          throw new ContractValidateException(
-                  "This value[ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID] is only allowed to be 1");
-        }
-        break;
-      }
       default:
         if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
           throw new ContractValidateException("Bad proposal parameter key or value");
@@ -815,8 +795,8 @@ public class ProposalUtil {
     ALLOW_ETHEREUM_COMPATIBLE_TRANSACTION_NATIVE_STEP1(62),
     MODIFY_SPREAD_MINT_PARENT_FEE(63),
     SEPARATE_PROPOSAL_STRING_PARAMETERS(64),
-    ALLOW_UNFREEZE_FRAGMENTATION(65),
-    ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID(66),
+//    ALLOW_UNFREEZE_FRAGMENTATION(65),
+//    ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID(66),
     ALLOW_FREEZE_ACCOUNT(67),
     FREEZE_ACCOUNT_OWNER(68),
     FREEZE_ACCOUNT_LIST(69);

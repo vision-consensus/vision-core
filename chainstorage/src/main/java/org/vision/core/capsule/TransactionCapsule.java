@@ -113,17 +113,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
   private byte[] ethRlpData;
 
-  private Sha256Hash id;
-
-  private byte[] ownerAddress;
-
-  public byte[] getOwnerAddress() {
-    if (this.ownerAddress == null) {
-      this.ownerAddress = getOwner(this.transaction.getRawData().getContract(0));
-    }
-    return this.ownerAddress;
-  }
-
   /**
    * constructor TransactionCapsule.
    */
@@ -640,8 +629,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         .setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
         .setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
         .build();
-//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-    setRawData(rawData);
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
   }
 
   public long getExpiration() {
@@ -654,38 +642,24 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   public void setExpiration(long expiration) {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
         .build();
-//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-    setRawData(rawData);
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
   }
 
   public void setTimestamp() {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder()
         .setTimestamp(System.currentTimeMillis())
         .build();
-//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-    setRawData(rawData);
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
   }
   public void setTimestamp(long timestamp) {
     Transaction.raw rawData = this.transaction.getRawData().toBuilder()
         .setTimestamp(timestamp)
         .build();
-//    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-    setRawData(rawData);
+    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
   }
 
   public long getTimestamp() {
     return transaction.getRawData().getTimestamp();
-  }
-
-  public void setFeeLimit(long feeLimit) {
-    Transaction.raw rawData = this.transaction.getRawData().toBuilder()
-            .setFeeLimit(feeLimit)
-            .build();
-    setRawData(rawData);
-  }
-
-  public long getFeeLimit() {
-    return transaction.getRawData().getFeeLimit();
   }
 
   @Deprecated
@@ -713,7 +687,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     //    String signature = cryptoEngine.signHash(getRawHash().getBytes());
     //    ByteString sig = ByteString.copyFrom(signature.getBytes());
     ByteString sig = ByteString.copyFrom(cryptoEngine.Base64toBytes(cryptoEngine
-        .signHash(getTransactionId().getBytes())));
+        .signHash(getRawHash().getBytes())));
     this.transaction = this.transaction.toBuilder().addSignature(sig).build();
   }
 
@@ -737,7 +711,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
         .fromPrivate(privateKey, CommonParameter.getInstance().isECKeyCryptoEngine());
     byte[] address = cryptoEngine.getAddress();
     if (this.transaction.getSignatureCount() > 0) {
-      checkWeight(permission, this.transaction.getSignatureList(), this.getTransactionId().getBytes(),
+      checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
           approveList);
       if (approveList.contains(ByteString.copyFrom(address))) {
         throw new PermissionException(encode58Check(address) + " had signed!");
@@ -752,7 +726,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     }
     //    String signature = cryptoEngine.signHash(getRawHash().getBytes());
     ByteString sig = ByteString.copyFrom(cryptoEngine.Base64toBytes(cryptoEngine
-        .signHash(getTransactionId().getBytes())));
+        .signHash(getRawHash().getBytes())));
     this.transaction = this.transaction.toBuilder().addSignature(sig).build();
   }
   private static void checkPermission(int permissionId, Permission permission, Transaction.Contract contract) throws PermissionException {
@@ -2264,7 +2238,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       throw new ValidateSignatureException("too many signatures");
     }
 
-    byte[] hash = this.getTransactionId().getBytes();
+    byte[] hash = this.getRawHash().getBytes();
 
     try {
       if (!validateSignature(this.transaction, hash, accountStore, dynamicPropertiesStore)) {
@@ -2533,16 +2507,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
   }
 
   public Sha256Hash getTransactionId() {
-    if (this.id == null) {
-      this.id = getRawHash();
-    }
-    return this.id;
-  }
-
-  private void setRawData(Transaction.raw rawData) {
-    this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-    // invalidate trxId
-    this.id = null;
+    return getRawHash();
   }
 
   public Sha256Hash getEthRlpDataHash(DynamicPropertiesStore dynamicPropertiesStore){

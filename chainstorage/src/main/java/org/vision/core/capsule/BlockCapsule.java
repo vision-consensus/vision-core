@@ -144,13 +144,6 @@ public class BlockCapsule implements ProtoCapsule<Block> {
     getTransactions().add(pendingTrx);
   }
 
-  public void addAllTransactions(List<TransactionCapsule> pendingTrxs) {
-    List<Transaction> list = pendingTrxs.stream().map(TransactionCapsule::getInstance).collect(
-            Collectors.toList());
-    this.block = this.block.toBuilder().addAllTransactions(list).build();
-    getTransactions().addAll(pendingTrxs);
-  }
-
   public List<TransactionCapsule> getTransactions() {
     return transactions;
   }

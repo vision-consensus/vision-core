@@ -1,8 +1,6 @@
 package org.vision.core.capsule;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.vision.core.exception.BadItemException;
@@ -31,7 +29,7 @@ public class TransactionRetCapsule implements ProtoCapsule<TransactionRet> {
 
   public TransactionRetCapsule(byte[] data) throws BadItemException {
     try {
-      this.transactionRet = TransactionRet.parseFrom(data);
+      this.transactionRet = transactionRet.parseFrom(data);
     } catch (InvalidProtocolBufferException e) {
       throw new BadItemException("TransactionInfoCapsule proto data parse exception");
     }
@@ -39,10 +37,6 @@ public class TransactionRetCapsule implements ProtoCapsule<TransactionRet> {
 
   public void addTransactionInfo(TransactionInfo result) {
     this.transactionRet = this.transactionRet.toBuilder().addTransactioninfo(result).build();
-  }
-
-  public void addAllTransactionInfos(List<TransactionInfo> results) {
-    this.transactionRet = this.transactionRet.toBuilder().addAllTransactioninfo(results).build();
   }
 
   @Override

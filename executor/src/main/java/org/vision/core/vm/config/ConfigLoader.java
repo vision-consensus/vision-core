@@ -27,8 +27,6 @@ public class ConfigLoader {
         VMConfig.initAllowVvmIstanbul(ds.getAllowVvmIstanbul());
         VMConfig.initAllowVvmStake(ds.getAllowVvmStake());
         VMConfig.initAllowVvmAssetIssue(ds.getAllowVvmAssetIssue());
-        VMConfig.initAllowOptimizedReturnValueOfChainId(
-                ds.getAllowOptimizedReturnValueOfChainId());
       }
     }
   }
