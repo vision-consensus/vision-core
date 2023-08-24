@@ -2046,8 +2046,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
           build.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)));
         }
 
-        if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[])
+        if (dataValue.length() >= VALUE_SIZE * 3){ // unfreezeBalance(uint256,address,uint256[]) || unfreezeBalance(uint256,address,uint256[],uint256)
           int stageIndex = VALUE_SIZE * 3;
+
+          int stageArrIndex =  ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(VALUE_SIZE * 2, VALUE_SIZE * 3))) * 2;
+          if (stageArrIndex == VALUE_SIZE * 4) {
+            build.setUnfreezeBalance(ByteUtil.byteArrayToLong(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE))));
+            stageIndex += VALUE_SIZE;
+          }
+
           int stageSize = ByteUtil.byteArrayToInt(ByteArray.fromHexString(dataValue.substring(stageIndex, stageIndex + VALUE_SIZE)));
           int index = 1;
           int startIndex, endIndex;
