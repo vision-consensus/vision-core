@@ -337,6 +337,7 @@ public class JsonRpcApiUtil {
         break;
       case NativeTransactionContractAbi.UnfreezeBalance_FunctionSelector:
       case NativeTransactionContractAbi.UnfreezeBalanceStage_FunctionSelector:
+      case NativeTransactionContractAbi.UnfreezeBalanceStageFragment_FunctionSelector:
         UnfreezeBalanceContract.Builder build1 = ethTrx.rlpParseToUnfreezeBalanceContract().toBuilder();
         trxCap = wallet.createTransactionCapsule(build1.build(), ContractType.UnfreezeBalanceContract);
         break;
