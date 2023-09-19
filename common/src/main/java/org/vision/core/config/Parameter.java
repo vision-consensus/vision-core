@@ -7,7 +7,8 @@ public class Parameter {
   public enum ForkBlockVersionEnum {
     ENTROPY_LIMIT(5, 0L, 0),
     VERSION_1_0_0(20, 0L, 0),
-    VERSION_1_2_0(21, 1654444800000L, 80);//GMT 2022-06-06 00:00:00, 80 means 22 FV upgrade
+    VERSION_1_2_0(21, 1654444800000L, 80),//GMT 2022-06-06 00:00:00, 80 means 22 FV upgrade
+    VERSION_1_3_0(22, 1654444800000L, 80);//GMT 2022-06-06 00:00:00, 80 means 22 FV upgrade
 
     @Getter
     private int value;
@@ -54,7 +55,7 @@ public class Parameter {
     public static final int SINGLE_REPEAT = 1;
     public static final int BLOCK_FILLED_SLOTS_NUMBER = 128;
     public static final int MAX_FROZEN_NUMBER = 1;
-    public static final int BLOCK_VERSION = 21;
+    public static final int BLOCK_VERSION = 22;
     public static final long FROZEN_PERIOD = 86_400_000L;
     public static final long VS_PRECISION = 1000_000L;
     public static final long UN_FREEZE_FVGUARANTEE_LIMIT = 23L;
@@ -147,6 +148,9 @@ public class Parameter {
 
     public static final String UnfreezeBalanceStage = "unfreezeBalance(uint256,address,uint256[])";               // b1c68f74 3ec3afdfe31282ab0b2c9362ef7c5c113743ee22ae0697d1207a7c06
     public static final String UnfreezeBalanceStage_FunctionSelector = "b1c68f74";
+
+    public static final String UnfreezeBalanceStageFragment = "unfreezeBalance(uint256,address,uint256[],uint256)";               // 4d639a82 79345b705fc5a9552f378ef0de3ecdf6163cd6e999898381c0c39942
+    public static final String UnfreezeBalanceStageFragment_FunctionSelector = "4d639a82";
 
     public static final String WithdrawBalance = "withdrawBalance(uint256)";                        // da76d5cd be3baa4ef4f3adb20b7af22c89bcd5dc86bb34ab804e6d35b15874d4
     public static final String WithdrawBalance_FunctionSelector = "da76d5cd";

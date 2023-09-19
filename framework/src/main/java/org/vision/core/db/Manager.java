@@ -1180,10 +1180,9 @@ public class Manager {
       }
     }
 
-    TransactionRetCapsule transactionRetCapsule = new TransactionRetCapsule(blockCapsule);
-
     Set<String> accountSet = new HashSet<>();
     AtomicInteger shieldedTransCounts = new AtomicInteger(0);
+    List<TransactionCapsule> toBePacked = new ArrayList<>();
     Iterator<TransactionCapsule> iterator = pendingTransactions.iterator();
     while (iterator.hasNext() || rePushTransactions.size() > 0) {
       boolean fromPending = false;
@@ -1193,6 +1192,13 @@ public class Manager {
         trx = iterator.next();
       } else {
         trx = rePushTransactions.poll();
+      }
+
+      if (trx == null) {
+        //  transaction may be removed by rePushLoop.
+        logger.warn("transaction is null, fromPending: {}, pending: {}, repush: {}.",
+                fromPending, pendingTransactions.size(), rePushTransactions.size());
+        continue;
       }
 
       if (System.currentTimeMillis() > timeout) {
@@ -1212,8 +1218,7 @@ public class Manager {
         continue;
       }
       //multi sign transaction
-      Contract contract = trx.getInstance().getRawData().getContract(0);
-      byte[] owner = TransactionCapsule.getOwner(contract);
+      byte[] owner = trx.getOwnerAddress();
       String ownerAddress = ByteArray.toHexString(owner);
       if (accountSet.contains(ownerAddress)) {
         continue;
@@ -1231,10 +1236,7 @@ public class Manager {
         TransactionInfo result = processTransaction(trx, blockCapsule);
         accountStateCallBack.exeTransFinish();
         tmpSession.merge();
-        blockCapsule.addTransaction(trx);
-        if (Objects.nonNull(result)) {
-          transactionRetCapsule.addTransactionInfo(result);
-        }
+        toBePacked.add(trx);
         if (fromPending) {
           iterator.remove();
         }
@@ -1242,7 +1244,7 @@ public class Manager {
         logger.error("Process trx failed when generating block: {}", e.getMessage());
       }
     }
-
+    blockCapsule.addAllTransactions(toBePacked);
     accountStateCallBack.executeGenerateFinish();
 
     session.reset();
@@ -1337,8 +1339,10 @@ public class Manager {
     try {
       merkleContainer.resetCurrentMerkleTree();
       accountStateCallBack.preExecute(block);
+      List<TransactionInfo> results = new ArrayList<>();
+      long num = block.getNum();
       for (TransactionCapsule transactionCapsule : block.getTransactions()) {
-        transactionCapsule.setBlockNum(block.getNum());
+        transactionCapsule.setBlockNum(num);
         if (block.generatedByMyself) {
           transactionCapsule.setVerified(true);
         }
@@ -1346,9 +1350,10 @@ public class Manager {
         TransactionInfo result = processTransaction(transactionCapsule, block);
         accountStateCallBack.exeTransFinish();
         if (Objects.nonNull(result)) {
-          transactionRetCapsule.addTransactionInfo(result);
+          results.add(result);
         }
       }
+      transactionRetCapsule.addAllTransactionInfos(results);
       accountStateCallBack.executePushFinish();
     } finally {
       accountStateCallBack.exceptionFinish();
