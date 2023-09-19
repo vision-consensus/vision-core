@@ -62,9 +62,13 @@ public class Constant {
   public static final String LOCAL_WITNESS_ACCOUNT_ADDRESS = "localWitnessAccountAddress";
   public static final String LOCAL_WITNESS_KEYSTORE = "localwitnesskeystore";
   public static final String VM_SUPPORT_CONSTANT = "vm.supportConstant";
+  public static final String VM_MAX_ENTROPY_LIMIT_FOR_CONSTANT = "vm.maxEntropyLimitForConstant";
   public static final String VM_MIN_TIME_RATIO = "vm.minTimeRatio";
   public static final String VM_MAX_TIME_RATIO = "vm.maxTimeRatio";
   public static final String VM_LONG_RUNNING_TIME = "vm.longRunningTime";
+  public static final String VM_ESTIMATE_ENTROPY = "vm.estimateEntropy";
+
+  public static final String VM_ESTIMATE_ENTROPY_MAX_RETRY = "vm.estimateEntropyMaxRetry";
 
   public static final String ROCKSDB = "ROCKSDB";
 
@@ -269,6 +273,9 @@ public class Constant {
 
   public static final String COMMITTEE_ALLOW_TRANSACTION_FEE_POOL = "committee.allowTransactionFeePool";
   public static final String COMMITTEE_ALLOW_BLACK_HOLE_OPTIMIZATION = "committee.allowBlackHoleOptimization";
+  public static final String COMMITTEE_ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID =
+          "committee.allowOptimizedReturnValueOfChainId";
+
   public static final String METRICS_STORAGE_ENABLE = "node.metrics.storageEnable";
   public static final String METRICS_INFLUXDB_IP = "node.metrics.influxdb.ip";
   public static final String METRICS_INFLUXDB_PORT = "node.metrics.influxdb.port";

@@ -83,6 +83,8 @@ public class VMActuator implements Actuator2 {
   @Setter
   private boolean isConstantCall = false;
 
+  private long maxEntropyLimit;
+
   @Setter
   private boolean enableEventListener;
 
@@ -90,6 +92,7 @@ public class VMActuator implements Actuator2 {
 
   public VMActuator(boolean isConstantCall) {
     this.isConstantCall = isConstantCall;
+    this.maxEntropyLimit = CommonParameter.getInstance().maxEntropyLimitForConstant;
     programInvokeFactory = new ProgramInvokeFactoryImpl();
   }
 
@@ -113,6 +116,12 @@ public class VMActuator implements Actuator2 {
     //Load Config
     ConfigLoader.load(context.getStoreFactory());
     trx = context.getTrxCap().getInstance();
+    // If tx`s fee limit is set, use it to calc max energy limit for constant call
+    if (isConstantCall && trx.getRawData().getFeeLimit() > 0) {
+      maxEntropyLimit = Math.min(maxEntropyLimit, trx.getRawData().getFeeLimit()
+              / context.getStoreFactory().getChainBaseManager()
+              .getDynamicPropertiesStore().getEntropyFee());
+    }
     blockCap = context.getBlockCap();
     //Route Type
     ContractType contractType = this.trx.getRawData().getContract(0).getType();
@@ -171,22 +180,6 @@ public class VMActuator implements Actuator2 {
         vm.play(program);
         result = program.getResult();
 
-        if (isConstantCall) {
-          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
-          long callTokenValue = TransactionUtil
-              .getCallTokenValue(trx.getRawData().getContract(0));
-          if (callValue > 0 || callTokenValue > 0) {
-            result.setRuntimeError("constant cannot set call value or call token value.");
-            result.rejectInternalTransactions();
-          }
-          if (result.getException() != null) {
-            result.setRuntimeError(result.getException().getMessage());
-            result.rejectInternalTransactions();
-          }
-          context.setProgramResult(result);
-          return;
-        }
-
         if (TrxType.TRX_CONTRACT_CREATION_TYPE == trxType && !result.isRevert()) {
           byte[] code = program.getResult().getHReturn();
           long saveCodeEntropy = (long) getLength(code) * EntropyCost.getInstance().getCREATE_DATA();
@@ -203,6 +196,22 @@ public class VMActuator implements Actuator2 {
               repository.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
             }
           }
+        }
+
+        if (isConstantCall) {
+          long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
+          long callTokenValue = TransactionUtil
+                  .getCallTokenValue(trx.getRawData().getContract(0));
+          if (callValue > 0 || callTokenValue > 0) {
+            result.setRuntimeError("constant cannot set call value or call token value.");
+            result.rejectInternalTransactions();
+          }
+          if (result.getException() != null) {
+            result.setRuntimeError(result.getException().getMessage());
+            result.rejectInternalTransactions();
+          }
+          context.setProgramResult(result);
+          return;
         }
 
         if (result.getException() != null || result.isRevert()) {
@@ -348,19 +357,23 @@ public class VMActuator implements Actuator2 {
       long entropyLimit;
       // according to version
 
-      if (StorageUtils.getEntropyLimitHardFork()) {
-        if (callValue < 0) {
-          throw new ContractValidateException("callValue must be >= 0");
-        }
-        if (tokenValue < 0) {
-          throw new ContractValidateException("tokenValue must be >= 0");
-        }
-        if (newSmartContract.getOriginEntropyLimit() <= 0) {
-          throw new ContractValidateException("The originEntropyLimit must be > 0");
-        }
-        entropyLimit = getAccountEntropyLimitWithFixRatio(creator, feeLimit, callValue);
+      if (isConstantCall){
+        entropyLimit = maxEntropyLimit;
       } else {
-        entropyLimit = getAccountEntropyLimitWithFloatRatio(creator, feeLimit, callValue);
+        if (StorageUtils.getEntropyLimitHardFork()) {
+          if (callValue < 0) {
+            throw new ContractValidateException("callValue must be >= 0");
+          }
+          if (tokenValue < 0) {
+            throw new ContractValidateException("tokenValue must be >= 0");
+          }
+          if (newSmartContract.getOriginEntropyLimit() <= 0) {
+            throw new ContractValidateException("The originEntropyLimit must be > 0");
+          }
+          entropyLimit = getAccountEntropyLimitWithFixRatio(creator, feeLimit, callValue);
+        } else {
+          entropyLimit = getAccountEntropyLimitWithFloatRatio(creator, feeLimit, callValue);
+        }
       }
 
       checkTokenValueAndId(tokenValue, tokenId);
@@ -377,6 +390,9 @@ public class VMActuator implements Actuator2 {
           .createProgramInvoke(TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
                       tokenValue, tokenId, blockCap.getInstance(), repository, vmStartInUs,
                       vmShouldEndInUs, entropyLimit);
+      if (isConstantCall) {
+        programInvoke.setConstantCall();
+      }
       this.vm = new VM();
       this.program = new Program(ops, programInvoke, rootInternalTransaction, vmConfig
       );
@@ -474,7 +490,7 @@ public class VMActuator implements Actuator2 {
       AccountCapsule caller = repository.getAccount(callerAddress);
       long entropyLimit;
       if (isConstantCall) {
-        entropyLimit = VMConstant.ENTROPY_LIMIT_IN_CONSTANT_TX;
+        entropyLimit = maxEntropyLimit; // VMConstant.ENTROPY_LIMIT_IN_CONSTANT_TX;
       } else {
         AccountCapsule creator = repository
             .getAccount(deployedContract.getInstance().getOriginAddress().toByteArray());

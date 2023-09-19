@@ -143,6 +143,8 @@ public class Args extends CommonParameter {
     PARAMETER.solidityNode = false;
     PARAMETER.trustNodeAddr = "";
     PARAMETER.walletExtensionApi = false;
+    PARAMETER.estimateEntropy = false;
+    PARAMETER.estimateEntropyMaxRetry = 3;
     PARAMETER.connectFactor = 0.3;
     PARAMETER.activeConnectFactor = 0.1;
     PARAMETER.disconnectNumberFactor = 0.4;
@@ -275,6 +277,11 @@ public class Args extends CommonParameter {
 
     if (config.hasPath(Constant.VM_SUPPORT_CONSTANT)) {
       PARAMETER.supportConstant = config.getBoolean(Constant.VM_SUPPORT_CONSTANT);
+    }
+
+    if (config.hasPath(Constant.VM_MAX_ENTROPY_LIMIT_FOR_CONSTANT)) {
+      long configLimit = config.getLong(Constant.VM_MAX_ENTROPY_LIMIT_FOR_CONSTANT);
+      PARAMETER.maxEntropyLimitForConstant = max(3_000_000L, configLimit);
     }
 
     if (config.hasPath(Constant.NODE_HTTP_FULLNODE_ENABLE)) {
@@ -576,6 +583,19 @@ public class Args extends CommonParameter {
         config.hasPath(Constant.NODE_WALLET_EXTENSION_API)
             && config.getBoolean(Constant.NODE_WALLET_EXTENSION_API);
 
+
+    PARAMETER.estimateEntropy =
+            config.hasPath(Constant.VM_ESTIMATE_ENTROPY)
+                    && config.getBoolean(Constant.VM_ESTIMATE_ENTROPY);
+    PARAMETER.estimateEntropyMaxRetry = config.hasPath(Constant.VM_ESTIMATE_ENTROPY_MAX_RETRY)
+            ? config.getInt(Constant.VM_ESTIMATE_ENTROPY_MAX_RETRY) : 3;
+    if (PARAMETER.estimateEntropyMaxRetry < 0) {
+      PARAMETER.estimateEntropyMaxRetry = 0;
+    }
+    if (PARAMETER.estimateEntropyMaxRetry > 10) {
+      PARAMETER.estimateEntropyMaxRetry = 10;
+    }
+
     PARAMETER.connectFactor =
         config.hasPath(Constant.NODE_CONNECT_FACTOR)
             ? config.getDouble(Constant.NODE_CONNECT_FACTOR) : 0.3;
@@ -712,6 +732,11 @@ public class Args extends CommonParameter {
     PARAMETER.allowVvmAssetIssue =
             config.hasPath(Constant.COMMITTEE_ALLOW_VVM_ASSETISSUE) ? config
                     .getInt(Constant.COMMITTEE_ALLOW_VVM_ASSETISSUE) : 0;
+
+    PARAMETER.allowOptimizedReturnValueOfChainId =
+            config.hasPath(Constant.COMMITTEE_ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID) ? config
+                    .getInt(Constant.COMMITTEE_ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID) : 0;
+
     initBackupProperty(config);
     if (Constant.ROCKSDB.equals(CommonParameter
             .getInstance().getStorage().getDbEngine().toUpperCase())) {
