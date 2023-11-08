@@ -3248,6 +3248,23 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
                     () -> new IllegalArgumentException(msg));
   }
 
+  public boolean supportOptimizeUnfreezeVoteWeight() {
+    return getAllowUnfreezeFragmentationVoteWeight() == 1L;
+  }
+
+  public void saveAllowUnfreezeFragmentationVoteWeight(long value) {
+    this.put(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT,
+            new BytesCapsule(ByteArray.fromLong(value)));
+  }
+
+  public long getAllowUnfreezeFragmentationVoteWeight() {
+    String msg = "not found ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT";
+    return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
+  }
+
   public void burnSpreadAmount(long amount) {
     if (amount <= 0) return;
     long burn = getBurnSpreadAmount();
@@ -3374,6 +3391,7 @@ public class DynamicPropertiesStore extends VisionStoreWithRevoking<BytesCapsule
     private static final byte[] FREEZE_ACCOUNT_LIST = "FREEZE_ACCOUNT_LIST".getBytes();
     public static final byte[] ALLOW_UNFREEZE_FRAGMENTATION = "ALLOW_UNFREEZE_FRAGMENTATION".getBytes();
     private static final byte[] ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID = "ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID".getBytes();
+    private static final byte[] ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT = "ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT".getBytes();
 
   }
 
