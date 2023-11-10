@@ -508,6 +508,16 @@ public class ProposalUtil {
         }
         break;
       }
+      case ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT: {
+        if (!forkController.pass(ForkBlockVersionEnum.VERSION_1_3_0)) {
+          throw new ContractValidateException("Bad chain parameter id [ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT]");
+        }
+        if (value != 1) {
+          throw new ContractValidateException(
+                  "This value[ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT] is only allowed to be 1");
+        }
+        break;
+      }
       default:
         if (dynamicPropertiesStore.getSeparateProposalStringParameters() == 1L){
           throw new ContractValidateException("Bad proposal parameter key or value");
@@ -819,7 +829,8 @@ public class ProposalUtil {
     ALLOW_OPTIMIZED_RETURN_VALUE_OF_CHAIN_ID(66),
     ALLOW_FREEZE_ACCOUNT(67),
     FREEZE_ACCOUNT_OWNER(68),
-    FREEZE_ACCOUNT_LIST(69);
+    FREEZE_ACCOUNT_LIST(69),
+    ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT(70);
 
     private long code;
 
