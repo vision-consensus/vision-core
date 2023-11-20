@@ -316,6 +316,10 @@ public class ProposalService extends ProposalUtil {
           manager.getDynamicPropertiesStore().saveAllowOptimizedReturnValueOfChainId(entry.getValue());
           break;
         }
+        case ALLOW_UNFREEZE_FRAGMENTATION_VOTE_WEIGHT: {
+          manager.getDynamicPropertiesStore().saveAllowUnfreezeFragmentationVoteWeight(entry.getValue());
+          break;
+        }
         default:
           find = false;
           break;

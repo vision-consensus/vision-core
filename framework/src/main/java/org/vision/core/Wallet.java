@@ -1230,6 +1230,10 @@ public class Wallet {
             .setKey("getAllowFreezeAccount")
             .setValue(dbManager.getDynamicPropertiesStore().getAllowFreezeAccount())
             .build());
+    builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+            .setKey("getAllowUnfreezeFragmentationVoteWeight")
+            .setValue(dbManager.getDynamicPropertiesStore().getAllowUnfreezeFragmentationVoteWeight())
+            .build());
 
     return builder.build();
   }
