@@ -2,6 +2,7 @@ package org.vision.core.actuator;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.math.LongMath;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.vision.common.utils.JsonFormat;
 import org.vision.common.utils.Producer;
 import org.vision.common.utils.StringUtil;
 import org.vision.core.capsule.*;
+import org.vision.core.config.Parameter;
 import org.vision.core.exception.ContractExeException;
 import org.vision.core.exception.ContractValidateException;
 import org.vision.core.service.MortgageService;
@@ -898,19 +900,59 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 
     // Update Owner Voting
     votesCapsule.clearNewVotes();
-    for (Vote vote : accountCapsule.getVotesList()) {
-      long newVoteCount = (long)
-              ((double) vote.getVoteCount() / totalVote * ownedVisionPower / VS_PRECISION);
-      if (newVoteCount > 0) {
-        votesCapsule.addNewVotes(vote.getVoteAddress(), newVoteCount);
+    if (chainBaseManager.getDynamicPropertiesStore().supportOptimizeUnfreezeVoteWeight()) {
+      updateVoteWeight(accountCapsule, votesCapsule, totalVote);
+      votesStore.put(ownerAddress, votesCapsule);
+
+      accountCapsule.clearVotes();
+      for (Vote vote : votesCapsule.getNewVotes()) {
+        accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount(), vote.getVoteCountWeight());
+      }
+
+    } else {
+      for (Vote vote : accountCapsule.getVotesList()) {
+        long newVoteCount = (long)
+                ((double) vote.getVoteCount() / totalVote * ownedVisionPower / VS_PRECISION);
+        if (newVoteCount > 0) {
+          votesCapsule.addNewVotes(vote.getVoteAddress(), newVoteCount);
+        }
+      }
+      votesStore.put(ownerAddress, votesCapsule);
+
+      accountCapsule.clearVotes();
+      for (Vote vote : votesCapsule.getNewVotes()) {
+        accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
       }
     }
-    votesStore.put(ownerAddress, votesCapsule);
+  }
 
-    accountCapsule.clearVotes();
-    for (Vote vote : votesCapsule.getNewVotes()) {
-      accountCapsule.addVotes(vote.getVoteAddress(), vote.getVoteCount());
+  private void updateVoteWeight(AccountCapsule accountCapsule, VotesCapsule votesCapsule, long totalVote) {
+    DynamicPropertiesStore dynamicStore = chainBaseManager.getDynamicPropertiesStore();
+    long interval1 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel1(), VS_PRECISION);
+    long interval2 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel2(), VS_PRECISION);
+    long interval3 = LongMath.checkedMultiply(dynamicStore.getVoteFreezeStageLevel3(), VS_PRECISION);
+    long visionPower = accountCapsule.getVisionPower();
+
+    for (Vote vote : accountCapsule.getVotesList()) {
+      long voteCount = (long)((double) vote.getVoteCount() / totalVote * visionPower / VS_PRECISION);
+      if (voteCount <= 0) {
+        continue;
+      }
+
+      long voteCountWeight = voteCount;
+      if (visionPower >= interval3) {
+        voteCountWeight = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel3() / Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      } else if (visionPower >= interval2) {
+        voteCountWeight = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel2() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      } else if (visionPower >= interval1) {
+        voteCountWeight = (long) (voteCount * ((float) dynamicStore.getVoteFreezePercentLevel1() /Parameter.ChainConstant.VOTE_PERCENT_PRECISION));
+      }
+      if (dynamicStore.getAllowVPFreezeStageWeight() == 1L) {
+        voteCountWeight = (long) (voteCountWeight * (accountCapsule.getFrozenStageWeightMerge() * 1.0 / 100L));
+      }
+      votesCapsule.addNewVotes(vote.getVoteAddress(), voteCount, voteCountWeight);
     }
+
   }
 
 }
